@@ -1,0 +1,9 @@
+export 'core_dictionaries/core_dictionaries_repository.dart';
+export 'discount_category/discount_category_repository.dart';
+export 'discount_source/discount_source_repository.dart';
+export 'news_category/news_category_repository.dart';
+export 'referral_program_candidate/referral_program_candidate_repository.dart';
+export 'referral_program_vacation/referral_program_vacation_repository.dart';
+export 'resell_equipment_type/resell_equipment_type_repository.dart';
+export 'unplanned_training_contractor/unplanned_training_contractor_repository.dart';
+export 'violation_security_level/violation_security_level_repository.dart';
