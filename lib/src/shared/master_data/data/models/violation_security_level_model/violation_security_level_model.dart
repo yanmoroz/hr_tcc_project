@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/violation_security_level/violation_security_level.dart';
+import '../../../domain/entities/entities.dart';
 
 part 'violation_security_level_model.freezed.dart';
 part 'violation_security_level_model.g.dart';

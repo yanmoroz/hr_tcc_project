@@ -6,8 +6,8 @@ import 'package:hr_tcc_project/src/shared/master_data/data/datasources/data_sour
 import 'package:hr_tcc_project/src/shared/master_data/data/models/models.dart';
 
 void main() {
-  group('ViolationSecurityLevelRemoteDataSource', () {
-    late ViolationSecurityLevelRemoteDataSource dataSource;
+  group('UnplannedTrainingContractorRemoteDataSource', () {
+    late UnplannedTrainingContractorRemoteDataSource dataSource;
     late ApiClient apiClient;
     late AuthTokenProvider authTokenProvider;
 
@@ -20,13 +20,13 @@ void main() {
       // Create real instances (no mocks)
       authTokenProvider = LocalAuthTokenProvider();
       apiClient = InsecureApiClient(authTokenProvider);
-      dataSource = ViolationSecurityLevelRemoteDataSourceImpl(apiClient);
+      dataSource = UnplannedTrainingContractorRemoteDataSourceImpl(apiClient);
     });
 
-    group('getViolationSecurityLevels', () {
-      test('should fetch violation security levels from API and map to models', () async {
+    group('getUnplannedTrainingContractors', () {
+      test('should fetch unplanned training contractors from API and map to models', () async {
         // Act
-        final result = await dataSource.getViolationSecurityLevels();
+        final result = await dataSource.getUnplannedTrainingContractors();
 
         // Assert
         result.fold(
@@ -35,11 +35,11 @@ void main() {
           },
           (models) {
             // If we get here, the API call succeeded
-            expect(models, isA<List<ViolationSecurityLevelModel>>());
+            expect(models, isA<List<UnplannedTrainingContractorModel>>());
             expect(models.isNotEmpty, isTrue);
 
             // Print the actual data for verification
-            print('Fetched ${models.length} violation security levels:');
+            print('Fetched ${models.length} unplanned training contractors:');
             for (final model in models) {
               print(model.toString());
             }
