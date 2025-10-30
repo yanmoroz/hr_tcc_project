@@ -4,8 +4,5 @@ part 'resell_equipment_type.freezed.dart';
 
 @freezed
 abstract class ResellEquipmentType with _$ResellEquipmentType {
-  const factory ResellEquipmentType({
-    required String id,
-    required String name,
-  }) = _ResellEquipmentType;
+  const factory ResellEquipmentType({required String id, required String name}) = _ResellEquipmentType;
 }

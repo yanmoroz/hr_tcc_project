@@ -8,10 +8,10 @@
         "**/*.freezed.dart": true,
         "**/*.g.dart": true
     },
-    "dart.lineLength": 80,
+    "dart.lineLength": 120,
     "[dart]": {
         "editor.rulers": [
-            80
+            120
         ]
     }
 }

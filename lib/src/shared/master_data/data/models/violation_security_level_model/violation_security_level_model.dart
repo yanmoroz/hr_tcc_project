@@ -7,10 +7,7 @@ part 'violation_security_level_model.g.dart';
 
 @freezed
 abstract class ViolationSecurityLevelModel with _$ViolationSecurityLevelModel {
-  const factory ViolationSecurityLevelModel({
-    required String id,
-    required String name,
-  }) = _ViolationSecurityLevelModel;
+  const factory ViolationSecurityLevelModel({required String id, required String name}) = _ViolationSecurityLevelModel;
 
   factory ViolationSecurityLevelModel.fromJson(Map<String, dynamic> json) =>
       _$ViolationSecurityLevelModelFromJson(json);
