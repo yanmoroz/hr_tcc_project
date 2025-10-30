@@ -6,7 +6,7 @@ export 'discount_source/get_discount_sources_usecase.dart';
 export 'news_category/get_news_categories_usecase.dart';
 export 'office/get_offices_usecase.dart';
 export 'referral_program_candidate/get_referral_program_candidates_usecase.dart';
-export 'referral_program_vacation/get_referral_program_vacations_usecase.dart';
+export 'referral_program_vacancy/get_referral_program_vacancies_usecase.dart';
 export 'resell_equipment_type/get_resell_equipment_types_usecase.dart';
 export 'system_status/get_system_statuses_usecase.dart';
 export 'system_status_group/get_system_status_groups_usecase.dart';
