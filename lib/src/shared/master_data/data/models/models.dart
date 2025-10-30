@@ -1,3 +1,7 @@
 export 'resell_equipment_type_model/resell_equipment_type_model.dart';
 export 'unplanned_training_contractor_model/unplanned_training_contractor_model.dart';
 export 'violation_security_level_model/violation_security_level_model.dart';
+export 'referral_program_candidate_model/referral_program_candidate_model.dart';
+export 'referral_program_vacancy_model/referral_program_vacancy_model.dart';
+export 'referral_program_vacancy_model/bonus_model.dart';
+export 'referral_program_vacancy_model/field_activity_model.dart';

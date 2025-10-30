@@ -1,3 +1,5 @@
 export 'resell_equipment_type_repository_impl.dart';
 export 'unplanned_training_contractor_repository_impl.dart';
 export 'violation_security_level_repository_impl.dart';
+export 'referral_program_candidate_repository_impl.dart';
+export 'referral_program_vacancy_repository_impl.dart';

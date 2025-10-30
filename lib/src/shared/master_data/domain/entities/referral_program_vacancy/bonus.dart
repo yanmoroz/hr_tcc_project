@@ -6,5 +6,3 @@ part 'bonus.freezed.dart';
 abstract class Bonus with _$Bonus {
   const factory Bonus({required int cents, required String currency}) = _Bonus;
 }
-
-
