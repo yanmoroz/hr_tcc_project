@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 
-import '../../../../core/exceptions/network/network_exception.dart';
-import '../../../../core/network/api_client.dart';
-import '../../../../core/network/api_constants.dart';
-import '../models/models.dart';
+import '../../../../../core/exceptions/network/network_exception.dart';
+import '../../../../../core/network/api_client.dart';
+import '../../../../../core/network/api_constants.dart';
+import '../../models/models.dart';
 
 abstract class ResellEquipmentTypeRemoteDataSource {
   Future<Either<NetworkException, List<ResellEquipmentTypeModel>>> getResellEquipmentTypes();
