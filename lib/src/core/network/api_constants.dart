@@ -6,6 +6,7 @@ class ApiConstants {
   // Dictionary endpoints
   static const String violationSecurityLevelEndpoint = '/dictionaries/violation-security-level';
   static const String unplannedTrainingContractorEndpoint = '/dictionaries/unplanned-training-contractor';
+  static const String resellEquipmentTypeEndpoint = '/dictionaries/resell-equipment-type';
 
   // Headers
   static const String authorizationHeader = 'Authorization';

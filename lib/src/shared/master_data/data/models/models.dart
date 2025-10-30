@@ -1,2 +1,3 @@
+export 'resell_equipment_type_model/resell_equipment_type_model.dart';
 export 'unplanned_training_contractor_model/unplanned_training_contractor_model.dart';
 export 'violation_security_level_model/violation_security_level_model.dart';
