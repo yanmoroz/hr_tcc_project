@@ -1,3 +1,4 @@
+export 'core_dictionaries/core_dictionaries_repository_impl.dart';
 export 'resell_equipment_type/resell_equipment_type_repository_impl.dart';
 export 'unplanned_training_contractor/unplanned_training_contractor_repository_impl.dart';
 export 'violation_security_level/violation_security_level_repository_impl.dart';

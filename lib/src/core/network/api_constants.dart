@@ -4,6 +4,7 @@ class ApiConstants {
   static String get baseUrl => dotenv.env['API_BASE_URL']!;
 
   // Dictionary endpoints
+  static const String coreDictionariesEndpoint = '/dictionaries';
   static const String violationSecurityLevelEndpoint = '/dictionaries/violation-security-level';
   static const String unplannedTrainingContractorEndpoint = '/dictionaries/unplanned-training-contractor';
   static const String resellEquipmentTypeEndpoint = '/dictionaries/resell-equipment-type';
