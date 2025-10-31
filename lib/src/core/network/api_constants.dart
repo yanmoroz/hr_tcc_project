@@ -16,6 +16,7 @@ class ApiConstants {
   static const String kpAbsenceCategoryEndpoint = '/dictionaries/absence-category';
   static const String kpOfficeEndpoint = '/dictionaries/offices-kp';
   static const String kpParkingTypeEndpoint = '/dictionaries/parking-type';
+  static const String businessTripPurposeEndpoint = '/dictionaries/business-trip-purpose';
 
   // Headers
   static const String authorizationHeader = 'Authorization';

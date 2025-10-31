@@ -1,5 +1,6 @@
 export 'kp_absence_category/kp_absence_category_repository.dart';
 export 'core_dictionaries/core_dictionaries_repository.dart';
+export 'business_trip_purpose/business_trip_purpose_repository.dart';
 export 'kp_discount_category/kp_discount_category_repository.dart';
 export 'kp_discount_source/kp_discount_source_repository.dart';
 export 'kp_office/kp_office_repository.dart';

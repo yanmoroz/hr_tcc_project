@@ -17,6 +17,7 @@ export 'referral_program_vacancy_model/bonus_model.dart';
 export 'referral_program_vacancy_model/field_activity_model.dart';
 export 'kp_absence_category_model/kp_absence_category_model.dart';
 export 'kp_discount_category_model/kp_discount_category_model.dart';
+export 'business_trip_purpose_model/business_trip_purpose_model.dart';
 export 'kp_discount_source_model/kp_discount_source_model.dart';
 export 'kp_office_model/kp_office_model.dart';
 export 'kp_news_category_model/kp_news_category_model.dart';

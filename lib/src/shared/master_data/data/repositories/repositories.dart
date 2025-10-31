@@ -10,3 +10,4 @@ export 'kp_discount_source/kp_discount_source_repository_impl.dart';
 export 'kp_office/kp_office_repository_impl.dart';
 export 'kp_news_category/kp_news_category_repository_impl.dart';
 export 'kp_parking_type/kp_parking_type_repository_impl.dart';
+export 'business_trip_purpose/business_trip_purpose_repository_impl.dart';

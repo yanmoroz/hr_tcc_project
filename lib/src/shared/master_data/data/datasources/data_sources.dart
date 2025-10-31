@@ -10,5 +10,6 @@ export 'kp_discount_source/kp_discount_source_remote_data_source.dart';
 export 'kp_office/kp_office_remote_data_source.dart';
 export 'kp_news_category/kp_news_category_remote_data_source.dart';
 export 'kp_parking_type/kp_parking_type_remote_data_source.dart';
+export 'business_trip_purpose/business_trip_purpose_remote_data_source.dart';
 
 export 'core_dictionaries/core_dictionaries_response.dart';

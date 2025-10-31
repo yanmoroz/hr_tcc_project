@@ -1,5 +1,6 @@
 export 'kp_absence_category/kp_absence_category.dart';
 export 'alpina_digital_prev_access/alpina_digital_prev_access.dart';
+export 'business_trip_purpose/business_trip_purpose.dart';
 export 'application_form/application_form.dart';
 export 'application_form_group/application_form_group.dart';
 export 'kp_discount_category/kp_discount_category.dart';
