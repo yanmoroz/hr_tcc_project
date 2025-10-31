@@ -1,10 +1,13 @@
+export 'absence_category/absence_category.dart';
 export 'alpina_digital_prev_access/alpina_digital_prev_access.dart';
 export 'application_form/application_form.dart';
 export 'application_form_group/application_form_group.dart';
 export 'discount_category/discount_category.dart';
 export 'discount_source/discount_source.dart';
+export 'kp_office/kp_office.dart';
 export 'news_category/news_category.dart';
 export 'office/office.dart';
+export 'parking_type/parking_type.dart';
 export 'referral_program_candidate/referral_program_candidate.dart';
 export 'referral_program_vacancy/referral_program_vacancy.dart';
 export 'referral_program_vacancy/bonus.dart';

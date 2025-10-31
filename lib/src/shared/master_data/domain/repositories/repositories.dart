@@ -1,7 +1,10 @@
+export 'absence_category/absence_category_repository.dart';
 export 'core_dictionaries/core_dictionaries_repository.dart';
 export 'discount_category/discount_category_repository.dart';
 export 'discount_source/discount_source_repository.dart';
+export 'kp_office/kp_office_repository.dart';
 export 'news_category/news_category_repository.dart';
+export 'parking_type/parking_type_repository.dart';
 export 'referral_program_candidate/referral_program_candidate_repository.dart';
 export 'referral_program_vacancy/referral_program_vacancy_repository.dart';
 export 'resell_equipment_type/resell_equipment_type_repository.dart';

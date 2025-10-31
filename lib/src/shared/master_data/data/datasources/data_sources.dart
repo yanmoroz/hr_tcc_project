@@ -3,6 +3,9 @@ export 'unplanned_training_contractor/unplanned_training_contractor_remote_data_
 export 'violation_security_level/violation_security_level_remote_data_source.dart';
 export 'referral_program_candidate/referral_program_candidate_remote_data_source.dart';
 export 'referral_program_vacancy/referral_program_vacancy_remote_data_source.dart';
-export 'news_category/news_category_remote_data_source.dart';
-export 'discount_source/discount_source_remote_data_source.dart';
+export 'absence_category/absence_category_remote_data_source.dart';
 export 'discount_category/discount_category_remote_data_source.dart';
+export 'discount_source/discount_source_remote_data_source.dart';
+export 'kp_office/kp_office_remote_data_source.dart';
+export 'news_category/news_category_remote_data_source.dart';
+export 'parking_type/parking_type_remote_data_source.dart';
