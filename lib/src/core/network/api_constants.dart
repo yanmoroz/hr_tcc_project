@@ -18,6 +18,11 @@ class ApiConstants {
   static const String kpParkingTypeEndpoint = '/dictionaries/parking-type';
   static const String businessTripPurposeEndpoint = '/dictionaries/business-trip-purpose';
 
+  // Notification endpoints
+  static const String notificationsEndpoint = '/notifications';
+  static const String notificationsCountEndpoint = '/notifications/count';
+  static const String notificationsReadEndpoint = '/notifications/read';
+
   // Headers
   static const String authorizationHeader = 'Authorization';
   static const String acceptHeader = 'accept';

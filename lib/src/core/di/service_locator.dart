@@ -3,6 +3,9 @@ import 'package:get_it/get_it.dart';
 import '../../shared/master_data/data/datasources/data_sources.dart';
 import '../../shared/master_data/data/repositories/repositories.dart';
 import '../../shared/master_data/domain/repositories/repositories.dart';
+import '../../features/notifications/data/datasources/data_sources.dart';
+import '../../features/notifications/data/repositories/repositories.dart';
+import '../../features/notifications/domain/repositories/repositories.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 
@@ -36,6 +39,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<KpOfficeRemoteDataSource>(() => KpOfficeRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<KpNewsCategoryRemoteDataSource>(() => KpNewsCategoryRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<KpParkingTypeRemoteDataSource>(() => KpParkingTypeRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(sl()));
 
   // Repositories
   sl.registerLazySingleton<CoreDictionariesRepository>(() => CoreDictionariesRepositoryImpl(sl()));
@@ -52,4 +56,5 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<KpOfficeRepository>(() => KpOfficeRepositoryImpl(sl()));
   sl.registerLazySingleton<KpNewsCategoryRepository>(() => KpNewsCategoryRepositoryImpl(sl()));
   sl.registerLazySingleton<KpParkingTypeRepository>(() => KpParkingTypeRepositoryImpl(sl()));
+  sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(sl()));
 }
