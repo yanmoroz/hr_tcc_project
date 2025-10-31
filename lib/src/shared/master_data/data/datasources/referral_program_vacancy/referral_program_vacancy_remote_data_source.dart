@@ -1,8 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
+import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
@@ -19,44 +19,16 @@ class ReferralProgramVacancyRemoteDataSourceImpl implements ReferralProgramVacan
   Future<Either<NetworkException, List<ReferralProgramVacancyModel>>> getReferralProgramVacancies({
     bool? active,
   }) async {
-    try {
-      final response = await _apiClient.get(
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.get(
         ApiConstants.referralProgramVacancyEndpoint,
         queryParameters: active == null ? null : {'active': active},
-      );
-
-      if (response.statusCode == 200) {
+      ),
+      successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         final vacanciesJson = data['vacancies'] as List<dynamic>;
-
-        final models = vacanciesJson
-            .map((json) => ReferralProgramVacancyModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-
-        return Right(models);
-      } else {
-        return Left(
-          NetworkException.fromDioError(
-            DioException(
-              requestOptions: response.requestOptions,
-              response: response,
-              type: DioExceptionType.badResponse,
-            ),
-          ),
-        );
-      }
-    } on DioException catch (e) {
-      return Left(NetworkException.fromDioError(e));
-    } catch (e) {
-      return Left(
-        NetworkException.fromDioError(
-          DioException(
-            requestOptions: RequestOptions(path: ''),
-            error: e,
-            type: DioExceptionType.unknown,
-          ),
-        ),
-      );
-    }
+        return vacanciesJson.map((json) => ReferralProgramVacancyModel.fromJson(json as Map<String, dynamic>)).toList();
+      },
+    );
   }
 }

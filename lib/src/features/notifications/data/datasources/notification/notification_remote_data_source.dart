@@ -1,8 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
+import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
@@ -19,109 +19,36 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
 
   @override
   Future<Either<NetworkException, List<NotificationModel>>> getNotifications() async {
-    try {
-      final response = await _apiClient.get(ApiConstants.notificationsEndpoint);
-
-      if (response.statusCode == 200) {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.get(ApiConstants.notificationsEndpoint),
+      successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         final itemsJson = data['items'] as List<dynamic>;
-
-        final models = itemsJson.map((json) => NotificationModel.fromJson(json as Map<String, dynamic>)).toList();
-
-        return Right(models);
-      } else {
-        return Left(
-          NetworkException.fromDioError(
-            DioException(
-              requestOptions: response.requestOptions,
-              response: response,
-              type: DioExceptionType.badResponse,
-            ),
-          ),
-        );
-      }
-    } on DioException catch (e) {
-      return Left(NetworkException.fromDioError(e));
-    } catch (e) {
-      return Left(
-        NetworkException.fromDioError(
-          DioException(
-            requestOptions: RequestOptions(path: ''),
-            error: e,
-            type: DioExceptionType.unknown,
-          ),
-        ),
-      );
-    }
+        return itemsJson.map((json) => NotificationModel.fromJson(json as Map<String, dynamic>)).toList();
+      },
+    );
   }
 
   @override
   Future<Either<NetworkException, int>> getUnreadNotificationsCount() async {
-    try {
-      final response = await _apiClient.get(ApiConstants.notificationsCountEndpoint);
-
-      if (response.statusCode == 200) {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.get(ApiConstants.notificationsCountEndpoint),
+      successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        final count = data['count'] as int;
-
-        return Right(count);
-      } else {
-        return Left(
-          NetworkException.fromDioError(
-            DioException(
-              requestOptions: response.requestOptions,
-              response: response,
-              type: DioExceptionType.badResponse,
-            ),
-          ),
-        );
-      }
-    } on DioException catch (e) {
-      return Left(NetworkException.fromDioError(e));
-    } catch (e) {
-      return Left(
-        NetworkException.fromDioError(
-          DioException(
-            requestOptions: RequestOptions(path: ''),
-            error: e,
-            type: DioExceptionType.unknown,
-          ),
-        ),
-      );
-    }
+        return data['count'] as int;
+      },
+    );
   }
 
   @override
   Future<Either<NetworkException, void>> markAsRead({int? id}) async {
-    try {
-      final queryParameters = id != null ? {'id': id.toString()} : null;
-      final response = await _apiClient.post(ApiConstants.notificationsReadEndpoint, queryParameters: queryParameters);
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        return const Right(null);
-      } else {
-        return Left(
-          NetworkException.fromDioError(
-            DioException(
-              requestOptions: response.requestOptions,
-              response: response,
-              type: DioExceptionType.badResponse,
-            ),
-          ),
-        );
-      }
-    } on DioException catch (e) {
-      return Left(NetworkException.fromDioError(e));
-    } catch (e) {
-      return Left(
-        NetworkException.fromDioError(
-          DioException(
-            requestOptions: RequestOptions(path: ''),
-            error: e,
-            type: DioExceptionType.unknown,
-          ),
-        ),
-      );
-    }
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () {
+        final queryParameters = id != null ? {'id': id.toString()} : null;
+        return _apiClient.post(ApiConstants.notificationsReadEndpoint, queryParameters: queryParameters);
+      },
+      successParser: (_) => null,
+      validStatusCodes: [200, 204],
+    );
   }
 }

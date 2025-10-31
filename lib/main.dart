@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'src/core/di/service_locator.dart';
+import 'src/features_page.dart';
+import 'src/features/notifications/presentation/pages/notifications_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,8 +22,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return MaterialApp(
+      title: 'HR TCC Project',
+      initialRoute: '/',
+      routes: {'/': (context) => const FeaturesPage(), '/notifications': (context) => const NotificationsPage()},
     );
   }
 }

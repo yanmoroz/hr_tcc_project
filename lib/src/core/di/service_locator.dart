@@ -6,18 +6,28 @@ import '../../shared/master_data/domain/repositories/repositories.dart';
 import '../../features/notifications/data/datasources/data_sources.dart';
 import '../../features/notifications/data/repositories/repositories.dart';
 import '../../features/notifications/domain/repositories/repositories.dart';
+import '../../features/notifications/domain/usecases/usecases.dart';
+import '../../features/notifications/presentation/bloc/notifications_page/notifications_list_bloc.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
+  _initializeCoreDependencies();
+  _initializeMasterDataDependencies();
+  _initializeNotificationDependencies();
+}
+
+void _initializeCoreDependencies() {
   // Core - Auth token provider
   sl.registerLazySingleton<AuthTokenProvider>(() => LocalAuthTokenProvider());
 
   // Core - Using InsecureApiClient for now
   sl.registerLazySingleton<ApiClient>(() => InsecureApiClient(sl()));
+}
 
+void _initializeMasterDataDependencies() {
   // Data sources
   sl.registerLazySingleton<CoreDictionariesRemoteDataSource>(() => CoreDictionariesRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<ViolationSecurityLevelRemoteDataSource>(
@@ -39,7 +49,6 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<KpOfficeRemoteDataSource>(() => KpOfficeRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<KpNewsCategoryRemoteDataSource>(() => KpNewsCategoryRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<KpParkingTypeRemoteDataSource>(() => KpParkingTypeRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(sl()));
 
   // Repositories
   sl.registerLazySingleton<CoreDictionariesRepository>(() => CoreDictionariesRepositoryImpl(sl()));
@@ -56,5 +65,28 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<KpOfficeRepository>(() => KpOfficeRepositoryImpl(sl()));
   sl.registerLazySingleton<KpNewsCategoryRepository>(() => KpNewsCategoryRepositoryImpl(sl()));
   sl.registerLazySingleton<KpParkingTypeRepository>(() => KpParkingTypeRepositoryImpl(sl()));
+}
+
+void _initializeNotificationDependencies() {
+  // Data sources
+  sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(sl()));
+
+  // Repositories
   sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetNotificationsUsecase>(() => GetNotificationsUsecase(sl()));
+  sl.registerFactory<MarkNotificationAsReadUsecase>(() => MarkNotificationAsReadUsecase(sl()));
+  sl.registerFactory<MarkAllNotificationsAsReadUsecase>(() => MarkAllNotificationsAsReadUsecase(sl()));
+  sl.registerFactory<GetUnreadNotificationsCountUsecase>(() => GetUnreadNotificationsCountUsecase(sl()));
+
+  // BLoC
+  sl.registerFactory<NotificationsListBloc>(
+    () => NotificationsListBloc(
+      getNotificationsUsecase: sl(),
+      markNotificationAsReadUsecase: sl(),
+      markAllNotificationsAsReadUsecase: sl(),
+      getUnreadNotificationsCountUsecase: sl(),
+    ),
+  );
 }
