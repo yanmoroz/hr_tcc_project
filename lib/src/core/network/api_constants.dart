@@ -9,12 +9,12 @@ class ApiConstants {
   static const String resellEquipmentTypeEndpoint = '/dictionaries/resell-equipment-type';
   static const String referralProgramCandidateEndpoint = '/dictionaries/referral-program-candidate';
   static const String referralProgramVacancyEndpoint = '/dictionaries/referral-program-vacation';
-  static const String newsCategoryEndpoint = '/dictionaries/news-category';
-  static const String discountSourceEndpoint = '/dictionaries/discount-source';
-  static const String discountCategoryEndpoint = '/dictionaries/discount-category';
-  static const String absenceCategoryEndpoint = '/dictionaries/absence-category';
+  static const String kpNewsCategoryEndpoint = '/dictionaries/news-category';
+  static const String kpDiscountSourceEndpoint = '/dictionaries/discount-source';
+  static const String kpDiscountCategoryEndpoint = '/dictionaries/discount-category';
+  static const String kpAbsenceCategoryEndpoint = '/dictionaries/absence-category';
   static const String kpOfficeEndpoint = '/dictionaries/offices-kp';
-  static const String parkingTypeEndpoint = '/dictionaries/parking-type';
+  static const String kpParkingTypeEndpoint = '/dictionaries/parking-type';
 
   // Headers
   static const String authorizationHeader = 'Authorization';
