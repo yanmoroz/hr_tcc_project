@@ -9,6 +9,9 @@ class ApiConstants {
   static const String resellEquipmentTypeEndpoint = '/dictionaries/resell-equipment-type';
   static const String referralProgramCandidateEndpoint = '/dictionaries/referral-program-candidate';
   static const String referralProgramVacancyEndpoint = '/dictionaries/referral-program-vacation';
+  static const String newsCategoryEndpoint = '/dictionaries/news-category';
+  static const String discountSourceEndpoint = '/dictionaries/discount-source';
+  static const String discountCategoryEndpoint = '/dictionaries/discount-category';
 
   // Headers
   static const String authorizationHeader = 'Authorization';

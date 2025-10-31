@@ -3,3 +3,6 @@ export 'unplanned_training_contractor/unplanned_training_contractor_repository_i
 export 'violation_security_level/violation_security_level_repository_impl.dart';
 export 'referral_program_candidate/referral_program_candidate_repository_impl.dart';
 export 'referral_program_vacancy/referral_program_vacancy_repository_impl.dart';
+export 'news_category/news_category_repository_impl.dart';
+export 'discount_source/discount_source_repository_impl.dart';
+export 'discount_category/discount_category_repository_impl.dart';

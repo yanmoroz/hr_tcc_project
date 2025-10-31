@@ -5,3 +5,6 @@ export 'referral_program_candidate_model/referral_program_candidate_model.dart';
 export 'referral_program_vacancy_model/referral_program_vacancy_model.dart';
 export 'referral_program_vacancy_model/bonus_model.dart';
 export 'referral_program_vacancy_model/field_activity_model.dart';
+export 'news_category_model/news_category_model.dart';
+export 'discount_source_model/discount_source_model.dart';
+export 'discount_category_model/discount_category_model.dart';
