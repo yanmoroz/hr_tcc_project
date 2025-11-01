@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/models/models.dart';
@@ -37,11 +38,10 @@ void main() {
             // If we get here, the API call succeeded
             expect(models, isA<List<BusinessTripPurposeModel>>());
 
-            // Print the actual data for verification
-            print('Fetched business trip purposes: ${models.length}');
+            // Log the actual data for verification
+            AppLogger.d('Fetched business trip purposes: ${models.length}\n${models.map((m) => '  - ${m.toString()}').join('\n')}');
+            // Verify fields
             for (final businessTripPurpose in models) {
-              print('  - ${businessTripPurpose.toString()}');
-              // Verify fields
               expect(businessTripPurpose.id, isNotEmpty);
               expect(businessTripPurpose.name, isNotEmpty);
               expect(businessTripPurpose.obligation, isA<bool>());

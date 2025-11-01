@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/models/models.dart';
@@ -46,48 +47,28 @@ void main() {
             expect(response.alpinaDigitalPrevAccesses, isA<List<AlpinaDigitalPrevAccessModel>>());
             expect(response.offices, isA<List<OfficeModel>>());
 
-            // Print the actual data for verification
-            print('Fetched core dictionaries:');
-            print('  - ApplicationFormGroups: ${response.applicationFormGroups.length}');
-            for (final applicationFormGroup in response.applicationFormGroups) {
-              print('    - ${applicationFormGroup.toString()}');
-            }
-            print('  - ApplicationForms: ${response.applicationForms.length}');
-            for (final applicationForm in response.applicationForms) {
-              print('    - ${applicationForm.toString()}');
-            }
-            print('  - SystemStatusesGroups: ${response.systemStatusesGroups.length}');
-            for (final systemStatusGroup in response.systemStatusesGroups) {
-              print('    - ${systemStatusGroup.toString()}');
-            }
-            print('  - SystemStatuses: ${response.systemStatuses.length}');
-            for (final systemStatus in response.systemStatuses) {
-              print('    - ${systemStatus.toString()}');
-            }
-            print('  - TripPurposes: ${response.tripPurposes.length}');
-            for (final tripPurpose in response.tripPurposes) {
-              print('    - ${tripPurpose.toString()}');
-            }
-            print('  - TrainingTypes: ${response.trainingTypes.length}');
-            for (final trainingType in response.trainingTypes) {
-              print('    - ${trainingType.toString()}');
-            }
-            print('  - TrainingForms: ${response.trainingForms.length}');
-            for (final trainingForm in response.trainingForms) {
-              print('    - ${trainingForm.toString()}');
-            }
-            print('  - TrainingMonths: ${response.trainingMonths.length}');
-            for (final trainingMonth in response.trainingMonths) {
-              print('    - ${trainingMonth.toString()}');
-            }
-            print('  - AlpinaDigitalPrevAccesses: ${response.alpinaDigitalPrevAccesses.length}');
-            for (final alpinaDigitalPrevAccess in response.alpinaDigitalPrevAccesses) {
-              print('    - ${alpinaDigitalPrevAccess.toString()}');
-            }
-            print('  - Offices: ${response.offices.length}');
-            for (final office in response.offices) {
-              print('    - ${office.toString()}');
-            }
+            // Log the actual data for verification
+            AppLogger.d('''Fetched core dictionaries:
+  - ApplicationFormGroups: ${response.applicationFormGroups.length}
+${response.applicationFormGroups.map((g) => '    - ${g.toString()}').join('\n')}
+  - ApplicationForms: ${response.applicationForms.length}
+${response.applicationForms.map((f) => '    - ${f.toString()}').join('\n')}
+  - SystemStatusesGroups: ${response.systemStatusesGroups.length}
+${response.systemStatusesGroups.map((g) => '    - ${g.toString()}').join('\n')}
+  - SystemStatuses: ${response.systemStatuses.length}
+${response.systemStatuses.map((s) => '    - ${s.toString()}').join('\n')}
+  - TripPurposes: ${response.tripPurposes.length}
+${response.tripPurposes.map((p) => '    - ${p.toString()}').join('\n')}
+  - TrainingTypes: ${response.trainingTypes.length}
+${response.trainingTypes.map((t) => '    - ${t.toString()}').join('\n')}
+  - TrainingForms: ${response.trainingForms.length}
+${response.trainingForms.map((f) => '    - ${f.toString()}').join('\n')}
+  - TrainingMonths: ${response.trainingMonths.length}
+${response.trainingMonths.map((m) => '    - ${m.toString()}').join('\n')}
+  - AlpinaDigitalPrevAccesses: ${response.alpinaDigitalPrevAccesses.length}
+${response.alpinaDigitalPrevAccesses.map((a) => '    - ${a.toString()}').join('\n')}
+  - Offices: ${response.offices.length}
+${response.offices.map((o) => '    - ${o.toString()}').join('\n')}''');
           },
         );
       });

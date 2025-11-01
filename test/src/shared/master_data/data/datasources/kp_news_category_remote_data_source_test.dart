@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/models/models.dart';
@@ -38,11 +39,8 @@ void main() {
             expect(models, isA<List<KpNewsCategoryModel>>());
             expect(models.isNotEmpty, isTrue);
 
-            // Print the actual data for verification
-            print('Fetched ${models.length} news categories:');
-            for (final model in models) {
-              print(model.toString());
-            }
+            // Log the actual data for verification
+            AppLogger.d('Fetched ${models.length} news categories:\n${models.join('\n')}');
           },
         );
       });

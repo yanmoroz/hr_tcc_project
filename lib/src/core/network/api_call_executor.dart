@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../exceptions/network/network_exception.dart';
+import '../logging/app_logger.dart';
 
 class ApiCallExecutor {
   static Future<Either<NetworkException, T>> executeApiCall<T>({
@@ -17,8 +18,7 @@ class ApiCallExecutor {
         try {
           return Right(successParser(response));
         } catch (e, stackTrace) {
-          print('Error parsing API response: $e');
-          print('StackTrace: $stackTrace');
+          AppLogger.e('Error parsing API response', e, stackTrace);
           rethrow;
         }
       } else {

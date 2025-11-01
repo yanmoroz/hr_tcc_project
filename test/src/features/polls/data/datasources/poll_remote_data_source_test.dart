@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/polls/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/features/polls/data/models/models.dart';
@@ -37,11 +38,8 @@ void main() {
             // If we get here, the API call succeeded
             expect(polls, isA<List<PollModel>>());
 
-            // Print the actual data for verification
-            print('Fetched polls: ${polls.length}');
-            for (final poll in polls.take(3)) {
-              print('  - ${poll.toString()}');
-            }
+            // Log the actual data for verification
+            AppLogger.d('Fetched polls: ${polls.length}\n${polls.map((p) => '  - ${p.toString()}').join('\n')}');
           },
         );
       });
