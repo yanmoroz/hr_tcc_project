@@ -17,7 +17,7 @@ abstract class PollDetailModel with _$PollDetailModel {
     String? description,
     String? emailContent,
     required String cover,
-    int? periodType,
+    @JsonKey(fromJson: periodTypeFromJson) PeriodType? periodType,
     required int periodCount,
     required int pollType,
     int? priority,

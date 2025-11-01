@@ -15,7 +15,7 @@ abstract class PollModel with _$PollModel {
     String? description,
     String? cover,
     required int countAnswers,
-    int? periodType,
+    @JsonKey(fromJson: periodTypeFromJson) PeriodType? periodType,
     required bool isHide,
     required bool isShowResults,
     @JsonKey(name: 'lastAnswerCreatedAt') DateTime? lastAnswerCreatedAt,

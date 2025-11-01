@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../shared_types/period_type.dart';
 import 'employee.dart';
 
 part 'poll.freezed.dart';
@@ -13,7 +14,7 @@ abstract class Poll with _$Poll {
     String? description,
     String? cover,
     required int countAnswers,
-    int? periodType,
+    PeriodType? periodType,
     required bool isHide,
     required bool isShowResults,
     DateTime? lastAnswerCreatedAt,

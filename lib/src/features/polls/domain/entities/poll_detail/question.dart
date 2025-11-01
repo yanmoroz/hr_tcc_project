@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'question_type.dart';
 import 'answer.dart';
 import 'page.dart';
 
@@ -17,7 +18,7 @@ abstract class Question with _$Question {
     bool? hasMultipliAnswer,
     bool? isArchive,
     int? categoryId,
-    required int type,
+    required QuestionType type,
     required int position,
     required int lookupType,
     required bool isNoAnswer,

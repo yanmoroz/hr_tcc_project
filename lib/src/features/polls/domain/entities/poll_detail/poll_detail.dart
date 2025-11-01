@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../shared_types/period_type.dart';
 import '../poll/department.dart';
 import '../poll/employee.dart';
 import 'page.dart';
@@ -15,7 +16,7 @@ abstract class PollDetail with _$PollDetail {
     String? description,
     String? emailContent,
     required String cover,
-    int? periodType,
+    PeriodType? periodType,
     required int periodCount,
     required int pollType,
     int? priority,

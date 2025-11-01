@@ -19,7 +19,7 @@ abstract class QuestionModel with _$QuestionModel {
     bool? hasMultipliAnswer,
     bool? isArchive,
     int? categoryId,
-    required int type,
+    @JsonKey(fromJson: questionTypeFromJson) required QuestionType type,
     required int position,
     required int lookupType,
     required bool isNoAnswer,

@@ -1,3 +1,5 @@
+export 'shared_types/period_type.dart';
+export 'poll_detail/question_type.dart';
 export 'poll/poll.dart';
 export 'poll/employee.dart';
 export 'poll/department.dart';
