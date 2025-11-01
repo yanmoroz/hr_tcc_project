@@ -1,12 +1,13 @@
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../../core/data/base_repository.dart';
 import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../datasources/data_sources.dart';
 import '../../models/models.dart';
 
-class NotificationRepositoryImpl implements NotificationRepository {
+class NotificationRepositoryImpl with BaseRepository implements NotificationRepository {
   final NotificationRemoteDataSource _remoteDataSource;
 
   NotificationRepositoryImpl(this._remoteDataSource);
@@ -15,7 +16,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<Either<NetworkException, List<Notification>>> getNotifications() async {
     final result = await _remoteDataSource.getNotifications();
 
-    return result.fold((failure) => Left(failure), (models) => Right(models.map((model) => model.toDomain()).toList()));
+    return mapResultList(result, (model) => model.toDomain());
   }
 
   @override
