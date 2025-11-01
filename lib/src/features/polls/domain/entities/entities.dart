@@ -1,8 +1,10 @@
 export 'shared_types/period_type.dart';
+export 'shared_types/staff_target.dart';
 export 'poll_detail/question_type.dart';
 export 'poll/poll.dart';
 export 'poll/employee.dart';
 export 'poll/department.dart';
+export 'poll/staff_item.dart';
 export 'poll_detail/poll_detail.dart';
 export 'poll_detail/page.dart';
 export 'poll_detail/question.dart';

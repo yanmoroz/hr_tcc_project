@@ -8,6 +8,10 @@ import '../../features/notifications/data/repositories/repositories.dart';
 import '../../features/notifications/domain/repositories/repositories.dart';
 import '../../features/notifications/domain/usecases/usecases.dart';
 import '../../features/notifications/presentation/bloc/notifications_page/notifications_list_bloc.dart';
+import '../../features/polls/data/datasources/data_sources.dart';
+import '../../features/polls/data/repositories/repositories.dart';
+import '../../features/polls/domain/repositories/repositories.dart';
+import '../../features/polls/domain/usecases/usecases.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 
@@ -17,6 +21,7 @@ Future<void> initializeDependencies() async {
   _initializeCoreDependencies();
   _initializeMasterDataDependencies();
   _initializeNotificationDependencies();
+  _initializePollDependencies();
 }
 
 void _initializeCoreDependencies() {
@@ -89,4 +94,21 @@ void _initializeNotificationDependencies() {
       getUnreadNotificationsCountUsecase: sl(),
     ),
   );
+}
+
+void _initializePollDependencies() {
+  // Data sources
+  sl.registerLazySingleton<PollRemoteDataSource>(() => PollRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<StaffRemoteDataSource>(() => StaffRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<PollDetailRemoteDataSource>(() => PollDetailRemoteDataSourceImpl(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<PollRepository>(() => PollRepositoryImpl(sl()));
+  sl.registerLazySingleton<StaffRepository>(() => StaffRepositoryImpl(sl()));
+  sl.registerLazySingleton<PollDetailRepository>(() => PollDetailRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetPollsUsecase>(() => GetPollsUsecase(sl()));
+  sl.registerFactory<GetStaffUsecase>(() => GetStaffUsecase(sl()));
+  sl.registerFactory<GetPollDetailUsecase>(() => GetPollDetailUsecase(sl()));
 }
