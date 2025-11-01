@@ -21,13 +21,7 @@ class PollDetailRemoteDataSourceImpl implements PollDetailRemoteDataSource {
       apiCall: () => _apiClient.get('${ApiConstants.pollsEndpoint}/$id'),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        try {
-          return PollDetailModel.fromJson(data);
-        } catch (e, stackTrace) {
-          print('Error parsing poll detail: $e');
-          print('StackTrace: $stackTrace');
-          rethrow;
-        }
+        return PollDetailModel.fromJson(data);
       },
     );
   }

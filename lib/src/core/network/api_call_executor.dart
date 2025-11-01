@@ -14,7 +14,13 @@ class ApiCallExecutor {
       final validCodes = validStatusCodes ?? [200];
 
       if (validCodes.contains(response.statusCode)) {
-        return Right(successParser(response));
+        try {
+          return Right(successParser(response));
+        } catch (e, stackTrace) {
+          print('Error parsing API response: $e');
+          print('StackTrace: $stackTrace');
+          rethrow;
+        }
       } else {
         return Left(
           NetworkException.fromDioError(

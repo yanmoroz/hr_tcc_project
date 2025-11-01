@@ -28,13 +28,7 @@ class PollRemoteDataSourceImpl implements PollRemoteDataSource {
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         final itemsJson = data['items'] as List<dynamic>;
-        try {
-          return itemsJson.map((json) => PollModel.fromJson(json as Map<String, dynamic>)).toList();
-        } catch (e, stackTrace) {
-          print('Error parsing polls: $e');
-          print('StackTrace: $stackTrace');
-          rethrow;
-        }
+        return itemsJson.map((json) => PollModel.fromJson(json as Map<String, dynamic>)).toList();
       },
     );
   }
