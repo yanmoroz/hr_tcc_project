@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/service_locator.dart';
+import '../../../../core/di/bloc_factory.dart';
 import '../bloc/polls_page/polls_list_bloc.dart';
 import '../bloc/polls_page/polls_list_event.dart';
 import '../bloc/polls_page/polls_list_state.dart';
@@ -13,7 +13,7 @@ class PollsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<PollsListBloc>()..add(const PollsListEvent.loadPolls()),
+      create: (context) => BlocFactory.createPollsListBloc()..add(const PollsListEvent.loadPolls()),
       child: BlocBuilder<PollsListBloc, PollsListState>(
         builder: (context, state) {
           return Scaffold(

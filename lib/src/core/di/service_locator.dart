@@ -7,9 +7,6 @@ import '../../features/notifications/data/datasources/data_sources.dart';
 import '../../features/notifications/data/repositories/repositories.dart';
 import '../../features/notifications/domain/repositories/repositories.dart';
 import '../../features/notifications/domain/usecases/usecases.dart';
-import '../../features/notifications/presentation/bloc/notifications_page/notifications_list_bloc.dart';
-import '../../features/polls/presentation/bloc/polls_page/polls_list_bloc.dart';
-import '../../features/polls/presentation/bloc/poll_page/poll_detail_bloc.dart';
 import '../../features/polls/data/datasources/data_sources.dart';
 import '../../features/polls/data/repositories/repositories.dart';
 import '../../features/polls/domain/repositories/repositories.dart';
@@ -86,16 +83,6 @@ void _initializeNotificationDependencies() {
   sl.registerFactory<MarkNotificationAsReadUsecase>(() => MarkNotificationAsReadUsecase(sl()));
   sl.registerFactory<MarkAllNotificationsAsReadUsecase>(() => MarkAllNotificationsAsReadUsecase(sl()));
   sl.registerFactory<GetUnreadNotificationsCountUsecase>(() => GetUnreadNotificationsCountUsecase(sl()));
-
-  // BLoC
-  sl.registerFactory<NotificationsListBloc>(
-    () => NotificationsListBloc(
-      getNotificationsUsecase: sl(),
-      markNotificationAsReadUsecase: sl(),
-      markAllNotificationsAsReadUsecase: sl(),
-      getUnreadNotificationsCountUsecase: sl(),
-    ),
-  );
 }
 
 void _initializePollDependencies() {
@@ -114,8 +101,4 @@ void _initializePollDependencies() {
   sl.registerFactory<GetStaffUsecase>(() => GetStaffUsecase(sl()));
   sl.registerFactory<GetPollDetailUsecase>(() => GetPollDetailUsecase(sl()));
   sl.registerFactory<SubmitPollAnswersUsecase>(() => SubmitPollAnswersUsecase(sl()));
-
-  // BLoC
-  sl.registerFactory<PollsListBloc>(() => PollsListBloc(getPollsUsecase: sl()));
-  sl.registerFactory<PollDetailBloc>(() => PollDetailBloc(getPollDetailUsecase: sl(), submitPollAnswersUsecase: sl()));
 }

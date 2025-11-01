@@ -1,28 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/service_locator.dart';
+import '../../../../core/di/bloc_factory.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/entities/poll_detail/page.dart' as poll_page;
 import '../bloc/poll_page/poll_detail_bloc.dart';
 import '../bloc/poll_page/poll_detail_event.dart';
 import '../bloc/poll_page/poll_detail_state.dart';
+import '../widgets/questions/question_widget_factory.dart';
 
-class PollPage extends StatelessWidget {
+class PollPage extends StatefulWidget {
   final int pollId;
 
   const PollPage({super.key, required this.pollId});
 
   @override
+  State<PollPage> createState() => _PollPageState();
+}
+
+class _PollPageState extends State<PollPage> {
+  final Map<int, PollAnswer> _answers = {};
+  final Set<int> _requiredQuestionIds = {};
+
+  void _onAnswerChanged(Question question, Object? answer) {
+    setState(() {
+      if (answer == null) {
+        _answers.remove(question.id);
+      } else if (answer is PollAnswer) {
+        _answers[question.id] = answer;
+      }
+    });
+  }
+
+  void _collectRequiredQuestions(PollDetail pollDetail) {
+    _requiredQuestionIds.clear();
+    for (final page in pollDetail.pages) {
+      for (final question in [...page.questions, ...page.scaleQuestions]) {
+        if (question.isRequired == true) {
+          _requiredQuestionIds.add(question.id);
+        }
+      }
+    }
+  }
+
+  bool _validateAnswers() {
+    for (final questionId in _requiredQuestionIds) {
+      if (!_answers.containsKey(questionId)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void _submitAnswers(BuildContext context, PollDetail pollDetail) {
+    if (!_validateAnswers()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please answer all required questions'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    final answersList = _answers.values.toList();
+    final request = PollAnswersRequest(answers: answersList);
+
+    context.read<PollDetailBloc>().add(PollDetailEvent.submitAnswers(request: request));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<PollDetailBloc>()..add(PollDetailEvent.loadPollDetail(pollId)),
+      create: (context) => BlocFactory.createPollDetailBloc(widget.pollId)..add(const PollDetailEvent.loadPollDetail()),
       child: BlocBuilder<PollDetailBloc, PollDetailState>(
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
               title: state.maybeWhen(
-                loaded: (pollDetail) => Text(pollDetail.title),
+                loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) => Text(pollDetail.title),
                 submitted: (pollDetail) => Text(pollDetail.title),
                 orElse: () => const Text('Poll'),
               ),
@@ -30,7 +83,10 @@ class PollPage extends StatelessWidget {
             body: state.when(
               initial: () => const Center(child: CircularProgressIndicator()),
               loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (pollDetail) => _buildPollDetail(context, pollDetail),
+              loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) {
+                _collectRequiredQuestions(pollDetail);
+                return _buildPollDetail(context, pollDetail);
+              },
               submitting: (pollDetail) => _buildPollDetail(context, pollDetail, isSubmitting: true),
               submitted: (pollDetail) => _buildPollDetail(context, pollDetail, isSubmitted: true),
               error: (message) => Center(
@@ -41,7 +97,7 @@ class PollPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        context.read<PollDetailBloc>().add(PollDetailEvent.loadPollDetail(pollId));
+                        context.read<PollDetailBloc>().add(const PollDetailEvent.loadPollDetail());
                       },
                       child: const Text('Retry'),
                     ),
@@ -74,27 +130,50 @@ class PollPage extends StatelessWidget {
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (pollDetail.description != null && pollDetail.description!.isNotEmpty) ...[
-            Text(pollDetail.description!, style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 24),
-          ],
-          ...pollDetail.pages.asMap().entries.map((entry) {
-            final index = entry.key;
-            final page = entry.value;
-            return _buildPage(context, page, index + 1, pollDetail.pages.length);
-          }),
-          if (isSubmitting)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(child: CircularProgressIndicator()),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (pollDetail.description != null && pollDetail.description!.isNotEmpty) ...[
+                  Text(pollDetail.description!, style: Theme.of(context).textTheme.bodyLarge),
+                  const SizedBox(height: 24),
+                ],
+                ...pollDetail.pages.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final page = entry.value;
+                  return _buildPage(context, page, index + 1, pollDetail.pages.length);
+                }),
+                if (isSubmitting)
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+              ],
             ),
-        ],
-      ),
+          ),
+        ),
+        if (!isSubmitting && !isSubmitted)
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, -2)),
+              ],
+            ),
+            child: SafeArea(
+              child: ElevatedButton(
+                onPressed: () => _submitAnswers(context, pollDetail),
+                style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
+                child: const Text('Submit Answers'),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -129,38 +208,16 @@ class PollPage extends StatelessWidget {
   }
 
   Widget _buildQuestion(BuildContext context, Question question) {
+    final hasError = question.isRequired == true && !_answers.containsKey(question.id);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12.0),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      color: hasError
+          ? Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.1)
+          : Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(child: Text(question.title, style: Theme.of(context).textTheme.titleMedium)),
-                if (question.isRequired == true)
-                  Chip(
-                    label: const Text('Required'),
-                    labelStyle: const TextStyle(fontSize: 10),
-                    padding: EdgeInsets.zero,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  ),
-              ],
-            ),
-            if (question.comment != null && question.comment!.isNotEmpty) ...[
-              const SizedBox(height: 4.0),
-              Text(question.comment!, style: Theme.of(context).textTheme.bodySmall),
-            ],
-            const SizedBox(height: 8.0),
-            Text('Type: ${question.type.displayName}', style: Theme.of(context).textTheme.bodySmall),
-            if (question.answers.isNotEmpty) ...[
-              const SizedBox(height: 4.0),
-              Text('Answers: ${question.answers.length}', style: Theme.of(context).textTheme.bodySmall),
-            ],
-          ],
-        ),
+        child: buildQuestionWidget(question: question, onAnswerChanged: _onAnswerChanged),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/service_locator.dart';
+import '../../../../core/di/bloc_factory.dart';
 import '../bloc/notifications_page/notifications_list_bloc.dart';
 import '../bloc/notifications_page/notifications_list_event.dart';
 import '../bloc/notifications_page/notifications_list_state.dart';
@@ -13,7 +13,8 @@ class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<NotificationsListBloc>()..add(const NotificationsListEvent.loadNotifications()),
+      create: (context) =>
+          BlocFactory.createNotificationsListBloc()..add(const NotificationsListEvent.loadNotifications()),
       child: BlocBuilder<NotificationsListBloc, NotificationsListState>(
         builder: (context, state) {
           return Scaffold(

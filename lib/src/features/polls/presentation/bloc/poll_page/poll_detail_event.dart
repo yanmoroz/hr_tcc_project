@@ -6,7 +6,7 @@ part 'poll_detail_event.freezed.dart';
 
 @freezed
 abstract class PollDetailEvent with _$PollDetailEvent {
-  const factory PollDetailEvent.loadPollDetail(int pollId) = LoadPollDetail;
-  const factory PollDetailEvent.submitAnswers({required int pollId, required PollAnswersRequest request}) =
-      SubmitAnswers;
+  const factory PollDetailEvent.loadPollDetail() = LoadPollDetail;
+  const factory PollDetailEvent.submitAnswers({required PollAnswersRequest request}) = SubmitAnswers;
+  const factory PollDetailEvent.searchStaff({required StaffTarget target, String? search}) = SearchStaff;
 }
