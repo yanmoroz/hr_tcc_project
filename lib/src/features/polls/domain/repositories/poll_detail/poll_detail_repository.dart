@@ -5,4 +5,5 @@ import '../../entities/entities.dart';
 
 abstract class PollDetailRepository {
   Future<Either<NetworkException, PollDetail>> getPollDetail(int id);
+  Future<Either<NetworkException, void>> submitPollAnswers({required int pollId, required PollAnswersRequest request});
 }

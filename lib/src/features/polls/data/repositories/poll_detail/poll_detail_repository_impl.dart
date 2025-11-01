@@ -17,4 +17,13 @@ class PollDetailRepositoryImpl implements PollDetailRepository {
 
     return result.fold((failure) => Left(failure), (model) => Right(model.toDomain()));
   }
+
+  @override
+  Future<Either<NetworkException, void>> submitPollAnswers({
+    required int pollId,
+    required PollAnswersRequest request,
+  }) async {
+    final requestModel = PollAnswersRequestModel(answers: request.answers.map((answer) => answer.toModel()).toList());
+    return await _remoteDataSource.submitPollAnswers(pollId: pollId, request: requestModel);
+  }
 }

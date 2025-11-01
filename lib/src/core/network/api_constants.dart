@@ -26,6 +26,7 @@ class ApiConstants {
   // Poll endpoints
   static const String pollsEndpoint = '/polls';
   static const String staffEndpoint = '/polls/staff';
+  static String pollVoteEndpoint(int pollId) => '/polls/$pollId/vote';
 
   // Headers
   static const String authorizationHeader = 'Authorization';

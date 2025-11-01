@@ -9,3 +9,6 @@ export 'poll_detail/poll_detail.dart';
 export 'poll_detail/page.dart';
 export 'poll_detail/question.dart';
 export 'poll_detail/answer.dart';
+export 'poll_detail/attachment_file.dart';
+export 'poll_detail/poll_answer.dart';
+export 'poll_detail/poll_answers_request.dart';

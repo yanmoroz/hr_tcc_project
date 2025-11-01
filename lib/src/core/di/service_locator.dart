@@ -111,4 +111,5 @@ void _initializePollDependencies() {
   sl.registerFactory<GetPollsUsecase>(() => GetPollsUsecase(sl()));
   sl.registerFactory<GetStaffUsecase>(() => GetStaffUsecase(sl()));
   sl.registerFactory<GetPollDetailUsecase>(() => GetPollDetailUsecase(sl()));
+  sl.registerFactory<SubmitPollAnswersUsecase>(() => SubmitPollAnswersUsecase(sl()));
 }
