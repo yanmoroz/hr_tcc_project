@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'bonus.dart';
+import 'bonus_info.dart';
 import 'field_activity.dart';
 
 part 'referral_program_vacancy.freezed.dart';
@@ -9,11 +9,11 @@ part 'referral_program_vacancy.freezed.dart';
 abstract class ReferralProgramVacancy with _$ReferralProgramVacancy {
   const factory ReferralProgramVacancy({
     required String id,
-    required Bonus bonus,
+    BonusInfo? bonusInfo,
     required String name,
-    required String linkHH,
+    String? linkHH,
     required bool active,
-    required String subdivision,
-    required List<FieldActivity> fieldActivity,
+    String? subdivision,
+    List<FieldActivity>? fieldActivity,
   }) = _ReferralProgramVacancy;
 }

@@ -13,7 +13,7 @@ export 'unplanned_training_contractor_model/unplanned_training_contractor_model.
 export 'violation_security_level_model/violation_security_level_model.dart';
 export 'referral_program_candidate_model/referral_program_candidate_model.dart';
 export 'referral_program_vacancy_model/referral_program_vacancy_model.dart';
-export 'referral_program_vacancy_model/bonus_model.dart';
+export 'referral_program_vacancy_model/bonus_info_model.dart';
 export 'referral_program_vacancy_model/field_activity_model.dart';
 export 'kp_absence_category_model/kp_absence_category_model.dart';
 export 'kp_discount_category_model/kp_discount_category_model.dart';

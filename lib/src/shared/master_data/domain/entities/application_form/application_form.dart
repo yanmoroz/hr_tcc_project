@@ -9,7 +9,7 @@ abstract class ApplicationForm with _$ApplicationForm {
     required String idGroup,
     required String code,
     String? codeSystem,
-    required String system,
+    String? system,
     required String name,
     required bool archive,
   }) = _ApplicationForm;

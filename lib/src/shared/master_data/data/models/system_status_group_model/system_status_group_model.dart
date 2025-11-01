@@ -7,7 +7,10 @@ part 'system_status_group_model.g.dart';
 
 @freezed
 abstract class SystemStatusGroupModel with _$SystemStatusGroupModel {
-  const factory SystemStatusGroupModel({required String statusGroup, required String name}) = _SystemStatusGroupModel;
+  const factory SystemStatusGroupModel({
+    @JsonKey(fromJson: statusGroupTypeFromJson) required StatusGroupType statusGroup,
+    required String name,
+  }) = _SystemStatusGroupModel;
 
   factory SystemStatusGroupModel.fromJson(Map<String, dynamic> json) => _$SystemStatusGroupModelFromJson(json);
 }

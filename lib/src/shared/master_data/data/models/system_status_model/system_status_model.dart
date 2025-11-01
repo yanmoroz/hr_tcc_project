@@ -10,7 +10,7 @@ abstract class SystemStatusModel with _$SystemStatusModel {
   const factory SystemStatusModel({
     required String id,
     required String idForm,
-    required String statusGroup,
+    @JsonKey(fromJson: statusGroupTypeFromJson) required StatusGroupType statusGroup,
     required String code,
     required String name,
     required bool cancelable,

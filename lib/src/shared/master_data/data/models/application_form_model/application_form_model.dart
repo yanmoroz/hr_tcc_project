@@ -12,7 +12,7 @@ abstract class ApplicationFormModel with _$ApplicationFormModel {
     required String idGroup,
     required String code,
     String? codeSystem,
-    required String system,
+    String? system,
     required String name,
     required bool archive,
   }) = _ApplicationFormModel;
