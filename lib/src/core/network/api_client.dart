@@ -11,6 +11,18 @@ abstract class ApiClient {
   Future<Response> post(String path, {dynamic data, Map<String, dynamic>? queryParameters});
   Future<Response> put(String path, {dynamic data, Map<String, dynamic>? queryParameters});
   Future<Response> delete(String path, {Map<String, dynamic>? queryParameters});
+  Future<Response> uploadFile(
+    String path, {
+    required FormData formData,
+    Map<String, dynamic>? queryParameters,
+    ProgressCallback? onSendProgress,
+  });
+  Future<Response> downloadFile(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    ProgressCallback? onReceiveProgress,
+    Options? options,
+  });
 }
 
 abstract class BaseApiClient implements ApiClient {
@@ -46,6 +58,7 @@ abstract class BaseApiClient implements ApiClient {
     );
 
     // Add logging interceptor for debugging
+    // Suppress logging for file upload/download requests to avoid excessive logging of binary data
     _dio.interceptors.add(
       PrettyDioLogger(
         requestHeader: true,
@@ -54,6 +67,11 @@ abstract class BaseApiClient implements ApiClient {
         responseHeader: false,
         error: true,
         compact: true,
+        filter: (options, args) {
+          // Skip logging for file upload/download endpoints
+          final path = options.path.toLowerCase();
+          return !path.contains('/files/upload') && !path.contains('/files/download');
+        },
       ),
     );
 
@@ -84,6 +102,33 @@ abstract class BaseApiClient implements ApiClient {
   @override
   Future<Response> delete(String path, {Map<String, dynamic>? queryParameters}) {
     return _dio.delete(path, queryParameters: queryParameters);
+  }
+
+  @override
+  Future<Response> uploadFile(
+    String path, {
+    required FormData formData,
+    Map<String, dynamic>? queryParameters,
+    ProgressCallback? onSendProgress,
+  }) {
+    return _dio.post(path, data: formData, queryParameters: queryParameters, onSendProgress: onSendProgress);
+  }
+
+  @override
+  Future<Response> downloadFile(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    ProgressCallback? onReceiveProgress,
+    Options? options,
+  }) {
+    return _dio.get(
+      path,
+      queryParameters: queryParameters,
+      onReceiveProgress: onReceiveProgress,
+      options:
+          options ??
+          Options(responseType: ResponseType.bytes, followRedirects: false, validateStatus: (status) => status! < 500),
+    );
   }
 }
 

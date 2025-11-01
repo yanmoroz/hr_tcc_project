@@ -28,6 +28,10 @@ class ApiConstants {
   static const String staffEndpoint = '/polls/staff';
   static String pollVoteEndpoint(int pollId) => '/polls/$pollId/vote';
 
+  // File endpoints
+  static const String filesUploadEndpoint = '/files/upload';
+  static const String filesDownloadEndpoint = '/files/download';
+
   // Headers
   static const String authorizationHeader = 'Authorization';
   static const String acceptHeader = 'accept';

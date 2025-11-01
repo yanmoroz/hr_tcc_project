@@ -1,0 +1,37 @@
+/// System type enumeration for file operations
+enum SystemType {
+  elma,
+  kp,
+  jira,
+  _1c;
+
+  String get value {
+    switch (this) {
+      case SystemType.elma:
+        return 'ELMA';
+      case SystemType.kp:
+        return 'KP';
+      case SystemType.jira:
+        return 'JIRA';
+      case SystemType._1c:
+        return '_1C';
+    }
+  }
+
+  static SystemType fromString(String value) {
+    switch (value) {
+      case 'ELMA':
+        return SystemType.elma;
+      case 'KP':
+        return SystemType.kp;
+      case 'JIRA':
+        return SystemType.jira;
+      case '_1C':
+        return SystemType._1c;
+      default:
+        throw ArgumentError('Unknown SystemType: $value');
+    }
+  }
+}
+
+SystemType systemTypeFromJson(String value) => SystemType.fromString(value);

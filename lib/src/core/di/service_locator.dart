@@ -13,11 +13,13 @@ import '../../features/polls/domain/repositories/repositories.dart';
 import '../../features/polls/domain/usecases/usecases.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
+import '../files/files.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
   _initializeCoreDependencies();
+  _initializeFileDependencies();
   _initializeMasterDataDependencies();
   _initializeNotificationDependencies();
   _initializePollDependencies();
@@ -29,6 +31,18 @@ void _initializeCoreDependencies() {
 
   // Core - Using InsecureApiClient for now
   sl.registerLazySingleton<ApiClient>(() => InsecureApiClient(sl()));
+}
+
+void _initializeFileDependencies() {
+  // Data sources
+  sl.registerLazySingleton<FileRemoteDataSource>(() => FileRemoteDataSourceImpl(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<FileRepository>(() => FileRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<UploadFileUsecase>(() => UploadFileUsecase(sl()));
+  sl.registerFactory<DownloadFileUsecase>(() => DownloadFileUsecase(sl()));
 }
 
 void _initializeMasterDataDependencies() {
