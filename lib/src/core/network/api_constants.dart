@@ -23,6 +23,9 @@ class ApiConstants {
   static const String notificationsCountEndpoint = '/notifications/count';
   static const String notificationsReadEndpoint = '/notifications/read';
 
+  // Poll endpoints
+  static const String pollsEndpoint = '/polls';
+
   // Headers
   static const String authorizationHeader = 'Authorization';
   static const String acceptHeader = 'accept';
