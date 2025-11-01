@@ -7,7 +7,7 @@ import 'service_locator.dart';
 class BlocFactory {
   /// Creates a [PollsListBloc] instance.
   static PollsListBloc createPollsListBloc() {
-    return PollsListBloc(getPollsUsecase: sl());
+    return PollsListBloc(getPollsUsecase: sl(), downloadFileUsecase: sl());
   }
 
   /// Creates a [PollDetailBloc] instance with the given [pollId].

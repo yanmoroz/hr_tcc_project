@@ -1,61 +1,62 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/entities.dart';
+import 'poll_item_view_model.dart';
 
 class PollItem extends StatelessWidget {
-  final Poll poll;
+  final PollItemViewModel viewModel;
   final VoidCallback onTap;
 
-  const PollItem({super.key, required this.poll, required this.onTap});
+  const PollItem({super.key, required this.viewModel, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final poll = viewModel.poll;
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(poll.title, style: Theme.of(context).textTheme.titleLarge),
-              if (poll.shortDescription.isNotEmpty) ...[
-                const SizedBox(height: 8.0),
-                Text(poll.shortDescription, style: Theme.of(context).textTheme.bodyMedium),
-              ],
-              const SizedBox(height: 8.0),
-              Row(
-                children: [
-                  if (poll.countAnswers > 0)
-                    Text('${poll.countAnswers} answers', style: Theme.of(context).textTheme.bodySmall),
-                  if (poll.countAnswers > 0 && poll.canAnswer)
-                    Text(' • ', style: Theme.of(context).textTheme.bodySmall),
-                  if (poll.canAnswer)
-                    Text(
-                      'Can answer',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary),
-                    ),
-                  if (!poll.canAnswer)
-                    Text(
-                      'Cannot answer',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
-                    ),
+        borderRadius: BorderRadius.circular(12.0),
+        child: Container(
+          decoration: viewModel.decoration,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(poll.title, style: viewModel.titleStyle(theme.textTheme, theme.colorScheme)),
+                if (viewModel.shouldShowShortDescription) ...[
+                  const SizedBox(height: 8.0),
+                  Text(
+                    poll.shortDescription,
+                    style: viewModel.shortDescriptionStyle(theme.textTheme, theme.colorScheme),
+                  ),
                 ],
-              ),
-              if (poll.isNew) ...[
                 const SizedBox(height: 8.0),
-                Chip(
-                  label: const Text('New'),
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  labelStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 12),
+                Row(
+                  children: [
+                    if (viewModel.answersCountText != null)
+                      Text(
+                        viewModel.answersCountText!,
+                        style: viewModel.answersCountStyle(theme.textTheme, theme.colorScheme),
+                      ),
+                    if (viewModel.answersCountText != null && poll.canAnswer)
+                      Text(' • ', style: viewModel.separatorStyle(theme.textTheme, theme.colorScheme)),
+                    Text(viewModel.statusText, style: viewModel.statusStyle(theme.textTheme, theme.colorScheme)),
+                  ],
                 ),
+                if (viewModel.shouldShowNewBadge) ...[
+                  const SizedBox(height: 8.0),
+                  Chip(
+                    label: const Text('New'),
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    labelStyle: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontSize: 12),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

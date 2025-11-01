@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/data/base_repository.dart';
 import '../../../../core/exceptions/network/network_exception.dart';
+import '../../../../core/logging/app_logger.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../datasources/data_sources.dart';
@@ -44,7 +48,18 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
     String? urlFile,
     ProgressCallback? onProgress,
   }) async {
-    return await _remoteDataSource.downloadFile(
+    // Generate cache key based on file identifiers
+    final cacheKey = _generateCacheKey(systemType, idFile, uriFile, urlFile);
+
+    // Try to load from cache first
+    final cachedData = await _loadFromCache(cacheKey);
+    if (cachedData != null) {
+      AppLogger.d('File loaded from cache: $cacheKey');
+      return Right(cachedData);
+    }
+
+    // Download from remote if not in cache
+    final result = await _remoteDataSource.downloadFile(
       systemType: systemType,
       download: download,
       idFile: idFile,
@@ -52,5 +67,55 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
       urlFile: urlFile,
       onProgress: onProgress,
     );
+
+    // Save to cache if download was successful and has content
+    result.fold(
+      (error) {
+        // Don't cache errors
+      },
+      (data) async {
+        if (data.isNotEmpty) {
+          await _saveToCache(cacheKey, data);
+        }
+      },
+    );
+
+    return result;
+  }
+
+  /// Generate a unique cache key based on system type and file identifiers
+  String _generateCacheKey(SystemType systemType, String? idFile, String? uriFile, String? urlFile) {
+    final identifier = idFile ?? uriFile ?? urlFile ?? '';
+    final input = '${systemType.value}_$identifier';
+    final bytes = utf8.encode(input);
+    final hash = md5.convert(bytes);
+    return hash.toString();
+  }
+
+  /// Load file data from cache
+  Future<Uint8List?> _loadFromCache(String cacheKey) async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+      final cacheFile = File('${cacheDir.path}/file_cache_$cacheKey');
+
+      if (await cacheFile.exists()) {
+        return await cacheFile.readAsBytes();
+      }
+    } catch (e, stackTrace) {
+      AppLogger.e('Error loading from cache', e, stackTrace);
+    }
+    return null;
+  }
+
+  /// Save file data to cache
+  Future<void> _saveToCache(String cacheKey, Uint8List data) async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+      final cacheFile = File('${cacheDir.path}/file_cache_$cacheKey');
+      await cacheFile.writeAsBytes(data);
+      AppLogger.d('File saved to cache: $cacheKey (${data.length} bytes)');
+    } catch (e, stackTrace) {
+      AppLogger.e('Error saving to cache', e, stackTrace);
+    }
   }
 }

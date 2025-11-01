@@ -43,6 +43,7 @@ void _initializeFileDependencies() {
   // Use cases
   sl.registerFactory<UploadFileUsecase>(() => UploadFileUsecase(sl()));
   sl.registerFactory<DownloadFileUsecase>(() => DownloadFileUsecase(sl()));
+  sl.registerFactory<ClearFileCacheUsecase>(() => ClearFileCacheUsecase());
 }
 
 void _initializeMasterDataDependencies() {

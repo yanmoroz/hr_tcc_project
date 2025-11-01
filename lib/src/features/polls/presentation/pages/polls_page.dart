@@ -6,6 +6,7 @@ import '../bloc/polls_page/polls_list_bloc.dart';
 import '../bloc/polls_page/polls_list_event.dart';
 import '../bloc/polls_page/polls_list_state.dart';
 import '../widgets/poll_item.dart';
+import '../widgets/poll_item_view_model.dart';
 
 class PollsPage extends StatelessWidget {
   const PollsPage({super.key});
@@ -21,7 +22,7 @@ class PollsPage extends StatelessWidget {
             body: state.when(
               initial: () => const Center(child: CircularProgressIndicator()),
               loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (polls) {
+              loaded: (polls, coverImages) {
                 if (polls.isEmpty) {
                   return const Center(child: Text('No polls available'));
                 }
@@ -34,8 +35,9 @@ class PollsPage extends StatelessWidget {
                     itemCount: polls.length,
                     itemBuilder: (context, index) {
                       final poll = polls[index];
+                      final viewModel = PollItemViewModel(poll: poll, coverImage: coverImages[poll.id]);
                       return PollItem(
-                        poll: poll,
+                        viewModel: viewModel,
                         onTap: () {
                           Navigator.pushNamed(context, '/poll', arguments: poll.id);
                         },
