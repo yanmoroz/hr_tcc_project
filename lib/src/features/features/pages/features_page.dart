@@ -20,6 +20,16 @@ class FeaturesPage extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            child: ListTile(
+              title: const Text('Polls'),
+              subtitle: const Text('View and participate in polls'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.pushNamed(context, '/polls');
+              },
+            ),
+          ),
         ],
       ),
     );

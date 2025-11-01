@@ -105,7 +105,9 @@ abstract class PollAnswerModel with _$PollAnswerModel {
         throw ArgumentError('Unknown PollAnswer type: $type');
     }
   }
+}
 
+extension PollAnswerModelX on PollAnswerModel {
   Map<String, dynamic> toJson() {
     return map(
       type0: (model) => {
@@ -145,9 +147,7 @@ abstract class PollAnswerModel with _$PollAnswerModel {
       },
     );
   }
-}
 
-extension PollAnswerModelX on PollAnswerModel {
   PollAnswer toDomain() {
     return map(
       type0: (model) => PollAnswer.type0(
