@@ -12,7 +12,7 @@ abstract class Question with _$Question {
     required String title,
     String? picture,
     String? comment,
-    bool? isReqered,
+    bool? isRequired,
     required bool hasCustomAnswer,
     bool? hasMultipliAnswer,
     bool? isArchive,
