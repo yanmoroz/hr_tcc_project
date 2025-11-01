@@ -8,14 +8,14 @@ part 'author.freezed.dart';
 abstract class Author with _$Author {
   const factory Author({
     required String firstName,
-    required String lastName,
-    required String middleName,
+    String? lastName,
+    String? middleName,
     Department? department,
-    required String organisation,
+    String? organisation,
     required bool isArchive,
     required int vacationDaysLeft,
     required bool isVaccinated,
-    String? photo,
+    required String photo,
     required int id,
     required String title,
     String? position,

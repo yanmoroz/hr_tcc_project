@@ -24,7 +24,13 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         final itemsJson = data['items'] as List<dynamic>;
-        return itemsJson.map((json) => NotificationModel.fromJson(json as Map<String, dynamic>)).toList();
+        try {
+          return itemsJson.map((json) => NotificationModel.fromJson(json as Map<String, dynamic>)).toList();
+        } catch (e, stackTrace) {
+          print('Error parsing notifications: $e');
+          print('StackTrace: $stackTrace');
+          rethrow;
+        }
       },
     );
   }

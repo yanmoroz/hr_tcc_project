@@ -11,7 +11,8 @@ abstract class NotificationModel with _$NotificationModel {
   const factory NotificationModel({
     required int id,
     @JsonKey(name: 'entityID') required int entityId,
-    @JsonKey(fromJson: entityTypeFromJson, toJson: entityTypeToJson) required EntityType entityType,
+    @JsonKey(fromJson: entityTypeFromJson) required EntityType entityType,
+    String? parentId,
     String? text,
     String? link,
     required DateTime created,
@@ -28,6 +29,7 @@ extension NotificationModelX on NotificationModel {
     id: id,
     entityId: entityId,
     entityType: entityType,
+    parentId: parentId,
     text: text,
     link: link,
     created: created,

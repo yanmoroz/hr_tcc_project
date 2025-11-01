@@ -11,6 +11,7 @@ abstract class Notification with _$Notification {
     required int id,
     required int entityId,
     required EntityType entityType,
+    String? parentId,
     String? text,
     String? link,
     required DateTime created,

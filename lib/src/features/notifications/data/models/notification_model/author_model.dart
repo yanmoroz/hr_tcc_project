@@ -10,14 +10,14 @@ part 'author_model.g.dart';
 abstract class AuthorModel with _$AuthorModel {
   const factory AuthorModel({
     required String firstName,
-    required String lastName,
-    required String middleName,
+    String? lastName,
+    String? middleName,
     DepartmentModel? department,
-    required String organisation,
+    String? organisation,
     required bool isArchive,
     required int vacationDaysLeft,
     required bool isVaccinated,
-    String? photo,
+    required String photo,
     required int id,
     required String title,
     String? position,
