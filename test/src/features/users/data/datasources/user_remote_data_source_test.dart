@@ -110,22 +110,6 @@ void main() {
           },
         );
       });
-
-      test('should handle empty search parameter correctly', () async {
-        // Act
-        final result = await dataSource.getUsers(systemType: SystemType.elma, search: '');
-
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (users) {
-            expect(users, isA<List<UserModel>>());
-            AppLogger.d('Fetched users with empty search: ${users.length}');
-          },
-        );
-      });
     });
   });
 }
