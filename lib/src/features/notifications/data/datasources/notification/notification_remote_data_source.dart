@@ -1,15 +1,14 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class NotificationRemoteDataSource {
-  Future<Either<NetworkException, List<NotificationModel>>> getNotifications();
-  Future<Either<NetworkException, int>> getUnreadNotificationsCount();
-  Future<Either<NetworkException, void>> markAsRead({int? id});
+  Future<Result<List<NotificationModel>>> getNotifications();
+  Future<Result<int>> getUnreadNotificationsCount();
+  Future<Result<void>> markAsRead({int? id});
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
@@ -18,7 +17,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   NotificationRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<NotificationModel>>> getNotifications() async {
+  Future<Result<List<NotificationModel>>> getNotifications() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.notificationsEndpoint),
       successParser: (response) {
@@ -30,7 +29,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<Either<NetworkException, int>> getUnreadNotificationsCount() async {
+  Future<Result<int>> getUnreadNotificationsCount() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.notificationsCountEndpoint),
       successParser: (response) {
@@ -41,7 +40,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<Either<NetworkException, void>> markAsRead({int? id}) async {
+  Future<Result<void>> markAsRead({int? id}) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () {
         final queryParameters = id != null ? {'id': id.toString()} : null;

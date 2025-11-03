@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../entities/entities.dart';
 import '../../repositories/repositories.dart';
 
@@ -9,7 +8,7 @@ class GetApplicationFormsUsecase {
 
   GetApplicationFormsUsecase(this.coreDictionariesRepository);
 
-  Future<Either<NetworkException, List<ApplicationForm>>> call() async {
+  Future<Result<List<ApplicationForm>>> call() async {
     return await coreDictionariesRepository.getApplicationForms();
   }
 }

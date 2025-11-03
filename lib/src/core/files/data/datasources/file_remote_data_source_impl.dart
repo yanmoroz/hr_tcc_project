@@ -2,9 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:fpdart/fpdart.dart';
+import '../../../../core/types/result.dart';
 
-import '../../../../core/exceptions/network/network_exception.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_constants.dart';
@@ -19,7 +18,7 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   FileRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, UploadedFileModel>> uploadFile({
+  Future<Result<UploadedFileModel>> uploadFile({
     required File file,
     required SystemType systemType,
     FileGroup? group,
@@ -66,7 +65,7 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   }
 
   @override
-  Future<Either<NetworkException, Uint8List>> downloadFile({
+  Future<Result<Uint8List>> downloadFile({
     required SystemType systemType,
     required bool download,
     String? idFile,

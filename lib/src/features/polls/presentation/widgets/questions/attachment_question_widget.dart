@@ -8,6 +8,7 @@ import '../../../../../core/files/domain/entities/entities.dart';
 import '../../../../../core/files/domain/usecases/usecases.dart';
 import '../../../domain/entities/entities.dart';
 import 'question_widget_factory.dart';
+import '../../../../../core/types/result.dart';
 
 class AttachmentQuestionWidget extends StatefulWidget {
   final Question question;

@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class ReferralProgramCandidateRemoteDataSource {
-  Future<Either<NetworkException, List<ReferralProgramCandidateModel>>> getReferralProgramCandidates();
+  Future<Result<List<ReferralProgramCandidateModel>>> getReferralProgramCandidates();
 }
 
 class ReferralProgramCandidateRemoteDataSourceImpl implements ReferralProgramCandidateRemoteDataSource {
@@ -16,7 +15,7 @@ class ReferralProgramCandidateRemoteDataSourceImpl implements ReferralProgramCan
   ReferralProgramCandidateRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<ReferralProgramCandidateModel>>> getReferralProgramCandidates() async {
+  Future<Result<List<ReferralProgramCandidateModel>>> getReferralProgramCandidates() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.referralProgramCandidateEndpoint),
       successParser: (response) {

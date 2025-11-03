@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../repositories/repositories.dart';
 
 class GetUnreadNotificationsCountUsecase {
@@ -8,7 +7,7 @@ class GetUnreadNotificationsCountUsecase {
 
   GetUnreadNotificationsCountUsecase(this.notificationRepository);
 
-  Future<Either<NetworkException, int>> call() async {
+  Future<Result<int>> call() async {
     return await notificationRepository.getUnreadNotificationsCount();
   }
 }

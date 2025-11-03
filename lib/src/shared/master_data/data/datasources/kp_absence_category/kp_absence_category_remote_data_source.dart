@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class KpAbsenceCategoryRemoteDataSource {
-  Future<Either<NetworkException, List<KpAbsenceCategoryModel>>> getKpAbsenceCategories();
+  Future<Result<List<KpAbsenceCategoryModel>>> getKpAbsenceCategories();
 }
 
 class KpAbsenceCategoryRemoteDataSourceImpl implements KpAbsenceCategoryRemoteDataSource {
@@ -16,7 +15,7 @@ class KpAbsenceCategoryRemoteDataSourceImpl implements KpAbsenceCategoryRemoteDa
   KpAbsenceCategoryRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<KpAbsenceCategoryModel>>> getKpAbsenceCategories() async {
+  Future<Result<List<KpAbsenceCategoryModel>>> getKpAbsenceCategories() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.kpAbsenceCategoryEndpoint),
       successParser: (response) {

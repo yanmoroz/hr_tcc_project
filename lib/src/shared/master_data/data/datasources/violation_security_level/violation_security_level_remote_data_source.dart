@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class ViolationSecurityLevelRemoteDataSource {
-  Future<Either<NetworkException, List<ViolationSecurityLevelModel>>> getViolationSecurityLevels();
+  Future<Result<List<ViolationSecurityLevelModel>>> getViolationSecurityLevels();
 }
 
 class ViolationSecurityLevelRemoteDataSourceImpl implements ViolationSecurityLevelRemoteDataSource {
@@ -16,7 +15,7 @@ class ViolationSecurityLevelRemoteDataSourceImpl implements ViolationSecurityLev
   ViolationSecurityLevelRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<ViolationSecurityLevelModel>>> getViolationSecurityLevels() async {
+  Future<Result<List<ViolationSecurityLevelModel>>> getViolationSecurityLevels() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.violationSecurityLevelEndpoint),
       successParser: (response) {

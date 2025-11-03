@@ -1,11 +1,10 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../entities/entities.dart';
 
 abstract class NotificationRepository {
-  Future<Either<NetworkException, List<Notification>>> getNotifications();
-  Future<Either<NetworkException, int>> getUnreadNotificationsCount();
-  Future<Either<NetworkException, void>> markNotificationAsRead(int id);
-  Future<Either<NetworkException, void>> markAllNotificationsAsRead();
+  Future<Result<List<Notification>>> getNotifications();
+  Future<Result<int>> getUnreadNotificationsCount();
+  Future<Result<void>> markNotificationAsRead(int id);
+  Future<Result<void>> markAllNotificationsAsRead();
 }

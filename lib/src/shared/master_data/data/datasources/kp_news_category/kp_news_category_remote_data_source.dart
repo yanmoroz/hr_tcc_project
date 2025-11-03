@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class KpNewsCategoryRemoteDataSource {
-  Future<Either<NetworkException, List<KpNewsCategoryModel>>> getKpNewsCategories();
+  Future<Result<List<KpNewsCategoryModel>>> getKpNewsCategories();
 }
 
 class KpNewsCategoryRemoteDataSourceImpl implements KpNewsCategoryRemoteDataSource {
@@ -16,7 +15,7 @@ class KpNewsCategoryRemoteDataSourceImpl implements KpNewsCategoryRemoteDataSour
   KpNewsCategoryRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<KpNewsCategoryModel>>> getKpNewsCategories() async {
+  Future<Result<List<KpNewsCategoryModel>>> getKpNewsCategories() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.kpNewsCategoryEndpoint),
       successParser: (response) {

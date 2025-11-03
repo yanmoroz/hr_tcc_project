@@ -1,14 +1,13 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class PollDetailRemoteDataSource {
-  Future<Either<NetworkException, PollDetailModel>> getPollDetail(int id);
-  Future<Either<NetworkException, void>> submitPollAnswers({
+  Future<Result<PollDetailModel>> getPollDetail(int id);
+  Future<Result<void>> submitPollAnswers({
     required int pollId,
     required PollAnswersRequestModel request,
   });
@@ -20,7 +19,7 @@ class PollDetailRemoteDataSourceImpl implements PollDetailRemoteDataSource {
   PollDetailRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, PollDetailModel>> getPollDetail(int id) async {
+  Future<Result<PollDetailModel>> getPollDetail(int id) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get('${ApiConstants.pollsEndpoint}/$id'),
       successParser: (response) {
@@ -31,7 +30,7 @@ class PollDetailRemoteDataSourceImpl implements PollDetailRemoteDataSource {
   }
 
   @override
-  Future<Either<NetworkException, void>> submitPollAnswers({
+  Future<Result<void>> submitPollAnswers({
     required int pollId,
     required PollAnswersRequestModel request,
   }) async {

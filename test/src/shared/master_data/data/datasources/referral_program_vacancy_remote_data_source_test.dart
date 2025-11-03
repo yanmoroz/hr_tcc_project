@@ -5,6 +5,7 @@ import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/models/models.dart';
+import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {
   group('ReferralProgramVacancyRemoteDataSource', () {

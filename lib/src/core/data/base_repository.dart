@@ -1,27 +1,26 @@
 import 'package:fpdart/fpdart.dart';
-
-import '../exceptions/network/network_exception.dart';
+import '../../core/types/result.dart';
 
 /// Base repository mixin that provides common mapping utilities
 /// for converting data models to domain entities.
 mixin BaseRepository {
-  /// Maps an Either result containing a list of models to a list of entities.
+  /// Maps a Result containing a list of models to a list of entities.
   ///
-  /// Handles the conversion from `Either<NetworkException, List<TModel>>`
-  /// to `Either<NetworkException, List<TEntity>>` using the provided mapper function.
-  Either<NetworkException, List<TEntity>> mapResultList<TModel, TEntity>(
-    Either<NetworkException, List<TModel>> result,
+  /// Handles the conversion from `Result<List<TModel>>`
+  /// to `Result<List<TEntity>>` using the provided mapper function.
+  Result<List<TEntity>> mapResultList<TModel, TEntity>(
+    Result<List<TModel>> result,
     TEntity Function(TModel) mapper,
   ) {
     return result.fold((failure) => Left(failure), (models) => Right(models.map((model) => mapper(model)).toList()));
   }
 
-  /// Maps an Either result containing a single model to a single entity.
+  /// Maps a Result containing a single model to a single entity.
   ///
-  /// Handles the conversion from `Either<NetworkException, TModel>`
-  /// to `Either<NetworkException, TEntity>` using the provided mapper function.
-  Either<NetworkException, TEntity> mapResult<TModel, TEntity>(
-    Either<NetworkException, TModel> result,
+  /// Handles the conversion from `Result<TModel>`
+  /// to `Result<TEntity>` using the provided mapper function.
+  Result<TEntity> mapResult<TModel, TEntity>(
+    Result<TModel> result,
     TEntity Function(TModel) mapper,
   ) {
     return result.fold((failure) => Left(failure), (model) => Right(mapper(model)));

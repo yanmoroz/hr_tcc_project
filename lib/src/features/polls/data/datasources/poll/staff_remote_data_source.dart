@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
@@ -8,7 +7,7 @@ import '../../../domain/entities/entities.dart';
 import '../../models/models.dart';
 
 abstract class StaffRemoteDataSource {
-  Future<Either<NetworkException, List<StaffItemModel>>> getStaff({required StaffTarget target, String? search});
+  Future<Result<List<StaffItemModel>>> getStaff({required StaffTarget target, String? search});
 }
 
 class StaffRemoteDataSourceImpl implements StaffRemoteDataSource {
@@ -17,7 +16,7 @@ class StaffRemoteDataSourceImpl implements StaffRemoteDataSource {
   StaffRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<StaffItemModel>>> getStaff({required StaffTarget target, String? search}) async {
+  Future<Result<List<StaffItemModel>>> getStaff({required StaffTarget target, String? search}) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () {
         final queryParameters = <String, String>{'target': target.value};

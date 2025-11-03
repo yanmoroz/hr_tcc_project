@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../entities/entities.dart';
 import '../../repositories/repositories.dart';
 
@@ -9,7 +8,7 @@ class GetPollDetailUsecase {
 
   GetPollDetailUsecase(this.pollDetailRepository);
 
-  Future<Either<NetworkException, PollDetail>> call(int id) async {
+  Future<Result<PollDetail>> call(int id) async {
     return await pollDetailRepository.getPollDetail(id);
   }
 }

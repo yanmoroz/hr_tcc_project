@@ -2,9 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:fpdart/fpdart.dart';
+import '../../../../core/types/result.dart';
 
-import '../../../../core/exceptions/network/network_exception.dart';
 import '../entities/entities.dart';
 
 abstract class FileRepository {
@@ -15,7 +14,7 @@ abstract class FileRepository {
   /// [group] - Optional file group for KP system (NEWS, DISCOUNT, PASS)
   /// [issueIdOrKey] - Optional JIRA issue ID/key
   /// [onProgress] - Optional progress callback
-  Future<Either<NetworkException, UploadedFile>> uploadFile({
+  Future<Result<UploadedFile>> uploadFile({
     required File file,
     required SystemType systemType,
     FileGroup? group,
@@ -31,7 +30,7 @@ abstract class FileRepository {
   /// [uriFile] - URI path for ELMA system
   /// [urlFile] - Full URL for JIRA system
   /// [onProgress] - Optional progress callback
-  Future<Either<NetworkException, Uint8List>> downloadFile({
+  Future<Result<Uint8List>> downloadFile({
     required SystemType systemType,
     required bool download,
     String? idFile,

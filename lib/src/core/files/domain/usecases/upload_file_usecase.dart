@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:fpdart/fpdart.dart';
+import '../../../../core/types/result.dart';
 
-import '../../../../core/exceptions/network/network_exception.dart';
 import '../entities/entities.dart';
 import '../repositories/repositories.dart';
 
@@ -12,7 +11,7 @@ class UploadFileUsecase {
 
   UploadFileUsecase(this.fileRepository);
 
-  Future<Either<NetworkException, UploadedFile>> call({
+  Future<Result<UploadedFile>> call({
     required File file,
     required SystemType systemType,
     FileGroup? group,

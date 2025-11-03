@@ -1,8 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/usecases/usecases.dart';
 import 'notifications_list_event.dart';
@@ -35,8 +34,8 @@ class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsLi
     // Run both API calls in parallel
     final results = await Future.wait([getNotificationsUsecase(), getUnreadNotificationsCountUsecase()]);
 
-    final notificationsResult = results[0] as Either<NetworkException, List<Notification>>;
-    final countResult = results[1] as Either<NetworkException, int>;
+    final notificationsResult = results[0] as Result<List<Notification>>;
+    final countResult = results[1] as Result<int>;
 
     notificationsResult.fold((error) => emit(NotificationsListState.error(error.message)), (notifications) {
       countResult.fold(

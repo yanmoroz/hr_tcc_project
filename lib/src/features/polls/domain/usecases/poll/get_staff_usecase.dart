@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../entities/entities.dart';
 import '../../repositories/repositories.dart';
 
@@ -9,7 +8,7 @@ class GetStaffUsecase {
 
   GetStaffUsecase(this.staffRepository);
 
-  Future<Either<NetworkException, List<StaffItem>>> call({required StaffTarget target, String? search}) async {
+  Future<Result<List<StaffItem>>> call({required StaffTarget target, String? search}) async {
     return await staffRepository.getStaff(target: target, search: search);
   }
 }

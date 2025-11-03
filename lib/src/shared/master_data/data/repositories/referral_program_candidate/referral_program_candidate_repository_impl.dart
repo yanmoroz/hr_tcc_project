@@ -1,7 +1,6 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
 import '../../../../../core/data/base_repository.dart';
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../datasources/data_sources.dart';
@@ -13,7 +12,7 @@ class ReferralProgramCandidateRepositoryImpl with BaseRepository implements Refe
   ReferralProgramCandidateRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Either<NetworkException, List<ReferralProgramCandidate>>> getReferralProgramCandidates() async {
+  Future<Result<List<ReferralProgramCandidate>>> getReferralProgramCandidates() async {
     final result = await _remoteDataSource.getReferralProgramCandidates();
 
     return mapResultList(result, (model) => model.toDomain());

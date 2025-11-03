@@ -6,6 +6,7 @@ import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/polls/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/features/polls/data/models/models.dart';
 import 'package:hr_tcc_project/src/features/polls/domain/entities/shared_types/staff_target.dart';
+import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {
   group('StaffRemoteDataSource', () {

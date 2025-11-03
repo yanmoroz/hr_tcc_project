@@ -5,6 +5,7 @@ import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/notifications/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/features/notifications/data/models/models.dart';
+import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {
   group('NotificationRemoteDataSource', () {

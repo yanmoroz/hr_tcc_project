@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
@@ -8,7 +7,7 @@ import '../../models/models.dart';
 import 'core_dictionaries_response.dart';
 
 abstract class CoreDictionariesRemoteDataSource {
-  Future<Either<NetworkException, CoreDictionariesResponse>> getCoreDictionaries();
+  Future<Result<CoreDictionariesResponse>> getCoreDictionaries();
 }
 
 class CoreDictionariesRemoteDataSourceImpl implements CoreDictionariesRemoteDataSource {
@@ -17,7 +16,7 @@ class CoreDictionariesRemoteDataSourceImpl implements CoreDictionariesRemoteData
   CoreDictionariesRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, CoreDictionariesResponse>> getCoreDictionaries() async {
+  Future<Result<CoreDictionariesResponse>> getCoreDictionaries() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.coreDictionariesEndpoint),
       successParser: (response) {

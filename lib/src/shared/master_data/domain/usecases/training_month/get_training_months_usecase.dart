@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../entities/entities.dart';
 import '../../repositories/repositories.dart';
 
@@ -9,7 +8,7 @@ class GetTrainingMonthsUsecase {
 
   GetTrainingMonthsUsecase(this.coreDictionariesRepository);
 
-  Future<Either<NetworkException, List<TrainingMonth>>> call() async {
+  Future<Result<List<TrainingMonth>>> call() async {
     return await coreDictionariesRepository.getTrainingMonths();
   }
 }

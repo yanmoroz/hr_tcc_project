@@ -2,15 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:fpdart/fpdart.dart';
+import '../../../../core/types/result.dart';
 
-import '../../../../core/exceptions/network/network_exception.dart';
 import '../../domain/entities/entities.dart';
 import '../models/models.dart';
 
 abstract class FileRemoteDataSource {
   /// Uploads a file to the server
-  Future<Either<NetworkException, UploadedFileModel>> uploadFile({
+  Future<Result<UploadedFileModel>> uploadFile({
     required File file,
     required SystemType systemType,
     FileGroup? group,
@@ -19,7 +18,7 @@ abstract class FileRemoteDataSource {
   });
 
   /// Downloads a file from the server
-  Future<Either<NetworkException, Uint8List>> downloadFile({
+  Future<Result<Uint8List>> downloadFile({
     required SystemType systemType,
     required bool download,
     String? idFile,

@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class PollRemoteDataSource {
-  Future<Either<NetworkException, List<PollModel>>> getPolls({int? status, required int page});
+  Future<Result<List<PollModel>>> getPolls({int? status, required int page});
 }
 
 class PollRemoteDataSourceImpl implements PollRemoteDataSource {
@@ -16,7 +15,7 @@ class PollRemoteDataSourceImpl implements PollRemoteDataSource {
   PollRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<PollModel>>> getPolls({int? status, required int page}) async {
+  Future<Result<List<PollModel>>> getPolls({int? status, required int page}) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () {
         final queryParameters = <String, String>{'page': page.toString()};

@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class ResellEquipmentTypeRemoteDataSource {
-  Future<Either<NetworkException, List<ResellEquipmentTypeModel>>> getResellEquipmentTypes();
+  Future<Result<List<ResellEquipmentTypeModel>>> getResellEquipmentTypes();
 }
 
 class ResellEquipmentTypeRemoteDataSourceImpl implements ResellEquipmentTypeRemoteDataSource {
@@ -16,7 +15,7 @@ class ResellEquipmentTypeRemoteDataSourceImpl implements ResellEquipmentTypeRemo
   ResellEquipmentTypeRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<ResellEquipmentTypeModel>>> getResellEquipmentTypes() async {
+  Future<Result<List<ResellEquipmentTypeModel>>> getResellEquipmentTypes() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.resellEquipmentTypeEndpoint),
       successParser: (response) {

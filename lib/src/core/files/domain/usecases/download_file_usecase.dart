@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:fpdart/fpdart.dart';
+import '../../../../core/types/result.dart';
 
-import '../../../../core/exceptions/network/network_exception.dart';
 import '../entities/entities.dart';
 import '../repositories/repositories.dart';
 
@@ -12,7 +11,7 @@ class DownloadFileUsecase {
 
   DownloadFileUsecase(this.fileRepository);
 
-  Future<Either<NetworkException, Uint8List>> call({
+  Future<Result<Uint8List>> call({
     required SystemType systemType,
     required bool download,
     String? idFile,

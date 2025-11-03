@@ -7,6 +7,7 @@ import '../../../../../core/files/domain/usecases/usecases.dart';
 import '../../../domain/usecases/usecases.dart';
 import 'polls_list_event.dart';
 import 'polls_list_state.dart';
+import '../../../../../core/types/result.dart';
 
 class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
   final GetPollsUsecase getPollsUsecase;

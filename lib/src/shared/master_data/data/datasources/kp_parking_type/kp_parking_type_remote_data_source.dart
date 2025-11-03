@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class KpParkingTypeRemoteDataSource {
-  Future<Either<NetworkException, List<KpParkingTypeModel>>> getKpParkingTypes();
+  Future<Result<List<KpParkingTypeModel>>> getKpParkingTypes();
 }
 
 class KpParkingTypeRemoteDataSourceImpl implements KpParkingTypeRemoteDataSource {
@@ -16,7 +15,7 @@ class KpParkingTypeRemoteDataSourceImpl implements KpParkingTypeRemoteDataSource
   KpParkingTypeRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<KpParkingTypeModel>>> getKpParkingTypes() async {
+  Future<Result<List<KpParkingTypeModel>>> getKpParkingTypes() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.kpParkingTypeEndpoint),
       successParser: (response) {

@@ -1,7 +1,6 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
 import '../../../../../core/data/base_repository.dart';
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../datasources/data_sources.dart';
@@ -13,14 +12,14 @@ class PollDetailRepositoryImpl with BaseRepository implements PollDetailReposito
   PollDetailRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Either<NetworkException, PollDetail>> getPollDetail(int id) async {
+  Future<Result<PollDetail>> getPollDetail(int id) async {
     final result = await _remoteDataSource.getPollDetail(id);
 
     return mapResult(result, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, void>> submitPollAnswers({
+  Future<Result<void>> submitPollAnswers({
     required int pollId,
     required PollAnswersRequest request,
   }) async {

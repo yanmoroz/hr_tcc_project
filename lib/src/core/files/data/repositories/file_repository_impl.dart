@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import '../../../../core/types/result.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/data/base_repository.dart';
-import '../../../../core/exceptions/network/network_exception.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
@@ -21,7 +21,7 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
   FileRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Either<NetworkException, UploadedFile>> uploadFile({
+  Future<Result<UploadedFile>> uploadFile({
     required File file,
     required SystemType systemType,
     FileGroup? group,
@@ -40,7 +40,7 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
   }
 
   @override
-  Future<Either<NetworkException, Uint8List>> downloadFile({
+  Future<Result<Uint8List>> downloadFile({
     required SystemType systemType,
     required bool download,
     String? idFile,

@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
 import '../../../../../core/data/base_repository.dart';
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../datasources/data_sources.dart';
@@ -13,7 +13,7 @@ class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictiona
 
   CoreDictionariesRepositoryImpl(this._remoteDataSource);
 
-  Future<Either<NetworkException, CoreDictionariesResponse>> _getResponse() async {
+  Future<Result<CoreDictionariesResponse>> _getResponse() async {
     if (_cachedResponse != null) {
       return Right(_cachedResponse!);
     }
@@ -24,70 +24,70 @@ class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictiona
   }
 
   @override
-  Future<Either<NetworkException, List<ApplicationFormGroup>>> getApplicationFormGroups() async {
+  Future<Result<List<ApplicationFormGroup>>> getApplicationFormGroups() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.applicationFormGroups);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<ApplicationForm>>> getApplicationForms() async {
+  Future<Result<List<ApplicationForm>>> getApplicationForms() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.applicationForms);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<SystemStatusGroup>>> getSystemStatusGroups() async {
+  Future<Result<List<SystemStatusGroup>>> getSystemStatusGroups() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.systemStatusesGroups);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<SystemStatus>>> getSystemStatuses() async {
+  Future<Result<List<SystemStatus>>> getSystemStatuses() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.systemStatuses);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<TripPurpose>>> getTripPurposes() async {
+  Future<Result<List<TripPurpose>>> getTripPurposes() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.tripPurposes);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<TrainingType>>> getTrainingTypes() async {
+  Future<Result<List<TrainingType>>> getTrainingTypes() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.trainingTypes);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<TrainingForm>>> getTrainingForms() async {
+  Future<Result<List<TrainingForm>>> getTrainingForms() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.trainingForms);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<TrainingMonth>>> getTrainingMonths() async {
+  Future<Result<List<TrainingMonth>>> getTrainingMonths() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.trainingMonths);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<AlpinaDigitalPrevAccess>>> getAlpinaDigitalPrevAccess() async {
+  Future<Result<List<AlpinaDigitalPrevAccess>>> getAlpinaDigitalPrevAccess() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.alpinaDigitalPrevAccesses);
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
-  Future<Either<NetworkException, List<Office>>> getOffices() async {
+  Future<Result<List<Office>>> getOffices() async {
     final result = await _getResponse();
     final listResult = mapResult(result, (response) => response.offices);
     return mapResultList(listResult, (model) => model.toDomain());

@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class UnplannedTrainingContractorRemoteDataSource {
-  Future<Either<NetworkException, List<UnplannedTrainingContractorModel>>> getUnplannedTrainingContractors();
+  Future<Result<List<UnplannedTrainingContractorModel>>> getUnplannedTrainingContractors();
 }
 
 class UnplannedTrainingContractorRemoteDataSourceImpl implements UnplannedTrainingContractorRemoteDataSource {
@@ -16,7 +15,7 @@ class UnplannedTrainingContractorRemoteDataSourceImpl implements UnplannedTraini
   UnplannedTrainingContractorRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<UnplannedTrainingContractorModel>>> getUnplannedTrainingContractors() async {
+  Future<Result<List<UnplannedTrainingContractorModel>>> getUnplannedTrainingContractors() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.unplannedTrainingContractorEndpoint),
       successParser: (response) {

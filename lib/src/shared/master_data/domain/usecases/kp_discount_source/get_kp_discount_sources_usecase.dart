@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../entities/entities.dart';
 import '../../repositories/repositories.dart';
 
@@ -9,7 +8,7 @@ class GetKpDiscountSourcesUsecase {
 
   GetKpDiscountSourcesUsecase(this.kpDiscountSourceRepository);
 
-  Future<Either<NetworkException, List<KpDiscountSource>>> call() async {
+  Future<Result<List<KpDiscountSource>>> call() async {
     return await kpDiscountSourceRepository.getKpDiscountSources();
   }
 }

@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../repositories/repositories.dart';
 
 class MarkAllNotificationsAsReadUsecase {
@@ -8,7 +7,7 @@ class MarkAllNotificationsAsReadUsecase {
 
   MarkAllNotificationsAsReadUsecase(this.notificationRepository);
 
-  Future<Either<NetworkException, void>> call() async {
+  Future<Result<void>> call() async {
     return await notificationRepository.markAllNotificationsAsRead();
   }
 }

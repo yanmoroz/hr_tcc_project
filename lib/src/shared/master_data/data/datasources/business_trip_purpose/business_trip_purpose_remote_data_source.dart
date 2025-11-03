@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class BusinessTripPurposeRemoteDataSource {
-  Future<Either<NetworkException, List<BusinessTripPurposeModel>>> getBusinessTripPurposes();
+  Future<Result<List<BusinessTripPurposeModel>>> getBusinessTripPurposes();
 }
 
 class BusinessTripPurposeRemoteDataSourceImpl implements BusinessTripPurposeRemoteDataSource {
@@ -16,7 +15,7 @@ class BusinessTripPurposeRemoteDataSourceImpl implements BusinessTripPurposeRemo
   BusinessTripPurposeRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<BusinessTripPurposeModel>>> getBusinessTripPurposes() async {
+  Future<Result<List<BusinessTripPurposeModel>>> getBusinessTripPurposes() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.businessTripPurposeEndpoint),
       successParser: (response) {

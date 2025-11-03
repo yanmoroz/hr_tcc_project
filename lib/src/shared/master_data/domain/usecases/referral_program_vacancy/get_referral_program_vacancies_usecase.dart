@@ -1,6 +1,5 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../entities/entities.dart';
 import '../../repositories/repositories.dart';
 
@@ -9,7 +8,7 @@ class GetReferralProgramVacanciesUsecase {
 
   GetReferralProgramVacanciesUsecase(this.referralProgramVacancyRepository);
 
-  Future<Either<NetworkException, List<ReferralProgramVacancy>>> call() async {
+  Future<Result<List<ReferralProgramVacancy>>> call() async {
     return await referralProgramVacancyRepository.getReferralProgramVacancies();
   }
 }

@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class KpOfficeRemoteDataSource {
-  Future<Either<NetworkException, List<KpOfficeModel>>> getKpOffices();
+  Future<Result<List<KpOfficeModel>>> getKpOffices();
 }
 
 class KpOfficeRemoteDataSourceImpl implements KpOfficeRemoteDataSource {
@@ -16,7 +15,7 @@ class KpOfficeRemoteDataSourceImpl implements KpOfficeRemoteDataSource {
   KpOfficeRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<KpOfficeModel>>> getKpOffices() async {
+  Future<Result<List<KpOfficeModel>>> getKpOffices() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.kpOfficeEndpoint),
       successParser: (response) {

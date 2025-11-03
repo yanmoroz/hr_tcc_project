@@ -1,13 +1,12 @@
-import 'package:fpdart/fpdart.dart';
+import '../../../../../core/types/result.dart';
 
-import '../../../../../core/exceptions/network/network_exception.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
 import '../../models/models.dart';
 
 abstract class KpDiscountCategoryRemoteDataSource {
-  Future<Either<NetworkException, List<KpDiscountCategoryModel>>> getKpDiscountCategories();
+  Future<Result<List<KpDiscountCategoryModel>>> getKpDiscountCategories();
 }
 
 class KpDiscountCategoryRemoteDataSourceImpl implements KpDiscountCategoryRemoteDataSource {
@@ -16,7 +15,7 @@ class KpDiscountCategoryRemoteDataSourceImpl implements KpDiscountCategoryRemote
   KpDiscountCategoryRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Either<NetworkException, List<KpDiscountCategoryModel>>> getKpDiscountCategories() async {
+  Future<Result<List<KpDiscountCategoryModel>>> getKpDiscountCategories() async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.kpDiscountCategoryEndpoint),
       successParser: (response) {
