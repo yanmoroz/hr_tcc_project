@@ -83,7 +83,11 @@ core/
 ├── files/               # File upload/download (multi-system support)
 ├── logging/             # Centralized logging (AppLogger)
 ├── data/                # BaseRepository mixin
-└── exceptions/          # Network exception handling
+├── types/               # Result<T> type alias
+├── cache/               # Generic caching layer with TTL
+└── exceptions/          # NetworkException and MappingException
+    ├── network/         # Network error handling
+    └── mapping/         # Parsing/serialization error handling
 ```
 
 **Shared Structure:**
@@ -102,9 +106,14 @@ shared/
 
 **2. Error Handling**
 - Functional error handling using `fpdart` library's `Either<L, R>` type
-- `Either<NetworkException, T>` for all repository/data source operations
-- `ApiCallExecutor.executeApiCall()` for standardized API call wrapping
-- `BaseRepository` mixin provides `mapResult()` and `mapResultList()` utilities
+- **Result Type**: `Result<T>` type alias for `Either<Exception, T>` (defined in `lib/src/core/types/result.dart`)
+- All repository/data source operations return `Result<T>`
+- Two exception types:
+  - `NetworkException`: HTTP/network errors (timeouts, connection issues, bad responses)
+  - `MappingException`: JSON parsing and serialization errors
+- Access error messages via `.message` extension on any Exception
+- `ApiCallExecutor.executeApiCall()` returns `Result<T>` for standardized API call wrapping
+- `BaseRepository` mixin provides `mapResult()` and `mapResultList()` utilities for `Result<T>`
 
 **3. API Client Architecture**
 - Abstract `ApiClient` interface with two implementations:
@@ -126,6 +135,15 @@ shared/
 - Freezed for immutable state/event classes
 - Factory pattern for BLoC creation ensures proper dependency injection
 - Example: `BlocFactory.createPollsListBloc()` instead of direct instantiation
+
+**6. Caching Layer**
+- Generic `CacheManager<T>` for in-memory caching with TTL (Time-To-Live)
+- Located in `lib/src/core/cache/cache_manager.dart`
+- Configurable cache duration (default: 1 hour)
+- Automatic expiration and manual cache clearing
+- Injectable into repositories for testability
+- Example: `CoreDictionariesRepositoryImpl` uses `CacheManager<CoreDictionariesResponse>`
+- See `lib/src/core/cache/README.md` for detailed usage
 
 ## Environment Configuration
 

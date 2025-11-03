@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import '../../../../../core/types/result.dart';
 
+import '../../../../../core/cache/cache_manager.dart';
 import '../../../../../core/data/base_repository.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/repositories/repositories.dart';
@@ -9,17 +10,34 @@ import '../../models/models.dart';
 
 class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictionariesRepository {
   final CoreDictionariesRemoteDataSource _remoteDataSource;
-  CoreDictionariesResponse? _cachedResponse;
+  final CacheManager<CoreDictionariesResponse> _cache;
 
-  CoreDictionariesRepositoryImpl(this._remoteDataSource);
+  CoreDictionariesRepositoryImpl(
+    this._remoteDataSource, {
+    CacheManager<CoreDictionariesResponse>? cache,
+  }) : _cache = cache ?? CacheManager(cacheDuration: const Duration(hours: 1));
+
+  /// Clears the cached response, forcing a fresh fetch on next request
+  void clearCache() {
+    _cache.clear();
+  }
 
   Future<Result<CoreDictionariesResponse>> _getResponse() async {
-    if (_cachedResponse != null) {
-      return Right(_cachedResponse!);
+    // Try to get from cache
+    final cachedResponse = _cache.get();
+    if (cachedResponse != null) {
+      return Right(cachedResponse);
     }
 
+    // Fetch from remote
     final result = await _remoteDataSource.getCoreDictionaries();
-    result.fold((failure) => null, (response) => _cachedResponse = response);
+
+    // Cache successful response
+    result.fold(
+      (failure) => null,
+      (response) => _cache.set(response),
+    );
+
     return result;
   }
 
