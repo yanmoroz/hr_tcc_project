@@ -32,6 +32,9 @@ class ApiConstants {
   static const String filesUploadEndpoint = '/files/upload';
   static const String filesDownloadEndpoint = '/files/download';
 
+  // User endpoints
+  static const String usersEndpoint = '/users';
+
   // Headers
   static const String authorizationHeader = 'Authorization';
   static const String acceptHeader = 'accept';

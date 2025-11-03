@@ -11,6 +11,10 @@ import '../../features/polls/data/datasources/data_sources.dart';
 import '../../features/polls/data/repositories/repositories.dart';
 import '../../features/polls/domain/repositories/repositories.dart';
 import '../../features/polls/domain/usecases/usecases.dart';
+import '../../features/users/data/datasources/data_sources.dart';
+import '../../features/users/data/repositories/repositories.dart';
+import '../../features/users/domain/repositories/repositories.dart';
+import '../../features/users/domain/usecases/usecases.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 import '../files/files.dart';
@@ -23,6 +27,7 @@ Future<void> initializeDependencies() async {
   _initializeMasterDataDependencies();
   _initializeNotificationDependencies();
   _initializePollDependencies();
+  _initializeUserDependencies();
 }
 
 void _initializeCoreDependencies() {
@@ -116,4 +121,15 @@ void _initializePollDependencies() {
   sl.registerFactory<GetStaffUsecase>(() => GetStaffUsecase(sl()));
   sl.registerFactory<GetPollDetailUsecase>(() => GetPollDetailUsecase(sl()));
   sl.registerFactory<SubmitPollAnswersUsecase>(() => SubmitPollAnswersUsecase(sl()));
+}
+
+void _initializeUserDependencies() {
+  // Data sources
+  sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetUsersUsecase>(() => GetUsersUsecase(sl()));
 }

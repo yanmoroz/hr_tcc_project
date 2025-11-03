@@ -3,7 +3,7 @@ enum SystemType {
   elma,
   kp,
   jira,
-  _1c;
+  oneC;
 
   String get value {
     switch (this) {
@@ -13,7 +13,7 @@ enum SystemType {
         return 'KP';
       case SystemType.jira:
         return 'JIRA';
-      case SystemType._1c:
+      case SystemType.oneC:
         return '_1C';
     }
   }
@@ -27,7 +27,7 @@ enum SystemType {
       case 'JIRA':
         return SystemType.jira;
       case '_1C':
-        return SystemType._1c;
+        return SystemType.oneC;
       default:
         throw ArgumentError('Unknown SystemType: $value');
     }

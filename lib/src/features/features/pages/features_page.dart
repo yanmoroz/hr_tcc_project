@@ -30,6 +30,16 @@ class FeaturesPage extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            child: ListTile(
+              title: const Text('Users'),
+              subtitle: const Text('Browse users by system type'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.pushNamed(context, '/users');
+              },
+            ),
+          ),
         ],
       ),
     );

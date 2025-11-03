@@ -6,6 +6,7 @@ import 'src/features/features/pages/features_page.dart';
 import 'src/features/notifications/presentation/pages/notifications_page.dart';
 import 'src/features/polls/presentation/pages/polls_page.dart';
 import 'src/features/polls/presentation/pages/poll_page.dart';
+import 'src/features/users/presentation/pages/users_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,7 @@ class MainApp extends StatelessWidget {
           final pollId = args as int;
           return PollPage(pollId: pollId);
         },
+        '/users': (context) => const UsersPage(),
       },
     );
   }
