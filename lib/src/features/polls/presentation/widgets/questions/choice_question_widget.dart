@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 import 'question_widget_factory.dart';
 
 class ChoiceQuestionWidget extends StatefulWidget {

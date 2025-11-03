@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/entities.dart';
+import '../../domain/domain.dart';
 
 /// View model for [PollItem] widget.
 /// Encapsulates presentation logic and computed properties.

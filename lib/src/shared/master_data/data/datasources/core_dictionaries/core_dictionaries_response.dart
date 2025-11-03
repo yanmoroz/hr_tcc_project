@@ -1,4 +1,4 @@
-import '../../models/models.dart';
+import '../../data.dart';
 
 class CoreDictionariesResponse {
   final List<ApplicationFormGroupModel> applicationFormGroups;

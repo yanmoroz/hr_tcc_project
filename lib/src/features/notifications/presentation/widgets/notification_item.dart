@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/entities.dart' as domain;
+import '../../domain/domain.dart' as domain;
 
 class NotificationItem extends StatelessWidget {
   final domain.Notification notification;

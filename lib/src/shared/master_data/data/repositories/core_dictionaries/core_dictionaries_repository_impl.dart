@@ -3,10 +3,10 @@ import '../../../../../core/types/result.dart';
 
 import '../../../../../core/cache/cache_manager.dart';
 import '../../../../../core/data/base_repository.dart';
-import '../../../domain/entities/entities.dart';
-import '../../../domain/repositories/repositories.dart';
-import '../../datasources/data_sources.dart';
-import '../../models/models.dart';
+import '../../../domain/domain.dart';
+import '../../../domain/domain.dart';
+import '../../data.dart';
+import '../../data.dart';
 
 class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictionariesRepository {
   final CoreDictionariesRemoteDataSource _remoteDataSource;

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 
 part 'alpina_digital_prev_access_model.freezed.dart';
 part 'alpina_digital_prev_access_model.g.dart';

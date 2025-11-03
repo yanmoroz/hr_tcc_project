@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 import 'multi_line_text_question_widget.dart';
 import 'choice_question_widget.dart';
 import 'table_lookup_question_widget.dart';

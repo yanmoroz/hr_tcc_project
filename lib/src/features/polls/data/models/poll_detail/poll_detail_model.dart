@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 import '../poll/department_model.dart';
 import '../poll/employee_model.dart';
 import 'page_model.dart';

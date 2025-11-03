@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 
 part 'training_month_model.freezed.dart';
 part 'training_month_model.g.dart';

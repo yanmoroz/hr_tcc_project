@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 
 part 'polls_list_state.freezed.dart';
 

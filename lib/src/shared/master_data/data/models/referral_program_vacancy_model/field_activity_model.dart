@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 
 part 'field_activity_model.freezed.dart';
 part 'field_activity_model.g.dart';

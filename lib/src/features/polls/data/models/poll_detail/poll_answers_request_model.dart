@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 import 'poll_answer_model.dart';
 
 part 'poll_answers_request_model.freezed.dart';

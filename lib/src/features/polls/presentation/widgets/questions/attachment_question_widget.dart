@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/files/domain/entities/entities.dart';
 import '../../../../../core/files/domain/usecases/usecases.dart';
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 import 'question_widget_factory.dart';
 import '../../../../../core/types/result.dart';
 

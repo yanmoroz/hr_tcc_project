@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/entities/entities.dart';
-import '../../../domain/usecases/usecases.dart';
+import '../../../domain/domain.dart';
+import '../../../domain/domain.dart';
 import 'poll_detail_event.dart';
 import 'poll_detail_state.dart';
 import '../../../../../core/types/result.dart';

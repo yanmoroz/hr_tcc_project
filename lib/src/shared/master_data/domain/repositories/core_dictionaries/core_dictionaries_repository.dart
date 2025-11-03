@@ -1,6 +1,6 @@
 import '../../../../../core/types/result.dart';
 
-import '../../entities/entities.dart';
+import '../../domain.dart';
 
 abstract class CoreDictionariesRepository {
   Future<Result<List<ApplicationFormGroup>>> getApplicationFormGroups();

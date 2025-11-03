@@ -3,9 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/features/polls/data/datasources/data_sources.dart';
-import 'package:hr_tcc_project/src/features/polls/data/models/models.dart';
-import 'package:hr_tcc_project/src/features/polls/domain/entities/shared_types/staff_target.dart';
+import 'package:hr_tcc_project/src/features/polls/data/data.dart';
+import 'package:hr_tcc_project/src/features/polls/domain/domain.dart';
 import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {

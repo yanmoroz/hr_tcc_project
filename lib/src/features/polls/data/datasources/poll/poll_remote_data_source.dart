@@ -3,7 +3,7 @@ import '../../../../../core/types/result.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
-import '../../models/models.dart';
+import '../../data.dart';
 
 abstract class PollRemoteDataSource {
   Future<Result<List<PollModel>>> getPolls({int? status, required int page});

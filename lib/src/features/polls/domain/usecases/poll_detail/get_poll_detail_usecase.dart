@@ -1,7 +1,7 @@
 import '../../../../../core/types/result.dart';
 
-import '../../entities/entities.dart';
-import '../../repositories/repositories.dart';
+import '../../domain.dart';
+import '../../domain.dart';
 
 class GetPollDetailUsecase {
   final PollDetailRepository pollDetailRepository;

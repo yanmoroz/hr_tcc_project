@@ -3,8 +3,8 @@ import '../../../../../core/types/result.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
 import '../../../../../core/network/api_constants.dart';
-import '../../../domain/entities/entities.dart';
-import '../../models/models.dart';
+import '../../../domain/domain.dart';
+import '../../data.dart';
 
 abstract class StaffRemoteDataSource {
   Future<Result<List<StaffItemModel>>> getStaff({required StaffTarget target, String? search});

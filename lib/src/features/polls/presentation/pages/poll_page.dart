@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/bloc_factory.dart';
-import '../../domain/entities/entities.dart';
+import '../../domain/domain.dart';
 import '../../domain/entities/poll_detail/page.dart' as poll_page;
 import '../bloc/poll_page/poll_detail_bloc.dart';
 import '../bloc/poll_page/poll_detail_event.dart';

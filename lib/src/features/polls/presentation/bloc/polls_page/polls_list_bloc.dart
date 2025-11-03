@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/files/domain/entities/system_type.dart';
 import '../../../../../core/files/domain/usecases/usecases.dart';
-import '../../../domain/usecases/usecases.dart';
+import '../../../domain/domain.dart';
 import 'polls_list_event.dart';
 import 'polls_list_state.dart';
 import '../../../../../core/types/result.dart';

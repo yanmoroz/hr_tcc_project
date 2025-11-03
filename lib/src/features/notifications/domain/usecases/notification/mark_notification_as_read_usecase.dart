@@ -1,6 +1,6 @@
 import '../../../../../core/types/result.dart';
 
-import '../../repositories/repositories.dart';
+import '../../domain.dart';
 
 class MarkNotificationAsReadUsecase {
   final NotificationRepository notificationRepository;

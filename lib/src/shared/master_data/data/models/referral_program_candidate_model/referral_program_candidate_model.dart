@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/entities.dart';
+import '../../../domain/domain.dart';
 
 part 'referral_program_candidate_model.freezed.dart';
 part 'referral_program_candidate_model.g.dart';

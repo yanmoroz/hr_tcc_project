@@ -37,11 +37,14 @@ flutter run -d <device_id>
 
 ### Testing & Quality
 ```bash
-# Run tests
+# Run all tests
 flutter test
 
 # Run specific test file
 flutter test test/path/to/test_file.dart
+
+# Run tests with verbose output
+flutter test --verbose
 
 # Analyze code
 flutter analyze
@@ -195,6 +198,7 @@ Simple route-based navigation via `MaterialApp`:
 - `/notifications` - NotificationsPage
 - `/polls` - PollsPage
 - `/poll` - PollPage (requires pollId argument)
+- `/users` - UsersPage
 
 ## API Integration
 
@@ -202,9 +206,18 @@ All API endpoints defined in `ApiConstants`:
 - Dictionary endpoints for master data
 - Notification endpoints
 - Poll endpoints
+- User endpoints
 - File upload/download endpoints
 
 Base URL loaded from `.env` file.
+
+### System Type Filtering
+
+Many API endpoints support filtering by system type (JIRA, ELMA, KP, _1C):
+- Use the `SystemType` enum from `lib/src/core/files/domain/entities/system_type.dart`
+- Enum values: `elma`, `kp`, `jira`, `oneC`
+- Get API string value via `.value` getter (returns ELMA, KP, JIRA, _1C)
+- Parse from API string via `SystemType.fromString()` or `systemTypeFromJson()`
 
 ## Adding a New Feature
 
@@ -215,8 +228,125 @@ Base URL loaded from `.env` file.
 5. Create data models in `data/models/` (use Freezed + JsonSerializable)
 6. Implement data sources in `data/datasources/`
 7. Implement repository in `data/repositories/` (extend `BaseRepository` mixin)
-8. Register dependencies in `service_locator.dart`
-9. Create BLoC in `presentation/bloc/`
-10. Add BLoC factory method in `bloc_factory.dart`
-11. Build UI in `presentation/pages/` and `presentation/widgets/`
-12. Run `flutter pub run build_runner build --delete-conflicting-outputs`
+8. Create consolidated barrel files for clean imports:
+   - `domain/domain.dart` - exports all entities, repositories, and usecases
+   - `data/data.dart` - exports all models, datasources, and repository implementations
+   - `presentation/presentation.dart` - exports all pages, widgets, and BLoC files (if applicable)
+9. Register dependencies in `service_locator.dart` using consolidated barrel imports
+10. Create BLoC in `presentation/bloc/` (if needed for complex state management)
+11. Add BLoC factory method in `bloc_factory.dart` (if BLoC created)
+12. Build UI in `presentation/pages/` and `presentation/widgets/`
+13. Add route in `main.dart` and navigation from `FeaturesPage`
+14. Run `flutter pub run build_runner build --delete-conflicting-outputs`
+15. Create integration tests in `test/src/features/<feature_name>/` following existing patterns
+
+### Example: Users Feature
+
+The users feature demonstrates a complete implementation:
+
+**Domain Layer:**
+- `User` entity with Freezed
+- `UserRepository` abstract interface
+- `GetUsersUsecase` for business logic
+
+**Data Layer:**
+- `UserModel` with Freezed + JsonSerializable
+- `GetUsersResponse` wrapper for API response
+- `UserRemoteDataSource` with `ApiCallExecutor` integration
+- `UserRepositoryImpl` extending `BaseRepository` mixin
+- Model-to-domain mapping via `.toDomain()` extension
+
+**Presentation Layer:**
+- Simple `UsersPage` with dropdown (system type) and search
+- Direct use case injection via `sl<GetUsersUsecase>()`
+- Result handling with `.fold()` for error/success states
+
+**Testing:**
+- Integration tests in `test/src/features/users/data/datasources/`
+- Real API calls with environment configuration
+- Multiple test cases covering all system types and search scenarios
+
+## Testing Strategy
+
+The project uses integration testing with real API calls instead of mocks:
+
+### Test Structure
+
+```dart
+void main() {
+  group('FeatureRemoteDataSource', () {
+    late FeatureRemoteDataSource dataSource;
+    late ApiClient apiClient;
+    late AuthTokenProvider authTokenProvider;
+
+    setUpAll(() async {
+      // Load environment variables once for all tests
+      await dotenv.load(fileName: ".env");
+    });
+
+    setUp(() {
+      // Create real instances before each test
+      authTokenProvider = LocalAuthTokenProvider();
+      apiClient = InsecureApiClient(authTokenProvider);
+      dataSource = FeatureRemoteDataSourceImpl(apiClient);
+    });
+
+    test('should fetch data from API', () async {
+      // Act
+      final result = await dataSource.getData();
+
+      // Assert using Result<T>.fold() pattern
+      result.fold(
+        (failure) => fail('Unexpected error: ${failure.message}'),
+        (data) {
+          expect(data, isA<ExpectedType>());
+          AppLogger.d('Success: $data');
+        },
+      );
+    });
+  });
+}
+```
+
+### Testing Best Practices
+
+**Integration Test Pattern:**
+- Use real implementations instead of mocks (ApiClient, AuthTokenProvider, DataSource)
+- Load environment variables via `flutter_dotenv` in `setUpAll()`
+- Create fresh instances in `setUp()` for test isolation
+- Make actual API calls to backend (requires `.env` configuration)
+
+**Assertion Pattern:**
+- Use `Result<T>.fold()` for handling success/failure cases
+- Call `fail()` with error message on unexpected failures
+- Use `expect()` for type and value assertions
+- Log successful results with `AppLogger.d()` for debugging
+
+**Test Coverage:**
+- Test all variations of parameters (system types, optional fields, search terms)
+- Test response parsing and model structure
+- Test error scenarios when possible
+- Group related tests with `group()`
+
+**Example Test Cases:**
+```dart
+// Test different enum values
+test('should work with ELMA system type', () async { ... });
+test('should work with KP system type', () async { ... });
+test('should work with JIRA system type', () async { ... });
+test('should work with _1C system type', () async { ... });
+
+// Test optional parameters
+test('should work with search parameter', () async { ... });
+test('should work without search parameter', () async { ... });
+
+// Test response structure
+test('should correctly map API response to model', () async { ... });
+```
+
+**Environment Setup for Tests:**
+Ensure `.env` file exists with required variables:
+```
+API_BASE_URL=https://your-api-url.com
+ACCESS_TOKEN=your-test-token
+```
