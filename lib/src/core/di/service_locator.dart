@@ -10,8 +10,11 @@ import '../../features/users/data/data.dart';
 import '../../features/users/domain/domain.dart';
 import '../../features/discounts/data/data.dart';
 import '../../features/discounts/domain/domain.dart';
+import '../../features/news/data/data.dart';
+import '../../features/news/domain/domain.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
+import '../network/api_constants.dart';
 import '../files/files.dart';
 
 final sl = GetIt.instance;
@@ -24,6 +27,7 @@ Future<void> initializeDependencies() async {
   _initializePollDependencies();
   _initializeUserDependencies();
   _initializeDiscountDependencies();
+  _initializeNewsDependencies();
 }
 
 void _initializeCoreDependencies() {
@@ -133,8 +137,25 @@ void _initializeUserDependencies() {
 void _initializeDiscountDependencies() {
   // Data sources
   sl.registerLazySingleton<DiscountRemoteDataSource>(() => DiscountRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<CommentRemoteDataSource>(() => CommentRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<LikeRemoteDataSource>(() => LikeRemoteDataSourceImpl(sl()));
+
+  // Shared comment data source with discount-specific endpoints
+  sl.registerLazySingleton<CommentRemoteDataSource>(
+    () => CommentRemoteDataSourceImpl(
+      apiClient: sl(),
+      getCommentsEndpoint: ApiConstants.discountCommentsEndpoint,
+      addCommentEndpoint: ApiConstants.discountCommentsEndpoint,
+      deleteCommentEndpoint: ApiConstants.discountCommentEndpoint,
+    ),
+  );
+
+  // Shared like data source with discount-specific endpoints
+  sl.registerLazySingleton<LikeRemoteDataSource>(
+    () => LikeRemoteDataSourceImpl(
+      apiClient: sl(),
+      toggleEntityLikeEndpoint: ApiConstants.discountLikeEndpoint,
+      toggleCommentLikeEndpoint: ApiConstants.commentLikeEndpoint,
+    ),
+  );
 
   // Repositories
   sl.registerLazySingleton<DiscountRepository>(() => DiscountRepositoryImpl(sl()));
@@ -150,4 +171,19 @@ void _initializeDiscountDependencies() {
   sl.registerFactory<AddCommentUsecase>(() => AddCommentUsecase(sl()));
   sl.registerFactory<DeleteCommentUsecase>(() => DeleteCommentUsecase(sl()));
   sl.registerFactory<ToggleCommentLikeUsecase>(() => ToggleCommentLikeUsecase(sl()));
+}
+
+void _initializeNewsDependencies() {
+  // Data sources
+  sl.registerLazySingleton<NewsRemoteDataSource>(() => NewsRemoteDataSourceImpl(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<NewsRepository>(() => NewsRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetNewsListUsecase>(() => GetNewsListUsecase(sl()));
+  sl.registerFactory<GetNewsDetailUsecase>(() => GetNewsDetailUsecase(sl()));
+  sl.registerFactory<GetNewsStatsUsecase>(() => GetNewsStatsUsecase(sl()));
+  sl.registerFactory<GetNewsGalleryUsecase>(() => GetNewsGalleryUsecase(sl()));
+  sl.registerFactory<ToggleNewsLikeUsecase>(() => ToggleNewsLikeUsecase(sl()));
 }

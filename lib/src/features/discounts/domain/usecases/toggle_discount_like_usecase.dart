@@ -1,5 +1,5 @@
 import 'package:hr_tcc_project/src/core/types/result.dart';
-import '../repositories/like_repository.dart';
+import 'package:hr_tcc_project/src/shared/comments/domain/domain.dart';
 
 class ToggleDiscountLikeUsecase {
   final LikeRepository repository;
@@ -7,6 +7,6 @@ class ToggleDiscountLikeUsecase {
   ToggleDiscountLikeUsecase(this.repository);
 
   Future<Result<bool>> call(int discountId) async {
-    return await repository.toggleDiscountLike(discountId);
+    return await repository.toggleEntityLike(discountId);
   }
 }
