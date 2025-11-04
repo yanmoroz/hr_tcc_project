@@ -4,18 +4,14 @@ import '../../../../../core/types/result.dart';
 import '../../../../../core/cache/cache_manager.dart';
 import '../../../../../core/data/base_repository.dart';
 import '../../../domain/domain.dart';
-import '../../../domain/domain.dart';
-import '../../data.dart';
 import '../../data.dart';
 
 class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictionariesRepository {
   final CoreDictionariesRemoteDataSource _remoteDataSource;
   final CacheManager<CoreDictionariesResponse> _cache;
 
-  CoreDictionariesRepositoryImpl(
-    this._remoteDataSource, {
-    CacheManager<CoreDictionariesResponse>? cache,
-  }) : _cache = cache ?? CacheManager(cacheDuration: const Duration(hours: 1));
+  CoreDictionariesRepositoryImpl(this._remoteDataSource, {CacheManager<CoreDictionariesResponse>? cache})
+    : _cache = cache ?? CacheManager(cacheDuration: const Duration(hours: 1));
 
   /// Clears the cached response, forcing a fresh fetch on next request
   void clearCache() {
@@ -33,10 +29,7 @@ class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictiona
     final result = await _remoteDataSource.getCoreDictionaries();
 
     // Cache successful response
-    result.fold(
-      (failure) => null,
-      (response) => _cache.set(response),
-    );
+    result.fold((failure) => null, (response) => _cache.set(response));
 
     return result;
   }

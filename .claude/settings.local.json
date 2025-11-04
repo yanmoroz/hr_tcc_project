@@ -4,7 +4,12 @@
       "Bash(flutter analyze:*)",
       "Bash(find:*)",
       "Bash(flutter pub run build_runner build:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(for file in */*.dart)",
+      "Bash(do)",
+      "Bash(awk:*)",
+      "Bash(\"$file.tmp\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

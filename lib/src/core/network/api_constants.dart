@@ -26,6 +26,7 @@ class ApiConstants {
   // Poll endpoints
   static const String pollsEndpoint = '/polls';
   static const String staffEndpoint = '/polls/staff';
+  static String pollDetailEndpoint(int pollId) => '/polls/$pollId';
   static String pollVoteEndpoint(int pollId) => '/polls/$pollId/vote';
 
   // File endpoints
@@ -34,6 +35,15 @@ class ApiConstants {
 
   // User endpoints
   static const String usersEndpoint = '/users';
+
+  // Discount endpoints
+  static const String discountsEndpoint = '/discount';
+  static String discountDetailEndpoint(int id) => '/discount/$id';
+  static String discountStatsEndpoint(int id) => '/discount/$id/comment-and-like-count';
+  static String discountCommentsEndpoint(int discountId) => '/discount/$discountId/comments';
+  static String discountCommentEndpoint(int discountId, int commentId) => '/discount/comments/$commentId';
+  static String discountLikeEndpoint(int id) => '/discount/$id/likes';
+  static String commentLikeEndpoint(int discountId, int commentId) => '/discount/comments/$commentId/likes';
 
   // Headers
   static const String authorizationHeader = 'Authorization';

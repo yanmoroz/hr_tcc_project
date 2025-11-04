@@ -1,7 +1,6 @@
 import '../../../../../core/types/result.dart';
 
 import '../../domain.dart';
-import '../../domain.dart';
 
 class GetApplicationFormGroupsUsecase {
   final CoreDictionariesRepository coreDictionariesRepository;

@@ -1,6 +1,4 @@
 import '../../../../../core/types/result.dart';
-
-import '../../domain.dart';
 import '../../domain.dart';
 
 class GetNotificationsUsecase {

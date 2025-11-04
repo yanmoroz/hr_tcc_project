@@ -4,7 +4,6 @@ import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
-import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
 import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {

@@ -1,9 +1,6 @@
 import '../../../../../core/types/result.dart';
-
 import '../../../../../core/data/base_repository.dart';
 import '../../../domain/domain.dart';
-import '../../../domain/domain.dart';
-import '../../data.dart';
 import '../../data.dart';
 
 class PollDetailRepositoryImpl with BaseRepository implements PollDetailRepository {

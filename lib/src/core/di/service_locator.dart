@@ -8,6 +8,8 @@ import '../../features/polls/data/data.dart';
 import '../../features/polls/domain/domain.dart';
 import '../../features/users/data/data.dart';
 import '../../features/users/domain/domain.dart';
+import '../../features/discounts/data/data.dart';
+import '../../features/discounts/domain/domain.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 import '../files/files.dart';
@@ -21,6 +23,7 @@ Future<void> initializeDependencies() async {
   _initializeNotificationDependencies();
   _initializePollDependencies();
   _initializeUserDependencies();
+  _initializeDiscountDependencies();
 }
 
 void _initializeCoreDependencies() {
@@ -125,4 +128,26 @@ void _initializeUserDependencies() {
 
   // Use cases
   sl.registerFactory<GetUsersUsecase>(() => GetUsersUsecase(sl()));
+}
+
+void _initializeDiscountDependencies() {
+  // Data sources
+  sl.registerLazySingleton<DiscountRemoteDataSource>(() => DiscountRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<CommentRemoteDataSource>(() => CommentRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<LikeRemoteDataSource>(() => LikeRemoteDataSourceImpl(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<DiscountRepository>(() => DiscountRepositoryImpl(sl()));
+  sl.registerLazySingleton<CommentRepository>(() => CommentRepositoryImpl(sl()));
+  sl.registerLazySingleton<LikeRepository>(() => LikeRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetDiscountsUsecase>(() => GetDiscountsUsecase(sl()));
+  sl.registerFactory<GetDiscountDetailUsecase>(() => GetDiscountDetailUsecase(sl()));
+  sl.registerFactory<GetDiscountStatsUsecase>(() => GetDiscountStatsUsecase(sl()));
+  sl.registerFactory<ToggleDiscountLikeUsecase>(() => ToggleDiscountLikeUsecase(sl()));
+  sl.registerFactory<GetCommentsUsecase>(() => GetCommentsUsecase(sl()));
+  sl.registerFactory<AddCommentUsecase>(() => AddCommentUsecase(sl()));
+  sl.registerFactory<DeleteCommentUsecase>(() => DeleteCommentUsecase(sl()));
+  sl.registerFactory<ToggleCommentLikeUsecase>(() => ToggleCommentLikeUsecase(sl()));
 }

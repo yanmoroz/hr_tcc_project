@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'poll_detail_event.dart';
 import 'poll_detail_state.dart';

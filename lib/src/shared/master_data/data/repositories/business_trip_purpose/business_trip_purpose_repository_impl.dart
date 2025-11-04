@@ -2,8 +2,6 @@ import '../../../../../core/types/result.dart';
 
 import '../../../../../core/data/base_repository.dart';
 import '../../../domain/domain.dart';
-import '../../../domain/domain.dart';
-import '../../data.dart';
 import '../../data.dart';
 
 class BusinessTripPurposeRepositoryImpl with BaseRepository implements BusinessTripPurposeRepository {
@@ -18,4 +16,3 @@ class BusinessTripPurposeRepositoryImpl with BaseRepository implements BusinessT
     return mapResultList(result, (model) => model.toDomain());
   }
 }
-

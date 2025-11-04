@@ -21,7 +21,7 @@ class PollDetailRemoteDataSourceImpl implements PollDetailRemoteDataSource {
   @override
   Future<Result<PollDetailModel>> getPollDetail(int id) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.get('${ApiConstants.pollsEndpoint}/$id'),
+      apiCall: () => _apiClient.get(ApiConstants.pollDetailEndpoint(id)),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         return PollDetailModel.fromJson(data);

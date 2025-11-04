@@ -1,8 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/types/result.dart';
-
-import '../../../domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'notifications_list_event.dart';
 import 'notifications_list_state.dart';

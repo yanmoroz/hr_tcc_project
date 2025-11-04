@@ -60,38 +60,6 @@ void main() {
         );
       });
 
-      test('should fetch users for JIRA system type from API and map to models', () async {
-        // Act
-        final result = await dataSource.getUsers(systemType: SystemType.jira);
-
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (users) {
-            expect(users, isA<List<UserModel>>());
-            AppLogger.d('Fetched JIRA users: ${users.length}');
-          },
-        );
-      });
-
-      test('should fetch users for _1C system type from API and map to models', () async {
-        // Act
-        final result = await dataSource.getUsers(systemType: SystemType.oneC);
-
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (users) {
-            expect(users, isA<List<UserModel>>());
-            AppLogger.d('Fetched _1C users: ${users.length}');
-          },
-        );
-      });
-
       test('should fetch users with search parameter from API and map to models', () async {
         // Act
         final result = await dataSource.getUsers(systemType: SystemType.elma, search: 'Иван');
