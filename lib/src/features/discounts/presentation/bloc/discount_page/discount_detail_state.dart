@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/domain.dart';
@@ -13,6 +15,7 @@ class DiscountDetailState with _$DiscountDetailState {
     required int likeCount,
     required bool liked,
     required int commentCount,
+    Uint8List? coverImage,
   }) = DiscountDetailLoaded;
   const factory DiscountDetailState.error(String message) = DiscountDetailError;
 }

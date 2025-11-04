@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/bloc_factory.dart';
 import '../bloc/discounts_page/discounts_list_bloc.dart';
 import '../bloc/discounts_page/discounts_list_event.dart';
 import '../bloc/discounts_page/discounts_list_state.dart';
@@ -44,76 +43,70 @@ class _DiscountsPageState extends State<DiscountsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get category filter from arguments if provided
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final categoryCode = args?['category'] as int?;
-    final sourceCode = args?['source'] as int?;
+    return BlocBuilder<DiscountsListBloc, DiscountsListState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Discounts')),
+          body: state.when(
+            initial: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            loaded: (discounts, currentPage, hasMorePages, isLoadingMore, coverImages, category, source) {
+              if (discounts.isEmpty) {
+                return const Center(child: Text('No discounts available'));
+              }
 
-    return BlocProvider(
-      create: (context) =>
-          BlocFactory.createDiscountsListBloc()
-            ..add(DiscountsListEvent.loadDiscounts(category: categoryCode, source: sourceCode)),
-      child: BlocBuilder<DiscountsListBloc, DiscountsListState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Discounts')),
-            body: state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (discounts, currentPage, hasMorePages, isLoadingMore, category, source) {
-                if (discounts.isEmpty) {
-                  return const Center(child: Text('No discounts available'));
-                }
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<DiscountsListBloc>().add(
+                    DiscountsListEvent.refreshDiscounts(category: category, source: source),
+                  );
+                },
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: discounts.length + (isLoadingMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index >= discounts.length) {
+                      return const Center(
+                        child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()),
+                      );
+                    }
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<DiscountsListBloc>().add(
-                      DiscountsListEvent.refreshDiscounts(category: category, source: source),
+                    final discount = discounts[index];
+                    return DiscountItem(
+                      discount: discount,
+                      coverImage: coverImages[discount.id],
+                      onTap: () {
+                        Navigator.pushNamed(context, '/discount', arguments: discount.id);
+                      },
                     );
                   },
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: discounts.length + (isLoadingMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index >= discounts.length) {
-                        return const Center(
-                          child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()),
-                        );
-                      }
-
-                      final discount = discounts[index];
-                      return DiscountItem(
-                        discount: discount,
-                        onTap: () {
-                          Navigator.pushNamed(context, '/discount', arguments: discount.id);
-                        },
+                ),
+              );
+            },
+            error: (message) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+                      final categoryCode = args?['category'] as int?;
+                      final sourceCode = args?['source'] as int?;
+                      context.read<DiscountsListBloc>().add(
+                        DiscountsListEvent.loadDiscounts(category: categoryCode, source: sourceCode),
                       );
                     },
+                    child: const Text('Retry'),
                   ),
-                );
-              },
-              error: (message) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<DiscountsListBloc>().add(
-                          DiscountsListEvent.loadDiscounts(category: categoryCode, source: sourceCode),
-                        );
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/domain.dart';
@@ -13,6 +15,7 @@ class DiscountsListState with _$DiscountsListState {
     required int currentPage,
     required bool hasMorePages,
     required bool isLoadingMore,
+    @Default({}) Map<int, Uint8List> coverImages,
     int? category,
     int? source,
   }) = DiscountsListLoaded;

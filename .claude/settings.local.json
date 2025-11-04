@@ -12,7 +12,8 @@
       "Bash(done)",
       "Bash(rm:*)",
       "Bash(mkdir:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -6,11 +8,13 @@ import '../../domain/domain.dart';
 class DiscountItem extends StatelessWidget {
   final Discount discount;
   final VoidCallback onTap;
+  final Uint8List? coverImage;
 
   const DiscountItem({
     super.key,
     required this.discount,
     required this.onTap,
+    this.coverImage,
   });
 
   @override
@@ -25,11 +29,11 @@ class DiscountItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Image (if available)
-              if (discount.image != null)
+              if (coverImage != null)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    discount.image!,
+                  child: Image.memory(
+                    coverImage!,
                     height: 180,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -42,7 +46,7 @@ class DiscountItem extends StatelessWidget {
                     },
                   ),
                 ),
-              if (discount.image != null) const SizedBox(height: 12),
+              if (coverImage != null) const SizedBox(height: 12),
 
               // Title
               Text(

@@ -6,6 +6,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Flutter mobile application built for HR TCC (Talent & Culture Center) using Clean Architecture principles with strict layer separation and functional programming patterns.
 
+## Implemented Features
+
+### Discounts Feature (Complete)
+Full presentation layer with Clean Architecture:
+- **DiscountCategoriesPage**: Browse discount categories from master data with filtering
+- **DiscountsPage**: Infinite scroll list with pagination, pull-to-refresh
+- **DiscountDetailPage**: Full detail view with contact info, promo codes, optimistic like updates
+- **CommentsPage**: Reusable comments module with add/delete/like functionality
+
+Navigation flow: FeaturesPage → DiscountCategoriesPage → DiscountsPage → DiscountDetailPage → CommentsPage
+
+BLoC implementation with:
+- Pagination support for infinite scroll
+- Optimistic UI updates with error reversion
+- Pull-to-refresh on all pages
+- Loading states and error handling with retry
+
+### Other Features
+- **Notifications**: View and manage notifications
+- **Polls**: View and participate in polls with submission
+- **Users**: Browse users by system type
+
 ## Essential Commands
 
 ### Development
@@ -140,10 +162,12 @@ User Action → BLoC Event → Use Case → Repository Interface → Repository 
 Reusable domain/data layers used across multiple features:
 
 - **comments/**: Generic comments and likes functionality
+  - **Includes presentation layer**: Reusable `CommentsPage` with BLoC
   - Configurable via endpoint factories in DI
-  - Used by discounts, news, and other features
+  - Used by discounts feature (ready for news and other features)
   - Entities: `Comment`, `CommentAuthor`, `Attachment`
   - Use Cases: `GetCommentsUsecase`, `AddCommentUsecase`, `DeleteCommentUsecase`, `ToggleEntityLikeUsecase`, `ToggleCommentLikeUsecase`
+  - Features: Add/delete comments, like comments, optimistic updates, error handling
 
 - **master_data/**: Dictionary/lookup data (20+ entities)
   - Examples: `KpDiscountCategory`, `KpOffice`, `SystemStatus`, `TrainingType`
@@ -472,3 +496,166 @@ sl.registerLazySingleton<CommentRemoteDataSource>(
 ```
 
 This pattern ensures DRY while maintaining flexibility.
+
+## BLoC Best Practices
+
+### Avoiding Async Issues in Event Handlers
+
+**IMPORTANT**: When calling async operations in BLoC event handlers, always `await` them properly to avoid emit-after-completion errors.
+
+**BAD - Causes assertion error:**
+```dart
+on<Event>((event, emit) {
+  future.then((result) {
+    emit(State.loaded(result)); // Error: emit called after handler completed
+  });
+});
+```
+
+**GOOD - Properly awaited:**
+```dart
+on<Event>((event, emit) async {
+  emit(State.loading());
+  final result = await future;
+  if (!emit.isDone) {
+    result.fold(
+      (error) => emit(State.error(error.message)),
+      (data) => emit(State.loaded(data)),
+    );
+  }
+});
+```
+
+### Example: Adding Comments with Proper Async Handling
+
+```dart
+Future<void> _onAddComment(AddComment event, Emitter<State> emit) async {
+  // Extract current state
+  List<Comment>? comments;
+  state.maybeWhen(
+    loaded: (loadedComments, _) => comments = loadedComments,
+    orElse: () {},
+  );
+
+  if (comments != null) {
+    emit(State.loaded(comments: comments!, isAddingComment: true));
+
+    // Await the async operation
+    final result = await _addCommentUsecase(
+      entityId: entityId,
+      content: event.content,
+    );
+
+    // Check result and reload if successful
+    if (result.isRight()) {
+      await _loadComments(emit); // Await this too!
+    } else {
+      emit(State.loaded(comments: comments!, isAddingComment: false));
+    }
+  }
+}
+```
+
+### Optimistic Updates with Revert on Error
+
+For like/unlike actions, use optimistic updates to provide instant feedback:
+
+```dart
+Future<void> _onToggleLike(ToggleLike event, Emitter<State> emit) async {
+  // 1. Optimistically update UI
+  state.maybeWhen(
+    loaded: (items, _) {
+      final updated = items.map((item) {
+        if (item.id == event.itemId) {
+          return item.copyWith(
+            liked: !item.liked,
+            likeCount: item.liked ? item.likeCount - 1 : item.likeCount + 1,
+          );
+        }
+        return item;
+      }).toList();
+      emit(State.loaded(items: updated));
+    },
+    orElse: () {},
+  );
+
+  // 2. Make API call
+  final result = await _toggleLikeUsecase(event.itemId);
+
+  // 3. Revert on error
+  result.fold(
+    (error) {
+      state.maybeWhen(
+        loaded: (items, _) {
+          final reverted = items.map((item) {
+            if (item.id == event.itemId) {
+              return item.copyWith(
+                liked: !item.liked,
+                likeCount: item.liked ? item.likeCount - 1 : item.likeCount + 1,
+              );
+            }
+            return item;
+          }).toList();
+          emit(State.loaded(items: reverted));
+        },
+        orElse: () {},
+      );
+    },
+    (_) {}, // Success - no action needed, already updated
+  );
+}
+```
+
+## Pagination Implementation
+
+For infinite scroll lists, implement pagination in the BLoC:
+
+```dart
+@freezed
+class ListState with _$ListState {
+  const factory ListState.loaded({
+    required List<Item> items,
+    required int currentPage,
+    required bool hasMorePages,
+    required bool isLoadingMore,
+  }) = ListLoaded;
+}
+
+// In BLoC:
+on<LoadMore>((event, emit) async {
+  state.maybeWhen(
+    loaded: (items, page, hasMore, isLoadingMore) {
+      if (!isLoadingMore && hasMore) {
+        // Set loading flag
+        emit(ListState.loaded(
+          items: items,
+          currentPage: page,
+          hasMorePages: hasMore,
+          isLoadingMore: true,
+        ));
+
+        // Load next page
+        _loadMore(emit, items, page + 1);
+      }
+    },
+    orElse: () {},
+  );
+});
+```
+
+In the UI, use `ScrollController` to detect scroll position:
+
+```dart
+void _onScroll() {
+  if (_isBottom) {
+    context.read<Bloc>().add(Event.loadMore());
+  }
+}
+
+bool get _isBottom {
+  if (!_scrollController.hasClients) return false;
+  final maxScroll = _scrollController.position.maxScrollExtent;
+  final currentScroll = _scrollController.offset;
+  return currentScroll >= (maxScroll * 0.9); // Trigger at 90%
+}
+```

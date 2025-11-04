@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/di/bloc_factory.dart';
 import '../bloc/comments_page/comments_bloc.dart';
 import '../bloc/comments_page/comments_event.dart';
 import '../bloc/comments_page/comments_state.dart';
@@ -10,8 +9,9 @@ import '../../domain/domain.dart';
 
 class CommentsPage extends StatefulWidget {
   final int entityId;
+  final String feature;
 
-  const CommentsPage({super.key, required this.entityId});
+  const CommentsPage({super.key, required this.entityId, required this.feature});
 
   @override
   State<CommentsPage> createState() => _CommentsPageState();
@@ -28,121 +28,115 @@ class _CommentsPageState extends State<CommentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BlocFactory.createCommentsBloc(widget.entityId)..add(const CommentsEvent.loadComments()),
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Comments')),
-        body: Column(
-          children: [
-            // Comments list
-            Expanded(
-              child: BlocBuilder<CommentsBloc, CommentsState>(
-                builder: (context, state) {
-                  return state.when(
-                    initial: () => const Center(child: CircularProgressIndicator()),
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    loaded: (comments, isAddingComment) {
-                      if (comments.isEmpty) {
-                        return const Center(child: Text('No comments yet'));
-                      }
-
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          context.read<CommentsBloc>().add(const CommentsEvent.refreshComments());
-                        },
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: comments.length,
-                          itemBuilder: (context, index) {
-                            final comment = comments[index];
-                            return _CommentItem(
-                              comment: comment,
-                              onLike: () {
-                                context.read<CommentsBloc>().add(CommentsEvent.toggleCommentLike(comment.id));
-                              },
-                              onDelete: comment.editable
-                                  ? () {
-                                      _showDeleteDialog(context, comment.id);
-                                    }
-                                  : null,
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    error: (message) => Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Error: $message',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<CommentsBloc>().add(const CommentsEvent.loadComments());
-                            },
-                            child: const Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Add comment input
-            BlocBuilder<CommentsBloc, CommentsState>(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Comments')),
+      body: Column(
+        children: [
+          // Comments list
+          Expanded(
+            child: BlocBuilder<CommentsBloc, CommentsState>(
               builder: (context, state) {
-                final isAddingComment = state.maybeWhen(loaded: (_, isAdding) => isAdding, orElse: () => false);
+                return state.when(
+                  initial: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loaded: (comments, isAddingComment) {
+                    if (comments.isEmpty) {
+                      return const Center(child: Text('No comments yet'));
+                    }
 
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, -2)),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _commentController,
-                          decoration: const InputDecoration(
-                            hintText: 'Write a comment...',
-                            border: OutlineInputBorder(),
-                          ),
-                          maxLines: null,
-                          enabled: !isAddingComment,
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<CommentsBloc>().add(const CommentsEvent.refreshComments());
+                      },
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: comments.length,
+                        itemBuilder: (context, index) {
+                          final comment = comments[index];
+                          return _CommentItem(
+                            comment: comment,
+                            onLike: () {
+                              context.read<CommentsBloc>().add(CommentsEvent.toggleCommentLike(comment.id));
+                            },
+                            onDelete: comment.editable
+                                ? () {
+                                    _showDeleteDialog(context, comment.id);
+                                  }
+                                : null,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  error: (message) => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Error: $message',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: isAddingComment
-                            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Icon(Icons.send),
-                        onPressed: isAddingComment
-                            ? null
-                            : () {
-                                if (_commentController.text.trim().isNotEmpty) {
-                                  context.read<CommentsBloc>().add(
-                                    CommentsEvent.addComment(content: _commentController.text.trim()),
-                                  );
-                                  _commentController.clear();
-                                }
-                              },
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<CommentsBloc>().add(const CommentsEvent.loadComments());
+                          },
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
-          ],
-        ),
+          ),
+
+          // Add comment input
+          BlocBuilder<CommentsBloc, CommentsState>(
+            builder: (context, state) {
+              final isAddingComment = state.maybeWhen(loaded: (_, isAdding) => isAdding, orElse: () => false);
+
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, -2)),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _commentController,
+                        decoration: const InputDecoration(hintText: 'Write a comment...', border: OutlineInputBorder()),
+                        maxLines: null,
+                        enabled: !isAddingComment,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: isAddingComment
+                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.send),
+                      onPressed: isAddingComment
+                          ? null
+                          : () {
+                              if (_commentController.text.trim().isNotEmpty) {
+                                context.read<CommentsBloc>().add(
+                                  CommentsEvent.addComment(content: _commentController.text.trim()),
+                                );
+                                _commentController.clear();
+                              }
+                            },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

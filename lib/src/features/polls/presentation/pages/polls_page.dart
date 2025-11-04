@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/bloc_factory.dart';
 import '../bloc/polls_page/polls_list_bloc.dart';
 import '../bloc/polls_page/polls_list_event.dart';
 import '../bloc/polls_page/polls_list_state.dart';
@@ -13,58 +12,55 @@ class PollsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BlocFactory.createPollsListBloc()..add(const PollsListEvent.loadPolls()),
-      child: BlocBuilder<PollsListBloc, PollsListState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Polls')),
-            body: state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (polls, coverImages) {
-                if (polls.isEmpty) {
-                  return const Center(child: Text('No polls available'));
-                }
+    return BlocBuilder<PollsListBloc, PollsListState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Polls')),
+          body: state.when(
+            initial: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            loaded: (polls, coverImages) {
+              if (polls.isEmpty) {
+                return const Center(child: Text('No polls available'));
+              }
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<PollsListBloc>().add(const PollsListEvent.refreshPolls());
-                  },
-                  child: ListView.builder(
-                    itemCount: polls.length,
-                    itemBuilder: (context, index) {
-                      final poll = polls[index];
-                      final viewModel = PollItemViewModel(poll: poll, coverImage: coverImages[poll.id]);
-                      return PollItem(
-                        viewModel: viewModel,
-                        onTap: () {
-                          Navigator.pushNamed(context, '/poll', arguments: poll.id);
-                        },
-                      );
-                    },
-                  ),
-                );
-              },
-              error: (message) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<PollsListBloc>().add(const PollsListEvent.loadPolls());
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<PollsListBloc>().add(const PollsListEvent.refreshPolls());
+                },
+                child: ListView.builder(
+                  itemCount: polls.length,
+                  itemBuilder: (context, index) {
+                    final poll = polls[index];
+                    final viewModel = PollItemViewModel(poll: poll, coverImage: coverImages[poll.id]);
+                    return PollItem(
+                      viewModel: viewModel,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/poll', arguments: poll.id);
                       },
-                      child: const Text('Retry'),
-                    ),
-                  ],
+                    );
+                  },
                 ),
+              );
+            },
+            error: (message) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<PollsListBloc>().add(const PollsListEvent.loadPolls());
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

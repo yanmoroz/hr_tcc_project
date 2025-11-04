@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/bloc_factory.dart';
 import '../../domain/domain.dart';
 import '../../domain/entities/poll_detail/page.dart' as poll_page;
 import '../bloc/poll_page/poll_detail_bloc.dart';
@@ -68,46 +67,43 @@ class _PollPageState extends State<PollPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BlocFactory.createPollDetailBloc(widget.pollId)..add(const PollDetailEvent.loadPollDetail()),
-      child: BlocBuilder<PollDetailBloc, PollDetailState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              title: state.maybeWhen(
-                loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) => Text(pollDetail.title),
-                submitted: (pollDetail) => Text(pollDetail.title),
-                orElse: () => const Text('Poll'),
+    return BlocBuilder<PollDetailBloc, PollDetailState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: state.maybeWhen(
+              loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) => Text(pollDetail.title),
+              submitted: (pollDetail) => Text(pollDetail.title),
+              orElse: () => const Text('Poll'),
+            ),
+          ),
+          body: state.when(
+            initial: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) {
+              _collectRequiredQuestions(pollDetail);
+              return _buildPollDetail(context, pollDetail);
+            },
+            submitting: (pollDetail) => _buildPollDetail(context, pollDetail, isSubmitting: true),
+            submitted: (pollDetail) => _buildPollDetail(context, pollDetail, isSubmitted: true),
+            error: (message) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<PollDetailBloc>().add(const PollDetailEvent.loadPollDetail());
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
             ),
-            body: state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) {
-                _collectRequiredQuestions(pollDetail);
-                return _buildPollDetail(context, pollDetail);
-              },
-              submitting: (pollDetail) => _buildPollDetail(context, pollDetail, isSubmitting: true),
-              submitted: (pollDetail) => _buildPollDetail(context, pollDetail, isSubmitted: true),
-              error: (message) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<PollDetailBloc>().add(const PollDetailEvent.loadPollDetail());
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

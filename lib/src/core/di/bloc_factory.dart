@@ -46,6 +46,7 @@ class BlocFactory {
   static DiscountsListBloc createDiscountsListBloc() {
     return DiscountsListBloc(
       getDiscountsUsecase: sl(),
+      downloadFileUsecase: sl(),
     );
   }
 
@@ -56,17 +57,26 @@ class BlocFactory {
       getDiscountDetailUsecase: sl(),
       getDiscountStatsUsecase: sl(),
       toggleDiscountLikeUsecase: sl(),
+      downloadFileUsecase: sl(),
     );
   }
 
-  /// Creates a [CommentsBloc] instance for the given [entityId].
-  static CommentsBloc createCommentsBloc(int entityId) {
+  /// Creates a [CommentsBloc] instance for the given [entityId] and [feature].
+  ///
+  /// [feature] should be 'discount' or 'news' to resolve the correct use case instances.
+  static CommentsBloc createCommentsBloc({
+    required int entityId,
+    required String feature,
+  }) {
+    // Capitalize first letter for instance name
+    final capitalizedFeature = feature[0].toUpperCase() + feature.substring(1);
+
     return CommentsBloc(
       entityId: entityId,
-      getCommentsUsecase: sl(),
-      addCommentUsecase: sl(),
-      deleteCommentUsecase: sl(),
-      toggleCommentLikeUsecase: sl(),
+      getCommentsUsecase: sl(instanceName: 'get${capitalizedFeature}CommentsUsecase'),
+      addCommentUsecase: sl(instanceName: 'add${capitalizedFeature}CommentUsecase'),
+      deleteCommentUsecase: sl(instanceName: 'delete${capitalizedFeature}CommentUsecase'),
+      toggleCommentLikeUsecase: sl(instanceName: 'toggle${capitalizedFeature}CommentLikeUsecase'),
     );
   }
 }

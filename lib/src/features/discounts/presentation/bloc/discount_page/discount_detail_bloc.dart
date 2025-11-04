@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/files/domain/entities/system_type.dart';
+import '../../../../../core/files/domain/usecases/usecases.dart';
 import '../../../../../core/types/result.dart';
 import '../../../domain/domain.dart';
 import 'discount_detail_event.dart';
@@ -10,15 +12,18 @@ class DiscountDetailBloc extends Bloc<DiscountDetailEvent, DiscountDetailState> 
   final GetDiscountDetailUsecase _getDiscountDetailUsecase;
   final GetDiscountStatsUsecase _getDiscountStatsUsecase;
   final ToggleDiscountLikeUsecase _toggleDiscountLikeUsecase;
+  final DownloadFileUsecase _downloadFileUsecase;
 
   DiscountDetailBloc({
     required this.discountId,
     required GetDiscountDetailUsecase getDiscountDetailUsecase,
     required GetDiscountStatsUsecase getDiscountStatsUsecase,
     required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
+    required DownloadFileUsecase downloadFileUsecase,
   })  : _getDiscountDetailUsecase = getDiscountDetailUsecase,
         _getDiscountStatsUsecase = getDiscountStatsUsecase,
         _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
+        _downloadFileUsecase = downloadFileUsecase,
         super(const DiscountDetailState.initial()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleLike>(_onToggleLike);
@@ -46,12 +51,13 @@ class DiscountDetailBloc extends Bloc<DiscountDetailEvent, DiscountDetailState> 
   ) async {
     // Optimistic update
     state.maybeWhen(
-      loaded: (discount, likeCount, liked, commentCount) {
+      loaded: (discount, likeCount, liked, commentCount, coverImage) {
         emit(DiscountDetailState.loaded(
           discount: discount,
           likeCount: liked ? likeCount - 1 : likeCount + 1,
           liked: !liked,
           commentCount: commentCount,
+          coverImage: coverImage,
         ));
       },
       orElse: () {},
@@ -64,12 +70,13 @@ class DiscountDetailBloc extends Bloc<DiscountDetailEvent, DiscountDetailState> 
       (error) {
         // Revert on error
         state.maybeWhen(
-          loaded: (discount, likeCount, liked, commentCount) {
+          loaded: (discount, likeCount, liked, commentCount, coverImage) {
             emit(DiscountDetailState.loaded(
               discount: discount,
               likeCount: liked ? likeCount - 1 : likeCount + 1,
               liked: !liked,
               commentCount: commentCount,
+              coverImage: coverImage,
             ));
           },
           orElse: () {},
@@ -93,19 +100,52 @@ class DiscountDetailBloc extends Bloc<DiscountDetailEvent, DiscountDetailState> 
       return;
     }
 
-    detailResult.fold(
-      (_) => null,
-      (discount) {
-        statsResult.fold(
-          (_) => null,
-          (stats) {
+    await detailResult.fold(
+      (_) async => null,
+      (discount) async {
+        await statsResult.fold(
+          (_) async => null,
+          (stats) async {
             emit(DiscountDetailState.loaded(
               discount: discount,
               likeCount: stats.likeCount,
               liked: stats.like,
               commentCount: stats.commentCount,
             ));
+            await _loadCoverImage(discount, emit);
           },
+        );
+      },
+    );
+  }
+
+  Future<void> _loadCoverImage(DiscountDetail discount, Emitter<DiscountDetailState> emit) async {
+    if (discount.image == null || discount.image!.isEmpty) {
+      return;
+    }
+
+    final result = await _downloadFileUsecase(
+      systemType: SystemType.kp,
+      download: false,
+      uriFile: discount.image,
+    );
+
+    result.fold(
+      (error) {
+        // Silently fail for image download
+      },
+      (imageBytes) {
+        state.maybeWhen(
+          loaded: (discount, likeCount, liked, commentCount, _) {
+            emit(DiscountDetailState.loaded(
+              discount: discount,
+              likeCount: likeCount,
+              liked: liked,
+              commentCount: commentCount,
+              coverImage: imageBytes,
+            ));
+          },
+          orElse: () {},
         );
       },
     );
