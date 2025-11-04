@@ -11,7 +11,8 @@
       "Bash(\"$file.tmp\")",
       "Bash(done)",
       "Bash(rm:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(xargs cat:*)"
     ],
     "deny": [],
     "ask": []

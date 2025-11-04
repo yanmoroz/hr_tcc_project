@@ -89,6 +89,10 @@ void _initializeMasterDataDependencies() {
   sl.registerLazySingleton<KpOfficeRepository>(() => KpOfficeRepositoryImpl(sl()));
   sl.registerLazySingleton<KpNewsCategoryRepository>(() => KpNewsCategoryRepositoryImpl(sl()));
   sl.registerLazySingleton<KpParkingTypeRepository>(() => KpParkingTypeRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetKpDiscountCategoriesUsecase>(() => GetKpDiscountCategoriesUsecase(sl()));
+  sl.registerFactory<GetKpDiscountSourcesUsecase>(() => GetKpDiscountSourcesUsecase(sl()));
 }
 
 void _initializeNotificationDependencies() {

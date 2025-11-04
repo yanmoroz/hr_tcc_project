@@ -40,6 +40,16 @@ class FeaturesPage extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            child: ListTile(
+              title: const Text('Discounts'),
+              subtitle: const Text('Browse discount categories and offers'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.pushNamed(context, '/discount-categories');
+              },
+            ),
+          ),
         ],
       ),
     );
