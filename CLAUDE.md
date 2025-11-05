@@ -8,31 +8,47 @@ This is a Flutter mobile application built for HR TCC (Talent & Culture Center) 
 
 ## Implemented Features
 
-### Discounts Feature (Complete)
-Full presentation layer with Clean Architecture:
-- **DiscountCategoriesPage**: Browse discount categories from master data with filtering
-- **DiscountsPage**: Infinite scroll list with pagination, pull-to-refresh
-- **DiscountDetailPage**: Full detail view with contact info, promo codes, optimistic like updates
-- **CommentsPage**: Reusable comments module with add/delete/like functionality
+### Features with Complete UI (Domain + Data + Presentation)
 
-Navigation flow: FeaturesPage → DiscountCategoriesPage → DiscountsPage → DiscountDetailPage → CommentsPage
+1. **Discounts** - Full feature with 4 pages
+   - DiscountCategoriesPage → DiscountsPage → DiscountDetailPage → CommentsPage
+   - Infinite scroll with pagination, pull-to-refresh, optimistic likes
+   - Integrated with shared comments/likes modules
 
-BLoC implementation with:
-- Pagination support for infinite scroll
-- Optimistic UI updates with error reversion
-- Pull-to-refresh on all pages
-- Loading states and error handling with retry
+2. **News** - Full feature with 3 pages
+   - NewsPage → NewsDetailPage → CommentsPage
+   - Infinite scroll with pagination, pull-to-refresh, optimistic likes
+   - HTML content rendering using flutter_html package
+   - Integrated with shared comments/likes modules
 
-### Other Features
-- **Notifications**: View and manage notifications
-- **Polls**: View and participate in polls with submission
-- **Users**: Browse users by system type
+3. **Notifications** - Notification management
+   - NotificationsPage with mark as read/unread functionality
+   - Unread count tracking
+
+4. **Polls** - Polling system
+   - PollsPage (list) → PollPage (detail with voting)
+   - Poll submission and results display
+
+5. **Users** - User directory
+   - UsersPage with filtering by system type
+
+### Shared Modules
+
+1. **Comments** (lib/src/shared/comments/)
+   - Reusable CommentsPage and CommentsBloc
+   - Used by discounts and news features
+   - Features: Add/delete comments, like comments/entities, optimistic updates
+   - Instance-based DI pattern: `discountComments`, `newsComments`, etc.
+
+2. **Master Data** (lib/src/shared/master_data/)
+   - 20+ dictionary/lookup entities (KpDiscountCategory, KpNewsCategory, KpOffice, etc.)
+   - Domain + data layers only
 
 ## Essential Commands
 
 ### Development
 ```bash
-# Run the app (development mode)
+# Run the app
 flutter run
 
 # Run with specific device
@@ -47,10 +63,10 @@ flutter run -d <device_id>
 # Generate .freezed.dart and .g.dart files
 flutter pub run build_runner build
 
-# Watch mode (auto-regenerate on file changes)
+# Watch mode (auto-regenerate)
 flutter pub run build_runner watch
 
-# Clean generated files and rebuild
+# Clean and rebuild
 flutter pub run build_runner clean
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
@@ -68,7 +84,7 @@ flutter test
 # Run specific test file
 flutter test test/src/features/polls/data/datasources/poll_remote_data_source_test.dart
 
-# Run tests with coverage
+# Run with coverage
 flutter test --coverage
 ```
 
@@ -76,9 +92,6 @@ flutter test --coverage
 ```bash
 # Run static analysis
 flutter analyze
-
-# Check for linting issues
-flutter pub run flutter_lints
 ```
 
 ### Dependencies
@@ -130,7 +143,7 @@ User Action → BLoC Event → Use Case → Repository Interface → Repository 
 
 - **network/**: Dio-based API client with auth, logging, and error handling
   - `ApiClient`: Wrapper around Dio (SecureApiClient for prod, InsecureApiClient for dev)
-  - `ApiConstants`: Centralized endpoint definitions
+  - `ApiConstants`: Centralized endpoint definitions (48 endpoints)
   - `ApiCallExecutor`: Generic API call wrapper with error handling
 
 - **di/**: Dependency injection using GetIt service locator
@@ -154,24 +167,6 @@ User Action → BLoC Event → Use Case → Repository Interface → Repository 
 
 - **logging/**: Application logging
   - `AppLogger`: Wrapper around logger package
-
-### Shared Modules
-
-**Location:** `lib/src/shared/`
-
-Reusable domain/data layers used across multiple features:
-
-- **comments/**: Generic comments and likes functionality
-  - **Includes presentation layer**: Reusable `CommentsPage` with BLoC
-  - Configurable via endpoint factories in DI
-  - Used by discounts feature (ready for news and other features)
-  - Entities: `Comment`, `CommentAuthor`, `Attachment`
-  - Use Cases: `GetCommentsUsecase`, `AddCommentUsecase`, `DeleteCommentUsecase`, `ToggleEntityLikeUsecase`, `ToggleCommentLikeUsecase`
-  - Features: Add/delete comments, like comments, optimistic updates, error handling
-
-- **master_data/**: Dictionary/lookup data (20+ entities)
-  - Examples: `KpDiscountCategory`, `KpOffice`, `SystemStatus`, `TrainingType`
-  - Each entity has its own data source → repository → use case
 
 ### Dependency Injection
 
@@ -201,6 +196,30 @@ sl.registerFactory<GetFeatureUsecase>(
 **Lifecycle:**
 - `registerLazySingleton`: Single instance created on first access (data sources, repositories)
 - `registerFactory`: New instance each time (use cases, BLoCs)
+
+**Multi-Instance Pattern (Shared Modules):**
+```dart
+// For shared modules used by multiple features (e.g., comments):
+sl.registerLazySingleton<CommentRemoteDataSource>(
+  () => CommentRemoteDataSourceImpl(
+    apiClient: sl(),
+    getCommentsEndpoint: ApiConstants.discountCommentsEndpoint,
+    addCommentEndpoint: ApiConstants.discountCommentsEndpoint,
+    deleteCommentEndpoint: ApiConstants.discountCommentEndpoint,
+  ),
+  instanceName: 'discountComments', // Unique instance name
+);
+
+sl.registerLazySingleton<CommentRemoteDataSource>(
+  () => CommentRemoteDataSourceImpl(
+    apiClient: sl(),
+    getCommentsEndpoint: ApiConstants.newsCommentsEndpoint,
+    addCommentEndpoint: ApiConstants.newsCommentsEndpoint,
+    deleteCommentEndpoint: ApiConstants.newsCommentEndpoint,
+  ),
+  instanceName: 'newsComments', // Different instance name
+);
+```
 
 ### Error Handling
 
@@ -284,7 +303,32 @@ import 'package:hr_tcc_project/src/features/discounts/domain/domain.dart';
 
 **Always update barrel files when adding new files.**
 
+### Routing
+
+The app uses **traditional MaterialApp routes** with named routes in `lib/main.dart`:
+
+```dart
+routes: {
+  '/': (context) => FeaturesPage(),
+  '/notifications': (context) => NotificationsPage(),
+  '/polls': (context) => PollsPage(),
+  '/poll': (context) => PollPage(),
+  '/users': (context) => UsersPage(),
+  '/discount-categories': (context) => DiscountCategoriesPage(),
+  '/discounts': (context) => DiscountsPage(),
+  '/discount': (context) => DiscountDetailPage(),
+  '/comments': (context) => CommentsPage(),
+  // No /news routes yet - news feature has no UI
+}
+```
+
+Navigation pattern: `Navigator.pushNamed(context, '/route-name', arguments: {...})`
+
+**Note:** go_router is in dependencies but not yet used.
+
 ## Adding a New Feature
+
+### Option 1: Feature with UI (Complete Implementation)
 
 1. **Create feature directory structure:**
    ```
@@ -299,7 +343,7 @@ import 'package:hr_tcc_project/src/features/discounts/domain/domain.dart';
    │   ├── models/
    │   ├── repositories/
    │   └── data.dart
-   └── presentation/          # If feature has UI
+   └── presentation/
        ├── bloc/
        ├── pages/
        ├── widgets/
@@ -344,12 +388,49 @@ import 'package:hr_tcc_project/src/features/discounts/domain/domain.dart';
    flutter pub run build_runner build
    ```
 
-10. **If feature has UI:**
-    - Create BLoC with events and states (using `@freezed`)
-    - Create pages and widgets
-    - Register routes in `lib/main.dart`
+10. **Create BLoC with events and states** (using `@freezed`)
 
-11. **Write tests** for data sources (integration tests against real API)
+11. **Create pages and widgets**
+
+12. **Register routes** in `lib/main.dart`
+
+13. **Write tests** for data sources (integration tests against real API)
+
+### Option 2: Backend-First Approach (Domain + Data Only)
+
+Follow steps 1-9 above, but **skip presentation layer**. This is useful when:
+- API is ready but UI design is not finalized
+- Building business logic before UI implementation
+- Creating reusable backend modules
+
+**Example:** News feature is currently in this state - ready for UI implementation.
+
+## Adding a Presentation Layer to Existing Backend Feature
+
+If a feature already has domain + data layers (like news):
+
+1. **Create presentation directory structure:**
+   ```
+   lib/src/features/feature_name/presentation/
+   ├── bloc/
+   │   ├── feature_bloc.dart
+   │   ├── feature_event.dart
+   │   └── feature_state.dart
+   ├── pages/
+   │   └── feature_page.dart
+   ├── widgets/
+   └── presentation.dart
+   ```
+
+2. **Create BLoC** using existing use cases from domain layer
+
+3. **Create pages** using BLoC for state management
+
+4. **Register routes** in `lib/main.dart`
+
+5. **Add navigation link** in FeaturesPage or parent page
+
+**Reference implementation:** Discounts feature shows complete pattern with comments integration.
 
 ## Environment Configuration
 
@@ -422,81 +503,6 @@ void main() {
 - Register data sources and repositories as singletons, use cases and BLoCs as factories
 - Avoid print statements (linter rule: `avoid_print: true`) - use `AppLogger` instead
 
-## Key Dependencies
-
-- **flutter_bloc**: State management
-- **freezed** + **freezed_annotation**: Immutable classes with code generation
-- **json_serializable** + **json_annotation**: JSON serialization
-- **dio** + **pretty_dio_logger**: HTTP client with logging
-- **get_it**: Dependency injection
-- **fpdart**: Functional programming (Either type for error handling)
-- **equatable**: Value equality
-- **go_router**: Navigation (imported but not yet used, routes in main.dart)
-- **flutter_dotenv**: Environment variables
-- **connectivity_plus**: Network connectivity status
-- **logger**: Logging
-
-## API Integration
-
-All API endpoints are defined in `lib/src/core/network/api_constants.dart`:
-
-```dart
-class ApiConstants {
-  static const String polls = '/polls';
-  static String pollDetailEndpoint(int pollId) => '/polls/$pollId';
-  static String discountCommentsEndpoint(int discountId) => '/discount/$discountId/comments';
-}
-```
-
-Generic API call pattern using `ApiCallExecutor`:
-
-```dart
-Future<Result<List<Model>>> fetchData() async {
-  return ApiCallExecutor.executeApiCall(
-    apiCall: () => _apiClient.get(ApiConstants.endpoint),
-    successParser: (response) {
-      final data = response.data as List;
-      return data.map((json) => Model.fromJson(json)).toList();
-    },
-  );
-}
-```
-
-## Shared Functionality
-
-When multiple features need the same functionality (e.g., comments, likes), use the **shared module pattern**:
-
-1. Create shared module in `lib/src/shared/module_name/`
-2. Implement domain and data layers (no presentation layer)
-3. Make data sources configurable via constructor parameters (e.g., endpoint factories)
-4. Register in DI with feature-specific configuration:
-
-```dart
-// In service_locator.dart for discounts feature
-sl.registerLazySingleton<CommentRemoteDataSource>(
-  () => CommentRemoteDataSourceImpl(
-    apiClient: sl(),
-    getCommentsEndpoint: ApiConstants.discountCommentsEndpoint,
-    addCommentEndpoint: ApiConstants.discountCommentsEndpoint,
-    deleteCommentEndpoint: ApiConstants.discountCommentEndpoint,
-  ),
-  instanceName: 'discountComments', // Unique instance name
-);
-
-// In service_locator.dart for news feature
-sl.registerLazySingleton<CommentRemoteDataSource>(
-  () => CommentRemoteDataSourceImpl(
-    apiClient: sl(),
-    getCommentsEndpoint: ApiConstants.newsCommentsEndpoint,
-    addCommentEndpoint: ApiConstants.newsCommentsEndpoint,
-    deleteCommentEndpoint: ApiConstants.newsCommentEndpoint,
-  ),
-  instanceName: 'newsComments', // Different instance name
-);
-```
-
-This pattern ensures DRY while maintaining flexibility.
-
 ## BLoC Best Practices
 
 ### Avoiding Async Issues in Event Handlers
@@ -524,36 +530,6 @@ on<Event>((event, emit) async {
     );
   }
 });
-```
-
-### Example: Adding Comments with Proper Async Handling
-
-```dart
-Future<void> _onAddComment(AddComment event, Emitter<State> emit) async {
-  // Extract current state
-  List<Comment>? comments;
-  state.maybeWhen(
-    loaded: (loadedComments, _) => comments = loadedComments,
-    orElse: () {},
-  );
-
-  if (comments != null) {
-    emit(State.loaded(comments: comments!, isAddingComment: true));
-
-    // Await the async operation
-    final result = await _addCommentUsecase(
-      entityId: entityId,
-      content: event.content,
-    );
-
-    // Check result and reload if successful
-    if (result.isRight()) {
-      await _loadComments(emit); // Await this too!
-    } else {
-      emit(State.loaded(comments: comments!, isAddingComment: false));
-    }
-  }
-}
 ```
 
 ### Optimistic Updates with Revert on Error
@@ -606,7 +582,7 @@ Future<void> _onToggleLike(ToggleLike event, Emitter<State> emit) async {
 }
 ```
 
-## Pagination Implementation
+### Pagination Implementation
 
 For infinite scroll lists, implement pagination in the BLoC:
 
@@ -657,5 +633,74 @@ bool get _isBottom {
   final maxScroll = _scrollController.position.maxScrollExtent;
   final currentScroll = _scrollController.offset;
   return currentScroll >= (maxScroll * 0.9); // Trigger at 90%
+}
+```
+
+## Shared Functionality Pattern
+
+When multiple features need the same functionality (e.g., comments, likes), use the **shared module pattern**:
+
+1. Create shared module in `lib/src/shared/module_name/`
+2. Implement domain and data layers
+3. Optionally implement presentation layer if reusable UI exists
+4. Make data sources configurable via constructor parameters (e.g., endpoint factories)
+5. Register in DI with feature-specific configuration using instance names
+
+**Example (Comments for multiple features):**
+```dart
+// In service_locator.dart for discounts feature
+sl.registerLazySingleton<CommentRemoteDataSource>(
+  () => CommentRemoteDataSourceImpl(
+    apiClient: sl(),
+    getCommentsEndpoint: ApiConstants.discountCommentsEndpoint,
+    addCommentEndpoint: ApiConstants.discountCommentsEndpoint,
+    deleteCommentEndpoint: ApiConstants.discountCommentEndpoint,
+  ),
+  instanceName: 'discountComments', // Unique instance name
+);
+
+// In service_locator.dart for news feature
+sl.registerLazySingleton<CommentRemoteDataSource>(
+  () => CommentRemoteDataSourceImpl(
+    apiClient: sl(),
+    getCommentsEndpoint: ApiConstants.newsCommentsEndpoint,
+    addCommentEndpoint: ApiConstants.newsCommentsEndpoint,
+    deleteCommentEndpoint: ApiConstants.newsCommentEndpoint,
+  ),
+  instanceName: 'newsComments', // Different instance name
+);
+```
+
+This pattern ensures DRY while maintaining flexibility.
+
+## Key Dependencies
+
+- **flutter_bloc**: State management
+- **freezed** + **freezed_annotation**: Immutable classes with code generation
+- **json_serializable** + **json_annotation**: JSON serialization
+- **dio** + **pretty_dio_logger**: HTTP client with logging
+- **get_it**: Dependency injection
+- **fpdart**: Functional programming (Either type for error handling)
+- **equatable**: Value equality
+- **go_router**: Navigation (imported but not yet used)
+- **flutter_dotenv**: Environment variables
+- **connectivity_plus**: Network connectivity status
+- **logger**: Logging
+
+## API Integration
+
+All API endpoints are defined in `lib/src/core/network/api_constants.dart` (48 endpoints total).
+
+Generic API call pattern using `ApiCallExecutor`:
+
+```dart
+Future<Result<List<Model>>> fetchData() async {
+  return ApiCallExecutor.executeApiCall(
+    apiCall: () => _apiClient.get(ApiConstants.endpoint),
+    successParser: (response) {
+      final data = response.data as List;
+      return data.map((json) => Model.fromJson(json)).toList();
+    },
+  );
 }
 ```

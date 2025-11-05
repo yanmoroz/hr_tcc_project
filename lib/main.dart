@@ -18,6 +18,10 @@ import 'src/features/discounts/presentation/pages/discounts_page.dart';
 import 'src/features/discounts/presentation/bloc/discounts_page/discounts_list_event.dart';
 import 'src/features/discounts/presentation/pages/discount_detail_page.dart';
 import 'src/features/discounts/presentation/bloc/discount_page/discount_detail_event.dart';
+import 'src/features/news/presentation/pages/news_page.dart';
+import 'src/features/news/presentation/bloc/news_page/news_list_event.dart';
+import 'src/features/news/presentation/pages/news_detail_page.dart';
+import 'src/features/news/presentation/bloc/news_detail_page/news_detail_event.dart';
 import 'src/shared/comments/presentation/pages/comments_page.dart';
 import 'src/shared/comments/presentation/bloc/comments_page/comments_event.dart';
 
@@ -90,6 +94,22 @@ class MainApp extends StatelessWidget {
             create: (context) =>
                 BlocFactory.createDiscountDetailBloc(discountId)..add(const DiscountDetailEvent.loadDetail()),
             child: DiscountDetailPage(discountId: discountId),
+          );
+        },
+        '/news': (context) {
+          return BlocProvider(
+            create: (context) =>
+                BlocFactory.createNewsListBloc()..add(const NewsListEvent.loadNews()),
+            child: const NewsPage(),
+          );
+        },
+        '/news-detail': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments;
+          final newsId = args as int;
+          return BlocProvider(
+            create: (context) =>
+                BlocFactory.createNewsDetailBloc(newsId)..add(const NewsDetailEvent.loadDetail()),
+            child: NewsDetailPage(newsId: newsId),
           );
         },
         '/comments': (context) {

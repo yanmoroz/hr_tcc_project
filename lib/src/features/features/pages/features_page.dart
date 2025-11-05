@@ -50,6 +50,16 @@ class FeaturesPage extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            child: ListTile(
+              title: const Text('News'),
+              subtitle: const Text('Read latest news and updates'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.pushNamed(context, '/news');
+              },
+            ),
+          ),
         ],
       ),
     );
