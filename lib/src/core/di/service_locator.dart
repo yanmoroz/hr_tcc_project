@@ -1,7 +1,5 @@
 import 'package:get_it/get_it.dart';
 
-import '../../shared/master_data/data/data.dart';
-import '../../shared/master_data/domain/domain.dart';
 import '../../features/notifications/data/data.dart';
 import '../../features/notifications/domain/domain.dart';
 import '../../features/polls/data/data.dart';
@@ -12,6 +10,8 @@ import '../../features/discounts/data/data.dart';
 import '../../features/discounts/domain/domain.dart';
 import '../../features/news/data/data.dart';
 import '../../features/news/domain/domain.dart';
+import '../../features/resell/data/data.dart';
+import '../../features/resell/domain/domain.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 import '../network/api_constants.dart';
@@ -28,6 +28,7 @@ Future<void> initializeDependencies() async {
   _initializeUserDependencies();
   _initializeDiscountDependencies();
   _initializeNewsDependencies();
+  _initializeResellDependencies();
 }
 
 void _initializeCoreDependencies() {
@@ -240,9 +241,7 @@ void _initializeNewsDependencies() {
   sl.registerFactory<GetNewsDetailUsecase>(() => GetNewsDetailUsecase(sl()));
   sl.registerFactory<GetNewsStatsUsecase>(() => GetNewsStatsUsecase(sl()));
   sl.registerFactory<GetNewsGalleryUsecase>(() => GetNewsGalleryUsecase(sl()));
-  sl.registerFactory<ToggleNewsLikeUsecase>(
-    () => ToggleNewsLikeUsecase(sl(instanceName: 'newsLikeRepository')),
-  );
+  sl.registerFactory<ToggleNewsLikeUsecase>(() => ToggleNewsLikeUsecase(sl(instanceName: 'newsLikeRepository')));
 
   // Comment use cases for news feature
   sl.registerFactory<GetCommentsUsecase>(
@@ -261,4 +260,18 @@ void _initializeNewsDependencies() {
     () => ToggleCommentLikeUsecase(sl(instanceName: 'newsLikeRepository')),
     instanceName: 'toggleNewsCommentLikeUsecase',
   );
+}
+
+void _initializeResellDependencies() {
+  // Data sources
+  sl.registerLazySingleton<ResellRemoteDataSource>(() => ResellRemoteDataSourceImpl(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<ResellRepository>(() => ResellRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetResellItemsUsecase>(() => GetResellItemsUsecase(sl()));
+  sl.registerFactory<GetResellDetailUsecase>(() => GetResellDetailUsecase(sl()));
+  sl.registerFactory<BookResellItemUsecase>(() => BookResellItemUsecase(sl()));
+  sl.registerFactory<ConfirmResellBookingUsecase>(() => ConfirmResellBookingUsecase(sl()));
 }

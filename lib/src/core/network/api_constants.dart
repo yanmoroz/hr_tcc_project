@@ -55,6 +55,12 @@ class ApiConstants {
   static String newsLikeEndpoint(int id) => '/news/$id/likes';
   static String newsCommentLikeEndpoint(int newsId, int commentId) => '/news/comments/$commentId/likes';
 
+  // Resell endpoints
+  static const String resellListEndpoint = '/resell';
+  static String resellDetailEndpoint(String id) => '/resell/$id';
+  static String resellBookingEndpoint(String id) => '/resell/$id/booking';
+  static String resellConfirmBookingEndpoint(String id) => '/resell/$id/confirm-booking';
+
   // Headers
   static const String authorizationHeader = 'Authorization';
   static const String acceptHeader = 'accept';

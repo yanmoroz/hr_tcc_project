@@ -1,0 +1,4 @@
+enum ApplicationStatus {
+  ok,
+  processing,
+}
