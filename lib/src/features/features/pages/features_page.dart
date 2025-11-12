@@ -60,6 +60,16 @@ class FeaturesPage extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            child: ListTile(
+              title: const Text('Resell'),
+              subtitle: const Text('Browse and book items from marketplace'),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.pushNamed(context, '/resell');
+              },
+            ),
+          ),
         ],
       ),
     );

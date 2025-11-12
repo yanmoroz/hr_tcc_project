@@ -32,14 +32,14 @@ This is a Flutter mobile application built for HR TCC (Talent & Culture Center) 
 5. **Users** - User directory
    - UsersPage with filtering by system type
 
-### Backend-Ready Features (Domain + Data Only, No UI)
-
 6. **Resell** - Marketplace for selling/buying items between employees
-   - Domain + Data layers implemented and tested
-   - 4 API endpoints: list items, get details, book item, confirm/cancel booking
-   - Features: Pagination, filtering by status, search, booking workflow
-   - Ready for presentation layer implementation
-   - Entities: ResellItem, ResellDetail, ResellBooking, Author
+   - Full feature with 3 pages + modal
+   - ResellItemsPage → ResellDetailPage → ResellBookingPage (modal)
+   - Features: Infinite scroll with pagination, status filtering (Active/Booked/All), pull-to-refresh
+   - Two-step booking workflow: initial booking → confirmation with form data
+   - Full-screen modal for booking confirmation with success toast
+   - Auto-reload detail page after booking completion
+   - 4 API endpoints: list items, get details, book item, confirm booking
    - Test file: `test/src/features/resell/data/datasources/resell_remote_data_source_test.dart`
 
 ### Shared Modules

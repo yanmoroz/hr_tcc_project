@@ -16,7 +16,7 @@ abstract class ResellDetail with _$ResellDetail {
     required bool bookingFinish,
     required String name,
     required ResellEquipmentType equipmentType,
-    required Author author,
+    Author? author,
     String? location,
     String? description,
     required DateTime creationDate,

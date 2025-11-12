@@ -22,6 +22,8 @@ import 'src/features/news/presentation/pages/news_page.dart';
 import 'src/features/news/presentation/bloc/news_page/news_list_event.dart';
 import 'src/features/news/presentation/pages/news_detail_page.dart';
 import 'src/features/news/presentation/bloc/news_detail_page/news_detail_event.dart';
+import 'src/features/resell/presentation/pages/resell_items_page.dart';
+import 'src/features/resell/presentation/pages/resell_detail_page.dart';
 import 'src/shared/comments/presentation/pages/comments_page.dart';
 import 'src/shared/comments/presentation/bloc/comments_page/comments_event.dart';
 
@@ -123,6 +125,8 @@ class MainApp extends StatelessWidget {
             child: CommentsPage(entityId: entityId, feature: feature),
           );
         },
+        '/resell': (context) => const ResellItemsPage(),
+        '/resell-detail': (context) => const ResellDetailPage(),
       },
     );
   }

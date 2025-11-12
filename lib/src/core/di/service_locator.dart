@@ -12,6 +12,9 @@ import '../../features/news/data/data.dart';
 import '../../features/news/domain/domain.dart';
 import '../../features/resell/data/data.dart';
 import '../../features/resell/domain/domain.dart';
+import '../../features/resell/presentation/bloc/resell_items_bloc.dart';
+import '../../features/resell/presentation/bloc/resell_detail_bloc.dart';
+import '../../features/resell/presentation/bloc/resell_booking_bloc.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 import '../network/api_constants.dart';
@@ -274,4 +277,11 @@ void _initializeResellDependencies() {
   sl.registerFactory<GetResellDetailUsecase>(() => GetResellDetailUsecase(sl()));
   sl.registerFactory<BookResellItemUsecase>(() => BookResellItemUsecase(sl()));
   sl.registerFactory<ConfirmResellBookingUsecase>(() => ConfirmResellBookingUsecase(sl()));
+
+  // BLoCs
+  sl.registerFactory<ResellItemsBloc>(() => ResellItemsBloc(sl()));
+  sl.registerFactory<ResellDetailBloc>(() => ResellDetailBloc(sl(), sl()));
+  sl.registerFactoryParam<ResellBookingBloc, ResellBooking, void>(
+    (booking, _) => ResellBookingBloc(sl(), booking),
+  );
 }
