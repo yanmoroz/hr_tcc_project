@@ -22,6 +22,7 @@ abstract class KpUploadFileResponseModel with _$KpUploadFileResponseModel {
     int? width,
     int? height,
     String? thumbnail,
+    int? priority,
   }) = _KpUploadFileResponseModel;
 
   factory KpUploadFileResponseModel.fromJson(Map<String, dynamic> json) => _$KpUploadFileResponseModelFromJson(json);
@@ -36,7 +37,7 @@ DateTime _dateTimeFromJson(dynamic value) {
 
 extension KpUploadFileResponseModelX on KpUploadFileResponseModel {
   UploadedFile toDomain() {
-    return UploadedFile.fromKp(
+    return UploadedFile.kp(
       id: id,
       name: name,
       url: url,
@@ -49,6 +50,7 @@ extension KpUploadFileResponseModelX on KpUploadFileResponseModel {
       width: width,
       height: height,
       thumbnail: thumbnail,
+      priority: priority,
     );
   }
 }

@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/files/domain/entities/system_type.dart';
-import '../../../../../core/files/domain/usecases/usecases.dart';
+import '../../../../../shared/files/domain/entities/system_type.dart';
+import '../../../../../shared/files/domain/usecases/usecases.dart';
 import '../../../../../core/types/result.dart';
 import '../../../domain/domain.dart';
 import 'discounts_list_event.dart';
@@ -16,9 +16,9 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
   DiscountsListBloc({
     required GetDiscountsUsecase getDiscountsUsecase,
     required DownloadFileUsecase downloadFileUsecase,
-  })  : _getDiscountsUsecase = getDiscountsUsecase,
-        _downloadFileUsecase = downloadFileUsecase,
-        super(const DiscountsListState.initial()) {
+  }) : _getDiscountsUsecase = getDiscountsUsecase,
+       _downloadFileUsecase = downloadFileUsecase,
+       super(const DiscountsListState.initial()) {
     on<LoadDiscounts>(_onLoadDiscounts);
     on<RefreshDiscounts>(_onRefreshDiscounts);
     on<LoadMoreDiscounts>(_onLoadMoreDiscounts);
@@ -45,16 +45,24 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     int? source;
 
     state.maybeWhen(
-      loaded: (loadedDiscounts, loadedCurrentPage, loadedHasMorePages, loadedIsLoadingMore, loadedCoverImages,
-          loadedCategory, loadedSource) {
-        discounts = loadedDiscounts;
-        currentPage = loadedCurrentPage;
-        hasMorePages = loadedHasMorePages;
-        isLoadingMore = loadedIsLoadingMore;
-        coverImages = loadedCoverImages;
-        category = loadedCategory;
-        source = loadedSource;
-      },
+      loaded:
+          (
+            loadedDiscounts,
+            loadedCurrentPage,
+            loadedHasMorePages,
+            loadedIsLoadingMore,
+            loadedCoverImages,
+            loadedCategory,
+            loadedSource,
+          ) {
+            discounts = loadedDiscounts;
+            currentPage = loadedCurrentPage;
+            hasMorePages = loadedHasMorePages;
+            isLoadingMore = loadedIsLoadingMore;
+            coverImages = loadedCoverImages;
+            category = loadedCategory;
+            source = loadedSource;
+          },
       orElse: () {},
     );
 
@@ -92,22 +100,19 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
   Future<void> _loadDiscounts(Emitter<DiscountsListState> emit, {required int page, int? category, int? source}) async {
     final result = await _getDiscountsUsecase(category: category ?? 0, source: source ?? 0, page: page);
 
-    await result.fold(
-      (error) async => emit(DiscountsListState.error(error.message)),
-      (discounts) async {
-        emit(
-          DiscountsListState.loaded(
-            discounts: discounts,
-            currentPage: page,
-            hasMorePages: discounts.isNotEmpty, // Assume more pages if we got results
-            isLoadingMore: false,
-            category: category,
-            source: source,
-          ),
-        );
-        await _loadCoverImages(discounts, emit);
-      },
-    );
+    await result.fold((error) async => emit(DiscountsListState.error(error.message)), (discounts) async {
+      emit(
+        DiscountsListState.loaded(
+          discounts: discounts,
+          currentPage: page,
+          hasMorePages: discounts.isNotEmpty, // Assume more pages if we got results
+          isLoadingMore: false,
+          category: category,
+          source: source,
+        ),
+      );
+      await _loadCoverImages(discounts, emit);
+    });
   }
 
   Future<void> _loadMoreDiscounts(
@@ -158,12 +163,10 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     final coverImages = <int, Uint8List>{};
 
     // Download images in parallel for discounts that have image
-    final futures = discounts.where((discount) => discount.image != null && discount.image!.isNotEmpty).map((discount) async {
-      final result = await _downloadFileUsecase(
-        systemType: SystemType.kp,
-        download: false,
-        uriFile: discount.image,
-      );
+    final futures = discounts.where((discount) => discount.image != null && discount.image!.isNotEmpty).map((
+      discount,
+    ) async {
+      final result = await _downloadFileUsecase(systemType: SystemType.kp, download: false, uriFile: discount.image);
 
       result.fold(
         (error) {

@@ -52,7 +52,14 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
         ),
         successParser: (response) {
           final json = response.data as Map<String, dynamic>;
-          return UploadedFileModel.fromJson(json, systemType);
+          // Try to parse with automatic systemType detection from JSON (like Java JsonTypeInfo)
+          // Fallback to explicit systemType for backward compatibility
+          try {
+            return UploadedFileModel.fromJson(json);
+          } catch (e) {
+            // If systemType is not in JSON, use the provided systemType
+            return UploadedFileModel.fromJsonWithSystemType(json, systemType);
+          }
         },
         validStatusCodes: [200],
       );

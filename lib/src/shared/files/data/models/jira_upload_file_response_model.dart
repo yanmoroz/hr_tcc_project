@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/entities/entities.dart';
+import 'jira_author_model.dart';
 
 part 'jira_upload_file_response_model.freezed.dart';
 part 'jira_upload_file_response_model.g.dart';
@@ -11,6 +12,7 @@ abstract class JiraUploadFileResponseModel with _$JiraUploadFileResponseModel {
   const factory JiraUploadFileResponseModel({
     required String id,
     required String filename,
+    required JiraAuthorModel author,
     required String self,
     @JsonKey(fromJson: _dateTimeFromJson) required DateTime created,
     required int size,
@@ -18,7 +20,6 @@ abstract class JiraUploadFileResponseModel with _$JiraUploadFileResponseModel {
     required String systemType,
     String? mimeType,
     String? thumbnail,
-    Map<String, dynamic>? author,
   }) = _JiraUploadFileResponseModel;
 
   factory JiraUploadFileResponseModel.fromJson(Map<String, dynamic> json) =>
@@ -34,7 +35,7 @@ DateTime _dateTimeFromJson(dynamic value) {
 
 extension JiraUploadFileResponseModelX on JiraUploadFileResponseModel {
   UploadedFile toDomain() {
-    return UploadedFile.fromJira(
+    return UploadedFile.jira(
       id: id,
       filename: filename,
       self: self,
@@ -43,7 +44,7 @@ extension JiraUploadFileResponseModelX on JiraUploadFileResponseModel {
       content: content,
       mimeType: mimeType,
       thumbnail: thumbnail,
-      author: author,
+      author: author.toJson(),
     );
   }
 }

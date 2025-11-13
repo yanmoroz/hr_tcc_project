@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/files/domain/entities/system_type.dart';
-import '../../../../../core/files/domain/usecases/usecases.dart';
+import '../../../../../shared/files/domain/entities/system_type.dart';
+import '../../../../../shared/files/domain/usecases/usecases.dart';
 import '../../../domain/domain.dart';
 import 'polls_list_event.dart';
 import 'polls_list_state.dart';

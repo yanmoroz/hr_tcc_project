@@ -3,6 +3,7 @@ enum SystemType {
   elma,
   kp,
   jira,
+  tcc,
   oneC;
 
   String get value {
@@ -13,6 +14,8 @@ enum SystemType {
         return 'KP';
       case SystemType.jira:
         return 'JIRA';
+      case SystemType.tcc:
+        return 'TCC';
       case SystemType.oneC:
         return '_1C';
     }
@@ -26,6 +29,8 @@ enum SystemType {
         return SystemType.kp;
       case 'JIRA':
         return SystemType.jira;
+      case 'TCC':
+        return SystemType.tcc;
       case '_1C':
         return SystemType.oneC;
       default:

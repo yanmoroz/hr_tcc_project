@@ -153,7 +153,6 @@ void main() {
             expect(booking, isA<ResellBookingModel>());
             expect(booking.id, equals(itemId));
             AppLogger.d('Confirmation status: ${booking.applicationStatus}');
-            AppLogger.d('Booking finish: ${booking.bookingFinish ?? false}');
           },
         );
       });

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../../core/files/domain/entities/entities.dart';
-import '../../../../../core/files/domain/usecases/usecases.dart';
+import '../../../../../shared/files/domain/entities/entities.dart';
+import '../../../../../shared/files/domain/usecases/usecases.dart';
 import '../../../domain/domain.dart';
 import 'question_widget_factory.dart';
 import '../../../../../core/types/result.dart';
@@ -100,9 +100,9 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
       result.fold(
         (failure) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to upload ${file.name}: ${failure.message}')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Failed to upload ${file.name}: ${failure.message}')));
             setState(() {
               _uploadingFiles[index] = false;
             });
@@ -119,9 +119,7 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading ${file.name}: $e')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading ${file.name}: $e')));
         setState(() {
           _uploadingFiles[index] = false;
         });
@@ -131,31 +129,36 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
 
   void _updateAnswerWithUploadedFile(UploadedFile uploadedFile, int index) {
     // Convert UploadedFile (KP system) to AttachmentFile
-    if (uploadedFile.systemType == SystemType.kp && uploadedFile.id != null && uploadedFile.url != null) {
-      final attachmentFile = AttachmentFile(
-        id: uploadedFile.id!,
-        name: uploadedFile.name ?? '',
-        url: uploadedFile.url!,
-        folder: uploadedFile.folder ?? '',
-        extension: uploadedFile.extension ?? '',
-        size: uploadedFile.size ?? 0,
-        created: uploadedFile.created ?? DateTime.now(),
-        fileType: uploadedFile.fileType ?? 0,
-        systemType: 'KP',
-        icon: uploadedFile.icon,
-        width: uploadedFile.width,
-        height: uploadedFile.height,
-        thumbnail: uploadedFile.thumbnail,
-      );
+    uploadedFile.maybeWhen(
+      kp: (id, name, url, folder, extension, size, created, fileType, icon, width, height, thumbnail, priority) {
+        final attachmentFile = AttachmentFile(
+          id: id,
+          name: name,
+          url: url,
+          folder: folder,
+          extension: extension,
+          size: size,
+          created: created,
+          fileType: fileType,
+          systemType: 'KP',
+          icon: icon,
+          width: width,
+          height: height,
+          thumbnail: thumbnail,
+        );
 
-      // Store uploaded file
-      setState(() {
-        _uploadedFiles[index] = attachmentFile;
-      });
+        // Store uploaded file
+        setState(() {
+          _uploadedFiles[index] = attachmentFile;
+        });
 
-      // Update answer with all uploaded files
-      _updateAnswerFromUploadedFiles();
-    }
+        // Update answer with all uploaded files
+        _updateAnswerFromUploadedFiles();
+      },
+      orElse: () {
+        // Only KP files are supported for polls
+      },
+    );
   }
 
   void _updateAnswerFromUploadedFiles() {
@@ -168,11 +171,7 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
     }
 
     // Update the answer with all uploaded files
-    final pollAnswer = PollAnswer.type5(
-      type: 5,
-      questionId: widget.question.id,
-      answerData: uploadedFiles,
-    );
+    final pollAnswer = PollAnswer.type5(type: 5, questionId: widget.question.id, answerData: uploadedFiles);
     widget.onAnswerChanged(widget.question, pollAnswer);
   }
 
@@ -245,11 +244,7 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(_formatFileSize(fileSize)),
-                    if (isUploading)
-                      LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 2,
-                      ),
+                    if (isUploading) LinearProgressIndicator(value: progress, minHeight: 2),
                   ],
                 ),
                 trailing: IconButton(

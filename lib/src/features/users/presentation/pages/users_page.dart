@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hr_tcc_project/src/core/di/service_locator.dart';
-import 'package:hr_tcc_project/src/core/files/domain/entities/system_type.dart';
+import 'package:hr_tcc_project/src/shared/files/domain/entities/system_type.dart';
 import 'package:hr_tcc_project/src/features/users/domain/entities/user.dart';
 import 'package:hr_tcc_project/src/features/users/domain/usecases/get_users_usecase.dart';
 

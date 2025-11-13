@@ -17,6 +17,6 @@ abstract class ElmaUploadFileResponseModel with _$ElmaUploadFileResponseModel {
 
 extension ElmaUploadFileResponseModelX on ElmaUploadFileResponseModel {
   UploadedFile toDomain() {
-    return UploadedFile.fromElma(idFile: idFile);
+    return UploadedFile.elma(idFile: idFile);
   }
 }

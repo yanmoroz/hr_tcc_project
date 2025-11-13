@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-import '../../../logging/app_logger.dart';
+import '../../../../core/logging/app_logger.dart';
 
 /// Use case for clearing the file download cache
 class ClearFileCacheUsecase {

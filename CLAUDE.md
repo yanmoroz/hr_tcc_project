@@ -37,6 +37,7 @@ This is a Flutter mobile application built for HR TCC (Talent & Culture Center) 
    - ResellItemsPage → ResellDetailPage → ResellBookingPage (modal)
    - Features: Infinite scroll with pagination, status filtering (Active/Booked/All), pull-to-refresh
    - Two-step booking workflow: initial booking → confirmation with form data
+   - Booking confirmation returns `ResellBookingConfirm` entity with status tracking
    - Full-screen modal for booking confirmation with success toast
    - Auto-reload detail page after booking completion
    - 4 API endpoints: list items, get details, book item, confirm booking
@@ -77,6 +78,13 @@ This is a Flutter mobile application built for HR TCC (Talent & Culture Center) 
    - Shared business logic enums and types
    - `ApplicationStatus`: Async operation status (ok/processing)
    - Used by multiple features (resell, applications)
+
+4. **Files** (lib/src/shared/files/) - Previously in lib/src/core/files/
+   - File upload/download functionality with multi-system support
+   - Supports 5 systems: KP, ELMA, JIRA, TCC, 1C
+   - Uses sealed union pattern for type-safe `UploadedFile` entity
+   - Each system has specific response models and file variants
+   - Domain + data layers with use cases for upload/download/cache operations
 
 ## Essential Commands
 
@@ -197,8 +205,6 @@ User Action → BLoC Event → Use Case → Repository Interface → Repository 
 - **types/**: Type definitions
   - `Result<T>`: Alias for `Either<Exception, T>` (functional error handling via fpdart)
 
-- **files/**: File upload/download feature (Clean Architecture)
-
 - **logging/**: Application logging
   - `AppLogger`: Wrapper around logger package
 
@@ -317,6 +323,51 @@ extension DiscountModelX on DiscountModel {
   );
 }
 ```
+
+### Sealed Union Pattern (Type-Safe Variants)
+
+The project uses Freezed's **sealed union pattern** for polymorphic entities with type-safe variants:
+
+**Example - UploadedFile Entity:**
+```dart
+@freezed
+sealed class UploadedFile with _$UploadedFile {
+  const factory UploadedFile.kp({
+    required int id,
+    required String name,
+    // KP-specific fields
+  }) = KpUploadedFile;
+
+  const factory UploadedFile.jira({
+    required String id,
+    // JIRA-specific fields
+  }) = JiraUploadedFile;
+
+  // Other system variants...
+}
+```
+
+**Usage with Pattern Matching:**
+```dart
+// Type-safe handling with maybeWhen
+uploadedFile.maybeWhen(
+  kp: (id, name, url, ...) {
+    // Handle KP file - all fields typed
+  },
+  jira: (id, author, ...) {
+    // Handle JIRA file - different fields
+  },
+  orElse: () {
+    // Handle other variants
+  },
+);
+```
+
+**Benefits:**
+- **Compile-time safety**: No optional fields or runtime type checks
+- **Better IDE support**: Autocomplete knows exact fields per variant
+- **Exhaustive handling**: Compiler warns about unhandled cases
+- **No casting needed**: Each variant has its own typed constructor
 
 ### Barrel Exports
 

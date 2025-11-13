@@ -41,7 +41,7 @@ class ResellRepositoryImpl implements ResellRepository {
   }
 
   @override
-  Future<Result<ResellBooking>> confirmBooking({
+  Future<Result<ResellBookingConfirm>> confirmBooking({
     required String id,
     required ResellBookingConfirmation confirmation,
   }) async {

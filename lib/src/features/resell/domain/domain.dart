@@ -2,6 +2,7 @@
 export 'entities/author.dart';
 export 'entities/booking_transition.dart';
 export 'entities/resell_booking.dart';
+export 'entities/resell_booking_confirm.dart';
 export 'entities/resell_booking_confirmation.dart';
 export 'entities/resell_detail.dart';
 export 'entities/resell_item.dart';

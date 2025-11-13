@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/files/domain/entities/system_type.dart';
-import '../../../../../core/files/domain/usecases/usecases.dart';
+import '../../../../../shared/files/domain/entities/system_type.dart';
+import '../../../../../shared/files/domain/usecases/usecases.dart';
 import '../../../../../core/types/result.dart';
 import '../../../domain/domain.dart';
 import 'news_detail_event.dart';
@@ -20,45 +20,38 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     required GetNewsStatsUsecase getNewsStatsUsecase,
     required ToggleNewsLikeUsecase toggleNewsLikeUsecase,
     required DownloadFileUsecase downloadFileUsecase,
-  })  : _getNewsDetailUsecase = getNewsDetailUsecase,
-        _getNewsStatsUsecase = getNewsStatsUsecase,
-        _toggleNewsLikeUsecase = toggleNewsLikeUsecase,
-        _downloadFileUsecase = downloadFileUsecase,
-        super(const NewsDetailState.initial()) {
+  }) : _getNewsDetailUsecase = getNewsDetailUsecase,
+       _getNewsStatsUsecase = getNewsStatsUsecase,
+       _toggleNewsLikeUsecase = toggleNewsLikeUsecase,
+       _downloadFileUsecase = downloadFileUsecase,
+       super(const NewsDetailState.initial()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleLike>(_onToggleLike);
     on<RefreshDetail>(_onRefreshDetail);
   }
 
-  Future<void> _onLoadDetail(
-    LoadDetail event,
-    Emitter<NewsDetailState> emit,
-  ) async {
+  Future<void> _onLoadDetail(LoadDetail event, Emitter<NewsDetailState> emit) async {
     emit(const NewsDetailState.loading());
     await _loadDetail(emit);
   }
 
-  Future<void> _onRefreshDetail(
-    RefreshDetail event,
-    Emitter<NewsDetailState> emit,
-  ) async {
+  Future<void> _onRefreshDetail(RefreshDetail event, Emitter<NewsDetailState> emit) async {
     await _loadDetail(emit);
   }
 
-  Future<void> _onToggleLike(
-    ToggleLike event,
-    Emitter<NewsDetailState> emit,
-  ) async {
+  Future<void> _onToggleLike(ToggleLike event, Emitter<NewsDetailState> emit) async {
     // Optimistic update
     state.maybeWhen(
       loaded: (newsDetail, likeCount, liked, commentCount, coverImage) {
-        emit(NewsDetailState.loaded(
-          newsDetail: newsDetail,
-          likeCount: liked ? likeCount - 1 : likeCount + 1,
-          liked: !liked,
-          commentCount: commentCount,
-          coverImage: coverImage,
-        ));
+        emit(
+          NewsDetailState.loaded(
+            newsDetail: newsDetail,
+            likeCount: liked ? likeCount - 1 : likeCount + 1,
+            liked: !liked,
+            commentCount: commentCount,
+            coverImage: coverImage,
+          ),
+        );
       },
       orElse: () {},
     );
@@ -71,13 +64,15 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
         // Revert on error
         state.maybeWhen(
           loaded: (newsDetail, likeCount, liked, commentCount, coverImage) {
-            emit(NewsDetailState.loaded(
-              newsDetail: newsDetail,
-              likeCount: liked ? likeCount - 1 : likeCount + 1,
-              liked: !liked,
-              commentCount: commentCount,
-              coverImage: coverImage,
-            ));
+            emit(
+              NewsDetailState.loaded(
+                newsDetail: newsDetail,
+                likeCount: liked ? likeCount - 1 : likeCount + 1,
+                liked: !liked,
+                commentCount: commentCount,
+                coverImage: coverImage,
+              ),
+            );
           },
           orElse: () {},
         );
@@ -100,23 +95,19 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
       return;
     }
 
-    await detailResult.fold(
-      (_) async => null,
-      (newsDetail) async {
-        await statsResult.fold(
-          (_) async => null,
-          (stats) async {
-            emit(NewsDetailState.loaded(
-              newsDetail: newsDetail,
-              likeCount: stats.likeCount,
-              liked: stats.like,
-              commentCount: stats.commentCount,
-            ));
-            await _loadCoverImage(newsDetail, emit);
-          },
+    await detailResult.fold((_) async => null, (newsDetail) async {
+      await statsResult.fold((_) async => null, (stats) async {
+        emit(
+          NewsDetailState.loaded(
+            newsDetail: newsDetail,
+            likeCount: stats.likeCount,
+            liked: stats.like,
+            commentCount: stats.commentCount,
+          ),
         );
-      },
-    );
+        await _loadCoverImage(newsDetail, emit);
+      });
+    });
   }
 
   Future<void> _loadCoverImage(NewsDetail newsDetail, Emitter<NewsDetailState> emit) async {
@@ -124,11 +115,7 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
       return;
     }
 
-    final result = await _downloadFileUsecase(
-      systemType: SystemType.kp,
-      download: false,
-      uriFile: newsDetail.image,
-    );
+    final result = await _downloadFileUsecase(systemType: SystemType.kp, download: false, uriFile: newsDetail.image);
 
     result.fold(
       (error) {
@@ -137,13 +124,15 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
       (imageBytes) {
         state.maybeWhen(
           loaded: (newsDetail, likeCount, liked, commentCount, _) {
-            emit(NewsDetailState.loaded(
-              newsDetail: newsDetail,
-              likeCount: likeCount,
-              liked: liked,
-              commentCount: commentCount,
-              coverImage: imageBytes,
-            ));
+            emit(
+              NewsDetailState.loaded(
+                newsDetail: newsDetail,
+                likeCount: likeCount,
+                liked: liked,
+                commentCount: commentCount,
+                coverImage: imageBytes,
+              ),
+            );
           },
           orElse: () {},
         );

@@ -1,6 +1,7 @@
 import 'package:hr_tcc_project/src/core/types/result.dart';
 
 import '../models/resell_booking_confirmation_model.dart';
+import '../models/resell_booking_confirm_model.dart';
 import '../models/resell_booking_model.dart';
 import '../models/resell_detail_model.dart';
 import '../models/resell_list_response_model.dart';
@@ -21,7 +22,7 @@ abstract class ResellRemoteDataSource {
   Future<Result<ResellBookingModel>> bookResellItem(String id);
 
   /// Confirm or cancel booking with additional details
-  Future<Result<ResellBookingModel>> confirmBooking({
+  Future<Result<ResellBookingConfirmModel>> confirmBooking({
     required String id,
     required ResellBookingConfirmationModel confirmation,
   });

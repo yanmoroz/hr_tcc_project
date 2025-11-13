@@ -20,7 +20,7 @@ import '../../features/applications/domain/domain.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 import '../network/api_constants.dart';
-import '../files/files.dart';
+import '../../shared/files/files.dart';
 
 final sl = GetIt.instance;
 
@@ -284,39 +284,21 @@ void _initializeResellDependencies() {
   // BLoCs
   sl.registerFactory<ResellItemsBloc>(() => ResellItemsBloc(sl()));
   sl.registerFactory<ResellDetailBloc>(() => ResellDetailBloc(sl(), sl()));
-  sl.registerFactoryParam<ResellBookingBloc, ResellBooking, void>(
-    (booking, _) => ResellBookingBloc(sl(), booking),
-  );
+  sl.registerFactoryParam<ResellBookingBloc, ResellBooking, void>((booking, _) => ResellBookingBloc(sl(), booking));
 }
 
 void _initializeApplicationDependencies() {
   // Data sources
-  sl.registerLazySingleton<ApplicationRemoteDataSource>(
-    () => ApplicationRemoteDataSourceImpl(sl()),
-  );
+  sl.registerLazySingleton<ApplicationRemoteDataSource>(() => ApplicationRemoteDataSourceImpl(sl()));
 
   // Repositories
-  sl.registerLazySingleton<ApplicationRepository>(
-    () => ApplicationRepositoryImpl(sl()),
-  );
+  sl.registerLazySingleton<ApplicationRepository>(() => ApplicationRepositoryImpl(sl()));
 
   // Use cases
-  sl.registerFactory<GetApplicationsUsecase>(
-    () => GetApplicationsUsecase(sl()),
-  );
-  sl.registerFactory<GetApplicationDetailUsecase>(
-    () => GetApplicationDetailUsecase(sl()),
-  );
-  sl.registerFactory<CreateApplicationUsecase>(
-    () => CreateApplicationUsecase(sl()),
-  );
-  sl.registerFactory<CancelApplicationUsecase>(
-    () => CancelApplicationUsecase(sl()),
-  );
-  sl.registerFactory<CheckCancelStatusUsecase>(
-    () => CheckCancelStatusUsecase(sl()),
-  );
-  sl.registerFactory<CheckApplicationStatusUsecase>(
-    () => CheckApplicationStatusUsecase(sl()),
-  );
+  sl.registerFactory<GetApplicationsUsecase>(() => GetApplicationsUsecase(sl()));
+  sl.registerFactory<GetApplicationDetailUsecase>(() => GetApplicationDetailUsecase(sl()));
+  sl.registerFactory<CreateApplicationUsecase>(() => CreateApplicationUsecase(sl()));
+  sl.registerFactory<CancelApplicationUsecase>(() => CancelApplicationUsecase(sl()));
+  sl.registerFactory<CheckCancelStatusUsecase>(() => CheckCancelStatusUsecase(sl()));
+  sl.registerFactory<CheckApplicationStatusUsecase>(() => CheckApplicationStatusUsecase(sl()));
 }

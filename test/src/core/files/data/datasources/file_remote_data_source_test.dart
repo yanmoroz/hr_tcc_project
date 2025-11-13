@@ -5,8 +5,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/core/files/data/datasources/data_sources.dart';
-import 'package:hr_tcc_project/src/core/files/domain/entities/entities.dart';
+import 'package:hr_tcc_project/src/shared/files/data/datasources/data_sources.dart';
+import 'package:hr_tcc_project/src/shared/files/domain/entities/entities.dart';
 import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {
