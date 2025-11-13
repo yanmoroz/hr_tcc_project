@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
 
-import 'application_status.dart';
+import '../domain.dart';
 
 part 'resell_booking.freezed.dart';
 

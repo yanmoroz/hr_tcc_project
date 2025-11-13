@@ -42,6 +42,25 @@ This is a Flutter mobile application built for HR TCC (Talent & Culture Center) 
    - 4 API endpoints: list items, get details, book item, confirm booking
    - Test file: `test/src/features/resell/data/datasources/resell_remote_data_source_test.dart`
 
+### Features with Backend Only (Domain + Data, No UI)
+
+1. **Applications** - Employee application management system
+   - Domain + data layers implemented, ready for UI implementation
+   - 6 API endpoints: list with pagination/filtering, get detail, create, cancel, check cancel status, check application status
+   - Polymorphic application details with 7 form types:
+     - `alpinaAccess`: Alpina Digital Access requests
+     - `courierDelivery`: Courier delivery applications
+     - `businessTrip`: Business trip requests
+     - `referralProgram`: Referral program submissions
+     - `unplannedTraining`: Unplanned training requests
+     - `violation`: Violation reports
+     - `absence`: Absence applications
+   - Async operation support with `ApplicationStatus` enum (ok/processing)
+   - Sealed class pattern with discriminator-based deserialization
+   - Reuses master data entities: `SystemStatus`, `ApplicationForm`, `AlpinaDigitalPrevAccess`, `StatusGroupType`
+   - List response includes statistics by status group
+   - Test file: `test/src/features/applications/data/datasources/application_remote_data_source_test.dart`
+
 ### Shared Modules
 
 1. **Comments** (lib/src/shared/comments/)
@@ -53,6 +72,11 @@ This is a Flutter mobile application built for HR TCC (Talent & Culture Center) 
 2. **Master Data** (lib/src/shared/master_data/)
    - 20+ dictionary/lookup entities (KpDiscountCategory, KpNewsCategory, KpOffice, etc.)
    - Domain + data layers only
+
+3. **Types** (lib/src/shared/types/)
+   - Shared business logic enums and types
+   - `ApplicationStatus`: Async operation status (ok/processing)
+   - Used by multiple features (resell, applications)
 
 ## Essential Commands
 
@@ -153,7 +177,7 @@ User Action → BLoC Event → Use Case → Repository Interface → Repository 
 
 - **network/**: Dio-based API client with auth, logging, and error handling
   - `ApiClient`: Wrapper around Dio (SecureApiClient for prod, InsecureApiClient for dev)
-  - `ApiConstants`: Centralized endpoint definitions (48 endpoints)
+  - `ApiConstants`: Centralized endpoint definitions (53 endpoints)
   - `ApiCallExecutor`: Generic API call wrapper with error handling
 
 - **di/**: Dependency injection using GetIt service locator
@@ -413,11 +437,11 @@ Follow steps 1-9 above, but **skip presentation layer**. This is useful when:
 - Building business logic before UI implementation
 - Creating reusable backend modules
 
-**Example:** News feature is currently in this state - ready for UI implementation.
+**Examples:** Applications feature is currently in this state - ready for UI implementation.
 
 ## Adding a Presentation Layer to Existing Backend Feature
 
-If a feature already has domain + data layers (like news):
+If a feature already has domain + data layers (like applications):
 
 1. **Create presentation directory structure:**
    ```
@@ -699,7 +723,7 @@ This pattern ensures DRY while maintaining flexibility.
 
 ## API Integration
 
-All API endpoints are defined in `lib/src/core/network/api_constants.dart` (48 endpoints total).
+All API endpoints are defined in `lib/src/core/network/api_constants.dart` (53 endpoints total).
 
 Generic API call pattern using `ApiCallExecutor`:
 

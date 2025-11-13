@@ -1,0 +1,18 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
+
+part 'application_info.freezed.dart';
+
+@freezed
+abstract class ApplicationInfo with _$ApplicationInfo {
+  const factory ApplicationInfo({
+    required String id,
+    required String idApplication,
+    required String name,
+    required ApplicationForm applicationForm,
+    required String iniciator,
+    required SystemStatus systemStatus,
+    required DateTime applicationDate,
+    required DateTime createDate,
+  }) = _ApplicationInfo;
+}

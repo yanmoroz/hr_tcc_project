@@ -15,6 +15,8 @@ import '../../features/resell/domain/domain.dart';
 import '../../features/resell/presentation/bloc/resell_items_bloc.dart';
 import '../../features/resell/presentation/bloc/resell_detail_bloc.dart';
 import '../../features/resell/presentation/bloc/resell_booking_bloc.dart';
+import '../../features/applications/data/data.dart';
+import '../../features/applications/domain/domain.dart';
 import '../auth/auth_token_provider.dart';
 import '../network/api_client.dart';
 import '../network/api_constants.dart';
@@ -32,6 +34,7 @@ Future<void> initializeDependencies() async {
   _initializeDiscountDependencies();
   _initializeNewsDependencies();
   _initializeResellDependencies();
+  _initializeApplicationDependencies();
 }
 
 void _initializeCoreDependencies() {
@@ -283,5 +286,37 @@ void _initializeResellDependencies() {
   sl.registerFactory<ResellDetailBloc>(() => ResellDetailBloc(sl(), sl()));
   sl.registerFactoryParam<ResellBookingBloc, ResellBooking, void>(
     (booking, _) => ResellBookingBloc(sl(), booking),
+  );
+}
+
+void _initializeApplicationDependencies() {
+  // Data sources
+  sl.registerLazySingleton<ApplicationRemoteDataSource>(
+    () => ApplicationRemoteDataSourceImpl(sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<ApplicationRepository>(
+    () => ApplicationRepositoryImpl(sl()),
+  );
+
+  // Use cases
+  sl.registerFactory<GetApplicationsUsecase>(
+    () => GetApplicationsUsecase(sl()),
+  );
+  sl.registerFactory<GetApplicationDetailUsecase>(
+    () => GetApplicationDetailUsecase(sl()),
+  );
+  sl.registerFactory<CreateApplicationUsecase>(
+    () => CreateApplicationUsecase(sl()),
+  );
+  sl.registerFactory<CancelApplicationUsecase>(
+    () => CancelApplicationUsecase(sl()),
+  );
+  sl.registerFactory<CheckCancelStatusUsecase>(
+    () => CheckCancelStatusUsecase(sl()),
+  );
+  sl.registerFactory<CheckApplicationStatusUsecase>(
+    () => CheckApplicationStatusUsecase(sl()),
   );
 }

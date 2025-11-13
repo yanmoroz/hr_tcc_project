@@ -1,5 +1,4 @@
 // Entities
-export 'entities/application_status.dart';
 export 'entities/author.dart';
 export 'entities/booking_transition.dart';
 export 'entities/resell_booking.dart';
@@ -19,3 +18,6 @@ export 'usecases/get_resell_items_usecase.dart';
 
 // Shared entities from master data
 export '../../../shared/master_data/domain/domain.dart';
+
+// Shared types
+export '../../../shared/types/types.dart';

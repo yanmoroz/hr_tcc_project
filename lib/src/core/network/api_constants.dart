@@ -61,6 +61,13 @@ class ApiConstants {
   static String resellBookingEndpoint(String id) => '/resell/$id/booking';
   static String resellConfirmBookingEndpoint(String id) => '/resell/$id/confirm-booking';
 
+  // Application endpoints
+  static const String applicationsEndpoint = '/applications';
+  static String applicationDetailEndpoint(String id) => '/applications/$id';
+  static String cancelApplicationEndpoint(String id) => '/applications/$id/cancel';
+  static String checkCancelStatusEndpoint(String id) => '/applications/$id/cancel-check';
+  static const String checkApplicationStatusEndpoint = '/applications/check';
+
   // Headers
   static const String authorizationHeader = 'Authorization';
   static const String acceptHeader = 'accept';
