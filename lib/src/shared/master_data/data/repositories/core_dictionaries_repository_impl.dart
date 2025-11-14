@@ -1,4 +1,6 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:hr_tcc_project/src/core/data/models/system_status_model.dart';
+import '../../../../core/domain/entities/system_status.dart';
 import '../../../../core/types/result.dart';
 
 import '../../../../core/cache/cache_manager.dart';
@@ -6,12 +8,16 @@ import '../../../../core/data/base_repository.dart';
 import '../../domain/domain.dart';
 import '../data.dart';
 
-class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictionariesRepository {
+class CoreDictionariesRepositoryImpl
+    with BaseRepository
+    implements CoreDictionariesRepository {
   final CoreDictionariesRemoteDataSource _remoteDataSource;
   final CacheManager<CoreDictionariesResponseModel> _cache;
 
-  CoreDictionariesRepositoryImpl(this._remoteDataSource, {CacheManager<CoreDictionariesResponseModel>? cache})
-    : _cache = cache ?? CacheManager(cacheDuration: const Duration(hours: 1));
+  CoreDictionariesRepositoryImpl(
+    this._remoteDataSource, {
+    CacheManager<CoreDictionariesResponseModel>? cache,
+  }) : _cache = cache ?? CacheManager(cacheDuration: const Duration(hours: 1));
 
   /// Clears the cached response, forcing a fresh fetch on next request
   void clearCache() {
@@ -37,21 +43,30 @@ class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictiona
   @override
   Future<Result<List<ApplicationFormGroup>>> getApplicationFormGroups() async {
     final result = await _getResponse();
-    final listResult = mapResult(result, (response) => response.applicationFormGroups);
+    final listResult = mapResult(
+      result,
+      (response) => response.applicationFormGroups,
+    );
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
   Future<Result<List<ApplicationForm>>> getApplicationForms() async {
     final result = await _getResponse();
-    final listResult = mapResult(result, (response) => response.applicationForms);
+    final listResult = mapResult(
+      result,
+      (response) => response.applicationForms,
+    );
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
   @override
   Future<Result<List<SystemStatusGroup>>> getSystemStatusGroups() async {
     final result = await _getResponse();
-    final listResult = mapResult(result, (response) => response.systemStatusesGroups);
+    final listResult = mapResult(
+      result,
+      (response) => response.systemStatusesGroups,
+    );
     return mapResultList(listResult, (model) => model.toDomain());
   }
 
@@ -91,9 +106,13 @@ class CoreDictionariesRepositoryImpl with BaseRepository implements CoreDictiona
   }
 
   @override
-  Future<Result<List<AlpinaDigitalPrevAccess>>> getAlpinaDigitalPrevAccess() async {
+  Future<Result<List<AlpinaDigitalPrevAccess>>>
+  getAlpinaDigitalPrevAccess() async {
     final result = await _getResponse();
-    final listResult = mapResult(result, (response) => response.alpinaDigitalPrevAccesses);
+    final listResult = mapResult(
+      result,
+      (response) => response.alpinaDigitalPrevAccesses,
+    );
     return mapResultList(listResult, (model) => model.toDomain());
   }
 

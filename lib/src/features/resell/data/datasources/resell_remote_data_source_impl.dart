@@ -3,12 +3,8 @@ import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/core/network/api_constants.dart';
 import 'package:hr_tcc_project/src/core/types/result.dart';
 
-import '../models/resell_booking_confirmation_model.dart';
-import '../models/resell_booking_confirm_model.dart';
-import '../models/resell_booking_model.dart';
-import '../models/resell_detail_model.dart';
-import '../models/resell_list_response_model.dart';
-import 'resell_remote_data_source.dart';
+import '../../domain/domain.dart';
+import '../data.dart';
 
 class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
   final ApiClient _apiClient;
@@ -17,7 +13,7 @@ class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
 
   @override
   Future<Result<ResellListResponseModel>> getResellItems({
-    required int status,
+    required ResellStatus status,
     String? search,
     required int page,
     required int pageSize,
@@ -25,7 +21,12 @@ class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(
         ApiConstants.resellListEndpoint,
-        queryParameters: {'status': status, if (search != null) 'search': search, 'page': page, 'pageSize': pageSize},
+        queryParameters: {
+          'status': status.value,
+          if (search != null) 'search': search,
+          'page': page,
+          'pageSize': pageSize,
+        },
       ),
       successParser: (response) {
         return ResellListResponseModel.fromJson(response.data);
@@ -44,11 +45,11 @@ class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
   }
 
   @override
-  Future<Result<ResellBookingModel>> bookResellItem(String id) async {
+  Future<Result<void>> bookResellItem(String id) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.post(ApiConstants.resellBookingEndpoint(id)),
       successParser: (response) {
-        return ResellBookingModel.fromJson(response.data);
+        return null;
       },
     );
   }
@@ -56,10 +57,23 @@ class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
   @override
   Future<Result<ResellBookingConfirmModel>> confirmBooking({
     required String id,
-    required ResellBookingConfirmationModel confirmation,
+    required BookingTransition transition,
+    String? inn,
+    String? address,
+    String? employeePlace,
+    bool? pickupLotMyself,
   }) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.post(ApiConstants.resellConfirmBookingEndpoint(id), data: confirmation.toJson()),
+      apiCall: () => _apiClient.post(
+        ApiConstants.resellConfirmBookingEndpoint(id),
+        data: {
+          'transition': transition.value,
+          if (inn != null) 'inn': inn,
+          if (address != null) 'address': address,
+          if (employeePlace != null) 'employeePlace': employeePlace,
+          if (pickupLotMyself != null) 'pickupLotMyself': pickupLotMyself,
+        },
+      ),
       successParser: (response) {
         return ResellBookingConfirmModel.fromJson(response.data);
       },

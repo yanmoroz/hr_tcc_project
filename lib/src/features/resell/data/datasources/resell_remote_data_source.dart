@@ -1,15 +1,12 @@
 import 'package:hr_tcc_project/src/core/types/result.dart';
 
-import '../models/resell_booking_confirmation_model.dart';
-import '../models/resell_booking_confirm_model.dart';
-import '../models/resell_booking_model.dart';
-import '../models/resell_detail_model.dart';
-import '../models/resell_list_response_model.dart';
+import '../../domain/domain.dart';
+import '../data.dart';
 
 abstract class ResellRemoteDataSource {
   /// Get paginated list of resell items with filtering
   Future<Result<ResellListResponseModel>> getResellItems({
-    required int status,
+    required ResellStatus status,
     String? search,
     required int page,
     required int pageSize,
@@ -19,11 +16,15 @@ abstract class ResellRemoteDataSource {
   Future<Result<ResellDetailModel>> getResellDetail(String id);
 
   /// Initiate booking process for a resell item
-  Future<Result<ResellBookingModel>> bookResellItem(String id);
+  Future<Result<void>> bookResellItem(String id);
 
   /// Confirm or cancel booking with additional details
   Future<Result<ResellBookingConfirmModel>> confirmBooking({
     required String id,
-    required ResellBookingConfirmationModel confirmation,
+    required BookingTransition transition,
+    String? inn,
+    String? address,
+    String? employeePlace,
+    bool? pickupLotMyself,
   });
 }

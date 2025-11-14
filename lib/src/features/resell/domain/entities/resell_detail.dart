@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
 
+import '../../../../core/domain/entities/resell_equipment_type.dart';
+import '../../../../core/domain/entities/system_status.dart';
 import 'author.dart';
 
 part 'resell_detail.freezed.dart';

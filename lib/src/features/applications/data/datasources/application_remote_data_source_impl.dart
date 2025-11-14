@@ -2,8 +2,8 @@ import 'package:hr_tcc_project/src/core/network/api_call_executor.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/core/network/api_constants.dart';
 import 'package:hr_tcc_project/src/core/types/result.dart';
-import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
 
+import '../../../../core/domain/value_objects/status_group_type.dart';
 import '../models/application_detail_model.dart';
 import '../models/application_list_response_model.dart';
 import '../models/cancel_application_result_model.dart';
@@ -42,9 +42,7 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
   @override
   Future<Result<ApplicationDetailModel>> getApplicationDetail(String id) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.get(
-        ApiConstants.applicationDetailEndpoint(id),
-      ),
+      apiCall: () => _apiClient.get(ApiConstants.applicationDetailEndpoint(id)),
       successParser: (response) {
         return ApplicationDetailModel.fromJson(response.data);
       },
@@ -56,10 +54,8 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
     Map<String, dynamic> request,
   ) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.post(
-        ApiConstants.applicationsEndpoint,
-        data: request,
-      ),
+      apiCall: () =>
+          _apiClient.post(ApiConstants.applicationsEndpoint, data: request),
       successParser: (response) {
         return CreateApplicationResultModel.fromJson(response.data);
       },
@@ -67,11 +63,12 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
   }
 
   @override
-  Future<Result<CancelApplicationResultModel>> cancelApplication(String id) async {
+  Future<Result<CancelApplicationResultModel>> cancelApplication(
+    String id,
+  ) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.post(
-        ApiConstants.cancelApplicationEndpoint(id),
-      ),
+      apiCall: () =>
+          _apiClient.post(ApiConstants.cancelApplicationEndpoint(id)),
       successParser: (response) {
         return CancelApplicationResultModel.fromJson(response.data);
       },
@@ -79,11 +76,12 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
   }
 
   @override
-  Future<Result<CancelApplicationResultModel>> checkCancelStatus(String id) async {
+  Future<Result<CancelApplicationResultModel>> checkCancelStatus(
+    String id,
+  ) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.post(
-        ApiConstants.checkCancelStatusEndpoint(id),
-      ),
+      apiCall: () =>
+          _apiClient.post(ApiConstants.checkCancelStatusEndpoint(id)),
       successParser: (response) {
         return CancelApplicationResultModel.fromJson(response.data);
       },

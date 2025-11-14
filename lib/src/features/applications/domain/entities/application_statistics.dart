@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
+
+import '../../../../core/domain/value_objects/status_group_type.dart';
 
 part 'application_statistics.freezed.dart';
 

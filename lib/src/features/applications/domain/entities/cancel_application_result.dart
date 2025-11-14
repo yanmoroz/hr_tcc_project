@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
 import 'package:hr_tcc_project/src/shared/types/types.dart';
+
+import '../../../../core/domain/entities/system_status.dart';
 
 part 'cancel_application_result.freezed.dart';
 

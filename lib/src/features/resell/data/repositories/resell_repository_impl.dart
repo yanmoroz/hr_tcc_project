@@ -1,8 +1,7 @@
 import 'package:hr_tcc_project/src/core/types/result.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
 
-import '../datasources/resell_remote_data_source.dart';
-import '../models/resell_booking_confirmation_model.dart';
+import '../../domain/domain.dart';
+import '../data.dart';
 
 class ResellRepositoryImpl implements ResellRepository {
   final ResellRemoteDataSource _remoteDataSource;
@@ -11,7 +10,7 @@ class ResellRepositoryImpl implements ResellRepository {
 
   @override
   Future<Result<List<ResellItem>>> getResellItems({
-    required int status,
+    required ResellStatus status,
     String? search,
     required int page,
     required int pageSize,
@@ -35,18 +34,26 @@ class ResellRepositoryImpl implements ResellRepository {
   }
 
   @override
-  Future<Result<ResellBooking>> bookResellItem(String id) async {
-    final result = await _remoteDataSource.bookResellItem(id);
-    return result.map((model) => model.toDomain());
+  Future<Result<void>> bookResellItem(String id) async {
+    return await _remoteDataSource.bookResellItem(id);
   }
 
   @override
-  Future<Result<ResellBookingConfirm>> confirmBooking({
+  Future<Result<void>> confirmBooking({
     required String id,
-    required ResellBookingConfirmation confirmation,
+    required BookingTransition transition,
+    String? inn,
+    String? address,
+    String? employeePlace,
+    bool? pickupLotMyself,
   }) async {
-    final confirmationModel = confirmation.toModel();
-    final result = await _remoteDataSource.confirmBooking(id: id, confirmation: confirmationModel);
-    return result.map((model) => model.toDomain());
+    return await _remoteDataSource.confirmBooking(
+      id: id,
+      transition: transition,
+      inn: inn,
+      address: address,
+      employeePlace: employeePlace,
+      pickupLotMyself: pickupLotMyself,
+    );
   }
 }

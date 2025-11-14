@@ -1,6 +1,6 @@
 import 'package:hr_tcc_project/src/core/types/result.dart';
-import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
 
+import '../../../../core/domain/value_objects/status_group_type.dart';
 import '../entities/application_detail.dart';
 import '../entities/application_info.dart';
 import '../entities/application_statistics.dart';
@@ -9,7 +9,8 @@ import '../entities/create_application_result.dart';
 
 abstract class ApplicationRepository {
   /// Get paginated list of applications with filtering and statistics
-  Future<Result<(List<ApplicationInfo>, int, List<ApplicationStatistics>)>> getApplications({
+  Future<Result<(List<ApplicationInfo>, int, List<ApplicationStatistics>)>>
+  getApplications({
     required int page,
     required int pageSize,
     StatusGroupType? statusGroup,
@@ -21,7 +22,9 @@ abstract class ApplicationRepository {
 
   /// Create a new application
   /// Returns result with status (ok/processing), instanceId, and applicationId
-  Future<Result<CreateApplicationResult>> createApplication(Map<String, dynamic> request);
+  Future<Result<CreateApplicationResult>> createApplication(
+    Map<String, dynamic> request,
+  );
 
   /// Cancel an application
   /// Returns result with status (ok/processing), applicationId, and systemStatus

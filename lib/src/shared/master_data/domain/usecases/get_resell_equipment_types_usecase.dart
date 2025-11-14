@@ -1,3 +1,4 @@
+import '../../../../core/domain/entities/resell_equipment_type.dart';
 import '../../../../core/types/result.dart';
 
 import '../domain.dart';

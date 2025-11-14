@@ -2,6 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hr_tcc_project/src/features/applications/domain/domain.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
 
+import '../../../../core/data/models/system_status_model.dart';
+
 part 'application_detail_model.freezed.dart';
 part 'application_detail_model.g.dart';
 
@@ -17,7 +19,8 @@ sealed class ApplicationDetailModel with _$ApplicationDetailModel {
     @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
     required DateTime desiredStartDate,
     required String comment,
-    @JsonKey(name: 'alpinaDigitalPrevAccess') required AlpinaDigitalPrevAccessModel alpinaDigitalPrevAccessModel,
+    @JsonKey(name: 'alpinaDigitalPrevAccess')
+    required AlpinaDigitalPrevAccessModel alpinaDigitalPrevAccessModel,
     required bool agreementAcceptance,
   }) = AlpinaDigitalAccessModel;
 

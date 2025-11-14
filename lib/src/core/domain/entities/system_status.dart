@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'status_group_type.dart';
+import '../value_objects/status_group_type.dart';
 
 part 'system_status.freezed.dart';
 

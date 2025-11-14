@@ -10,5 +10,5 @@ class ResellDetailState with _$ResellDetailState {
   const factory ResellDetailState.loaded(ResellDetail detail) = ResellDetailLoaded;
   const factory ResellDetailState.error(String message) = ResellDetailError;
   const factory ResellDetailState.bookingInProgress() = ResellDetailBookingInProgress;
-  const factory ResellDetailState.bookingSuccess(ResellBooking booking) = ResellDetailBookingSuccess;
+  const factory ResellDetailState.bookingSuccess() = ResellDetailBookingSuccess;
 }

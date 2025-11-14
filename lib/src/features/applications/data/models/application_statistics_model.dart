@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/domain/value_objects/status_group_type.dart';
 import '../../domain/domain.dart';
 
 part 'application_statistics_model.freezed.dart';
@@ -15,7 +16,8 @@ abstract class ApplicationStatisticsModel with _$ApplicationStatisticsModel {
     required int count,
   }) = _ApplicationStatisticsModel;
 
-  factory ApplicationStatisticsModel.fromJson(Map<String, dynamic> json) => _$ApplicationStatisticsModelFromJson(json);
+  factory ApplicationStatisticsModel.fromJson(Map<String, dynamic> json) =>
+      _$ApplicationStatisticsModelFromJson(json);
 
   ApplicationStatistics toDomain() => ApplicationStatistics(
     statusGroup: statusGroupTypeFromJson(statusGroupCode),

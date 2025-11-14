@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
+
+import '../../domain/domain.dart';
 
 part 'author_model.freezed.dart';
 part 'author_model.g.dart';
@@ -15,7 +16,13 @@ abstract class AuthorModel with _$AuthorModel {
     String? middleName,
   }) = _AuthorModel;
 
-  factory AuthorModel.fromJson(Map<String, dynamic> json) => _$AuthorModelFromJson(json);
+  factory AuthorModel.fromJson(Map<String, dynamic> json) =>
+      _$AuthorModelFromJson(json);
 
-  Author toDomain() => Author(id: id, lastName: lastName, firstName: firstName, middleName: middleName);
+  Author toDomain() => Author(
+    id: id,
+    lastName: lastName,
+    firstName: firstName,
+    middleName: middleName,
+  );
 }

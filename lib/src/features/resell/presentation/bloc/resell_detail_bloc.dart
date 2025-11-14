@@ -11,10 +11,8 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
 
   ResellDetail? _currentDetail;
 
-  ResellDetailBloc(
-    this._getResellDetailUsecase,
-    this._bookResellItemUsecase,
-  ) : super(const ResellDetailState.initial()) {
+  ResellDetailBloc(this._getResellDetailUsecase, this._bookResellItemUsecase)
+    : super(const ResellDetailState.initial()) {
     on<LoadResellDetail>(_onLoadResellDetail);
     on<BookResellItem>(_onBookResellItem);
   }
@@ -53,9 +51,9 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
           emit(ResellDetailState.loaded(_currentDetail!));
           emit(ResellDetailState.error(error.toString()));
         },
-        (booking) {
-          AppLogger.d('Booking successful: ${booking.id}');
-          emit(ResellDetailState.bookingSuccess(booking));
+        (_) {
+          AppLogger.d('Booking successful');
+          emit(ResellDetailState.bookingSuccess());
         },
       );
     }

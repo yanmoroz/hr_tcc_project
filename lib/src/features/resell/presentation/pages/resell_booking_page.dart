@@ -8,9 +8,8 @@ import 'package:hr_tcc_project/src/features/resell/presentation/bloc/resell_book
 
 class ResellBookingPage extends StatefulWidget {
   final String itemId;
-  final ResellBooking booking;
 
-  const ResellBookingPage({super.key, required this.itemId, required this.booking});
+  const ResellBookingPage({super.key, required this.itemId});
 
   @override
   State<ResellBookingPage> createState() => _ResellBookingPageState();
@@ -36,11 +35,11 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<ResellBookingBloc>(param1: widget.booking),
+      create: (context) => sl<ResellBookingBloc>(),
       child: BlocListener<ResellBookingBloc, ResellBookingState>(
         listener: (context, state) {
           state.maybeWhen(
-            bookingConfirmed: (booking) {
+            bookingConfirmed: () {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -82,10 +81,6 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                                 'Информация о бронировании',
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(height: 12),
-                              _buildInfoRow('ID бронирования:', widget.booking.id),
-                              const SizedBox(height: 8),
-                              _buildInfoRow('Статус:', widget.booking.applicationStatus.name),
                             ],
                           ),
                         ),
@@ -204,24 +199,6 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 140,
-          child: Text(
-            label,
-            style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w500),
-          ),
-        ),
-        Expanded(
-          child: Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-        ),
-      ],
-    );
-  }
-
   String _getTransitionLabel(BookingTransition transition) {
     switch (transition) {
       case BookingTransition.confirm:
@@ -233,7 +210,8 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
 
   void _submitForm(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
-      final confirmation = ResellBookingConfirmation(
+      final confirmation = ConfirmResellBookingUsecaseParams(
+        id: widget.itemId,
         transition: _selectedTransition,
         inn: _innController.text.isEmpty ? null : _innController.text,
         address: _addressController.text.isEmpty ? null : _addressController.text,
@@ -241,9 +219,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
         pickupLotMyself: _pickupLotMyself,
       );
 
-      context.read<ResellBookingBloc>().add(
-        ResellBookingEvent.confirmBooking(itemId: widget.itemId, confirmation: confirmation),
-      );
+      context.read<ResellBookingBloc>().add(ResellBookingEvent.confirmBooking(params: confirmation));
     }
   }
 }

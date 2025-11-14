@@ -8,20 +8,14 @@ import 'resell_booking_state.dart';
 class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
   final ConfirmResellBookingUsecase _confirmResellBookingUsecase;
 
-  ResellBookingBloc(
-    this._confirmResellBookingUsecase,
-    ResellBooking initialBooking,
-  ) : super(ResellBookingState.initial(initialBooking)) {
+  ResellBookingBloc(this._confirmResellBookingUsecase) : super(const ResellBookingState.initial()) {
     on<ConfirmBooking>(_onConfirmBooking);
   }
 
   Future<void> _onConfirmBooking(ConfirmBooking event, Emitter<ResellBookingState> emit) async {
     emit(const ResellBookingState.confirmingBooking());
 
-    final result = await _confirmResellBookingUsecase(
-      id: event.itemId,
-      confirmation: event.confirmation,
-    );
+    final result = await _confirmResellBookingUsecase(params: event.params);
 
     if (!emit.isDone) {
       result.fold(
@@ -30,8 +24,8 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
           emit(ResellBookingState.error(error.toString()));
         },
         (booking) {
-          AppLogger.d('Booking confirmed successfully: ${booking.id}');
-          emit(ResellBookingState.bookingConfirmed(booking));
+          AppLogger.d('Booking confirmed successfully');
+          emit(const ResellBookingState.bookingConfirmed());
         },
       );
     }

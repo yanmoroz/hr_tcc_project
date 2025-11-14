@@ -1,5 +1,6 @@
 import 'package:hr_tcc_project/src/core/types/result.dart';
 
+import '../../../../core/domain/value_objects/status_group_type.dart';
 import '../../domain/domain.dart';
 import '../datasources/application_remote_data_source.dart';
 
@@ -9,7 +10,8 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   ApplicationRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Result<(List<ApplicationInfo>, int, List<ApplicationStatistics>)>> getApplications({
+  Future<Result<(List<ApplicationInfo>, int, List<ApplicationStatistics>)>>
+  getApplications({
     required int page,
     required int pageSize,
     StatusGroupType? statusGroup,
@@ -23,8 +25,12 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
     );
 
     return result.map((responseModel) {
-      final applications = responseModel.applicationInfos.map((model) => model.toDomain()).toList();
-      final statistics = responseModel.statistics.map((model) => model.toDomain()).toList();
+      final applications = responseModel.applicationInfos
+          .map((model) => model.toDomain())
+          .toList();
+      final statistics = responseModel.statistics
+          .map((model) => model.toDomain())
+          .toList();
       return (applications, responseModel.total, statistics);
     });
   }
@@ -36,7 +42,9 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   }
 
   @override
-  Future<Result<CreateApplicationResult>> createApplication(Map<String, dynamic> request) async {
+  Future<Result<CreateApplicationResult>> createApplication(
+    Map<String, dynamic> request,
+  ) async {
     final result = await _remoteDataSource.createApplication(request);
     return result.map((model) => model.toDomain());
   }

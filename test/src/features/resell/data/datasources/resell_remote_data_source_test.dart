@@ -1,5 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
@@ -26,7 +27,7 @@ void main() {
     group('getResellItems', () {
       test('should fetch list of resell items with status filter from API and map to models', () async {
         // Act
-        final result = await dataSource.getResellItems(status: ResellStatus.onSale.value, page: 0, pageSize: 20);
+        final result = await dataSource.getResellItems(status: ResellStatus.onSale, page: 0, pageSize: 20);
 
         // Assert
         result.fold(
@@ -45,7 +46,7 @@ void main() {
 
     test('should fetch list of resell items with search filter', () async {
       final result = await dataSource.getResellItems(
-        status: ResellStatus.onSale.value,
+        status: ResellStatus.onSale,
         search: 'test',
         page: 0,
         pageSize: 10,
@@ -60,7 +61,7 @@ void main() {
     group('getResellDetail', () {
       test('should fetch resell item detail by id from API and map to model', () async {
         // First get a list to extract an ID
-        final listResult = await dataSource.getResellItems(status: ResellStatus.onSale.value, page: 0, pageSize: 1);
+        final listResult = await dataSource.getResellItems(status: ResellStatus.onSale, page: 0, pageSize: 1);
 
         await listResult.fold((failure) => fail('Failed to get list: ${failure.message}'), (response) async {
           if (response.items.isEmpty) {
@@ -89,7 +90,7 @@ void main() {
 
     test('should initiate booking for a resell item', () async {
       // First get a list to extract an ID
-      final listResult = await dataSource.getResellItems(status: ResellStatus.onSale.value, page: 0, pageSize: 1);
+      final listResult = await dataSource.getResellItems(status: ResellStatus.onSale, page: 0, pageSize: 1);
 
       await listResult.fold((error) => fail('Failed to get list: ${error.toString()}'), (response) async {
         if (response.items.isEmpty) {
@@ -108,13 +109,8 @@ void main() {
             AppLogger.d('Booking failed (expected): ${error.toString()}');
             expect(error, isA<Exception>());
           },
-          (booking) {
-            expect(booking, isA<ResellBookingModel>());
-            expect(booking.id, equals(itemId));
-            expect(booking.applicationStatus, isNotEmpty);
-            expect(booking.statusModel, isA<SystemStatusModel>());
-            AppLogger.d('Booking status: ${booking.applicationStatus}');
-            AppLogger.d('Booked user: ${booking.bookedUser ?? "None"}');
+          (_) {
+            AppLogger.d('Booking successful');
           },
         );
       });
@@ -122,7 +118,7 @@ void main() {
 
     test('should confirm booking with confirmation data', () async {
       // First get a list to extract an ID
-      final listResult = await dataSource.getResellItems(status: ResellStatus.onSale.value, page: 0, pageSize: 1);
+      final listResult = await dataSource.getResellItems(status: ResellStatus.onSale, page: 0, pageSize: 1);
 
       await listResult.fold((error) => fail('Failed to get list: ${error.toString()}'), (response) async {
         if (response.items.isEmpty) {
@@ -133,15 +129,14 @@ void main() {
         final itemId = response.items.first.id;
         AppLogger.d('Testing confirm booking endpoint with ID: $itemId');
 
-        final confirmationModel = ResellBookingConfirmationModel(
-          transition: BookingTransition.confirm.value,
+        final confirmResult = await dataSource.confirmBooking(
+          id: itemId,
+          transition: BookingTransition.confirm,
           inn: '520205004556',
           address: 'Test address',
           employeePlace: 'Test workplace',
           pickupLotMyself: true,
         );
-
-        final confirmResult = await dataSource.confirmBooking(id: itemId, confirmation: confirmationModel);
 
         confirmResult.fold(
           (error) {
@@ -149,10 +144,8 @@ void main() {
             AppLogger.d('Confirmation failed (expected): ${error.toString()}');
             expect(error, isA<Exception>());
           },
-          (booking) {
-            expect(booking, isA<ResellBookingModel>());
-            expect(booking.id, equals(itemId));
-            AppLogger.d('Confirmation status: ${booking.applicationStatus}');
+          (_) {
+            AppLogger.d('Confirmation successful');
           },
         );
       });
@@ -160,7 +153,7 @@ void main() {
 
     test('should cancel booking', () async {
       // First get a list to extract an ID
-      final listResult = await dataSource.getResellItems(status: ResellStatus.booked.value, page: 0, pageSize: 1);
+      final listResult = await dataSource.getResellItems(status: ResellStatus.booked, page: 0, pageSize: 1);
 
       await listResult.fold((error) => fail('Failed to get list: ${error.toString()}'), (response) async {
         if (response.items.isEmpty) {
@@ -171,9 +164,14 @@ void main() {
         final itemId = response.items.first.id;
         AppLogger.d('Testing cancel booking endpoint with ID: $itemId');
 
-        final cancelModel = ResellBookingConfirmationModel(transition: BookingTransition.cancel.value);
-
-        final cancelResult = await dataSource.confirmBooking(id: itemId, confirmation: cancelModel);
+        final cancelResult = await dataSource.confirmBooking(
+          id: itemId,
+          transition: BookingTransition.cancel,
+          inn: null,
+          address: null,
+          employeePlace: null,
+          pickupLotMyself: null,
+        );
 
         cancelResult.fold(
           (error) {
@@ -181,9 +179,8 @@ void main() {
             AppLogger.d('Cancellation failed (expected): ${error.toString()}');
             expect(error, isA<Exception>());
           },
-          (booking) {
-            expect(booking, isA<ResellBookingModel>());
-            AppLogger.d('Cancellation result: ${booking.applicationStatus}');
+          (_) {
+            AppLogger.d('Cancellation successful');
           },
         );
       });

@@ -284,7 +284,7 @@ void _initializeResellDependencies() {
   // BLoCs
   sl.registerFactory<ResellItemsBloc>(() => ResellItemsBloc(sl()));
   sl.registerFactory<ResellDetailBloc>(() => ResellDetailBloc(sl(), sl()));
-  sl.registerFactoryParam<ResellBookingBloc, ResellBooking, void>((booking, _) => ResellBookingBloc(sl(), booking));
+  sl.registerFactory<ResellBookingBloc>(() => ResellBookingBloc(sl()));
 }
 
 void _initializeApplicationDependencies() {

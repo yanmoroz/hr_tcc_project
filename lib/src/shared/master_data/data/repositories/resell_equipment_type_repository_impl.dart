@@ -1,10 +1,15 @@
+import 'package:hr_tcc_project/src/core/data/models/resell_equipment_type_model.dart';
+
+import '../../../../core/domain/entities/resell_equipment_type.dart';
 import '../../../../core/types/result.dart';
 
 import '../../../../core/data/base_repository.dart';
 import '../../domain/domain.dart';
 import '../data.dart';
 
-class ResellEquipmentTypeRepositoryImpl with BaseRepository implements ResellEquipmentTypeRepository {
+class ResellEquipmentTypeRepositoryImpl
+    with BaseRepository
+    implements ResellEquipmentTypeRepository {
   final ResellEquipmentTypeRemoteDataSource _remoteDataSource;
 
   ResellEquipmentTypeRepositoryImpl(this._remoteDataSource);

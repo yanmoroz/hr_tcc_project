@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/domain.dart';
+import '../../domain/entities/system_status.dart';
+import '../../domain/value_objects/status_group_type.dart';
 
 part 'system_status_model.freezed.dart';
 part 'system_status_model.g.dart';
@@ -10,13 +11,15 @@ abstract class SystemStatusModel with _$SystemStatusModel {
   const factory SystemStatusModel({
     required String id,
     required String idForm,
-    @JsonKey(fromJson: statusGroupTypeFromJson) required StatusGroupType statusGroup,
+    @JsonKey(fromJson: statusGroupTypeFromJson)
+    required StatusGroupType statusGroup,
     required String code,
     required String name,
     required bool cancelable,
   }) = _SystemStatusModel;
 
-  factory SystemStatusModel.fromJson(Map<String, dynamic> json) => _$SystemStatusModelFromJson(json);
+  factory SystemStatusModel.fromJson(Map<String, dynamic> json) =>
+      _$SystemStatusModelFromJson(json);
 }
 
 extension SystemStatusModelX on SystemStatusModel {

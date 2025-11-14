@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/data/models/system_status_model.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
@@ -25,30 +26,44 @@ void main() {
     });
 
     group('getCoreDictionaries', () {
-      test('should fetch core dictionaries from API and map to models', () async {
-        // Act
-        final result = await dataSource.getCoreDictionaries();
+      test(
+        'should fetch core dictionaries from API and map to models',
+        () async {
+          // Act
+          final result = await dataSource.getCoreDictionaries();
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (response) {
-            // If we get here, the API call succeeded
-            expect(response.applicationFormGroups, isA<List<ApplicationFormGroupModel>>());
-            expect(response.applicationForms, isA<List<ApplicationFormModel>>());
-            expect(response.systemStatusesGroups, isA<List<SystemStatusGroupModel>>());
-            expect(response.systemStatuses, isA<List<SystemStatusModel>>());
-            expect(response.tripPurposes, isA<List<TripPurposeModel>>());
-            expect(response.trainingTypes, isA<List<TrainingTypeModel>>());
-            expect(response.trainingForms, isA<List<TrainingFormModel>>());
-            expect(response.trainingMonths, isA<List<TrainingMonthModel>>());
-            expect(response.alpinaDigitalPrevAccesses, isA<List<AlpinaDigitalPrevAccessModel>>());
-            expect(response.offices, isA<List<OfficeModel>>());
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (response) {
+              // If we get here, the API call succeeded
+              expect(
+                response.applicationFormGroups,
+                isA<List<ApplicationFormGroupModel>>(),
+              );
+              expect(
+                response.applicationForms,
+                isA<List<ApplicationFormModel>>(),
+              );
+              expect(
+                response.systemStatusesGroups,
+                isA<List<SystemStatusGroupModel>>(),
+              );
+              expect(response.systemStatuses, isA<List<SystemStatusModel>>());
+              expect(response.tripPurposes, isA<List<TripPurposeModel>>());
+              expect(response.trainingTypes, isA<List<TrainingTypeModel>>());
+              expect(response.trainingForms, isA<List<TrainingFormModel>>());
+              expect(response.trainingMonths, isA<List<TrainingMonthModel>>());
+              expect(
+                response.alpinaDigitalPrevAccesses,
+                isA<List<AlpinaDigitalPrevAccessModel>>(),
+              );
+              expect(response.offices, isA<List<OfficeModel>>());
 
-            // Log the actual data for verification
-            AppLogger.d('''Fetched core dictionaries:
+              // Log the actual data for verification
+              AppLogger.d('''Fetched core dictionaries:
   - ApplicationFormGroups: ${response.applicationFormGroups.length}
 ${response.applicationFormGroups.map((g) => '    - ${g.toString()}').join('\n')}
   - ApplicationForms: ${response.applicationForms.length}
@@ -69,9 +84,10 @@ ${response.trainingMonths.map((m) => '    - ${m.toString()}').join('\n')}
 ${response.alpinaDigitalPrevAccesses.map((a) => '    - ${a.toString()}').join('\n')}
   - Offices: ${response.offices.length}
 ${response.offices.map((o) => '    - ${o.toString()}').join('\n')}''');
-          },
-        );
-      });
+            },
+          );
+        },
+      );
     });
   });
 }

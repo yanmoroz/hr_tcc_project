@@ -1,12 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/features/applications/domain/domain.dart';
-import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
+
+import '../../../../core/data/models/system_status_model.dart';
+import '../../domain/domain.dart';
 
 part 'cancel_application_result_model.freezed.dart';
 part 'cancel_application_result_model.g.dart';
 
 @freezed
-abstract class CancelApplicationResultModel with _$CancelApplicationResultModel {
+abstract class CancelApplicationResultModel
+    with _$CancelApplicationResultModel {
   const CancelApplicationResultModel._();
 
   const factory CancelApplicationResultModel({
@@ -19,10 +21,10 @@ abstract class CancelApplicationResultModel with _$CancelApplicationResultModel 
       _$CancelApplicationResultModelFromJson(json);
 
   CancelApplicationResult toDomain() => CancelApplicationResult(
-        status: _parseApplicationStatus(status),
-        id: id,
-        systemStatus: systemStatusModel.toDomain(),
-      );
+    status: _parseApplicationStatus(status),
+    id: id,
+    systemStatus: systemStatusModel.toDomain(),
+  );
 
   ApplicationStatus _parseApplicationStatus(String status) {
     switch (status.toLowerCase()) {

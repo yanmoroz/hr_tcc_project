@@ -1,12 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../../core/data/models/system_status_model.dart';
 import '../../data.dart';
 
 part 'core_dictionaries_response_model.freezed.dart';
 part 'core_dictionaries_response_model.g.dart';
 
 @freezed
-abstract class CoreDictionariesResponseModel with _$CoreDictionariesResponseModel {
+abstract class CoreDictionariesResponseModel
+    with _$CoreDictionariesResponseModel {
   const factory CoreDictionariesResponseModel({
     required List<ApplicationFormGroupModel> applicationFormGroups,
     required List<ApplicationFormModel> applicationForms,

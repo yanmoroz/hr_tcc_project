@@ -20,14 +20,11 @@ class ResellDetailPage extends StatelessWidget {
       child: BlocListener<ResellDetailBloc, ResellDetailState>(
         listener: (context, state) {
           state.maybeWhen(
-            bookingSuccess: (booking) {
+            bookingSuccess: () {
               // Show modal booking page
               Navigator.of(context)
                   .push(
-                    MaterialPageRoute(
-                      builder: (context) => ResellBookingPage(itemId: itemId, booking: booking),
-                      fullscreenDialog: true,
-                    ),
+                    MaterialPageRoute(builder: (context) => ResellBookingPage(itemId: itemId), fullscreenDialog: true),
                   )
                   .then((_) {
                     // Reload detail when booking page is closed
@@ -69,7 +66,7 @@ class ResellDetailPage extends StatelessWidget {
                     children: [CircularProgressIndicator(), SizedBox(height: 16), Text('Бронирование...')],
                   ),
                 ),
-                bookingSuccess: (_) => const Center(child: CircularProgressIndicator()),
+                bookingSuccess: () => const Center(child: CircularProgressIndicator()),
               );
             },
           ),

@@ -1,8 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
-import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
 
-import 'author_model.dart';
+import '../../../../core/data/models/resell_equipment_type_model.dart';
+import '../../../../core/data/models/system_status_model.dart';
+import '../../domain/domain.dart';
+import '../data.dart';
 
 part 'resell_item_model.freezed.dart';
 part 'resell_item_model.g.dart';
@@ -18,16 +19,17 @@ abstract class ResellItemModel with _$ResellItemModel {
     required bool lottery,
     required bool bookingFinish,
     required String shortName,
-    @JsonKey(name: 'equipmentType') required ResellEquipmentTypeModel equipmentTypeModel,
-    @JsonKey(name: 'author') AuthorModel? authorModel,
+    required ResellEquipmentTypeModel equipmentType,
+    AuthorModel? author,
     required DateTime creationDate,
-    @JsonKey(name: 'status') required SystemStatusModel statusModel,
+    required SystemStatusModel status,
     String? bookedUser,
     DateTime? finishDateReservation,
     String? idProcessReservation,
   }) = _ResellItemModel;
 
-  factory ResellItemModel.fromJson(Map<String, dynamic> json) => _$ResellItemModelFromJson(json);
+  factory ResellItemModel.fromJson(Map<String, dynamic> json) =>
+      _$ResellItemModelFromJson(json);
 
   ResellItem toDomain() => ResellItem(
     id: id,
@@ -36,10 +38,10 @@ abstract class ResellItemModel with _$ResellItemModel {
     lottery: lottery,
     bookingFinish: bookingFinish,
     shortName: shortName,
-    equipmentType: equipmentTypeModel.toDomain(),
-    author: authorModel?.toDomain(),
+    equipmentType: equipmentType.toDomain(),
+    author: author?.toDomain(),
     creationDate: creationDate,
-    status: statusModel.toDomain(),
+    status: status.toDomain(),
     bookedUser: bookedUser,
     finishDateReservation: finishDateReservation,
     idProcessReservation: idProcessReservation,
