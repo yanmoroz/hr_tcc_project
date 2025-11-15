@@ -1,6 +1,6 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
-import '../../../../core/domain/value_objects/status_group_type.dart';
+import '../../../../core/value_objects/status_group_type.dart';
 import '../models/application_detail_model.dart';
 import '../models/application_list_response_model.dart';
 import '../models/cancel_application_result_model.dart';

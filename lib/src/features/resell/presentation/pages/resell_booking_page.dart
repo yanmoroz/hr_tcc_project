@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hr_tcc_project/src/core/di/service_locator.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
-import 'package:hr_tcc_project/src/features/resell/presentation/bloc/resell_booking_bloc.dart';
-import 'package:hr_tcc_project/src/features/resell/presentation/bloc/resell_booking_event.dart';
-import 'package:hr_tcc_project/src/features/resell/presentation/bloc/resell_booking_state.dart';
+
+import '../../../../core/di/service_locator.dart';
+import '../../domain/domain.dart';
+import '../bloc/resell_booking_bloc.dart';
+import '../bloc/resell_booking_event.dart';
+import '../bloc/resell_booking_state.dart';
 
 class ResellBookingPage extends StatefulWidget {
   final String itemId;
@@ -50,9 +51,12 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
               );
             },
             error: (message) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Ошибка: $message'), backgroundColor: Colors.red));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Ошибка: $message'),
+                  backgroundColor: Colors.red,
+                ),
+              );
             },
             orElse: () {},
           );
@@ -61,7 +65,10 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
           appBar: AppBar(title: const Text('Подтверждение бронирования')),
           body: BlocBuilder<ResellBookingBloc, ResellBookingState>(
             builder: (context, state) {
-              final isLoading = state.maybeWhen(confirmingBooking: () => true, orElse: () => false);
+              final isLoading = state.maybeWhen(
+                confirmingBooking: () => true,
+                orElse: () => false,
+              );
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -79,7 +86,8 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                             children: [
                               Text(
                                 'Информация о бронировании',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -90,14 +98,22 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                       // Transition Dropdown
                       Text(
                         'Переход',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<BookingTransition>(
                         initialValue: _selectedTransition,
-                        decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Выберите переход'),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Выберите переход',
+                        ),
                         items: BookingTransition.values.map((transition) {
-                          return DropdownMenuItem(value: transition, child: Text(_getTransitionLabel(transition)));
+                          return DropdownMenuItem(
+                            value: transition,
+                            child: Text(_getTransitionLabel(transition)),
+                          );
                         }).toList(),
                         onChanged: isLoading
                             ? null
@@ -118,11 +134,19 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                       const SizedBox(height: 16),
 
                       // INN Field
-                      Text('ИНН', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        'ИНН',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _innController,
-                        decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Введите ИНН'),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Введите ИНН',
+                        ),
                         enabled: !isLoading,
                         keyboardType: TextInputType.number,
                       ),
@@ -131,12 +155,17 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                       // Address Field
                       Text(
                         'Адрес',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _addressController,
-                        decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Введите адрес'),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Введите адрес',
+                        ),
                         enabled: !isLoading,
                         maxLines: 2,
                       ),
@@ -145,7 +174,9 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                       // Employee Place Field
                       Text(
                         'Место работы сотрудника',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -178,13 +209,26 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : () => _submitForm(context),
-                          style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                          onPressed: isLoading
+                              ? null
+                              : () => _submitForm(context),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
                           child: isLoading
-                              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : const Text(
                                   'Подтвердить бронирование',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                         ),
                       ),
@@ -214,12 +258,18 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
         id: widget.itemId,
         transition: _selectedTransition,
         inn: _innController.text.isEmpty ? null : _innController.text,
-        address: _addressController.text.isEmpty ? null : _addressController.text,
-        employeePlace: _employeePlaceController.text.isEmpty ? null : _employeePlaceController.text,
+        address: _addressController.text.isEmpty
+            ? null
+            : _addressController.text,
+        employeePlace: _employeePlaceController.text.isEmpty
+            ? null
+            : _employeePlaceController.text,
         pickupLotMyself: _pickupLotMyself,
       );
 
-      context.read<ResellBookingBloc>().add(ResellBookingEvent.confirmBooking(params: confirmation));
+      context.read<ResellBookingBloc>().add(
+        ResellBookingEvent.confirmBooking(params: confirmation),
+      );
     }
   }
 }

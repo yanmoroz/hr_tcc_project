@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/training_form.dart';
+import '../../entities/training_form.dart';
 
 part 'training_form_model.freezed.dart';
 part 'training_form_model.g.dart';

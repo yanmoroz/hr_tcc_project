@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
+
+import '../../domain/domain.dart';
 
 part 'resell_items_state.freezed.dart';
 

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/training_type.dart';
+import '../../entities/training_type.dart';
 
 part 'training_type_model.freezed.dart';
 part 'training_type_model.g.dart';

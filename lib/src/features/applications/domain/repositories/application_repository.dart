@@ -1,6 +1,6 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
-import '../../../../core/domain/value_objects/status_group_type.dart';
+import '../../../../core/value_objects/status_group_type.dart';
 import '../entities/application_detail.dart';
 import '../entities/application_info.dart';
 import '../entities/application_statistics.dart';

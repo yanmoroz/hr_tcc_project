@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
+
+import '../../../../core/logging/app_logger.dart';
+import '../../domain/domain.dart';
 
 import 'resell_items_event.dart';
 import 'resell_items_state.dart';

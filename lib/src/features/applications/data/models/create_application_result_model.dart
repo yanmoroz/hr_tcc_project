@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hr_tcc_project/src/features/applications/domain/domain.dart';
 
-import '../../../../core/domain/value_objects/application_status.dart';
+import '../../../../core/value_objects/application_status.dart';
 
 part 'create_application_result_model.freezed.dart';
 part 'create_application_result_model.g.dart';

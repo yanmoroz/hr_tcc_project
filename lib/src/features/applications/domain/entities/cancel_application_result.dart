@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/entities/system_status.dart';
-import '../../../../core/domain/value_objects/application_status.dart';
+import '../../../../core/entities/system_status.dart';
+import '../../../../core/value_objects/application_status.dart';
 
 part 'cancel_application_result.freezed.dart';
 

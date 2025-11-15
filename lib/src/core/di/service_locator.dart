@@ -1,29 +1,31 @@
 import 'package:get_it/get_it.dart';
 
-import '../../features/notifications/data/data.dart';
-import '../../features/notifications/domain/domain.dart';
-import '../../features/polls/data/data.dart';
-import '../../features/polls/domain/domain.dart';
-import '../../features/users/data/data.dart';
-import '../../features/users/domain/domain.dart';
+import '../../features/applications/data/data.dart';
+import '../../features/applications/domain/domain.dart';
 import '../../features/discounts/data/data.dart';
 import '../../features/discounts/domain/domain.dart';
 import '../../features/news/data/data.dart';
 import '../../features/news/domain/domain.dart';
+import '../../features/notifications/data/data.dart';
+import '../../features/notifications/domain/domain.dart';
+import '../../features/polls/data/data.dart';
+import '../../features/polls/domain/domain.dart';
 import '../../features/resell/data/data.dart';
 import '../../features/resell/domain/domain.dart';
-import '../../features/resell/presentation/bloc/resell_items_bloc.dart';
-import '../../features/resell/presentation/bloc/resell_detail_bloc.dart';
 import '../../features/resell/presentation/bloc/resell_booking_bloc.dart';
-import '../../features/applications/data/data.dart';
-import '../../features/applications/domain/domain.dart';
+import '../../features/resell/presentation/bloc/resell_detail_bloc.dart';
+import '../../features/resell/presentation/bloc/resell_items_bloc.dart';
+import '../../features/users/data/data.dart';
+import '../../features/users/domain/domain.dart';
+import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
+import '../master_data/datasources/master_data_remote_data_source.dart';
+import '../master_data/datasources/master_data_remote_data_source_impl.dart';
+import '../master_data/master_data_cache.dart';
+import '../master_data/repositories/master_data_repository.dart';
+import '../master_data/repositories/master_data_repository_impl.dart';
 import '../network/api_client.dart';
 import '../network/api_constants.dart';
-import '../master_data/master_data_repository.dart';
-import '../master_data/master_data_cache.dart';
-import '../master_data/master_data_remote_data_source.dart';
-import '../../shared/files/files.dart';
 
 final sl = GetIt.instance;
 
@@ -63,10 +65,10 @@ void _initializeFileDependencies() {
 void _initializeMasterDataDependencies() {
   sl.registerLazySingleton<MasterDataCache>(() => MasterDataCache());
   sl.registerLazySingleton<MasterDataRemoteDataSource>(
-    () => MasterDataRemoteDataSource(sl()),
+    () => MasterDataRemoteDataSourceImpl(sl()),
   );
   sl.registerLazySingleton<MasterDataRepository>(
-    () => MasterDataRepository(sl(), sl()),
+    () => MasterDataRepositoryImpl(sl(), sl()),
   );
 }
 

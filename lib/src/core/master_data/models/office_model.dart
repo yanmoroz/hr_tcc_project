@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/office.dart';
+import '../../entities/office.dart';
 
 part 'office_model.freezed.dart';
 part 'office_model.g.dart';

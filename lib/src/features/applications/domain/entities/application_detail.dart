@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/entities/alpina_digital_prev_access.dart';
-import '../../../../core/domain/entities/system_status.dart';
+import '../../../../core/entities/alpina_digital_prev_access.dart';
+import '../../../../core/entities/system_status.dart';
 
 part 'application_detail.freezed.dart';
 

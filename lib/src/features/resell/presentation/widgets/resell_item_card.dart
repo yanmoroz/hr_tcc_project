@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
 import 'package:intl/intl.dart';
+
+import '../../domain/domain.dart';
 
 class ResellItemCard extends StatelessWidget {
   final ResellItem item;
   final VoidCallback onTap;
 
-  const ResellItemCard({
-    super.key,
-    required this.item,
-    required this.onTap,
-  });
+  const ResellItemCard({super.key, required this.item, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -64,24 +61,25 @@ class ResellItemCard extends StatelessWidget {
                     Text(
                       item.shortName,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       item.equipmentType.name,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Text(
                           currencyFormat.format(item.price),
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
                                 color: Theme.of(context).primaryColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -89,7 +87,10 @@ class ResellItemCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         if (item.lottery)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.orange[100],
                               borderRadius: BorderRadius.circular(12),
@@ -108,7 +109,10 @@ class ResellItemCard extends StatelessWidget {
                     if (item.bookingFinish) ...[
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.red[100],
                           borderRadius: BorderRadius.circular(12),

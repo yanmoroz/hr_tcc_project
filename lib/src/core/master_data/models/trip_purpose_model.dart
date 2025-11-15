@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/trip_purpose.dart';
+import '../../entities/trip_purpose.dart';
 
 part 'trip_purpose_model.freezed.dart';
 part 'trip_purpose_model.g.dart';

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hr_tcc_project/src/core/di/service_locator.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
-import 'package:hr_tcc_project/src/features/resell/presentation/bloc/resell_detail_bloc.dart';
-import 'package:hr_tcc_project/src/features/resell/presentation/bloc/resell_detail_event.dart';
-import 'package:hr_tcc_project/src/features/resell/presentation/bloc/resell_detail_state.dart';
-import 'package:hr_tcc_project/src/features/resell/presentation/pages/resell_booking_page.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../core/di/service_locator.dart';
+import '../../domain/domain.dart';
+import '../bloc/resell_detail_bloc.dart';
+import '../bloc/resell_detail_event.dart';
+import '../bloc/resell_detail_state.dart';
+import 'resell_booking_page.dart';
 
 class ResellDetailPage extends StatelessWidget {
   const ResellDetailPage({super.key});
@@ -16,7 +17,9 @@ class ResellDetailPage extends StatelessWidget {
     final itemId = ModalRoute.of(context)!.settings.arguments as String;
 
     return BlocProvider(
-      create: (context) => sl<ResellDetailBloc>()..add(ResellDetailEvent.loadResellDetail(itemId)),
+      create: (context) =>
+          sl<ResellDetailBloc>()
+            ..add(ResellDetailEvent.loadResellDetail(itemId)),
       child: BlocListener<ResellDetailBloc, ResellDetailState>(
         listener: (context, state) {
           state.maybeWhen(
@@ -24,15 +27,22 @@ class ResellDetailPage extends StatelessWidget {
               // Show modal booking page
               Navigator.of(context)
                   .push(
-                    MaterialPageRoute(builder: (context) => ResellBookingPage(itemId: itemId), fullscreenDialog: true),
+                    MaterialPageRoute(
+                      builder: (context) => ResellBookingPage(itemId: itemId),
+                      fullscreenDialog: true,
+                    ),
                   )
                   .then((_) {
                     // Reload detail when booking page is closed
-                    context.read<ResellDetailBloc>().add(ResellDetailEvent.loadResellDetail(itemId));
+                    context.read<ResellDetailBloc>().add(
+                      ResellDetailEvent.loadResellDetail(itemId),
+                    );
                   });
             },
             error: (message) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $message')));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Ошибка: $message')));
             },
             orElse: () {},
           );
@@ -53,7 +63,9 @@ class ResellDetailPage extends StatelessWidget {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
-                          context.read<ResellDetailBloc>().add(ResellDetailEvent.loadResellDetail(itemId));
+                          context.read<ResellDetailBloc>().add(
+                            ResellDetailEvent.loadResellDetail(itemId),
+                          );
                         },
                         child: const Text('Повторить'),
                       ),
@@ -63,10 +75,15 @@ class ResellDetailPage extends StatelessWidget {
                 bookingInProgress: () => const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [CircularProgressIndicator(), SizedBox(height: 16), Text('Бронирование...')],
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Бронирование...'),
+                    ],
                   ),
                 ),
-                bookingSuccess: () => const Center(child: CircularProgressIndicator()),
+                bookingSuccess: () =>
+                    const Center(child: CircularProgressIndicator()),
               );
             },
           ),
@@ -94,7 +111,10 @@ class ResellDetailPage extends StatelessWidget {
                     detail.photo![index],
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      return Container(color: Colors.grey[300], child: const Icon(Icons.image_not_supported, size: 80));
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.image_not_supported, size: 80),
+                      );
                     },
                   );
                 },
@@ -115,7 +135,11 @@ class ResellDetailPage extends StatelessWidget {
               },
             )
           else
-            Container(height: 300, color: Colors.grey[300], child: const Icon(Icons.image, size: 80)),
+            Container(
+              height: 300,
+              color: Colors.grey[300],
+              child: const Icon(Icons.image, size: 80),
+            ),
 
           Padding(
             padding: const EdgeInsets.all(16),
@@ -125,26 +149,39 @@ class ResellDetailPage extends StatelessWidget {
                 // Title and Price
                 Text(
                   detail.name,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Text(
                       currencyFormat.format(detail.price),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(width: 12),
                     if (detail.lottery)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(color: Colors.orange[100], borderRadius: BorderRadius.circular(16)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange[100],
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         child: Text(
                           'Розыгрыш',
-                          style: TextStyle(fontSize: 14, color: Colors.orange[800], fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.orange[800],
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                   ],
@@ -152,7 +189,11 @@ class ResellDetailPage extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Equipment Type
-                _buildInfoRow(context, 'Тип оборудования:', detail.equipmentType.name),
+                _buildInfoRow(
+                  context,
+                  'Тип оборудования:',
+                  detail.equipmentType.name,
+                ),
                 const SizedBox(height: 8),
 
                 // Location
@@ -172,7 +213,11 @@ class ResellDetailPage extends StatelessWidget {
                 ],
 
                 // Creation Date
-                _buildInfoRow(context, 'Дата создания:', dateFormat.format(detail.creationDate)),
+                _buildInfoRow(
+                  context,
+                  'Дата создания:',
+                  dateFormat.format(detail.creationDate),
+                ),
                 const SizedBox(height: 8),
 
                 // Status
@@ -183,10 +228,15 @@ class ResellDetailPage extends StatelessWidget {
                 if (detail.description != null) ...[
                   Text(
                     'Описание',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  Text(detail.description!, style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    detail.description!,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   const SizedBox(height: 16),
                 ],
 
@@ -195,19 +245,29 @@ class ResellDetailPage extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: Colors.red[100], borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(
+                      color: Colors.red[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Забронировано',
-                          style: TextStyle(fontSize: 16, color: Colors.red[800], fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.red[800],
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         if (detail.finishDateReservation != null) ...[
                           const SizedBox(height: 4),
                           Text(
                             'До ${dateFormat.format(detail.finishDateReservation!)}',
-                            style: TextStyle(fontSize: 14, color: Colors.red[700]),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.red[700],
+                            ),
                           ),
                         ],
                       ],
@@ -222,10 +282,20 @@ class ResellDetailPage extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        context.read<ResellDetailBloc>().add(ResellDetailEvent.bookResellItem(detail.id));
+                        context.read<ResellDetailBloc>().add(
+                          ResellDetailEvent.bookResellItem(detail.id),
+                        );
                       },
-                      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                      child: const Text('Забронировать', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text(
+                        'Забронировать',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
               ],
@@ -244,12 +314,15 @@ class ResellDetailPage extends StatelessWidget {
           width: 140,
           child: Text(
             label,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600], fontWeight: FontWeight.w500),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
-        Expanded(child: Text(value, style: Theme.of(context).textTheme.bodyMedium)),
+        Expanded(
+          child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+        ),
       ],
     );
   }

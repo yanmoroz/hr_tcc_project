@@ -1,12 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
-import 'package:hr_tcc_project/src/core/domain/entities/application_form.dart';
-import 'package:hr_tcc_project/src/core/domain/entities/application_form_group.dart';
+import 'package:hr_tcc_project/src/core/entities/application_form.dart';
+import 'package:hr_tcc_project/src/core/entities/application_form_group.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
+import 'package:hr_tcc_project/src/core/master_data/datasources/master_data_remote_data_source_impl.dart';
 import 'package:hr_tcc_project/src/core/master_data/master_data_cache.dart';
-import 'package:hr_tcc_project/src/core/master_data/master_data_remote_data_source.dart';
-import 'package:hr_tcc_project/src/core/master_data/master_data_repository.dart';
+import 'package:hr_tcc_project/src/core/master_data/datasources/master_data_remote_data_source.dart';
+import 'package:hr_tcc_project/src/core/master_data/repositories/master_data_repository.dart';
+import 'package:hr_tcc_project/src/core/master_data/repositories/master_data_repository_impl.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 
 void main() {
@@ -24,9 +26,9 @@ void main() {
     setUp(() {
       authTokenProvider = LocalAuthTokenProvider();
       apiClient = InsecureApiClient(authTokenProvider);
-      dataSource = MasterDataRemoteDataSource(apiClient);
+      dataSource = MasterDataRemoteDataSourceImpl(apiClient);
       cache = MasterDataCache();
-      masterDataRepository = MasterDataRepository(dataSource, cache);
+      masterDataRepository = MasterDataRepositoryImpl(dataSource, cache);
     });
 
     group('getCoreDictionaries', () {

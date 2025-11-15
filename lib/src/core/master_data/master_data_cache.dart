@@ -1,21 +1,16 @@
 import '../cache/cache_manager.dart';
-import '../domain/entities/alpina_digital_prev_access.dart';
-import '../domain/entities/application_form.dart';
-import '../domain/entities/application_form_group.dart';
-import '../domain/entities/office.dart';
-import '../domain/entities/system_status.dart';
-import '../domain/entities/system_status_group.dart';
-import '../domain/entities/training_form.dart';
-import '../domain/entities/training_month.dart';
-import '../domain/entities/training_type.dart';
-import '../domain/entities/trip_purpose.dart';
+import '../entities/alpina_digital_prev_access.dart';
+import '../entities/application_form.dart';
+import '../entities/application_form_group.dart';
+import '../entities/office.dart';
+import '../entities/system_status.dart';
+import '../entities/system_status_group.dart';
+import '../entities/training_form.dart';
+import '../entities/training_month.dart';
+import '../entities/training_type.dart';
+import '../entities/trip_purpose.dart';
 
-/// Centralized caching for all master data with 1-hour TTL
-///
-/// Caches domain entities (not models) to maintain layer separation.
-/// All core dictionaries are cached together since they come from a bundled API endpoint.
 class MasterDataCache {
-  // Cache managers for each dictionary type
   final CacheManager<List<ApplicationFormGroup>> _applicationFormGroupsCache;
   final CacheManager<List<ApplicationForm>> _applicationFormsCache;
   final CacheManager<List<SystemStatusGroup>> _systemStatusGroupsCache;

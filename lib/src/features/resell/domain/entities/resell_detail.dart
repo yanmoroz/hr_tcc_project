@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/entities/system_status.dart';
+import '../../../../core/entities/system_status.dart';
 import 'author.dart';
 import 'resell_equipment_type.dart';
 

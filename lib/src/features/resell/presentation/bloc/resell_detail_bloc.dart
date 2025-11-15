@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
+
+import '../../../../core/logging/app_logger.dart';
+import '../../domain/domain.dart';
 
 import 'resell_detail_event.dart';
 import 'resell_detail_state.dart';
@@ -17,7 +18,10 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
     on<BookResellItem>(_onBookResellItem);
   }
 
-  Future<void> _onLoadResellDetail(LoadResellDetail event, Emitter<ResellDetailState> emit) async {
+  Future<void> _onLoadResellDetail(
+    LoadResellDetail event,
+    Emitter<ResellDetailState> emit,
+  ) async {
     emit(const ResellDetailState.loading());
 
     final result = await _getResellDetailUsecase(event.id);
@@ -36,7 +40,10 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
     }
   }
 
-  Future<void> _onBookResellItem(BookResellItem event, Emitter<ResellDetailState> emit) async {
+  Future<void> _onBookResellItem(
+    BookResellItem event,
+    Emitter<ResellDetailState> emit,
+  ) async {
     if (_currentDetail == null) return;
 
     emit(const ResellDetailState.bookingInProgress());

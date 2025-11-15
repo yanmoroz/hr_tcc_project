@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/value_objects/application_status.dart';
+import '../../../../core/value_objects/application_status.dart';
 
 part 'create_application_result.freezed.dart';
 

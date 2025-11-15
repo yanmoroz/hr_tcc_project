@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/entities/application_form.dart';
-import '../../../../core/domain/entities/system_status.dart';
+import '../../../../core/entities/application_form.dart';
+import '../../../../core/entities/system_status.dart';
 
 part 'application_info.freezed.dart';
 

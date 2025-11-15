@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/value_objects/status_group_type.dart';
-import '../../domain/entities/system_status_group.dart';
+import '../../value_objects/status_group_type.dart';
+import '../../entities/system_status_group.dart';
 
 part 'system_status_group_model.freezed.dart';
 part 'system_status_group_model.g.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
-import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
+
+import '../../../../core/logging/app_logger.dart';
+import '../../domain/domain.dart';
 
 import 'resell_booking_event.dart';
 import 'resell_booking_state.dart';
@@ -8,11 +9,15 @@ import 'resell_booking_state.dart';
 class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
   final ConfirmResellBookingUsecase _confirmResellBookingUsecase;
 
-  ResellBookingBloc(this._confirmResellBookingUsecase) : super(const ResellBookingState.initial()) {
+  ResellBookingBloc(this._confirmResellBookingUsecase)
+    : super(const ResellBookingState.initial()) {
     on<ConfirmBooking>(_onConfirmBooking);
   }
 
-  Future<void> _onConfirmBooking(ConfirmBooking event, Emitter<ResellBookingState> emit) async {
+  Future<void> _onConfirmBooking(
+    ConfirmBooking event,
+    Emitter<ResellBookingState> emit,
+  ) async {
     emit(const ResellBookingState.confirmingBooking());
 
     final result = await _confirmResellBookingUsecase(params: event.params);

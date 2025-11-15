@@ -67,22 +67,22 @@ abstract class BaseApiClient implements ApiClient {
 
     // Add logging interceptor for debugging
     // Suppress logging for file upload/download requests to avoid excessive logging of binary data
-    _dio.interceptors.add(
-      PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: false,
-        error: true,
-        compact: true,
-        filter: (options, args) {
-          // Skip logging for file upload/download endpoints
-          final path = options.path.toLowerCase();
-          return !path.contains('/files/upload') &&
-              !path.contains('/files/download');
-        },
-      ),
-    );
+    // _dio.interceptors.add(
+    //   PrettyDioLogger(
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseBody: true,
+    //     responseHeader: false,
+    //     error: true,
+    //     compact: true,
+    //     filter: (options, args) {
+    //       // Skip logging for file upload/download endpoints
+    //       final path = options.path.toLowerCase();
+    //       return !path.contains('/files/upload') &&
+    //           !path.contains('/files/download');
+    //     },
+    //   ),
+    // );
 
     // Configure insecure certificate callback if needed
     _configureCertificateValidation();
