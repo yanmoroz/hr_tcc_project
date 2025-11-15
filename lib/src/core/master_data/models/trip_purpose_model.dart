@@ -1,15 +1,20 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/domain.dart';
+import '../../domain/entities/trip_purpose.dart';
 
 part 'trip_purpose_model.freezed.dart';
 part 'trip_purpose_model.g.dart';
 
 @freezed
 abstract class TripPurposeModel with _$TripPurposeModel {
-  const factory TripPurposeModel({required String id, required String code, required String name}) = _TripPurposeModel;
+  const factory TripPurposeModel({
+    required String id,
+    required String code,
+    required String name,
+  }) = _TripPurposeModel;
 
-  factory TripPurposeModel.fromJson(Map<String, dynamic> json) => _$TripPurposeModelFromJson(json);
+  factory TripPurposeModel.fromJson(Map<String, dynamic> json) =>
+      _$TripPurposeModelFromJson(json);
 }
 
 extension TripPurposeModelX on TripPurposeModel {

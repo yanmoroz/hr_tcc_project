@@ -1,10 +1,9 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:hr_tcc_project/src/core/data/models/system_status_model.dart';
 import '../../../../core/domain/entities/system_status.dart';
 import '../../../../core/types/result.dart';
 
 import '../../../../core/cache/cache_manager.dart';
-import '../../../../core/data/base_repository.dart';
+import '../../../../core/base_repository.dart';
 import '../../domain/domain.dart';
 import '../data.dart';
 

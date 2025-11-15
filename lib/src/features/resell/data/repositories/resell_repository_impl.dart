@@ -56,4 +56,13 @@ class ResellRepositoryImpl implements ResellRepository {
       pickupLotMyself: pickupLotMyself,
     );
   }
+
+  @override
+  Future<Result<List<ResellEquipmentType>>> getResellEquipmentTypes() async {
+    final result = await _remoteDataSource.getResellEquipmentTypes();
+
+    return result.map((response) {
+      return response.map((model) => model.toDomain()).toList();
+    });
+  }
 }

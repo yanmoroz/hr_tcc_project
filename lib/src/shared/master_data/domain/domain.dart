@@ -1,7 +1,8 @@
 // Entities
-export 'entities/alpina_digital_prev_access.dart';
-export 'entities/application_form.dart';
-export 'entities/application_form_group.dart';
+// NOTE: Core dictionary entities moved to core/domain/entities/
+export '../../../core/domain/entities/alpina_digital_prev_access.dart';
+export '../../../core/domain/entities/application_form.dart';
+export '../../../core/domain/entities/application_form_group.dart';
 export 'entities/business_trip_purpose.dart';
 export 'entities/kp_absence_category.dart';
 export 'entities/kp_discount_category.dart';
@@ -9,16 +10,16 @@ export 'entities/kp_discount_source.dart';
 export 'entities/kp_news_category.dart';
 export 'entities/kp_office.dart';
 export 'entities/kp_parking_type.dart';
-export 'entities/office.dart';
+export '../../../core/domain/entities/office.dart';
 export 'entities/referral_program_candidate.dart';
 export 'entities/referral_program_vacancy/bonus_info.dart';
 export 'entities/referral_program_vacancy/field_activity.dart';
 export 'entities/referral_program_vacancy/referral_program_vacancy.dart';
-export 'entities/system_status_group.dart';
-export 'entities/training_form.dart';
-export 'entities/training_month.dart';
-export 'entities/training_type.dart';
-export 'entities/trip_purpose.dart';
+export '../../../core/domain/entities/system_status_group.dart';
+export '../../../core/domain/entities/training_form.dart';
+export '../../../core/domain/entities/training_month.dart';
+export '../../../core/domain/entities/training_type.dart';
+export '../../../core/domain/entities/trip_purpose.dart';
 export 'entities/unplanned_training_contractor.dart';
 export 'entities/violation_security_level.dart';
 
@@ -33,7 +34,7 @@ export 'repositories/kp_office_repository.dart';
 export 'repositories/kp_parking_type_repository.dart';
 export 'repositories/referral_program_candidate_repository.dart';
 export 'repositories/referral_program_vacancy_repository.dart';
-export 'repositories/resell_equipment_type_repository.dart';
+// NOTE: ResellEquipmentTypeRepository moved to features/resell/domain/repositories/
 export 'repositories/unplanned_training_contractor_repository.dart';
 export 'repositories/violation_security_level_repository.dart';
 
@@ -51,7 +52,7 @@ export 'usecases/get_kp_parking_types_usecase.dart';
 export 'usecases/get_offices_usecase.dart';
 export 'usecases/get_referral_program_candidates_usecase.dart';
 export 'usecases/get_referral_program_vacancies_usecase.dart';
-export 'usecases/get_resell_equipment_types_usecase.dart';
+// NOTE: GetResellEquipmentTypesUsecase moved to features/resell/domain/usecases/
 export 'usecases/get_system_status_groups_usecase.dart';
 export 'usecases/get_system_statuses_usecase.dart';
 export 'usecases/get_training_forms_usecase.dart';

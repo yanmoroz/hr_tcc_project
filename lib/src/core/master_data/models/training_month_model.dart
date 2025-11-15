@@ -1,16 +1,20 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/domain.dart';
+import '../../domain/entities/training_month.dart';
 
 part 'training_month_model.freezed.dart';
 part 'training_month_model.g.dart';
 
 @freezed
 abstract class TrainingMonthModel with _$TrainingMonthModel {
-  const factory TrainingMonthModel({required String id, required String code, required String name}) =
-      _TrainingMonthModel;
+  const factory TrainingMonthModel({
+    required String id,
+    required String code,
+    required String name,
+  }) = _TrainingMonthModel;
 
-  factory TrainingMonthModel.fromJson(Map<String, dynamic> json) => _$TrainingMonthModelFromJson(json);
+  factory TrainingMonthModel.fromJson(Map<String, dynamic> json) =>
+      _$TrainingMonthModelFromJson(json);
 }
 
 extension TrainingMonthModelX on TrainingMonthModel {

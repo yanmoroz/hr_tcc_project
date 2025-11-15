@@ -1,15 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
-import 'package:hr_tcc_project/src/core/data/models/resell_equipment_type_model.dart';
+import 'package:hr_tcc_project/src/features/resell/data/datasources/resell_remote_data_source.dart';
+import 'package:hr_tcc_project/src/features/resell/data/datasources/resell_remote_data_source_impl.dart';
+import 'package:hr_tcc_project/src/features/resell/data/models/resell_equipment_type_model.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
 import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {
   group('ResellEquipmentTypeRemoteDataSource', () {
-    late ResellEquipmentTypeRemoteDataSource dataSource;
+    late ResellRemoteDataSource dataSource;
     late ApiClient apiClient;
     late AuthTokenProvider authTokenProvider;
 
@@ -22,7 +23,7 @@ void main() {
       // Create real instances (no mocks)
       authTokenProvider = LocalAuthTokenProvider();
       apiClient = InsecureApiClient(authTokenProvider);
-      dataSource = ResellEquipmentTypeRemoteDataSourceImpl(apiClient);
+      dataSource = ResellRemoteDataSourceImpl(apiClient);
     });
 
     group('getResellEquipmentTypes', () {

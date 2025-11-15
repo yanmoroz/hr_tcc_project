@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/data/models/system_status_model.dart';
+import '../../../../core/master_data/models/system_status_model.dart';
 
 part 'resell_booking_confirm_model.freezed.dart';
 part 'resell_booking_confirm_model.g.dart';

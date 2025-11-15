@@ -79,4 +79,23 @@ class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
       },
     );
   }
+
+  @override
+  Future<Result<List<ResellEquipmentTypeModel>>>
+  getResellEquipmentTypes() async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.get(ApiConstants.resellEquipmentTypeEndpoint),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        final equipmentTypesJson = data['equipmentTypes'] as List<dynamic>;
+        return equipmentTypesJson
+            .map(
+              (json) => ResellEquipmentTypeModel.fromJson(
+                json as Map<String, dynamic>,
+              ),
+            )
+            .toList();
+      },
+    );
+  }
 }

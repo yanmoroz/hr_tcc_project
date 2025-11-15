@@ -1,14 +1,18 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/domain.dart';
+import '../../domain/entities/alpina_digital_prev_access.dart';
 
 part 'alpina_digital_prev_access_model.freezed.dart';
 part 'alpina_digital_prev_access_model.g.dart';
 
 @freezed
-abstract class AlpinaDigitalPrevAccessModel with _$AlpinaDigitalPrevAccessModel {
-  const factory AlpinaDigitalPrevAccessModel({required String id, required String code, required String name}) =
-      _AlpinaDigitalPrevAccessModel;
+abstract class AlpinaDigitalPrevAccessModel
+    with _$AlpinaDigitalPrevAccessModel {
+  const factory AlpinaDigitalPrevAccessModel({
+    required String id,
+    required String code,
+    required String name,
+  }) = _AlpinaDigitalPrevAccessModel;
 
   factory AlpinaDigitalPrevAccessModel.fromJson(Map<String, dynamic> json) =>
       _$AlpinaDigitalPrevAccessModelFromJson(json);

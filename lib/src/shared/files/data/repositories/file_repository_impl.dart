@@ -8,7 +8,7 @@ import 'package:fpdart/fpdart.dart';
 import '../../../../core/types/result.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../../../core/data/base_repository.dart';
+import '../../../../core/base_repository.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
@@ -84,7 +84,12 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
   }
 
   /// Generate a unique cache key based on system type and file identifiers
-  String _generateCacheKey(SystemType systemType, String? idFile, String? uriFile, String? urlFile) {
+  String _generateCacheKey(
+    SystemType systemType,
+    String? idFile,
+    String? uriFile,
+    String? urlFile,
+  ) {
     final identifier = idFile ?? uriFile ?? urlFile ?? '';
     final input = '${systemType.value}_$identifier';
     final bytes = utf8.encode(input);

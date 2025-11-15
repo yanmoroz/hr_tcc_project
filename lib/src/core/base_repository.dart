@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import '../../core/types/result.dart';
+import 'types/result.dart';
 
 /// Base repository mixin that provides common mapping utilities
 /// for converting data models to domain entities.

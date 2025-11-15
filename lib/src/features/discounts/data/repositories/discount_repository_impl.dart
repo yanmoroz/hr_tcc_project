@@ -1,4 +1,4 @@
-import 'package:hr_tcc_project/src/core/data/base_repository.dart';
+import 'package:hr_tcc_project/src/core/base_repository.dart';
 import 'package:hr_tcc_project/src/core/types/result.dart';
 import '../../domain/domain.dart';
 import '../data.dart';

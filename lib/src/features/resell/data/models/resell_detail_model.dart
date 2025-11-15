@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/data/models/resell_equipment_type_model.dart';
-import '../../../../core/data/models/system_status_model.dart';
+import '../../../../core/master_data/models/system_status_model.dart';
 import '../../domain/domain.dart';
 import '../data.dart';
 

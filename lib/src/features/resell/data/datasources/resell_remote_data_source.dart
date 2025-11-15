@@ -27,4 +27,6 @@ abstract class ResellRemoteDataSource {
     String? employeePlace,
     bool? pickupLotMyself,
   });
+
+  Future<Result<List<ResellEquipmentTypeModel>>> getResellEquipmentTypes();
 }

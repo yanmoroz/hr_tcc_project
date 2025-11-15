@@ -26,4 +26,6 @@ abstract class ResellRepository {
     String? employeePlace,
     bool? pickupLotMyself,
   });
+
+  Future<Result<List<ResellEquipmentType>>> getResellEquipmentTypes();
 }

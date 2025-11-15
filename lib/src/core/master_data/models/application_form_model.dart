@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/domain.dart';
+import '../../domain/entities/application_form.dart';
 
 part 'application_form_model.freezed.dart';
 part 'application_form_model.g.dart';
@@ -17,7 +17,8 @@ abstract class ApplicationFormModel with _$ApplicationFormModel {
     required bool archive,
   }) = _ApplicationFormModel;
 
-  factory ApplicationFormModel.fromJson(Map<String, dynamic> json) => _$ApplicationFormModelFromJson(json);
+  factory ApplicationFormModel.fromJson(Map<String, dynamic> json) =>
+      _$ApplicationFormModelFromJson(json);
 }
 
 extension ApplicationFormModelX on ApplicationFormModel {
