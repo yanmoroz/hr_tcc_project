@@ -15,6 +15,7 @@ import '../types/result.dart';
 import 'models/alpina_digital_prev_access_model.dart';
 import 'models/application_form_group_model.dart';
 import 'models/application_form_model.dart';
+import 'models/core_dictionaries_response_model.dart';
 import 'models/office_model.dart';
 import 'models/system_status_group_model.dart';
 import 'models/system_status_model.dart';
@@ -22,7 +23,6 @@ import 'models/training_form_model.dart';
 import 'models/training_month_model.dart';
 import 'models/training_type_model.dart';
 import 'models/trip_purpose_model.dart';
-import '../../shared/master_data/data/models/core_dictionaries_response_model/core_dictionaries_response_model.dart';
 
 /// Remote data source for master data
 ///

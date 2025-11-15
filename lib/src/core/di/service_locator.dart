@@ -87,9 +87,6 @@ void _initializeMasterDataDependencies() {
   // ============================================================================
 
   // Data sources
-  sl.registerLazySingleton<CoreDictionariesRemoteDataSource>(
-    () => CoreDictionariesRemoteDataSourceImpl(sl()),
-  );
   sl.registerLazySingleton<ViolationSecurityLevelRemoteDataSource>(
     () => ViolationSecurityLevelRemoteDataSourceImpl(sl()),
   );
@@ -123,9 +120,6 @@ void _initializeMasterDataDependencies() {
   );
 
   // Repositories
-  sl.registerLazySingleton<CoreDictionariesRepository>(
-    () => CoreDictionariesRepositoryImpl(sl()),
-  );
   sl.registerLazySingleton<ViolationSecurityLevelRepository>(
     () => ViolationSecurityLevelRepositoryImpl(sl()),
   );

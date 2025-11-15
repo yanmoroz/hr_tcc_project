@@ -38,4 +38,5 @@ enum StatusGroupType {
   }
 }
 
-StatusGroupType statusGroupTypeFromJson(String value) => StatusGroupType.fromString(value);
+StatusGroupType statusGroupTypeFromJson(String value) =>
+    StatusGroupType.fromString(value);

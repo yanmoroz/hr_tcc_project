@@ -65,10 +65,7 @@ class BlocFactory {
 
   /// Creates a [NewsListBloc] instance.
   static NewsListBloc createNewsListBloc() {
-    return NewsListBloc(
-      getNewsListUsecase: sl(),
-      downloadFileUsecase: sl(),
-    );
+    return NewsListBloc(getNewsListUsecase: sl(), downloadFileUsecase: sl());
   }
 
   /// Creates a [NewsDetailBloc] instance with the given [newsId].
@@ -94,10 +91,18 @@ class BlocFactory {
 
     return CommentsBloc(
       entityId: entityId,
-      getCommentsUsecase: sl(instanceName: 'get${capitalizedFeature}CommentsUsecase'),
-      addCommentUsecase: sl(instanceName: 'add${capitalizedFeature}CommentUsecase'),
-      deleteCommentUsecase: sl(instanceName: 'delete${capitalizedFeature}CommentUsecase'),
-      toggleCommentLikeUsecase: sl(instanceName: 'toggle${capitalizedFeature}CommentLikeUsecase'),
+      getCommentsUsecase: sl(
+        instanceName: 'get${capitalizedFeature}CommentsUsecase',
+      ),
+      addCommentUsecase: sl(
+        instanceName: 'add${capitalizedFeature}CommentUsecase',
+      ),
+      deleteCommentUsecase: sl(
+        instanceName: 'delete${capitalizedFeature}CommentUsecase',
+      ),
+      toggleCommentLikeUsecase: sl(
+        instanceName: 'toggle${capitalizedFeature}CommentLikeUsecase',
+      ),
     );
   }
 }

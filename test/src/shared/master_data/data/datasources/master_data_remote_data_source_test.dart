@@ -2,13 +2,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
+import 'package:hr_tcc_project/src/core/master_data/master_data_remote_data_source.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/alpina_digital_prev_access_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/application_form_group_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/application_form_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/office_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/system_status_group_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/system_status_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/training_form_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/training_month_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/training_type_model.dart';
+import 'package:hr_tcc_project/src/core/master_data/models/trip_purpose_model.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
 import '../../../../../../lib/src/core/types/result.dart';
 
 void main() {
-  group('CoreDictionariesRemoteDataSource', () {
-    late CoreDictionariesRemoteDataSource dataSource;
+  group('MasterDataRemoteDataSource', () {
+    late MasterDataRemoteDataSource dataSource;
     late ApiClient apiClient;
     late AuthTokenProvider authTokenProvider;
 
@@ -21,7 +31,7 @@ void main() {
       // Create real instances (no mocks)
       authTokenProvider = LocalAuthTokenProvider();
       apiClient = InsecureApiClient(authTokenProvider);
-      dataSource = CoreDictionariesRemoteDataSourceImpl(apiClient);
+      dataSource = MasterDataRemoteDataSource(apiClient);
     });
 
     group('getCoreDictionaries', () {
@@ -29,7 +39,7 @@ void main() {
         'should fetch core dictionaries from API and map to models',
         () async {
           // Act
-          final result = await dataSource.getCoreDictionaries();
+          final result = await dataSource.fetchAllCoreDictionaries();
 
           // Assert
           result.fold(
@@ -47,7 +57,7 @@ void main() {
                 isA<List<ApplicationFormModel>>(),
               );
               expect(
-                response.systemStatusesGroups,
+                response.systemStatusGroups,
                 isA<List<SystemStatusGroupModel>>(),
               );
               expect(response.systemStatuses, isA<List<SystemStatusModel>>());
@@ -67,8 +77,8 @@ void main() {
 ${response.applicationFormGroups.map((g) => '    - ${g.toString()}').join('\n')}
   - ApplicationForms: ${response.applicationForms.length}
 ${response.applicationForms.map((f) => '    - ${f.toString()}').join('\n')}
-  - SystemStatusesGroups: ${response.systemStatusesGroups.length}
-${response.systemStatusesGroups.map((g) => '    - ${g.toString()}').join('\n')}
+  - SystemStatusGroups: ${response.systemStatusGroups.length}
+${response.systemStatusGroups.map((g) => '    - ${g.toString()}').join('\n')}
   - SystemStatuses: ${response.systemStatuses.length}
 ${response.systemStatuses.map((s) => '    - ${s.toString()}').join('\n')}
   - TripPurposes: ${response.tripPurposes.length}

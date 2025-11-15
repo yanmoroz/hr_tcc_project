@@ -4,7 +4,8 @@ class CacheManager<T> {
   DateTime? _cacheTimestamp;
   final Duration _cacheDuration;
 
-  CacheManager({Duration cacheDuration = const Duration(hours: 1)}) : _cacheDuration = cacheDuration;
+  CacheManager({Duration cacheDuration = const Duration(hours: 1)})
+    : _cacheDuration = cacheDuration;
 
   /// Gets cached data if valid, null otherwise
   T? get() {

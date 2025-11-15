@@ -8,8 +8,16 @@ import 'api_constants.dart';
 
 abstract class ApiClient {
   Future<Response> get(String path, {Map<String, dynamic>? queryParameters});
-  Future<Response> post(String path, {dynamic data, Map<String, dynamic>? queryParameters});
-  Future<Response> put(String path, {dynamic data, Map<String, dynamic>? queryParameters});
+  Future<Response> post(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  });
+  Future<Response> put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  });
   Future<Response> delete(String path, {Map<String, dynamic>? queryParameters});
   Future<Response> uploadFile(
     String path, {
@@ -70,7 +78,8 @@ abstract class BaseApiClient implements ApiClient {
         filter: (options, args) {
           // Skip logging for file upload/download endpoints
           final path = options.path.toLowerCase();
-          return !path.contains('/files/upload') && !path.contains('/files/download');
+          return !path.contains('/files/upload') &&
+              !path.contains('/files/download');
         },
       ),
     );
@@ -90,17 +99,28 @@ abstract class BaseApiClient implements ApiClient {
   }
 
   @override
-  Future<Response> post(String path, {dynamic data, Map<String, dynamic>? queryParameters}) {
+  Future<Response> post(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
     return _dio.post(path, data: data, queryParameters: queryParameters);
   }
 
   @override
-  Future<Response> put(String path, {dynamic data, Map<String, dynamic>? queryParameters}) {
+  Future<Response> put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
     return _dio.put(path, data: data, queryParameters: queryParameters);
   }
 
   @override
-  Future<Response> delete(String path, {Map<String, dynamic>? queryParameters}) {
+  Future<Response> delete(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) {
     return _dio.delete(path, queryParameters: queryParameters);
   }
 
@@ -111,7 +131,12 @@ abstract class BaseApiClient implements ApiClient {
     Map<String, dynamic>? queryParameters,
     ProgressCallback? onSendProgress,
   }) {
-    return _dio.post(path, data: formData, queryParameters: queryParameters, onSendProgress: onSendProgress);
+    return _dio.post(
+      path,
+      data: formData,
+      queryParameters: queryParameters,
+      onSendProgress: onSendProgress,
+    );
   }
 
   @override
@@ -127,7 +152,11 @@ abstract class BaseApiClient implements ApiClient {
       onReceiveProgress: onReceiveProgress,
       options:
           options ??
-          Options(responseType: ResponseType.bytes, followRedirects: false, validateStatus: (status) => status! < 500),
+          Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) => status! < 500,
+          ),
     );
   }
 }
@@ -144,7 +173,8 @@ class InsecureApiClient extends BaseApiClient {
     // Configure HTTP client adapter for insecure connections
     (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
       final client = HttpClient();
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
       return client;
     };
   }

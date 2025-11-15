@@ -21,9 +21,7 @@ class ApiCallExecutor {
           return Right(successParser(response));
         } catch (e, stackTrace) {
           AppLogger.e('Error parsing API response', e, stackTrace);
-          return Left(
-            MappingException.fromParsingError(e, stackTrace),
-          );
+          return Left(MappingException.fromParsingError(e, stackTrace));
         }
       } else {
         return Left(

@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hr_tcc_project/src/features/applications/domain/domain.dart';
-import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
+
+import '../../../../core/master_data/models/application_form_model.dart';
+import '../../../../core/master_data/models/system_status_model.dart';
 
 part 'application_info_model.freezed.dart';
 part 'application_info_model.g.dart';

@@ -6,11 +6,7 @@ class MappingException extends Equatable implements Exception {
   final dynamic error;
   final StackTrace? stackTrace;
 
-  const MappingException({
-    required this.message,
-    this.error,
-    this.stackTrace,
-  });
+  const MappingException({required this.message, this.error, this.stackTrace});
 
   /// Creates a MappingException for JSON parsing errors
   factory MappingException.fromParsingError(
