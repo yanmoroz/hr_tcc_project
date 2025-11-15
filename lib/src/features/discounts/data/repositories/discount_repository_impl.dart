@@ -28,8 +28,7 @@ class DiscountRepositoryImpl with BaseRepository implements DiscountRepository {
       source: source,
       page: page,
     );
-    return mapResult(
-      result,
+    return result.map(
       (response) =>
           response.discounts.map((model) => model.toDomain()).toList(),
     );
@@ -38,15 +37,14 @@ class DiscountRepositoryImpl with BaseRepository implements DiscountRepository {
   @override
   Future<Result<DiscountDetail>> getDiscountDetail(int id) async {
     final result = await _remoteDataSource.getDiscountDetail(id);
-    return mapResult(result, (model) => model.toDomain());
+    return result.map((model) => model.toDomain());
   }
 
   @override
   Future<Result<({int likeCount, bool like, int commentCount})>>
   getDiscountStats(int id) async {
     final result = await _remoteDataSource.getDiscountStats(id);
-    return mapResult(
-      result,
+    return result.map(
       (response) => (
         likeCount: response.likeCount,
         like: response.like,

@@ -1,7 +1,8 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
 import '../../domain/domain.dart';
-import '../data.dart';
+import '../datasources/resell_remote_data_source.dart';
+import '../models/resell_equipment_type_model.dart';
 
 class ResellRepositoryImpl implements ResellRepository {
   final ResellRemoteDataSource _remoteDataSource;

@@ -36,7 +36,7 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
       onProgress: onProgress,
     );
 
-    return mapResult(result, (model) => model.toDomain());
+    return result.map((model) => model.toDomain());
   }
 
   @override

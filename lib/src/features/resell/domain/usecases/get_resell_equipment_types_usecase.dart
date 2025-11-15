@@ -1,5 +1,6 @@
 import '../../../../core/base_types/result.dart';
-import '../domain.dart';
+import '../entities/resell_equipment_type.dart';
+import '../repositories/resell_repository.dart';
 
 class GetResellEquipmentTypesUsecase {
   final ResellRepository resellRepository;

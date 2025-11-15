@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain.dart';
+import '../../value_objects/booking_transition.dart';
 
 part 'confirm_resell_booking_usecase_params.freezed.dart';
 

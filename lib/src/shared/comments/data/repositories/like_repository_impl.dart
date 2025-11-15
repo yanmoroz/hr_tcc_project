@@ -11,7 +11,7 @@ class LikeRepositoryImpl with BaseRepository implements LikeRepository {
   @override
   Future<Result<bool>> toggleEntityLike(int entityId) async {
     final result = await _remoteDataSource.toggleEntityLike(entityId);
-    return mapResult(result, (response) => response.like);
+    return result.map((response) => response.like);
   }
 
   @override
@@ -23,6 +23,6 @@ class LikeRepositoryImpl with BaseRepository implements LikeRepository {
       entityId,
       commentId,
     );
-    return mapResult(result, (response) => response.like);
+    return result.map((response) => response.like);
   }
 }

@@ -1,10 +1,12 @@
-import 'package:hr_tcc_project/src/core/network/api_call_executor.dart';
-import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/core/network/api_constants.dart';
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
+import '../../../../core/base_types/result.dart';
+import '../../../../core/network/api_call_executor.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_constants.dart';
 import '../../domain/domain.dart';
-import '../data.dart';
+import '../models/resell_detail_model.dart';
+import '../models/resell_equipment_type_model.dart';
+import '../models/resell_list_response_model.dart';
+import 'resell_remote_data_source.dart';
 
 class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
   final ApiClient _apiClient;
@@ -55,7 +57,7 @@ class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
   }
 
   @override
-  Future<Result<ResellBookingConfirmModel>> confirmBooking({
+  Future<Result<void>> confirmBooking({
     required String id,
     required BookingTransition transition,
     String? inn,
@@ -75,7 +77,7 @@ class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {
         },
       ),
       successParser: (response) {
-        return ResellBookingConfirmModel.fromJson(response.data);
+        return null;
       },
     );
   }

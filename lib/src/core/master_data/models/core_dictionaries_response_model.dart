@@ -27,7 +27,7 @@ abstract class CoreDictionariesResponseModel
     required List<TrainingFormModel> trainingForms,
     required List<TrainingMonthModel> trainingMonths,
     required List<AlpinaDigitalPrevAccessModel> alpinaDigitalPrevAccesses,
-    required List<OfficeModel> offices,
+    @JsonKey(name: 'dictOffices') required List<OfficeModel> offices,
   }) = _CoreDictionariesResponseModel;
 
   factory CoreDictionariesResponseModel.fromJson(Map<String, dynamic> json) =>

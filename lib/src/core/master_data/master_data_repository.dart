@@ -1,6 +1,5 @@
 import 'package:fpdart/fpdart.dart';
 
-import '../base_types/result.dart';
 import '../domain/entities/system_status.dart';
 import '../domain/entities/application_form_group.dart';
 import '../domain/entities/application_form.dart';
@@ -11,6 +10,7 @@ import '../domain/entities/training_form.dart';
 import '../domain/entities/training_month.dart';
 import '../domain/entities/alpina_digital_prev_access.dart';
 import '../domain/entities/office.dart';
+import '../base_types/result.dart';
 import 'master_data_cache.dart';
 import 'master_data_remote_data_source.dart';
 

@@ -1,9 +1,12 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
-import '../domain.dart';
+import '../entities/resell_detail.dart';
+import '../entities/resell_equipment_type.dart';
+import '../entities/resell_item.dart';
+import '../value_objects/booking_transition.dart';
+import '../value_objects/resell_status.dart';
 
 abstract class ResellRepository {
-  /// Get paginated list of resell items with filtering
   Future<Result<List<ResellItem>>> getResellItems({
     required ResellStatus status,
     String? search,
@@ -11,13 +14,10 @@ abstract class ResellRepository {
     required int pageSize,
   });
 
-  /// Get detailed information about a specific resell item
   Future<Result<ResellDetail>> getResellDetail(String id);
 
-  /// Initiate booking process for a resell item
   Future<Result<void>> bookResellItem(String id);
 
-  /// Confirm or cancel booking with additional details
   Future<Result<void>> confirmBooking({
     required String id,
     required BookingTransition transition,

@@ -14,7 +14,7 @@ class PollDetailRepositoryImpl
   Future<Result<PollDetail>> getPollDetail(int id) async {
     final result = await _remoteDataSource.getPollDetail(id);
 
-    return mapResult(result, (model) => model.toDomain());
+    return result.map((model) => model.toDomain());
   }
 
   @override

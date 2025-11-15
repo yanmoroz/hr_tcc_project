@@ -17,18 +17,4 @@ mixin BaseRepository {
       (models) => Right(models.map((model) => mapper(model)).toList()),
     );
   }
-
-  /// Maps a Result containing a single model to a single entity.
-  ///
-  /// Handles the conversion from `Result<TModel>`
-  /// to `Result<TEntity>` using the provided mapper function.
-  Result<TEntity> mapResult<TModel, TEntity>(
-    Result<TModel> result,
-    TEntity Function(TModel) mapper,
-  ) {
-    return result.fold(
-      (failure) => Left(failure),
-      (model) => Right(mapper(model)),
-    );
-  }
 }

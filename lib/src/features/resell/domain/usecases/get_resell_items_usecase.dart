@@ -1,6 +1,8 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
-import '../domain.dart';
+import '../entities/resell_item.dart';
+import '../value_objects/resell_status.dart';
+import '../repositories/resell_repository.dart';
 
 class GetResellItemsUsecase {
   final ResellRepository resellRepository;

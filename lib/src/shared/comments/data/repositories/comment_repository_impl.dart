@@ -11,8 +11,7 @@ class CommentRepositoryImpl with BaseRepository implements CommentRepository {
   @override
   Future<Result<List<Comment>>> getComments(int entityId) async {
     final result = await _remoteDataSource.getComments(entityId);
-    return mapResult(
-      result,
+    return result.map(
       (response) => response.comments.map((model) => model.toDomain()).toList(),
     );
   }
@@ -30,7 +29,7 @@ class CommentRepositoryImpl with BaseRepository implements CommentRepository {
       attachments: attachments,
     );
     final result = await _remoteDataSource.addComment(entityId, request);
-    return mapResult(result, (model) => model.toDomain());
+    return result.map((model) => model.toDomain());
   }
 
   @override
@@ -39,6 +38,6 @@ class CommentRepositoryImpl with BaseRepository implements CommentRepository {
     required int commentId,
   }) async {
     final result = await _remoteDataSource.deleteComment(entityId, commentId);
-    return mapResult(result, (response) => response.removedIds);
+    return result.map((response) => response.removedIds);
   }
 }
