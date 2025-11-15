@@ -1,6 +1,5 @@
-import '../../../../../core/base_types/result.dart';
-
-import '../../domain.dart';
+import '../../../../core/base_types/result.dart';
+import '../repositories/notification_repository.dart';
 
 class GetUnreadNotificationsCountUsecase {
   final NotificationRepository notificationRepository;

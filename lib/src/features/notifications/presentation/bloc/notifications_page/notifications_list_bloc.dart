@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'notifications_list_event.dart';
@@ -81,7 +82,7 @@ class NotificationsListBloc
     }
 
     // If already read, no need to update
-    if (notification.state == 1) return;
+    if (notification.isRead) return;
 
     final result = await markNotificationAsReadUsecase(id);
 
@@ -93,7 +94,7 @@ class NotificationsListBloc
         notification,
       ) {
         if (notification.id == id) {
-          return notification.copyWith(state: 1);
+          return notification.copyWith(isRead: true);
         }
         return notification;
       }).toList();
@@ -131,8 +132,8 @@ class NotificationsListBloc
       final updatedNotifications = currentState.notifications.map((
         notification,
       ) {
-        if (notification.state == 0) {
-          return notification.copyWith(state: 1);
+        if (!notification.isRead) {
+          return notification.copyWith(isRead: true);
         }
         return notification;
       }).toList();

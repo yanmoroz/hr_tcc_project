@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/domain.dart';
+import '../../domain/domain.dart';
 import 'author_model.dart';
 
 part 'notification_model.freezed.dart';
@@ -17,11 +17,12 @@ abstract class NotificationModel with _$NotificationModel {
     String? link,
     required DateTime created,
     required String notificationText,
-    required int state, // 0 = unread, 1 = read
+    required int state,
     AuthorModel? author,
   }) = _NotificationModel;
 
-  factory NotificationModel.fromJson(Map<String, dynamic> json) => _$NotificationModelFromJson(json);
+  factory NotificationModel.fromJson(Map<String, dynamic> json) =>
+      _$NotificationModelFromJson(json);
 }
 
 extension NotificationModelX on NotificationModel {
@@ -34,7 +35,7 @@ extension NotificationModelX on NotificationModel {
     link: link,
     created: created,
     notificationText: notificationText,
-    state: state,
+    isRead: state == 1,
     author: author?.toDomain(),
   );
 }

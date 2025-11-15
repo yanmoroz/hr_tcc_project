@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/domain.dart';
+import '../../domain/domain.dart';
 import 'department_model.dart';
 
 part 'author_model.freezed.dart';
@@ -24,7 +24,8 @@ abstract class AuthorModel with _$AuthorModel {
     String? status,
   }) = _AuthorModel;
 
-  factory AuthorModel.fromJson(Map<String, dynamic> json) => _$AuthorModelFromJson(json);
+  factory AuthorModel.fromJson(Map<String, dynamic> json) =>
+      _$AuthorModelFromJson(json);
 }
 
 extension AuthorModelX on AuthorModel {

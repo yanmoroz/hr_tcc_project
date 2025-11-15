@@ -9,7 +9,7 @@ import 'package:hr_tcc_project/src/features/resell/data/data.dart';
 import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
 
 void main() {
-  group('ResellRemoteDataSource', () {
+  group('Resell', () {
     late AuthTokenProvider authTokenProvider;
     late ApiClient apiClient;
     late ResellRemoteDataSource dataSource;
@@ -34,7 +34,7 @@ void main() {
       confirmResellBookingUsecase = ConfirmResellBookingUsecase(repository);
     });
 
-    test('getResellItems', () async {
+    test('E2E', () async {
       final resellItemsResult = await getResellItemsUsecase(
         status: ResellStatus.onSale,
         page: 0,

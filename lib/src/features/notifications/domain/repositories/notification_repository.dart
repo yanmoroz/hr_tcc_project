@@ -1,6 +1,5 @@
-import '../../../../../core/base_types/result.dart';
-
-import '../../domain.dart';
+import '../../../../core/base_types/result.dart';
+import '../entities/notification.dart';
 
 abstract class NotificationRepository {
   Future<Result<List<Notification>>> getNotifications();

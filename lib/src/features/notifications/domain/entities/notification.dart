@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../value_objects/entity_type.dart';
 import 'author.dart';
-import 'entity_type.dart';
 
 part 'notification.freezed.dart';
 
@@ -16,7 +16,7 @@ abstract class Notification with _$Notification {
     String? link,
     required DateTime created,
     required String notificationText,
-    required int state, // 0 = unread, 1 = read
+    required bool isRead,
     Author? author,
   }) = _Notification;
 }
