@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import '../../../../core/types/result.dart';
+import '../../../../core/base_types/result.dart';
 
 import '../entities/entities.dart';
 import '../repositories/repositories.dart';

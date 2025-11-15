@@ -1,4 +1,4 @@
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../../domain.dart';
 
 class SubmitPollAnswersUsecase {
@@ -6,7 +6,13 @@ class SubmitPollAnswersUsecase {
 
   SubmitPollAnswersUsecase(this.pollDetailRepository);
 
-  Future<Result<void>> call({required int pollId, required PollAnswersRequest request}) async {
-    return await pollDetailRepository.submitPollAnswers(pollId: pollId, request: request);
+  Future<Result<void>> call({
+    required int pollId,
+    required PollAnswersRequest request,
+  }) async {
+    return await pollDetailRepository.submitPollAnswers(
+      pollId: pollId,
+      request: request,
+    );
   }
 }

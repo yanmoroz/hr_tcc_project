@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../shared/files/domain/entities/system_type.dart';
 import '../../../../../shared/files/domain/usecases/usecases.dart';
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'news_list_event.dart';
 import 'news_list_state.dart';
@@ -13,10 +13,12 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
   final GetNewsListUsecase _getNewsListUsecase;
   final DownloadFileUsecase _downloadFileUsecase;
 
-  NewsListBloc({required GetNewsListUsecase getNewsListUsecase, required DownloadFileUsecase downloadFileUsecase})
-    : _getNewsListUsecase = getNewsListUsecase,
-      _downloadFileUsecase = downloadFileUsecase,
-      super(const NewsListState.initial()) {
+  NewsListBloc({
+    required GetNewsListUsecase getNewsListUsecase,
+    required DownloadFileUsecase downloadFileUsecase,
+  }) : _getNewsListUsecase = getNewsListUsecase,
+       _downloadFileUsecase = downloadFileUsecase,
+       super(const NewsListState.initial()) {
     on<LoadNews>(_onLoadNews);
     on<RefreshNews>(_onRefreshNews);
     on<LoadMoreNews>(_onLoadMoreNews);
@@ -24,15 +26,31 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
 
   Future<void> _onLoadNews(LoadNews event, Emitter<NewsListState> emit) async {
     emit(const NewsListState.loading());
-    await _loadNews(emit, page: 0, category: event.category, search: event.search);
+    await _loadNews(
+      emit,
+      page: 0,
+      category: event.category,
+      search: event.search,
+    );
   }
 
-  Future<void> _onRefreshNews(RefreshNews event, Emitter<NewsListState> emit) async {
+  Future<void> _onRefreshNews(
+    RefreshNews event,
+    Emitter<NewsListState> emit,
+  ) async {
     // Keep current state while refreshing, then reload from page 0
-    await _loadNews(emit, page: 0, category: event.category, search: event.search);
+    await _loadNews(
+      emit,
+      page: 0,
+      category: event.category,
+      search: event.search,
+    );
   }
 
-  Future<void> _onLoadMoreNews(LoadMoreNews event, Emitter<NewsListState> emit) async {
+  Future<void> _onLoadMoreNews(
+    LoadMoreNews event,
+    Emitter<NewsListState> emit,
+  ) async {
     // Extract state values first
     List<NewsItem>? newsItems;
     int? currentPage;
@@ -95,22 +113,35 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     }
   }
 
-  Future<void> _loadNews(Emitter<NewsListState> emit, {required int page, int? category, String? search}) async {
-    final result = await _getNewsListUsecase(page: page, category: category, search: search);
+  Future<void> _loadNews(
+    Emitter<NewsListState> emit, {
+    required int page,
+    int? category,
+    String? search,
+  }) async {
+    final result = await _getNewsListUsecase(
+      page: page,
+      category: category,
+      search: search,
+    );
 
-    await result.fold((error) async => emit(NewsListState.error(error.message)), (newsItems) async {
-      emit(
-        NewsListState.loaded(
-          newsItems: newsItems,
-          currentPage: page,
-          hasMorePages: newsItems.isNotEmpty, // Assume more pages if we got results
-          isLoadingMore: false,
-          category: category,
-          search: search,
-        ),
-      );
-      await _loadCoverImages(newsItems, emit);
-    });
+    await result.fold(
+      (error) async => emit(NewsListState.error(error.message)),
+      (newsItems) async {
+        emit(
+          NewsListState.loaded(
+            newsItems: newsItems,
+            currentPage: page,
+            hasMorePages:
+                newsItems.isNotEmpty, // Assume more pages if we got results
+            isLoadingMore: false,
+            category: category,
+            search: search,
+          ),
+        );
+        await _loadCoverImages(newsItems, emit);
+      },
+    );
   }
 
   Future<void> _loadMoreNews(
@@ -121,7 +152,11 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     int? category,
     String? search,
   }) async {
-    final result = await _getNewsListUsecase(page: nextPage, category: category, search: search);
+    final result = await _getNewsListUsecase(
+      page: nextPage,
+      category: category,
+      search: search,
+    );
 
     await result.fold(
       (error) async {
@@ -157,43 +192,61 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     );
   }
 
-  Future<void> _loadCoverImages(List<NewsItem> newsItems, Emitter<NewsListState> emit) async {
+  Future<void> _loadCoverImages(
+    List<NewsItem> newsItems,
+    Emitter<NewsListState> emit,
+  ) async {
     final coverImages = <int, Uint8List>{};
 
     // Download images in parallel for news items that have image
-    final futures = newsItems.where((newsItem) => newsItem.image != null && newsItem.image!.isNotEmpty).map((
-      newsItem,
-    ) async {
-      final result = await _downloadFileUsecase(systemType: SystemType.kp, download: false, uriFile: newsItem.image);
+    final futures = newsItems
+        .where(
+          (newsItem) => newsItem.image != null && newsItem.image!.isNotEmpty,
+        )
+        .map((newsItem) async {
+          final result = await _downloadFileUsecase(
+            systemType: SystemType.kp,
+            download: false,
+            uriFile: newsItem.image,
+          );
 
-      result.fold(
-        (error) {
-          // Silently fail for individual image downloads
-        },
-        (imageBytes) {
-          coverImages[newsItem.id] = imageBytes;
-        },
-      );
-    });
+          result.fold(
+            (error) {
+              // Silently fail for individual image downloads
+            },
+            (imageBytes) {
+              coverImages[newsItem.id] = imageBytes;
+            },
+          );
+        });
 
     await Future.wait(futures);
 
     // Emit updated state with cover images, merging with existing ones
     state.maybeWhen(
-      loaded: (newsItems, currentPage, hasMorePages, isLoadingMore, existingCoverImages, category, search) {
-        final mergedCoverImages = {...existingCoverImages, ...coverImages};
-        emit(
-          NewsListState.loaded(
-            newsItems: newsItems,
-            currentPage: currentPage,
-            hasMorePages: hasMorePages,
-            isLoadingMore: isLoadingMore,
-            coverImages: mergedCoverImages,
-            category: category,
-            search: search,
-          ),
-        );
-      },
+      loaded:
+          (
+            newsItems,
+            currentPage,
+            hasMorePages,
+            isLoadingMore,
+            existingCoverImages,
+            category,
+            search,
+          ) {
+            final mergedCoverImages = {...existingCoverImages, ...coverImages};
+            emit(
+              NewsListState.loaded(
+                newsItems: newsItems,
+                currentPage: currentPage,
+                hasMorePages: hasMorePages,
+                isLoadingMore: isLoadingMore,
+                coverImages: mergedCoverImages,
+                category: category,
+                search: search,
+              ),
+            );
+          },
       orElse: () {},
     );
   }

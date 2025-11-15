@@ -1,7 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/shared/master_data/data/data.dart';
+
 import '../../domain/domain.dart';
 import 'author_model.dart';
+import 'kp_news_category_model.dart';
 
 part 'news_item_model.freezed.dart';
 part 'news_item_model.g.dart';
@@ -23,23 +24,24 @@ abstract class NewsItemModel with _$NewsItemModel {
     String? image,
   }) = _NewsItemModel;
 
-  factory NewsItemModel.fromJson(Map<String, dynamic> json) => _$NewsItemModelFromJson(json);
+  factory NewsItemModel.fromJson(Map<String, dynamic> json) =>
+      _$NewsItemModelFromJson(json);
 }
 
 extension NewsItemModelX on NewsItemModel {
   NewsItem toDomain() => NewsItem(
-        id: id,
-        title: title,
-        summary: summary,
-        createdData: createdData,
-        published: published,
-        priority: priority,
-        categoryCode: category.code,
-        categoryName: category.name,
-        author: author.toDomain(),
-        likeCount: likeCount,
-        like: like,
-        commentCount: commentCount,
-        image: image,
-      );
+    id: id,
+    title: title,
+    summary: summary,
+    createdData: createdData,
+    published: published,
+    priority: priority,
+    categoryCode: category.code,
+    categoryName: category.name,
+    author: author.toDomain(),
+    likeCount: likeCount,
+    like: like,
+    commentCount: commentCount,
+    image: image,
+  );
 }

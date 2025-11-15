@@ -6,7 +6,7 @@ import 'package:hr_tcc_project/src/features/resell/data/datasources/resell_remot
 import 'package:hr_tcc_project/src/features/resell/data/models/resell_equipment_type_model.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import '../../../../../../lib/src/core/types/result.dart';
+import '../../../../../../lib/src/core/base_types/result.dart';
 
 void main() {
   group('ResellEquipmentTypeRemoteDataSource', () {

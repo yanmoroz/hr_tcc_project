@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/domain.dart';
 import 'poll_detail_event.dart';
 import 'poll_detail_state.dart';
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 
 class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
   final int pollId;
@@ -36,9 +36,13 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     );
   }
 
-  Future<void> _onSubmitAnswers(PollAnswersRequest request, Emitter<PollDetailState> emit) async {
+  Future<void> _onSubmitAnswers(
+    PollAnswersRequest request,
+    Emitter<PollDetailState> emit,
+  ) async {
     final currentState = state.maybeWhen(
-      loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) => pollDetail,
+      loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) =>
+          pollDetail,
       submitted: (pollDetail) => pollDetail,
       orElse: () => null,
     );
@@ -50,7 +54,10 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
 
     emit(PollDetailState.submitting(pollDetail: currentState));
 
-    final result = await submitPollAnswersUsecase(pollId: pollId, request: request);
+    final result = await submitPollAnswersUsecase(
+      pollId: pollId,
+      request: request,
+    );
 
     result.fold(
       (error) => emit(PollDetailState.error(error.message)),
@@ -58,9 +65,14 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     );
   }
 
-  Future<void> _onSearchStaff(StaffTarget target, String? search, Emitter<PollDetailState> emit) async {
+  Future<void> _onSearchStaff(
+    StaffTarget target,
+    String? search,
+    Emitter<PollDetailState> emit,
+  ) async {
     final currentState = state.maybeWhen(
-      loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) => pollDetail,
+      loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) =>
+          pollDetail,
       submitted: (pollDetail) => pollDetail,
       submitting: (pollDetail) => pollDetail,
       orElse: () => null,
@@ -70,13 +82,25 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
       return;
     }
 
-    emit(PollDetailState.loaded(pollDetail: currentState, isSearchingStaff: true));
+    emit(
+      PollDetailState.loaded(pollDetail: currentState, isSearchingStaff: true),
+    );
 
     final result = await getStaffUsecase(target: target, search: search);
 
     result.fold(
-      (error) => emit(PollDetailState.loaded(pollDetail: currentState, staffSearchError: error.message)),
-      (staffItems) => emit(PollDetailState.loaded(pollDetail: currentState, staffItems: staffItems)),
+      (error) => emit(
+        PollDetailState.loaded(
+          pollDetail: currentState,
+          staffSearchError: error.message,
+        ),
+      ),
+      (staffItems) => emit(
+        PollDetailState.loaded(
+          pollDetail: currentState,
+          staffItems: staffItems,
+        ),
+      ),
     );
   }
 }

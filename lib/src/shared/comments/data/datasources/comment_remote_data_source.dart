@@ -1,6 +1,6 @@
 import 'package:hr_tcc_project/src/core/network/api_call_executor.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import '../models/add_comment_request.dart';
 import '../models/comment_list_response.dart';
 import '../models/comment_model.dart';
@@ -34,10 +34,10 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
     required String Function(int entityId) getCommentsEndpoint,
     required String Function(int entityId) addCommentEndpoint,
     required String Function(int entityId, int commentId) deleteCommentEndpoint,
-  })  : _apiClient = apiClient,
-        _getCommentsEndpoint = getCommentsEndpoint,
-        _addCommentEndpoint = addCommentEndpoint,
-        _deleteCommentEndpoint = deleteCommentEndpoint;
+  }) : _apiClient = apiClient,
+       _getCommentsEndpoint = getCommentsEndpoint,
+       _addCommentEndpoint = addCommentEndpoint,
+       _deleteCommentEndpoint = deleteCommentEndpoint;
 
   @override
   Future<Result<CommentListResponse>> getComments(int entityId) async {
@@ -73,7 +73,8 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
     int commentId,
   ) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.delete(_deleteCommentEndpoint(entityId, commentId)),
+      apiCall: () =>
+          _apiClient.delete(_deleteCommentEndpoint(entityId, commentId)),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         return CommentRemoveResponse.fromJson(data);

@@ -1,4 +1,4 @@
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
@@ -23,7 +23,12 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         final itemsJson = data['items'] as List<dynamic>;
-        return itemsJson.map((json) => NotificationModel.fromJson(json as Map<String, dynamic>)).toList();
+        return itemsJson
+            .map(
+              (json) =>
+                  NotificationModel.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
       },
     );
   }
@@ -44,7 +49,10 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     return ApiCallExecutor.executeApiCall(
       apiCall: () {
         final queryParameters = id != null ? {'id': id.toString()} : null;
-        return _apiClient.post(ApiConstants.notificationsReadEndpoint, queryParameters: queryParameters);
+        return _apiClient.post(
+          ApiConstants.notificationsReadEndpoint,
+          queryParameters: queryParameters,
+        );
       },
       successParser: (_) => null,
       validStatusCodes: [200, 204],

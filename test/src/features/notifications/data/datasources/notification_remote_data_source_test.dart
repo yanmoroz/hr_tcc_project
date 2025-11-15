@@ -4,7 +4,7 @@ import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/notifications/data/data.dart';
-import '../../../../../../lib/src/core/types/result.dart';
+import '../../../../../../lib/src/core/base_types/result.dart';
 
 void main() {
   group('NotificationRemoteDataSource', () {

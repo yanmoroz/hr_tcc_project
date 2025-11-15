@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../shared/files/domain/entities/system_type.dart';
 import '../../../../../shared/files/domain/usecases/usecases.dart';
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'news_detail_event.dart';
 import 'news_detail_state.dart';
@@ -30,16 +30,25 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     on<RefreshDetail>(_onRefreshDetail);
   }
 
-  Future<void> _onLoadDetail(LoadDetail event, Emitter<NewsDetailState> emit) async {
+  Future<void> _onLoadDetail(
+    LoadDetail event,
+    Emitter<NewsDetailState> emit,
+  ) async {
     emit(const NewsDetailState.loading());
     await _loadDetail(emit);
   }
 
-  Future<void> _onRefreshDetail(RefreshDetail event, Emitter<NewsDetailState> emit) async {
+  Future<void> _onRefreshDetail(
+    RefreshDetail event,
+    Emitter<NewsDetailState> emit,
+  ) async {
     await _loadDetail(emit);
   }
 
-  Future<void> _onToggleLike(ToggleLike event, Emitter<NewsDetailState> emit) async {
+  Future<void> _onToggleLike(
+    ToggleLike event,
+    Emitter<NewsDetailState> emit,
+  ) async {
     // Optimistic update
     state.maybeWhen(
       loaded: (newsDetail, likeCount, liked, commentCount, coverImage) {
@@ -110,12 +119,19 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     });
   }
 
-  Future<void> _loadCoverImage(NewsDetail newsDetail, Emitter<NewsDetailState> emit) async {
+  Future<void> _loadCoverImage(
+    NewsDetail newsDetail,
+    Emitter<NewsDetailState> emit,
+  ) async {
     if (newsDetail.image == null || newsDetail.image!.isEmpty) {
       return;
     }
 
-    final result = await _downloadFileUsecase(systemType: SystemType.kp, download: false, uriFile: newsDetail.image);
+    final result = await _downloadFileUsecase(
+      systemType: SystemType.kp,
+      download: false,
+      uriFile: newsDetail.image,
+    );
 
     result.fold(
       (error) {

@@ -1,4 +1,4 @@
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
@@ -7,7 +7,10 @@ import '../../../domain/domain.dart';
 import '../../data.dart';
 
 abstract class StaffRemoteDataSource {
-  Future<Result<List<StaffItemModel>>> getStaff({required StaffTarget target, String? search});
+  Future<Result<List<StaffItemModel>>> getStaff({
+    required StaffTarget target,
+    String? search,
+  });
 }
 
 class StaffRemoteDataSourceImpl implements StaffRemoteDataSource {
@@ -16,19 +19,29 @@ class StaffRemoteDataSourceImpl implements StaffRemoteDataSource {
   StaffRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Result<List<StaffItemModel>>> getStaff({required StaffTarget target, String? search}) async {
+  Future<Result<List<StaffItemModel>>> getStaff({
+    required StaffTarget target,
+    String? search,
+  }) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () {
         final queryParameters = <String, String>{'target': target.value};
         if (search != null && search.isNotEmpty) {
           queryParameters['search'] = search;
         }
-        return _apiClient.get(ApiConstants.staffEndpoint, queryParameters: queryParameters);
+        return _apiClient.get(
+          ApiConstants.staffEndpoint,
+          queryParameters: queryParameters,
+        );
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         final itemsJson = data['items'] as List<dynamic>;
-        return itemsJson.map((json) => StaffItemModel.fromJson(json as Map<String, dynamic>)).toList();
+        return itemsJson
+            .map(
+              (json) => StaffItemModel.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
       },
     );
   }

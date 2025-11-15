@@ -1,4 +1,4 @@
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
 import '../entities/create_application_result.dart';
 import '../repositories/application_repository.dart';

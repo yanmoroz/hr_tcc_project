@@ -1,4 +1,6 @@
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
+
+import '../entities/kp_news_category.dart';
 import '../entities/news_item.dart';
 import '../entities/news_detail.dart';
 import '../entities/news_stats.dart';
@@ -16,4 +18,6 @@ abstract class NewsRepository {
   Future<Result<NewsStats>> getNewsStats(int newsId);
 
   Future<Result<List<GalleryImage>>> getNewsGallery(int galleryId);
+
+  Future<Result<List<KpNewsCategory>>> getKpNewsCategories();
 }

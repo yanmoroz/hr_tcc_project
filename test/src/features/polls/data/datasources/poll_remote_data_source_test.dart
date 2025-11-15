@@ -4,7 +4,7 @@ import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/polls/data/data.dart';
-import '../../../../../../lib/src/core/types/result.dart';
+import '../../../../../../lib/src/core/base_types/result.dart';
 
 void main() {
   group('PollRemoteDataSource', () {
@@ -39,7 +39,9 @@ void main() {
             expect(polls, isA<List<PollModel>>());
 
             // Log the actual data for verification
-            AppLogger.d('Fetched polls: ${polls.length}\n${polls.map((p) => '  - ${p.toString()}').join('\n')}');
+            AppLogger.d(
+              'Fetched polls: ${polls.length}\n${polls.map((p) => '  - ${p.toString()}').join('\n')}',
+            );
           },
         );
       });

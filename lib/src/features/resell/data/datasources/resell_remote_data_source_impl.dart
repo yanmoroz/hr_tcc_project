@@ -1,7 +1,7 @@
 import 'package:hr_tcc_project/src/core/network/api_call_executor.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/core/network/api_constants.dart';
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
 import '../../domain/domain.dart';
 import '../data.dart';

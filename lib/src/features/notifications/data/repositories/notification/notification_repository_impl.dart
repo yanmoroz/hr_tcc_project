@@ -1,9 +1,11 @@
-import '../../../../../core/types/result.dart';
-import '../../../../../core/base_repository.dart';
+import '../../../../../core/base_types/result.dart';
+import '../../../../../core/base_types/base_repository.dart';
 import '../../../domain/domain.dart';
 import '../../data.dart';
 
-class NotificationRepositoryImpl with BaseRepository implements NotificationRepository {
+class NotificationRepositoryImpl
+    with BaseRepository
+    implements NotificationRepository {
   final NotificationRemoteDataSource _remoteDataSource;
 
   NotificationRepositoryImpl(this._remoteDataSource);

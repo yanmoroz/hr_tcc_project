@@ -4,5 +4,6 @@ part 'kp_discount_source.freezed.dart';
 
 @freezed
 abstract class KpDiscountSource with _$KpDiscountSource {
-  const factory KpDiscountSource({required int code, required String name}) = _KpDiscountSource;
+  const factory KpDiscountSource({required int code, required String name}) =
+      _KpDiscountSource;
 }

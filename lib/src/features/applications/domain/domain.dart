@@ -15,9 +15,3 @@ export 'usecases/check_cancel_status_usecase.dart';
 export 'usecases/create_application_usecase.dart';
 export 'usecases/get_application_detail_usecase.dart';
 export 'usecases/get_applications_usecase.dart';
-
-// Shared entities from master data
-export '../../../shared/master_data/domain/domain.dart';
-
-// Shared types
-export '../../../shared/types/types.dart';

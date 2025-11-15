@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/shared/master_data/domain/domain.dart';
 
+import '../../../../core/domain/entities/alpina_digital_prev_access.dart';
 import '../../../../core/domain/entities/system_status.dart';
 
 part 'application_detail.freezed.dart';

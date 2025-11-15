@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import 'types/result.dart';
+import 'result.dart';
 
 /// Base repository mixin that provides common mapping utilities
 /// for converting data models to domain entities.
@@ -12,7 +12,10 @@ mixin BaseRepository {
     Result<List<TModel>> result,
     TEntity Function(TModel) mapper,
   ) {
-    return result.fold((failure) => Left(failure), (models) => Right(models.map((model) => mapper(model)).toList()));
+    return result.fold(
+      (failure) => Left(failure),
+      (models) => Right(models.map((model) => mapper(model)).toList()),
+    );
   }
 
   /// Maps a Result containing a single model to a single entity.
@@ -23,6 +26,9 @@ mixin BaseRepository {
     Result<TModel> result,
     TEntity Function(TModel) mapper,
   ) {
-    return result.fold((failure) => Left(failure), (model) => Right(mapper(model)));
+    return result.fold(
+      (failure) => Left(failure),
+      (model) => Right(mapper(model)),
+    );
   }
 }

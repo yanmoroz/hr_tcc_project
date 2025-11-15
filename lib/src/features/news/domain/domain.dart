@@ -4,6 +4,7 @@ export 'entities/news_detail.dart';
 export 'entities/author.dart';
 export 'entities/news_stats.dart';
 export 'entities/gallery_image.dart';
+export 'entities/kp_news_category.dart';
 
 // Shared entities
 export '../../../shared/comments/domain/domain.dart';

@@ -4,7 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import '../exceptions/mapping/mapping_exception.dart';
 import '../exceptions/network/network_exception.dart';
 import '../logging/app_logger.dart';
-import '../types/result.dart';
+import '../base_types/result.dart';
 
 class ApiCallExecutor {
   static Future<Result<T>> executeApiCall<T>({

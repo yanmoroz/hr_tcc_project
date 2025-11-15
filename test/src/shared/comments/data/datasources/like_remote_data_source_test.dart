@@ -4,7 +4,7 @@ import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/core/network/api_constants.dart';
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import 'package:hr_tcc_project/src/shared/comments/data/data.dart';
 
 void main() {
@@ -32,41 +32,51 @@ void main() {
     });
 
     group('toggleEntityLike', () {
-      test('should toggle entity like by entityId from API and map response to model', () async {
-        // Act - Using discount ID 49 for testing
-        final result = await dataSource.toggleEntityLike(49);
+      test(
+        'should toggle entity like by entityId from API and map response to model',
+        () async {
+          // Act - Using discount ID 49 for testing
+          final result = await dataSource.toggleEntityLike(49);
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (likeResponse) {
-            expect(likeResponse, isA<LikeResponse>());
-            expect(likeResponse.like, isA<bool>());
-            AppLogger.d('Toggled entity like, new state: ${likeResponse.like}');
-          },
-        );
-      });
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (likeResponse) {
+              expect(likeResponse, isA<LikeResponse>());
+              expect(likeResponse.like, isA<bool>());
+              AppLogger.d(
+                'Toggled entity like, new state: ${likeResponse.like}',
+              );
+            },
+          );
+        },
+      );
     });
 
     group('toggleCommentLike', () {
-      test('should toggle comment like by entityId and commentId from API and map response to model', () async {
-        // Act - Using discount ID 49 and comment ID 6782 for testing
-        final result = await dataSource.toggleCommentLike(49, 6782);
+      test(
+        'should toggle comment like by entityId and commentId from API and map response to model',
+        () async {
+          // Act - Using discount ID 49 and comment ID 6782 for testing
+          final result = await dataSource.toggleCommentLike(49, 6782);
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (likeResponse) {
-            expect(likeResponse, isA<LikeResponse>());
-            expect(likeResponse.like, isA<bool>());
-            AppLogger.d('Toggled comment like, new state: ${likeResponse.like}');
-          },
-        );
-      });
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (likeResponse) {
+              expect(likeResponse, isA<LikeResponse>());
+              expect(likeResponse.like, isA<bool>());
+              AppLogger.d(
+                'Toggled comment like, new state: ${likeResponse.like}',
+              );
+            },
+          );
+        },
+      );
     });
   });
 
@@ -89,41 +99,51 @@ void main() {
     });
 
     group('toggleEntityLike', () {
-      test('should toggle entity like by entityId from API and map response to model', () async {
-        // Act - Using news ID 1 for testing
-        final result = await newsDataSource.toggleEntityLike(100);
+      test(
+        'should toggle entity like by entityId from API and map response to model',
+        () async {
+          // Act - Using news ID 1 for testing
+          final result = await newsDataSource.toggleEntityLike(100);
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (likeResponse) {
-            expect(likeResponse, isA<LikeResponse>());
-            expect(likeResponse.like, isA<bool>());
-            AppLogger.d('Toggled entity like, new state: ${likeResponse.like}');
-          },
-        );
-      });
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (likeResponse) {
+              expect(likeResponse, isA<LikeResponse>());
+              expect(likeResponse.like, isA<bool>());
+              AppLogger.d(
+                'Toggled entity like, new state: ${likeResponse.like}',
+              );
+            },
+          );
+        },
+      );
     });
 
     group('toggleCommentLike', () {
-      test('should toggle comment like by entityId and commentId from API and map response to model', () async {
-        // Act - Using news ID 1 and comment ID for testing
-        final result = await newsDataSource.toggleCommentLike(100, 6017);
+      test(
+        'should toggle comment like by entityId and commentId from API and map response to model',
+        () async {
+          // Act - Using news ID 1 and comment ID for testing
+          final result = await newsDataSource.toggleCommentLike(100, 6017);
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (likeResponse) {
-            expect(likeResponse, isA<LikeResponse>());
-            expect(likeResponse.like, isA<bool>());
-            AppLogger.d('Toggled comment like, new state: ${likeResponse.like}');
-          },
-        );
-      });
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (likeResponse) {
+              expect(likeResponse, isA<LikeResponse>());
+              expect(likeResponse.like, isA<bool>());
+              AppLogger.d(
+                'Toggled comment like, new state: ${likeResponse.like}',
+              );
+            },
+          );
+        },
+      );
     });
   });
 }

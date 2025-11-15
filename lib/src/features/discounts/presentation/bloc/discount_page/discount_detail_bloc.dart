@@ -2,12 +2,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../shared/files/domain/entities/system_type.dart';
 import '../../../../../shared/files/domain/usecases/usecases.dart';
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'discount_detail_event.dart';
 import 'discount_detail_state.dart';
 
-class DiscountDetailBloc extends Bloc<DiscountDetailEvent, DiscountDetailState> {
+class DiscountDetailBloc
+    extends Bloc<DiscountDetailEvent, DiscountDetailState> {
   final int discountId;
   final GetDiscountDetailUsecase _getDiscountDetailUsecase;
   final GetDiscountStatsUsecase _getDiscountStatsUsecase;
@@ -30,16 +31,25 @@ class DiscountDetailBloc extends Bloc<DiscountDetailEvent, DiscountDetailState> 
     on<RefreshDetail>(_onRefreshDetail);
   }
 
-  Future<void> _onLoadDetail(LoadDetail event, Emitter<DiscountDetailState> emit) async {
+  Future<void> _onLoadDetail(
+    LoadDetail event,
+    Emitter<DiscountDetailState> emit,
+  ) async {
     emit(const DiscountDetailState.loading());
     await _loadDetail(emit);
   }
 
-  Future<void> _onRefreshDetail(RefreshDetail event, Emitter<DiscountDetailState> emit) async {
+  Future<void> _onRefreshDetail(
+    RefreshDetail event,
+    Emitter<DiscountDetailState> emit,
+  ) async {
     await _loadDetail(emit);
   }
 
-  Future<void> _onToggleLike(ToggleLike event, Emitter<DiscountDetailState> emit) async {
+  Future<void> _onToggleLike(
+    ToggleLike event,
+    Emitter<DiscountDetailState> emit,
+  ) async {
     // Optimistic update
     state.maybeWhen(
       loaded: (discount, likeCount, liked, commentCount, coverImage) {
@@ -110,12 +120,19 @@ class DiscountDetailBloc extends Bloc<DiscountDetailEvent, DiscountDetailState> 
     });
   }
 
-  Future<void> _loadCoverImage(DiscountDetail discount, Emitter<DiscountDetailState> emit) async {
+  Future<void> _loadCoverImage(
+    DiscountDetail discount,
+    Emitter<DiscountDetailState> emit,
+  ) async {
     if (discount.image == null || discount.image!.isEmpty) {
       return;
     }
 
-    final result = await _downloadFileUsecase(systemType: SystemType.kp, download: false, uriFile: discount.image);
+    final result = await _downloadFileUsecase(
+      systemType: SystemType.kp,
+      download: false,
+      uriFile: discount.image,
+    );
 
     result.fold(
       (error) {

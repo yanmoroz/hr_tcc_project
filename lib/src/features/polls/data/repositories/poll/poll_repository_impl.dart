@@ -1,5 +1,5 @@
-import '../../../../../core/types/result.dart';
-import '../../../../../core/base_repository.dart';
+import '../../../../../core/base_types/result.dart';
+import '../../../../../core/base_types/base_repository.dart';
 import '../../../domain/domain.dart';
 import '../../data.dart';
 

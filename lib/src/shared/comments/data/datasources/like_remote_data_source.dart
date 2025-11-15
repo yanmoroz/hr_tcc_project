@@ -1,6 +1,6 @@
 import 'package:hr_tcc_project/src/core/network/api_call_executor.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import '../models/like_response.dart';
 
 /// Generic like data source that works with any entity type
@@ -20,10 +20,11 @@ class LikeRemoteDataSourceImpl implements LikeRemoteDataSource {
   LikeRemoteDataSourceImpl({
     required ApiClient apiClient,
     required String Function(int entityId) toggleEntityLikeEndpoint,
-    required String Function(int entityId, int commentId) toggleCommentLikeEndpoint,
-  })  : _apiClient = apiClient,
-        _toggleEntityLikeEndpoint = toggleEntityLikeEndpoint,
-        _toggleCommentLikeEndpoint = toggleCommentLikeEndpoint;
+    required String Function(int entityId, int commentId)
+    toggleCommentLikeEndpoint,
+  }) : _apiClient = apiClient,
+       _toggleEntityLikeEndpoint = toggleEntityLikeEndpoint,
+       _toggleCommentLikeEndpoint = toggleCommentLikeEndpoint;
 
   @override
   Future<Result<LikeResponse>> toggleEntityLike(int entityId) async {
@@ -37,9 +38,13 @@ class LikeRemoteDataSourceImpl implements LikeRemoteDataSource {
   }
 
   @override
-  Future<Result<LikeResponse>> toggleCommentLike(int entityId, int commentId) async {
+  Future<Result<LikeResponse>> toggleCommentLike(
+    int entityId,
+    int commentId,
+  ) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.post(_toggleCommentLikeEndpoint(entityId, commentId)),
+      apiCall: () =>
+          _apiClient.post(_toggleCommentLikeEndpoint(entityId, commentId)),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         return LikeResponse.fromJson(data);

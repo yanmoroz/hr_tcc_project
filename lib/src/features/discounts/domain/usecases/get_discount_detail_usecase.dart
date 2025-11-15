@@ -1,4 +1,4 @@
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import '../entities/discount_detail.dart';
 import '../repositories/discount_repository.dart';
 

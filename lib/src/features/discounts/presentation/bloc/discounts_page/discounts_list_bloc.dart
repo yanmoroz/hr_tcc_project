@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../shared/files/domain/entities/system_type.dart';
 import '../../../../../shared/files/domain/usecases/usecases.dart';
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'discounts_list_event.dart';
 import 'discounts_list_state.dart';
@@ -24,17 +24,36 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     on<LoadMoreDiscounts>(_onLoadMoreDiscounts);
   }
 
-  Future<void> _onLoadDiscounts(LoadDiscounts event, Emitter<DiscountsListState> emit) async {
+  Future<void> _onLoadDiscounts(
+    LoadDiscounts event,
+    Emitter<DiscountsListState> emit,
+  ) async {
     emit(const DiscountsListState.loading());
-    await _loadDiscounts(emit, page: 0, category: event.category, source: event.source);
+    await _loadDiscounts(
+      emit,
+      page: 0,
+      category: event.category,
+      source: event.source,
+    );
   }
 
-  Future<void> _onRefreshDiscounts(RefreshDiscounts event, Emitter<DiscountsListState> emit) async {
+  Future<void> _onRefreshDiscounts(
+    RefreshDiscounts event,
+    Emitter<DiscountsListState> emit,
+  ) async {
     // Keep current state while refreshing, then reload from page 0
-    await _loadDiscounts(emit, page: 0, category: event.category, source: event.source);
+    await _loadDiscounts(
+      emit,
+      page: 0,
+      category: event.category,
+      source: event.source,
+    );
   }
 
-  Future<void> _onLoadMoreDiscounts(LoadMoreDiscounts event, Emitter<DiscountsListState> emit) async {
+  Future<void> _onLoadMoreDiscounts(
+    LoadMoreDiscounts event,
+    Emitter<DiscountsListState> emit,
+  ) async {
     // Extract state values first
     List<Discount>? discounts;
     int? currentPage;
@@ -97,22 +116,35 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     }
   }
 
-  Future<void> _loadDiscounts(Emitter<DiscountsListState> emit, {required int page, int? category, int? source}) async {
-    final result = await _getDiscountsUsecase(category: category ?? 0, source: source ?? 0, page: page);
+  Future<void> _loadDiscounts(
+    Emitter<DiscountsListState> emit, {
+    required int page,
+    int? category,
+    int? source,
+  }) async {
+    final result = await _getDiscountsUsecase(
+      category: category ?? 0,
+      source: source ?? 0,
+      page: page,
+    );
 
-    await result.fold((error) async => emit(DiscountsListState.error(error.message)), (discounts) async {
-      emit(
-        DiscountsListState.loaded(
-          discounts: discounts,
-          currentPage: page,
-          hasMorePages: discounts.isNotEmpty, // Assume more pages if we got results
-          isLoadingMore: false,
-          category: category,
-          source: source,
-        ),
-      );
-      await _loadCoverImages(discounts, emit);
-    });
+    await result.fold(
+      (error) async => emit(DiscountsListState.error(error.message)),
+      (discounts) async {
+        emit(
+          DiscountsListState.loaded(
+            discounts: discounts,
+            currentPage: page,
+            hasMorePages:
+                discounts.isNotEmpty, // Assume more pages if we got results
+            isLoadingMore: false,
+            category: category,
+            source: source,
+          ),
+        );
+        await _loadCoverImages(discounts, emit);
+      },
+    );
   }
 
   Future<void> _loadMoreDiscounts(
@@ -123,7 +155,11 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     int? category,
     int? source,
   }) async {
-    final result = await _getDiscountsUsecase(category: category ?? 0, source: source ?? 0, page: nextPage);
+    final result = await _getDiscountsUsecase(
+      category: category ?? 0,
+      source: source ?? 0,
+      page: nextPage,
+    );
 
     await result.fold(
       (error) async {
@@ -159,43 +195,61 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     );
   }
 
-  Future<void> _loadCoverImages(List<Discount> discounts, Emitter<DiscountsListState> emit) async {
+  Future<void> _loadCoverImages(
+    List<Discount> discounts,
+    Emitter<DiscountsListState> emit,
+  ) async {
     final coverImages = <int, Uint8List>{};
 
     // Download images in parallel for discounts that have image
-    final futures = discounts.where((discount) => discount.image != null && discount.image!.isNotEmpty).map((
-      discount,
-    ) async {
-      final result = await _downloadFileUsecase(systemType: SystemType.kp, download: false, uriFile: discount.image);
+    final futures = discounts
+        .where(
+          (discount) => discount.image != null && discount.image!.isNotEmpty,
+        )
+        .map((discount) async {
+          final result = await _downloadFileUsecase(
+            systemType: SystemType.kp,
+            download: false,
+            uriFile: discount.image,
+          );
 
-      result.fold(
-        (error) {
-          // Silently fail for individual image downloads
-        },
-        (imageBytes) {
-          coverImages[discount.id] = imageBytes;
-        },
-      );
-    });
+          result.fold(
+            (error) {
+              // Silently fail for individual image downloads
+            },
+            (imageBytes) {
+              coverImages[discount.id] = imageBytes;
+            },
+          );
+        });
 
     await Future.wait(futures);
 
     // Emit updated state with cover images, merging with existing ones
     state.maybeWhen(
-      loaded: (discounts, currentPage, hasMorePages, isLoadingMore, existingCoverImages, category, source) {
-        final mergedCoverImages = {...existingCoverImages, ...coverImages};
-        emit(
-          DiscountsListState.loaded(
-            discounts: discounts,
-            currentPage: currentPage,
-            hasMorePages: hasMorePages,
-            isLoadingMore: isLoadingMore,
-            coverImages: mergedCoverImages,
-            category: category,
-            source: source,
-          ),
-        );
-      },
+      loaded:
+          (
+            discounts,
+            currentPage,
+            hasMorePages,
+            isLoadingMore,
+            existingCoverImages,
+            category,
+            source,
+          ) {
+            final mergedCoverImages = {...existingCoverImages, ...coverImages};
+            emit(
+              DiscountsListState.loaded(
+                discounts: discounts,
+                currentPage: currentPage,
+                hasMorePages: hasMorePages,
+                isLoadingMore: isLoadingMore,
+                coverImages: mergedCoverImages,
+                category: category,
+                source: source,
+              ),
+            );
+          },
       orElse: () {},
     );
   }

@@ -1,11 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'notifications_list_event.dart';
 import 'notifications_list_state.dart';
 
-class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsListState> {
+class NotificationsListBloc
+    extends Bloc<NotificationsListEvent, NotificationsListState> {
   final GetNotificationsUsecase getNotificationsUsecase;
   final MarkNotificationAsReadUsecase markNotificationAsReadUsecase;
   final MarkAllNotificationsAsReadUsecase markAllNotificationsAsReadUsecase;
@@ -26,26 +27,43 @@ class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsLi
     });
   }
 
-  Future<void> _onLoadNotifications(Emitter<NotificationsListState> emit) async {
+  Future<void> _onLoadNotifications(
+    Emitter<NotificationsListState> emit,
+  ) async {
     emit(const NotificationsListState.loading());
 
     // Run both API calls in parallel
-    final results = await Future.wait([getNotificationsUsecase(), getUnreadNotificationsCountUsecase()]);
+    final results = await Future.wait([
+      getNotificationsUsecase(),
+      getUnreadNotificationsCountUsecase(),
+    ]);
 
     final notificationsResult = results[0] as Result<List<Notification>>;
     final countResult = results[1] as Result<int>;
 
-    notificationsResult.fold((error) => emit(NotificationsListState.error(error.message)), (notifications) {
-      countResult.fold(
-        (error) => emit(NotificationsListState.error(error.message)),
-        (unreadCount) => emit(NotificationsListState.loaded(notifications: notifications, unreadCount: unreadCount)),
-      );
-    });
+    notificationsResult.fold(
+      (error) => emit(NotificationsListState.error(error.message)),
+      (notifications) {
+        countResult.fold(
+          (error) => emit(NotificationsListState.error(error.message)),
+          (unreadCount) => emit(
+            NotificationsListState.loaded(
+              notifications: notifications,
+              unreadCount: unreadCount,
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  Future<void> _onMarkAsRead(int id, Emitter<NotificationsListState> emit) async {
+  Future<void> _onMarkAsRead(
+    int id,
+    Emitter<NotificationsListState> emit,
+  ) async {
     final currentState = state.maybeWhen(
-      loaded: (notifications, unreadCount) => (notifications: notifications, unreadCount: unreadCount),
+      loaded: (notifications, unreadCount) =>
+          (notifications: notifications, unreadCount: unreadCount),
       orElse: () => null,
     );
 
@@ -54,7 +72,9 @@ class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsLi
       return;
     }
 
-    final notification = currentState.notifications.firstWhereOrNull((n) => n.id == id);
+    final notification = currentState.notifications.firstWhereOrNull(
+      (n) => n.id == id,
+    );
     if (notification == null) {
       emit(NotificationsListState.error('Notification not found'));
       return;
@@ -65,9 +85,13 @@ class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsLi
 
     final result = await markNotificationAsReadUsecase(id);
 
-    result.fold((error) => emit(NotificationsListState.error(error.message)), (_) {
+    result.fold((error) => emit(NotificationsListState.error(error.message)), (
+      _,
+    ) {
       // Update local state: mark notification as read
-      final updatedNotifications = currentState.notifications.map((notification) {
+      final updatedNotifications = currentState.notifications.map((
+        notification,
+      ) {
         if (notification.id == id) {
           return notification.copyWith(state: 1);
         }
@@ -77,13 +101,19 @@ class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsLi
       // Update unread count: decrease by 1
       final updatedUnreadCount = currentState.unreadCount - 1;
 
-      emit(NotificationsListState.loaded(notifications: updatedNotifications, unreadCount: updatedUnreadCount));
+      emit(
+        NotificationsListState.loaded(
+          notifications: updatedNotifications,
+          unreadCount: updatedUnreadCount,
+        ),
+      );
     });
   }
 
   Future<void> _onMarkAllAsRead(Emitter<NotificationsListState> emit) async {
     final currentState = state.maybeWhen(
-      loaded: (notifications, unreadCount) => (notifications: notifications, unreadCount: unreadCount),
+      loaded: (notifications, unreadCount) =>
+          (notifications: notifications, unreadCount: unreadCount),
       orElse: () => null,
     );
 
@@ -94,9 +124,13 @@ class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsLi
 
     final result = await markAllNotificationsAsReadUsecase();
 
-    result.fold((error) => emit(NotificationsListState.error(error.message)), (_) {
+    result.fold((error) => emit(NotificationsListState.error(error.message)), (
+      _,
+    ) {
       // Update local state: mark all notifications as read
-      final updatedNotifications = currentState.notifications.map((notification) {
+      final updatedNotifications = currentState.notifications.map((
+        notification,
+      ) {
         if (notification.state == 0) {
           return notification.copyWith(state: 1);
         }
@@ -104,7 +138,12 @@ class NotificationsListBloc extends Bloc<NotificationsListEvent, NotificationsLi
       }).toList();
 
       // Update unread count: set to 0
-      emit(NotificationsListState.loaded(notifications: updatedNotifications, unreadCount: 0));
+      emit(
+        NotificationsListState.loaded(
+          notifications: updatedNotifications,
+          unreadCount: 0,
+        ),
+      );
     });
   }
 }

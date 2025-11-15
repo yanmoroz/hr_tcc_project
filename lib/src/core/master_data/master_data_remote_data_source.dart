@@ -1,3 +1,4 @@
+import '../base_types/result.dart';
 import '../domain/entities/alpina_digital_prev_access.dart';
 import '../domain/entities/application_form.dart';
 import '../domain/entities/application_form_group.dart';
@@ -11,7 +12,6 @@ import '../domain/entities/trip_purpose.dart';
 import '../network/api_call_executor.dart';
 import '../network/api_client.dart';
 import '../network/api_constants.dart';
-import '../types/result.dart';
 import 'models/alpina_digital_prev_access_model.dart';
 import 'models/application_form_group_model.dart';
 import 'models/application_form_model.dart';

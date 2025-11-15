@@ -14,7 +14,7 @@ import 'package:hr_tcc_project/src/core/master_data/models/training_month_model.
 import 'package:hr_tcc_project/src/core/master_data/models/training_type_model.dart';
 import 'package:hr_tcc_project/src/core/master_data/models/trip_purpose_model.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import '../../../../../../lib/src/core/types/result.dart';
+import '../../../../../../lib/src/core/base_types/result.dart';
 
 void main() {
   group('MasterDataRemoteDataSource', () {

@@ -4,7 +4,7 @@ import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/shared/files/domain/entities/system_type.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import 'package:hr_tcc_project/src/features/users/data/data.dart';
 
 void main() {
@@ -26,57 +26,69 @@ void main() {
     });
 
     group('getUsers', () {
-      test('should fetch users for ELMA system type from API and map to models', () async {
-        // Act
-        final result = await dataSource.getUsers(systemType: SystemType.elma);
+      test(
+        'should fetch users for ELMA system type from API and map to models',
+        () async {
+          // Act
+          final result = await dataSource.getUsers(systemType: SystemType.elma);
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (users) {
-            expect(users, isA<List<UserModel>>());
-            AppLogger.d(
-              'Fetched ELMA users: ${users.length}\n${users.map((u) => '  - ${u.title} (${u.position})').join('\n')}',
-            );
-          },
-        );
-      });
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (users) {
+              expect(users, isA<List<UserModel>>());
+              AppLogger.d(
+                'Fetched ELMA users: ${users.length}\n${users.map((u) => '  - ${u.title} (${u.position})').join('\n')}',
+              );
+            },
+          );
+        },
+      );
 
-      test('should fetch users for KP system type from API and map to models', () async {
-        // Act
-        final result = await dataSource.getUsers(systemType: SystemType.kp);
+      test(
+        'should fetch users for KP system type from API and map to models',
+        () async {
+          // Act
+          final result = await dataSource.getUsers(systemType: SystemType.kp);
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (users) {
-            expect(users, isA<List<UserModel>>());
-            AppLogger.d('Fetched KP users: ${users.length}');
-          },
-        );
-      });
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (users) {
+              expect(users, isA<List<UserModel>>());
+              AppLogger.d('Fetched KP users: ${users.length}');
+            },
+          );
+        },
+      );
 
-      test('should fetch users with search parameter from API and map to models', () async {
-        // Act
-        final result = await dataSource.getUsers(systemType: SystemType.elma, search: 'Иван');
+      test(
+        'should fetch users with search parameter from API and map to models',
+        () async {
+          // Act
+          final result = await dataSource.getUsers(
+            systemType: SystemType.elma,
+            search: 'Иван',
+          );
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (users) {
-            expect(users, isA<List<UserModel>>());
-            AppLogger.d(
-              'Fetched users with search "Иван": ${users.length}\n${users.map((u) => '  - ${u.title} (${u.position})').join('\n')}',
-            );
-          },
-        );
-      });
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (users) {
+              expect(users, isA<List<UserModel>>());
+              AppLogger.d(
+                'Fetched users with search "Иван": ${users.length}\n${users.map((u) => '  - ${u.title} (${u.position})').join('\n')}',
+              );
+            },
+          );
+        },
+      );
     });
   });
 }

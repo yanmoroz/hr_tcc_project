@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'comments_event.dart';
 import 'comments_state.dart';
@@ -30,16 +30,25 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     on<ToggleCommentLike>(_onToggleCommentLike);
   }
 
-  Future<void> _onLoadComments(LoadComments event, Emitter<CommentsState> emit) async {
+  Future<void> _onLoadComments(
+    LoadComments event,
+    Emitter<CommentsState> emit,
+  ) async {
     emit(const CommentsState.loading());
     await _loadComments(emit);
   }
 
-  Future<void> _onRefreshComments(RefreshComments event, Emitter<CommentsState> emit) async {
+  Future<void> _onRefreshComments(
+    RefreshComments event,
+    Emitter<CommentsState> emit,
+  ) async {
     await _loadComments(emit);
   }
 
-  Future<void> _onAddComment(AddComment event, Emitter<CommentsState> emit) async {
+  Future<void> _onAddComment(
+    AddComment event,
+    Emitter<CommentsState> emit,
+  ) async {
     // Extract state values first
     List<Comment>? comments;
     bool? isAddingComment;
@@ -56,11 +65,17 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     if (comments != null && !(isAddingComment ?? false)) {
       emit(CommentsState.loaded(comments: comments!, isAddingComment: true));
 
-      final result = await _addCommentUsecase(entityId: entityId, content: event.content, parent: event.parentId);
+      final result = await _addCommentUsecase(
+        entityId: entityId,
+        content: event.content,
+        parent: event.parentId,
+      );
 
       result.fold(
         (error) {
-          emit(CommentsState.loaded(comments: comments!, isAddingComment: false));
+          emit(
+            CommentsState.loaded(comments: comments!, isAddingComment: false),
+          );
         },
         (_) {
           // Success - will reload comments below
@@ -74,8 +89,14 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     }
   }
 
-  Future<void> _onDeleteComment(DeleteComment event, Emitter<CommentsState> emit) async {
-    final result = await _deleteCommentUsecase(entityId: entityId, commentId: event.commentId);
+  Future<void> _onDeleteComment(
+    DeleteComment event,
+    Emitter<CommentsState> emit,
+  ) async {
+    final result = await _deleteCommentUsecase(
+      entityId: entityId,
+      commentId: event.commentId,
+    );
 
     if (result.isRight()) {
       // Reload comments after successful delete
@@ -88,7 +109,10 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     }
   }
 
-  Future<void> _onToggleCommentLike(ToggleCommentLike event, Emitter<CommentsState> emit) async {
+  Future<void> _onToggleCommentLike(
+    ToggleCommentLike event,
+    Emitter<CommentsState> emit,
+  ) async {
     // Optimistic update
     state.maybeWhen(
       loaded: (comments, isAddingComment) {
@@ -98,19 +122,29 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
             final currentLikeCount = comment.likeCount ?? 0;
             return comment.copyWith(
               like: !currentLike,
-              likeCount: currentLike ? currentLikeCount - 1 : currentLikeCount + 1,
+              likeCount: currentLike
+                  ? currentLikeCount - 1
+                  : currentLikeCount + 1,
             );
           }
           return comment;
         }).toList();
 
-        emit(CommentsState.loaded(comments: updatedComments, isAddingComment: isAddingComment));
+        emit(
+          CommentsState.loaded(
+            comments: updatedComments,
+            isAddingComment: isAddingComment,
+          ),
+        );
       },
       orElse: () {},
     );
 
     // Make API call
-    final result = await _toggleCommentLikeUsecase(entityId: entityId, commentId: event.commentId);
+    final result = await _toggleCommentLikeUsecase(
+      entityId: entityId,
+      commentId: event.commentId,
+    );
 
     result.fold(
       (error) {
@@ -123,13 +157,20 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
                 final currentLikeCount = comment.likeCount ?? 0;
                 return comment.copyWith(
                   like: !currentLike,
-                  likeCount: currentLike ? currentLikeCount - 1 : currentLikeCount + 1,
+                  likeCount: currentLike
+                      ? currentLikeCount - 1
+                      : currentLikeCount + 1,
                 );
               }
               return comment;
             }).toList();
 
-            emit(CommentsState.loaded(comments: revertedComments, isAddingComment: isAddingComment));
+            emit(
+              CommentsState.loaded(
+                comments: revertedComments,
+                isAddingComment: isAddingComment,
+              ),
+            );
           },
           orElse: () {},
         );

@@ -1,17 +1,23 @@
 import 'package:hr_tcc_project/src/core/network/api_call_executor.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/core/network/api_constants.dart';
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import '../models/discount_detail_model.dart';
 import '../models/discount_list_response.dart';
+import '../models/kp_discount_category_model.dart';
+import '../models/kp_discount_source_model.dart';
 import '../models/stats_response.dart';
 
 abstract class DiscountRemoteDataSource {
-  Future<Result<DiscountListResponse>> getDiscounts({required int category, required int source, required int page});
-
+  Future<Result<DiscountListResponse>> getDiscounts({
+    required int category,
+    required int source,
+    required int page,
+  });
   Future<Result<DiscountDetailModel>> getDiscountDetail(int id);
-
   Future<Result<StatsResponse>> getDiscountStats(int id);
+  Future<Result<List<KpDiscountSourceModel>>> getKpDiscountSources();
+  Future<Result<List<KpDiscountCategoryModel>>> getKpDiscountCategories();
 }
 
 class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
@@ -27,9 +33,16 @@ class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
   }) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () {
-        final queryParameters = <String, dynamic>{'page': page, 'category': category, 'source': source};
+        final queryParameters = <String, dynamic>{
+          'page': page,
+          'category': category,
+          'source': source,
+        };
 
-        return _apiClient.get(ApiConstants.discountsEndpoint, queryParameters: queryParameters);
+        return _apiClient.get(
+          ApiConstants.discountsEndpoint,
+          queryParameters: queryParameters,
+        );
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
@@ -60,6 +73,43 @@ class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         return StatsResponse.fromJson(data);
+      },
+    );
+  }
+
+  @override
+  Future<Result<List<KpDiscountSourceModel>>> getKpDiscountSources() async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.get(ApiConstants.kpDiscountSourceEndpoint),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        final discountSourcesJson = data['discountSources'] as List<dynamic>;
+        return discountSourcesJson
+            .map(
+              (json) =>
+                  KpDiscountSourceModel.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+      },
+    );
+  }
+
+  @override
+  Future<Result<List<KpDiscountCategoryModel>>>
+  getKpDiscountCategories() async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.get(ApiConstants.kpDiscountCategoryEndpoint),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        final discountCategoriesJson =
+            data['discountCategories'] as List<dynamic>;
+        return discountCategoriesJson
+            .map(
+              (json) => KpDiscountCategoryModel.fromJson(
+                json as Map<String, dynamic>,
+              ),
+            )
+            .toList();
       },
     );
   }

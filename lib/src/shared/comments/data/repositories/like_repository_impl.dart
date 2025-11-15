@@ -1,5 +1,5 @@
-import 'package:hr_tcc_project/src/core/base_repository.dart';
-import 'package:hr_tcc_project/src/core/types/result.dart';
+import 'package:hr_tcc_project/src/core/base_types/base_repository.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import '../../domain/domain.dart';
 import '../datasources/like_remote_data_source.dart';
 
@@ -19,7 +19,10 @@ class LikeRepositoryImpl with BaseRepository implements LikeRepository {
     required int entityId,
     required int commentId,
   }) async {
-    final result = await _remoteDataSource.toggleCommentLike(entityId, commentId);
+    final result = await _remoteDataSource.toggleCommentLike(
+      entityId,
+      commentId,
+    );
     return mapResult(result, (response) => response.like);
   }
 }

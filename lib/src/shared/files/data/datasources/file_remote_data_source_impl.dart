@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import '../../../../core/types/result.dart';
+import '../../../../core/base_types/result.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_call_executor.dart';
@@ -39,7 +39,10 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
 
       // Create FormData with file
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(file.path, filename: file.path.split('/').last),
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: file.path.split('/').last,
+        ),
       });
 
       // Execute upload
@@ -82,7 +85,10 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   }) async {
     try {
       // Build query parameters
-      final queryParameters = <String, dynamic>{'systemType': systemType.value, 'download': download};
+      final queryParameters = <String, dynamic>{
+        'systemType': systemType.value,
+        'download': download,
+      };
 
       // Add file identifier based on system type
       if (idFile != null) {
@@ -108,7 +114,9 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
           } else if (response.data is Uint8List) {
             return response.data as Uint8List;
           } else {
-            throw Exception('Unexpected response data type: ${response.data.runtimeType}');
+            throw Exception(
+              'Unexpected response data type: ${response.data.runtimeType}',
+            );
           }
         },
         validStatusCodes: [200],

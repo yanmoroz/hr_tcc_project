@@ -1,8 +1,15 @@
-import 'package:hr_tcc_project/src/core/types/result.dart';
-import '../../domain/domain.dart';
-import '../data.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
-class NewsRepositoryImpl implements NewsRepository {
+import '../../../../core/base_types/base_repository.dart';
+import '../../domain/domain.dart';
+import '../datasources/news_remote_data_source.dart';
+import '../models/kp_news_category_model.dart';
+import '../models/news_detail_model.dart';
+import '../models/news_stats_model.dart';
+import '../models/gallery_image_model.dart';
+import '../models/news_item_model.dart';
+
+class NewsRepositoryImpl with BaseRepository implements NewsRepository {
   final NewsRemoteDataSource _remoteDataSource;
 
   NewsRepositoryImpl(this._remoteDataSource);
@@ -19,7 +26,9 @@ class NewsRepositoryImpl implements NewsRepository {
       page: page,
     );
 
-    return result.map((response) => response.items.map((model) => model.toDomain()).toList());
+    return result.map(
+      (response) => response.items.map((model) => model.toDomain()).toList(),
+    );
   }
 
   @override
@@ -37,6 +46,14 @@ class NewsRepositoryImpl implements NewsRepository {
   @override
   Future<Result<List<GalleryImage>>> getNewsGallery(int galleryId) async {
     final result = await _remoteDataSource.getNewsGallery(galleryId);
-    return result.map((response) => response.items.map((model) => model.toDomain()).toList());
+    return result.map(
+      (response) => response.items.map((model) => model.toDomain()).toList(),
+    );
+  }
+
+  @override
+  Future<Result<List<KpNewsCategory>>> getKpNewsCategories() async {
+    final result = await _remoteDataSource.getKpNewsCategories();
+    return mapResultList(result, (model) => model.toDomain());
   }
 }

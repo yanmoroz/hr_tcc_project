@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../../shared/master_data/domain/domain.dart';
+import '../../../domain/domain.dart';
 
 part 'discount_categories_state.freezed.dart';
 
@@ -12,5 +12,6 @@ class DiscountCategoriesState with _$DiscountCategoriesState {
     required List<KpDiscountCategory> categories,
     required List<KpDiscountSource> sources,
   }) = DiscountCategoriesLoaded;
-  const factory DiscountCategoriesState.error(String message) = DiscountCategoriesError;
+  const factory DiscountCategoriesState.error(String message) =
+      DiscountCategoriesError;
 }

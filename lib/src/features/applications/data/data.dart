@@ -13,6 +13,3 @@ export 'models/create_application_result_model.dart';
 
 // Repositories
 export 'repositories/application_repository_impl.dart';
-
-// Shared master data models
-export '../../../shared/master_data/data/data.dart';

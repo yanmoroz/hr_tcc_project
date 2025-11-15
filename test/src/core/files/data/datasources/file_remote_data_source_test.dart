@@ -7,7 +7,7 @@ import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/shared/files/data/datasources/data_sources.dart';
 import 'package:hr_tcc_project/src/shared/files/domain/entities/entities.dart';
-import '../../../../../../lib/src/core/types/result.dart';
+import '../../../../../../lib/src/core/base_types/result.dart';
 
 void main() {
   group('FileRemoteDataSource', () {
@@ -28,29 +28,38 @@ void main() {
     });
 
     group('downloadFile', () {
-      test('should download ELMA file using idFile from API and return binary data', () async {
-        // Arrange - Use a valid ELMA file ID (UUID format)
-        // Note: Replace with a valid file ID from your test environment
-        const elmaFileId = '019937dc-0be4-7dfd-b15e-d3dbb52778d2';
+      test(
+        'should download ELMA file using idFile from API and return binary data',
+        () async {
+          // Arrange - Use a valid ELMA file ID (UUID format)
+          // Note: Replace with a valid file ID from your test environment
+          const elmaFileId = '019937dc-0be4-7dfd-b15e-d3dbb52778d2';
 
-        // Act
-        final result = await dataSource.downloadFile(systemType: SystemType.elma, download: true, idFile: elmaFileId);
+          // Act
+          final result = await dataSource.downloadFile(
+            systemType: SystemType.elma,
+            download: true,
+            idFile: elmaFileId,
+          );
 
-        // Assert
-        result.fold(
-          (failure) {
-            fail('Unexpected error: ${failure.message}');
-          },
-          (fileData) {
-            // If we get here, the API call succeeded
-            expect(fileData, isA<Uint8List>());
-            expect(fileData.isNotEmpty, isTrue);
+          // Assert
+          result.fold(
+            (failure) {
+              fail('Unexpected error: ${failure.message}');
+            },
+            (fileData) {
+              // If we get here, the API call succeeded
+              expect(fileData, isA<Uint8List>());
+              expect(fileData.isNotEmpty, isTrue);
 
-            // Log the actual data for verification
-            AppLogger.d('Downloaded ELMA file (idFile): ${fileData.length} bytes');
-          },
-        );
-      });
+              // Log the actual data for verification
+              AppLogger.d(
+                'Downloaded ELMA file (idFile): ${fileData.length} bytes',
+              );
+            },
+          );
+        },
+      );
     });
   });
 }

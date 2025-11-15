@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/domain/value_objects/application_status.dart';
 import '../../../../core/master_data/models/system_status_model.dart';
 import '../../domain/domain.dart';
 

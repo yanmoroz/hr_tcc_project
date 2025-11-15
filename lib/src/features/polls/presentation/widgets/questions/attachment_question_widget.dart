@@ -8,25 +8,33 @@ import '../../../../../shared/files/domain/entities/entities.dart';
 import '../../../../../shared/files/domain/usecases/usecases.dart';
 import '../../../domain/domain.dart';
 import 'question_widget_factory.dart';
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 
 class AttachmentQuestionWidget extends StatefulWidget {
   final Question question;
   final AnswerChangedCallback onAnswerChanged;
 
-  const AttachmentQuestionWidget({super.key, required this.question, required this.onAnswerChanged});
+  const AttachmentQuestionWidget({
+    super.key,
+    required this.question,
+    required this.onAnswerChanged,
+  });
 
   @override
-  State<AttachmentQuestionWidget> createState() => _AttachmentQuestionWidgetState();
+  State<AttachmentQuestionWidget> createState() =>
+      _AttachmentQuestionWidgetState();
 }
 
 class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
   final List<XFile> _selectedFiles = [];
   final ImagePicker _picker = ImagePicker();
-  final UploadFileUsecase _uploadFileUsecase = GetIt.instance<UploadFileUsecase>();
-  final Map<int, bool> _uploadingFiles = {}; // Track which files are being uploaded
+  final UploadFileUsecase _uploadFileUsecase =
+      GetIt.instance<UploadFileUsecase>();
+  final Map<int, bool> _uploadingFiles =
+      {}; // Track which files are being uploaded
   final Map<int, double> _uploadProgress = {}; // Track upload progress
-  final Map<int, AttachmentFile> _uploadedFiles = {}; // Track uploaded files by index
+  final Map<int, AttachmentFile> _uploadedFiles =
+      {}; // Track uploaded files by index
 
   Future<void> _pickFiles() async {
     try {
@@ -41,7 +49,9 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
     } catch (e) {
       // Handle error - user might have canceled or permission denied
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error picking files: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error picking files: $e')));
       }
     }
   }
@@ -58,13 +68,19 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
       final newUploadedFiles = <int, AttachmentFile>{};
       for (var i = 0; i < _selectedFiles.length; i++) {
         if (i < index) {
-          if (_uploadingFiles.containsKey(i)) newUploadingFiles[i] = _uploadingFiles[i]!;
-          if (_uploadProgress.containsKey(i)) newUploadProgress[i] = _uploadProgress[i]!;
-          if (_uploadedFiles.containsKey(i)) newUploadedFiles[i] = _uploadedFiles[i]!;
+          if (_uploadingFiles.containsKey(i))
+            newUploadingFiles[i] = _uploadingFiles[i]!;
+          if (_uploadProgress.containsKey(i))
+            newUploadProgress[i] = _uploadProgress[i]!;
+          if (_uploadedFiles.containsKey(i))
+            newUploadedFiles[i] = _uploadedFiles[i]!;
         } else if (i > index) {
-          if (_uploadingFiles.containsKey(i)) newUploadingFiles[i - 1] = _uploadingFiles[i]!;
-          if (_uploadProgress.containsKey(i)) newUploadProgress[i - 1] = _uploadProgress[i]!;
-          if (_uploadedFiles.containsKey(i)) newUploadedFiles[i - 1] = _uploadedFiles[i]!;
+          if (_uploadingFiles.containsKey(i))
+            newUploadingFiles[i - 1] = _uploadingFiles[i]!;
+          if (_uploadProgress.containsKey(i))
+            newUploadProgress[i - 1] = _uploadProgress[i]!;
+          if (_uploadedFiles.containsKey(i))
+            newUploadedFiles[i - 1] = _uploadedFiles[i]!;
         }
       }
       _uploadingFiles.clear();
@@ -100,9 +116,13 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
       result.fold(
         (failure) {
           if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Failed to upload ${file.name}: ${failure.message}')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Failed to upload ${file.name}: ${failure.message}',
+                ),
+              ),
+            );
             setState(() {
               _uploadingFiles[index] = false;
             });
@@ -119,7 +139,9 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading ${file.name}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error uploading ${file.name}: $e')),
+        );
         setState(() {
           _uploadingFiles[index] = false;
         });
@@ -130,31 +152,46 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
   void _updateAnswerWithUploadedFile(UploadedFile uploadedFile, int index) {
     // Convert UploadedFile (KP system) to AttachmentFile
     uploadedFile.maybeWhen(
-      kp: (id, name, url, folder, extension, size, created, fileType, icon, width, height, thumbnail, priority) {
-        final attachmentFile = AttachmentFile(
-          id: id,
-          name: name,
-          url: url,
-          folder: folder,
-          extension: extension,
-          size: size,
-          created: created,
-          fileType: fileType,
-          systemType: 'KP',
-          icon: icon,
-          width: width,
-          height: height,
-          thumbnail: thumbnail,
-        );
+      kp:
+          (
+            id,
+            name,
+            url,
+            folder,
+            extension,
+            size,
+            created,
+            fileType,
+            icon,
+            width,
+            height,
+            thumbnail,
+            priority,
+          ) {
+            final attachmentFile = AttachmentFile(
+              id: id,
+              name: name,
+              url: url,
+              folder: folder,
+              extension: extension,
+              size: size,
+              created: created,
+              fileType: fileType,
+              systemType: 'KP',
+              icon: icon,
+              width: width,
+              height: height,
+              thumbnail: thumbnail,
+            );
 
-        // Store uploaded file
-        setState(() {
-          _uploadedFiles[index] = attachmentFile;
-        });
+            // Store uploaded file
+            setState(() {
+              _uploadedFiles[index] = attachmentFile;
+            });
 
-        // Update answer with all uploaded files
-        _updateAnswerFromUploadedFiles();
-      },
+            // Update answer with all uploaded files
+            _updateAnswerFromUploadedFiles();
+          },
       orElse: () {
         // Only KP files are supported for polls
       },
@@ -171,7 +208,11 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
     }
 
     // Update the answer with all uploaded files
-    final pollAnswer = PollAnswer.type5(type: 5, questionId: widget.question.id, answerData: uploadedFiles);
+    final pollAnswer = PollAnswer.type5(
+      type: 5,
+      questionId: widget.question.id,
+      answerData: uploadedFiles,
+    );
     widget.onAnswerChanged(widget.question, pollAnswer);
   }
 
@@ -202,7 +243,12 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
       children: [
         Row(
           children: [
-            Expanded(child: Text(widget.question.title, style: Theme.of(context).textTheme.titleMedium)),
+            Expanded(
+              child: Text(
+                widget.question.title,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             if (widget.question.isRequired == true)
               Chip(
                 label: const Text('Required'),
@@ -212,9 +258,13 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
               ),
           ],
         ),
-        if (widget.question.comment != null && widget.question.comment!.isNotEmpty) ...[
+        if (widget.question.comment != null &&
+            widget.question.comment!.isNotEmpty) ...[
           const SizedBox(height: 4.0),
-          Text(widget.question.comment!, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            widget.question.comment!,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
         const SizedBox(height: 8.0),
         ElevatedButton.icon(
@@ -224,7 +274,10 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
         ),
         if (_selectedFiles.isNotEmpty) ...[
           const SizedBox(height: 16.0),
-          Text('Selected Files:', style: Theme.of(context).textTheme.titleSmall),
+          Text(
+            'Selected Files:',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           const SizedBox(height: 8.0),
           ..._selectedFiles.asMap().entries.map((entry) {
             final index = entry.key;
@@ -237,14 +290,17 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
               margin: const EdgeInsets.only(bottom: 8.0),
               child: ListTile(
                 leading: isUploading
-                    ? CircularProgressIndicator(value: progress > 0 ? progress : null)
+                    ? CircularProgressIndicator(
+                        value: progress > 0 ? progress : null,
+                      )
                     : const Icon(Icons.insert_drive_file),
                 title: Text(file.name),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(_formatFileSize(fileSize)),
-                    if (isUploading) LinearProgressIndicator(value: progress, minHeight: 2),
+                    if (isUploading)
+                      LinearProgressIndicator(value: progress, minHeight: 2),
                   ],
                 ),
                 trailing: IconButton(

@@ -1,8 +1,16 @@
 import 'package:fpdart/fpdart.dart';
 
-import '../types/result.dart';
+import '../base_types/result.dart';
 import '../domain/entities/system_status.dart';
-import '../../shared/master_data/domain/domain.dart';
+import '../domain/entities/application_form_group.dart';
+import '../domain/entities/application_form.dart';
+import '../domain/entities/system_status_group.dart';
+import '../domain/entities/trip_purpose.dart';
+import '../domain/entities/training_type.dart';
+import '../domain/entities/training_form.dart';
+import '../domain/entities/training_month.dart';
+import '../domain/entities/alpina_digital_prev_access.dart';
+import '../domain/entities/office.dart';
 import 'master_data_cache.dart';
 import 'master_data_remote_data_source.dart';
 
@@ -188,8 +196,5 @@ class MasterDataRepository {
   // backwards compatibility.
   // ============================================================================
 
-  // TODO: Move KpDiscountCategory to features/discounts/
-  // TODO: Move KpDiscountSource to features/discounts/
-  // TODO: Move KpNewsCategory to features/news/
   // TODO: Move other feature-specific dictionaries to their features
 }

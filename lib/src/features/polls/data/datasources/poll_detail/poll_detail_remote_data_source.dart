@@ -1,4 +1,4 @@
-import '../../../../../core/types/result.dart';
+import '../../../../../core/base_types/result.dart';
 
 import '../../../../../core/network/api_client.dart';
 import '../../../../../core/network/api_call_executor.dart';
@@ -35,7 +35,10 @@ class PollDetailRemoteDataSourceImpl implements PollDetailRemoteDataSource {
     required PollAnswersRequestModel request,
   }) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.post(ApiConstants.pollVoteEndpoint(pollId), data: request.toJson()),
+      apiCall: () => _apiClient.post(
+        ApiConstants.pollVoteEndpoint(pollId),
+        data: request.toJson(),
+      ),
       successParser: (_) => null,
       validStatusCodes: [200],
     );

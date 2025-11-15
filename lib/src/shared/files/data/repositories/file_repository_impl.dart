@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import '../../../../core/types/result.dart';
+import '../../../../core/base_types/result.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../../../core/base_repository.dart';
+import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
