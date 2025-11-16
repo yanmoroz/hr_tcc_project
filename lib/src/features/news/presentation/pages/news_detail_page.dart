@@ -24,7 +24,9 @@ class NewsDetailPage extends StatelessWidget {
             loaded: (newsDetail, likeCount, liked, commentCount, coverImage) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<NewsDetailBloc>().add(const NewsDetailEvent.refresh());
+                  context.read<NewsDetailBloc>().add(
+                    const NewsDetailEvent.refresh(),
+                  );
                 },
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
@@ -43,7 +45,10 @@ class NewsDetailPage extends StatelessWidget {
                               return Container(
                                 height: 200,
                                 color: Colors.grey[300],
-                                child: const Icon(Icons.image_not_supported, size: 64),
+                                child: const Icon(
+                                  Icons.image_not_supported,
+                                  size: 64,
+                                ),
                               );
                             },
                           ),
@@ -53,7 +58,8 @@ class NewsDetailPage extends StatelessWidget {
                       // Title
                       Text(
                         newsDetail.title,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
 
@@ -74,7 +80,8 @@ class NewsDetailPage extends StatelessWidget {
                       if (newsDetail.content.isNotEmpty) ...[
                         Text(
                           'Content',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         Html(data: newsDetail.content),
@@ -85,8 +92,12 @@ class NewsDetailPage extends StatelessWidget {
                       Card(
                         child: ListTile(
                           leading: const Icon(Icons.person),
-                          title: Text('${newsDetail.author.firstName} ${newsDetail.author.lastName}'),
-                          subtitle: newsDetail.author.title.isNotEmpty ? Text(newsDetail.author.title) : null,
+                          title: Text(
+                            '${newsDetail.author.firstName} ${newsDetail.author.lastName}',
+                          ),
+                          subtitle: newsDetail.author.title.isNotEmpty
+                              ? Text(newsDetail.author.title)
+                              : null,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -96,9 +107,13 @@ class NewsDetailPage extends StatelessWidget {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              context.read<NewsDetailBloc>().add(const NewsDetailEvent.toggleLike());
+                              context.read<NewsDetailBloc>().add(
+                                const NewsDetailEvent.toggleLike(),
+                              );
                             },
-                            icon: Icon(liked ? Icons.favorite : Icons.favorite_border),
+                            icon: Icon(
+                              liked ? Icons.favorite : Icons.favorite_border,
+                            ),
                             label: Text('$likeCount'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: liked ? Colors.red[50] : null,
@@ -111,7 +126,10 @@ class NewsDetailPage extends StatelessWidget {
                               Navigator.pushNamed(
                                 context,
                                 '/comments',
-                                arguments: {'entityId': newsId, 'feature': 'news'},
+                                arguments: {
+                                  'entityId': newsId,
+                                  'feature': 'news',
+                                },
                               );
                             },
                             icon: const Icon(Icons.comment),
@@ -128,11 +146,17 @@ class NewsDetailPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                  Text(
+                    'Error: $message',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<NewsDetailBloc>().add(const NewsDetailEvent.loadDetail());
+                      context.read<NewsDetailBloc>().add(
+                        const NewsDetailEvent.loadDetail(),
+                      );
                     },
                     child: const Text('Retry'),
                   ),

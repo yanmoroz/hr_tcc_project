@@ -51,9 +51,9 @@ class NewsItemWidget extends StatelessWidget {
               // Title
               Text(
                 newsItem.title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
 
@@ -81,9 +81,9 @@ class NewsItemWidget extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     _formatDate(newsItem.createdData),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                   ),
                 ],
               ),

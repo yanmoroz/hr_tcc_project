@@ -1,11 +1,9 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
 import '../../../../core/base_types/base_repository.dart';
+import '../../../../core/base_types/result.dart';
 import '../../domain/domain.dart';
 import '../datasources/news_remote_data_source.dart';
 import '../models/kp_news_category_model.dart';
 import '../models/news_detail_model.dart';
-import '../models/news_stats_model.dart';
 import '../models/gallery_image_model.dart';
 import '../models/news_item_model.dart';
 
@@ -38,9 +36,17 @@ class NewsRepositoryImpl with BaseRepository implements NewsRepository {
   }
 
   @override
-  Future<Result<NewsStats>> getNewsStats(int newsId) async {
+  Future<Result<({int likeCount, bool like, int commentCount})>> getNewsStats(
+    int newsId,
+  ) async {
     final result = await _remoteDataSource.getNewsStats(newsId);
-    return result.map((model) => model.toDomain());
+    return result.map(
+      (response) => (
+        likeCount: response.likeCount,
+        like: response.like,
+        commentCount: response.commentCount,
+      ),
+    );
   }
 
   @override
@@ -55,5 +61,15 @@ class NewsRepositoryImpl with BaseRepository implements NewsRepository {
   Future<Result<List<KpNewsCategory>>> getKpNewsCategories() async {
     final result = await _remoteDataSource.getKpNewsCategories();
     return mapResultList(result, (model) => model.toDomain());
+  }
+
+  @override
+  Future<Result<bool>> toggleNewsLike(int newsId) async {
+    return await _remoteDataSource.toggleNewsLike(newsId);
+  }
+
+  @override
+  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId) async {
+    return await _remoteDataSource.toggleNewsCommentLike(newsId, commentId);
   }
 }

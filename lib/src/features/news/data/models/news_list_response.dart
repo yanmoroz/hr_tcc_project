@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'news_item_model.dart';
 
 part 'news_list_response.freezed.dart';
@@ -11,5 +12,6 @@ abstract class NewsListResponse with _$NewsListResponse {
     required int total,
   }) = _NewsListResponse;
 
-  factory NewsListResponse.fromJson(Map<String, dynamic> json) => _$NewsListResponseFromJson(json);
+  factory NewsListResponse.fromJson(Map<String, dynamic> json) =>
+      _$NewsListResponseFromJson(json);
 }

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/domain.dart';
 import 'author_model.dart';
 
@@ -16,16 +17,17 @@ abstract class NewsDetailModel with _$NewsDetailModel {
     String? image,
   }) = _NewsDetailModel;
 
-  factory NewsDetailModel.fromJson(Map<String, dynamic> json) => _$NewsDetailModelFromJson(json);
+  factory NewsDetailModel.fromJson(Map<String, dynamic> json) =>
+      _$NewsDetailModelFromJson(json);
 }
 
 extension NewsDetailModelX on NewsDetailModel {
   NewsDetail toDomain() => NewsDetail(
-        id: id,
-        title: title,
-        content: content,
-        createdData: createdData,
-        author: author.toDomain(),
-        image: image,
-      );
+    id: id,
+    title: title,
+    content: content,
+    createdData: createdData,
+    author: author.toDomain(),
+    image: image,
+  );
 }

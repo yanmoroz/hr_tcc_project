@@ -9,9 +9,13 @@ import '../../domain/domain.dart';
 
 class CommentsPage extends StatefulWidget {
   final int entityId;
-  final String feature;
+  final CommentableEntityType entityType;
 
-  const CommentsPage({super.key, required this.entityId, required this.feature});
+  const CommentsPage({
+    super.key,
+    required this.entityId,
+    required this.entityType,
+  });
 
   @override
   State<CommentsPage> createState() => _CommentsPageState();
@@ -37,8 +41,10 @@ class _CommentsPageState extends State<CommentsPage> {
             child: BlocBuilder<CommentsBloc, CommentsState>(
               builder: (context, state) {
                 return state.when(
-                  initial: () => const Center(child: CircularProgressIndicator()),
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  initial: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   loaded: (comments, isAddingComment) {
                     if (comments.isEmpty) {
                       return const Center(child: Text('No comments yet'));
@@ -46,7 +52,9 @@ class _CommentsPageState extends State<CommentsPage> {
 
                     return RefreshIndicator(
                       onRefresh: () async {
-                        context.read<CommentsBloc>().add(const CommentsEvent.refreshComments());
+                        context.read<CommentsBloc>().add(
+                          const CommentsEvent.refreshComments(),
+                        );
                       },
                       child: ListView.builder(
                         padding: const EdgeInsets.all(16),
@@ -56,7 +64,9 @@ class _CommentsPageState extends State<CommentsPage> {
                           return _CommentItem(
                             comment: comment,
                             onLike: () {
-                              context.read<CommentsBloc>().add(CommentsEvent.toggleCommentLike(comment.id));
+                              context.read<CommentsBloc>().add(
+                                CommentsEvent.toggleCommentLike(comment.id),
+                              );
                             },
                             onDelete: comment.editable
                                 ? () {
@@ -80,7 +90,9 @@ class _CommentsPageState extends State<CommentsPage> {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
-                            context.read<CommentsBloc>().add(const CommentsEvent.loadComments());
+                            context.read<CommentsBloc>().add(
+                              const CommentsEvent.loadComments(),
+                            );
                           },
                           child: const Text('Retry'),
                         ),
@@ -95,14 +107,21 @@ class _CommentsPageState extends State<CommentsPage> {
           // Add comment input
           BlocBuilder<CommentsBloc, CommentsState>(
             builder: (context, state) {
-              final isAddingComment = state.maybeWhen(loaded: (_, isAdding) => isAdding, orElse: () => false);
+              final isAddingComment = state.maybeWhen(
+                loaded: (_, isAdding) => isAdding,
+                orElse: () => false,
+              );
 
               return Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor,
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, -2)),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, -2),
+                    ),
                   ],
                 ),
                 child: Row(
@@ -110,7 +129,10 @@ class _CommentsPageState extends State<CommentsPage> {
                     Expanded(
                       child: TextField(
                         controller: _commentController,
-                        decoration: const InputDecoration(hintText: 'Write a comment...', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                          hintText: 'Write a comment...',
+                          border: OutlineInputBorder(),
+                        ),
                         maxLines: null,
                         enabled: !isAddingComment,
                       ),
@@ -118,14 +140,20 @@ class _CommentsPageState extends State<CommentsPage> {
                     const SizedBox(width: 8),
                     IconButton(
                       icon: isAddingComment
-                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : const Icon(Icons.send),
                       onPressed: isAddingComment
                           ? null
                           : () {
                               if (_commentController.text.trim().isNotEmpty) {
                                 context.read<CommentsBloc>().add(
-                                  CommentsEvent.addComment(content: _commentController.text.trim()),
+                                  CommentsEvent.addComment(
+                                    content: _commentController.text.trim(),
+                                  ),
                                 );
                                 _commentController.clear();
                               }
@@ -148,10 +176,15 @@ class _CommentsPageState extends State<CommentsPage> {
         title: const Text('Delete Comment'),
         content: const Text('Are you sure you want to delete this comment?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
-              context.read<CommentsBloc>().add(CommentsEvent.deleteComment(commentId));
+              context.read<CommentsBloc>().add(
+                CommentsEvent.deleteComment(commentId),
+              );
               Navigator.pop(dialogContext);
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -167,7 +200,11 @@ class _CommentItem extends StatelessWidget {
   final VoidCallback onLike;
   final VoidCallback? onDelete;
 
-  const _CommentItem({required this.comment, required this.onLike, this.onDelete});
+  const _CommentItem({
+    required this.comment,
+    required this.onLike,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +218,10 @@ class _CommentItem extends StatelessWidget {
             // Author info
             Row(
               children: [
-                CircleAvatar(radius: 16, child: Text(comment.author.title[0].toUpperCase())),
+                CircleAvatar(
+                  radius: 16,
+                  child: Text(comment.author.title[0].toUpperCase()),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -189,15 +229,24 @@ class _CommentItem extends StatelessWidget {
                     children: [
                       Text(
                         comment.author.title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       if (comment.author.position != null)
-                        Text(comment.author.position!, style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          comment.author.position!,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                     ],
                   ),
                 ),
                 if (onDelete != null)
-                  IconButton(icon: const Icon(Icons.delete, size: 20), onPressed: onDelete, color: Colors.red),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: onDelete,
+                    color: Colors.red,
+                  ),
               ],
             ),
             const SizedBox(height: 8),
@@ -211,12 +260,16 @@ class _CommentItem extends StatelessWidget {
               children: [
                 Text(
                   _formatDate(comment.createdData),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                 ),
                 const Spacer(),
                 IconButton(
                   icon: Icon(
-                    (comment.like ?? false) ? Icons.favorite : Icons.favorite_border,
+                    (comment.like ?? false)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
                     size: 20,
                     color: (comment.like ?? false) ? Colors.red : null,
                   ),

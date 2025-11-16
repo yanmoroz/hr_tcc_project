@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/domain.dart';
 
-part 'comment_author_model.freezed.dart';
-part 'comment_author_model.g.dart';
+part 'author_model.freezed.dart';
+part 'author_model.g.dart';
 
 @freezed
-abstract class CommentAuthorModel with _$CommentAuthorModel {
-  const factory CommentAuthorModel({
+abstract class AuthorModel with _$AuthorModel {
+  const factory AuthorModel({
     required String firstName,
     String? lastName,
     String? middleName,
@@ -18,13 +18,14 @@ abstract class CommentAuthorModel with _$CommentAuthorModel {
     required String photo,
     required int id,
     required String title,
-  }) = _CommentAuthorModel;
+  }) = _AuthorModel;
 
-  factory CommentAuthorModel.fromJson(Map<String, dynamic> json) => _$CommentAuthorModelFromJson(json);
+  factory AuthorModel.fromJson(Map<String, dynamic> json) =>
+      _$AuthorModelFromJson(json);
 }
 
-extension CommentAuthorModelX on CommentAuthorModel {
-  CommentAuthor toDomain() => CommentAuthor(
+extension AuthorModelX on AuthorModel {
+  Author toDomain() => Author(
     firstName: firstName,
     lastName: lastName,
     middleName: middleName,

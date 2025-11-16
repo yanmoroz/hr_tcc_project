@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/domain.dart';
 import 'attachment_model.dart';
-import 'comment_author_model.dart';
+import 'author_model.dart';
 
 part 'comment_model.freezed.dart';
 part 'comment_model.g.dart';
@@ -13,14 +13,15 @@ abstract class CommentModel with _$CommentModel {
     required int id,
     required String content,
     required DateTime createdData,
-    required CommentAuthorModel author,
+    required AuthorModel author,
     List<AttachmentModel>? attachments,
     required bool editable,
     int? likeCount,
     bool? like,
   }) = _CommentModel;
 
-  factory CommentModel.fromJson(Map<String, dynamic> json) => _$CommentModelFromJson(json);
+  factory CommentModel.fromJson(Map<String, dynamic> json) =>
+      _$CommentModelFromJson(json);
 }
 
 extension CommentModelX on CommentModel {

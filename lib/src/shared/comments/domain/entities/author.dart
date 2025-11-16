@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'comment_author.freezed.dart';
+part 'author.freezed.dart';
 
 @freezed
-abstract class CommentAuthor with _$CommentAuthor {
-  const factory CommentAuthor({
+abstract class Author with _$Author {
+  const factory Author({
     required String firstName,
     String? lastName,
     String? middleName,
@@ -16,5 +16,5 @@ abstract class CommentAuthor with _$CommentAuthor {
     required String photo,
     required int id,
     required String title,
-  }) = _CommentAuthor;
+  }) = _Author;
 }

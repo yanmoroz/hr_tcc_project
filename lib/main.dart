@@ -26,6 +26,7 @@ import 'src/features/resell/presentation/pages/resell_items_page.dart';
 import 'src/features/resell/presentation/pages/resell_detail_page.dart';
 import 'src/shared/comments/presentation/pages/comments_page.dart';
 import 'src/shared/comments/presentation/bloc/comments_page/comments_event.dart';
+import 'src/shared/comments/domain/domain.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,13 +53,16 @@ class MainApp extends StatelessWidget {
         '/notifications': (context) {
           return BlocProvider(
             create: (context) =>
-                BlocFactory.createNotificationsListBloc()..add(const NotificationsListEvent.loadNotifications()),
+                BlocFactory.createNotificationsListBloc()
+                  ..add(const NotificationsListEvent.loadNotifications()),
             child: const NotificationsPage(),
           );
         },
         '/polls': (context) {
           return BlocProvider(
-            create: (context) => BlocFactory.createPollsListBloc()..add(const PollsListEvent.loadPolls()),
+            create: (context) =>
+                BlocFactory.createPollsListBloc()
+                  ..add(const PollsListEvent.loadPolls()),
             child: const PollsPage(),
           );
         },
@@ -66,7 +70,9 @@ class MainApp extends StatelessWidget {
           final args = ModalRoute.of(context)!.settings.arguments;
           final pollId = args as int;
           return BlocProvider(
-            create: (context) => BlocFactory.createPollDetailBloc(pollId)..add(const PollDetailEvent.loadPollDetail()),
+            create: (context) =>
+                BlocFactory.createPollDetailBloc(pollId)
+                  ..add(const PollDetailEvent.loadPollDetail()),
             child: PollPage(pollId: pollId),
           );
         },
@@ -74,18 +80,25 @@ class MainApp extends StatelessWidget {
         '/discount-categories': (context) {
           return BlocProvider(
             create: (context) =>
-                BlocFactory.createDiscountCategoriesBloc()..add(const DiscountCategoriesEvent.loadCategories()),
+                BlocFactory.createDiscountCategoriesBloc()
+                  ..add(const DiscountCategoriesEvent.loadCategories()),
             child: const DiscountCategoriesPage(),
           );
         },
         '/discounts': (context) {
-          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final args =
+              ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>?;
           final categoryCode = args?['category'] as int?;
           final sourceCode = args?['source'] as int?;
           return BlocProvider(
-            create: (context) =>
-                BlocFactory.createDiscountsListBloc()
-                  ..add(DiscountsListEvent.loadDiscounts(category: categoryCode, source: sourceCode)),
+            create: (context) => BlocFactory.createDiscountsListBloc()
+              ..add(
+                DiscountsListEvent.loadDiscounts(
+                  category: categoryCode,
+                  source: sourceCode,
+                ),
+              ),
             child: const DiscountsPage(),
           );
         },
@@ -94,14 +107,16 @@ class MainApp extends StatelessWidget {
           final discountId = args as int;
           return BlocProvider(
             create: (context) =>
-                BlocFactory.createDiscountDetailBloc(discountId)..add(const DiscountDetailEvent.loadDetail()),
+                BlocFactory.createDiscountDetailBloc(discountId)
+                  ..add(const DiscountDetailEvent.loadDetail()),
             child: DiscountDetailPage(discountId: discountId),
           );
         },
         '/news': (context) {
           return BlocProvider(
             create: (context) =>
-                BlocFactory.createNewsListBloc()..add(const NewsListEvent.loadNews()),
+                BlocFactory.createNewsListBloc()
+                  ..add(const NewsListEvent.loadNews()),
             child: const NewsPage(),
           );
         },
@@ -110,19 +125,25 @@ class MainApp extends StatelessWidget {
           final newsId = args as int;
           return BlocProvider(
             create: (context) =>
-                BlocFactory.createNewsDetailBloc(newsId)..add(const NewsDetailEvent.loadDetail()),
+                BlocFactory.createNewsDetailBloc(newsId)
+                  ..add(const NewsDetailEvent.loadDetail()),
             child: NewsDetailPage(newsId: newsId),
           );
         },
         '/comments': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          final args =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
           final entityId = args['entityId'] as int;
-          final feature = args['feature'] as String;
+          final entityType = CommentableEntityType.fromString(
+            args['feature'] as String,
+          );
           return BlocProvider(
-            create: (context) =>
-                BlocFactory.createCommentsBloc(entityId: entityId, feature: feature)
-                  ..add(const CommentsEvent.loadComments()),
-            child: CommentsPage(entityId: entityId, feature: feature),
+            create: (context) => BlocFactory.createCommentsBloc(
+              entityId: entityId,
+              entityType: entityType,
+            )..add(const CommentsEvent.loadComments()),
+            child: CommentsPage(entityId: entityId, entityType: entityType),
           );
         },
         '/resell': (context) => const ResellItemsPage(),

@@ -18,6 +18,8 @@ abstract class DiscountRemoteDataSource {
   Future<Result<StatsResponse>> getDiscountStats(int id);
   Future<Result<List<KpDiscountSourceModel>>> getKpDiscountSources();
   Future<Result<List<KpDiscountCategoryModel>>> getKpDiscountCategories();
+  Future<Result<bool>> toggleDiscountLike(int discountId);
+  Future<Result<bool>> toggleDiscountCommentLike(int discountId, int commentId);
 }
 
 class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
@@ -110,6 +112,34 @@ class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
               ),
             )
             .toList();
+      },
+    );
+  }
+
+  @override
+  Future<Result<bool>> toggleDiscountLike(int discountId) async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () =>
+          _apiClient.post(ApiConstants.discountLikeEndpoint(discountId)),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        return data['like'] as bool;
+      },
+    );
+  }
+
+  @override
+  Future<Result<bool>> toggleDiscountCommentLike(
+    int discountId,
+    int commentId,
+  ) async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.post(
+        ApiConstants.commentLikeEndpoint(discountId, commentId),
+      ),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        return data['like'] as bool;
       },
     );
   }

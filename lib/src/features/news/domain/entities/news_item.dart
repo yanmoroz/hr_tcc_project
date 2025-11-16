@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'author.dart';
 
 part 'news_item.freezed.dart';

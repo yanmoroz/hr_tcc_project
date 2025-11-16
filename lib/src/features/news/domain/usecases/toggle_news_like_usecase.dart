@@ -1,12 +1,12 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
-import 'package:hr_tcc_project/src/shared/comments/domain/domain.dart';
+import '../repositories/news_repository.dart';
 
 class ToggleNewsLikeUsecase {
-  final LikeRepository repository;
+  final NewsRepository repository;
 
   ToggleNewsLikeUsecase(this.repository);
 
   Future<Result<bool>> call(int newsId) async {
-    return await repository.toggleEntityLike(newsId);
+    return await repository.toggleNewsLike(newsId);
   }
 }

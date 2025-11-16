@@ -66,4 +66,20 @@ class DiscountRepositoryImpl with BaseRepository implements DiscountRepository {
 
     return mapResultList(result, (model) => model.toDomain());
   }
+
+  @override
+  Future<Result<bool>> toggleDiscountLike(int discountId) async {
+    return await _remoteDataSource.toggleDiscountLike(discountId);
+  }
+
+  @override
+  Future<Result<bool>> toggleDiscountCommentLike(
+    int discountId,
+    int commentId,
+  ) async {
+    return await _remoteDataSource.toggleDiscountCommentLike(
+      discountId,
+      commentId,
+    );
+  }
 }

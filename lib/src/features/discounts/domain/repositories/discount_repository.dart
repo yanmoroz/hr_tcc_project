@@ -16,4 +16,9 @@ abstract class DiscountRepository {
   getDiscountStats(int id);
   Future<Result<List<KpDiscountSource>>> getKpDiscountSources();
   Future<Result<List<KpDiscountCategory>>> getKpDiscountCategories();
+  Future<Result<bool>> toggleDiscountLike(int discountId);
+  Future<Result<bool>> toggleDiscountCommentLike(
+    int discountId,
+    int commentId,
+  );
 }

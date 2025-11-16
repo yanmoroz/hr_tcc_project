@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/domain.dart';
 
 part 'gallery_image_model.freezed.dart';
@@ -21,7 +22,8 @@ abstract class GalleryImageModel with _$GalleryImageModel {
     int? priority,
   }) = _GalleryImageModel;
 
-  factory GalleryImageModel.fromJson(Map<String, dynamic> json) => _$GalleryImageModelFromJson(json);
+  factory GalleryImageModel.fromJson(Map<String, dynamic> json) =>
+      _$GalleryImageModelFromJson(json);
 }
 
 extension GalleryImageModelX on GalleryImageModel {

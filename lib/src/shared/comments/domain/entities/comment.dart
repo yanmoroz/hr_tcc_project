@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'attachment.dart';
-import 'comment_author.dart';
+import 'author.dart';
 
 part 'comment.freezed.dart';
 
@@ -11,7 +11,7 @@ abstract class Comment with _$Comment {
     required int id,
     required String content,
     required DateTime createdData,
-    required CommentAuthor author,
+    required Author author,
     List<Attachment>? attachments,
     required bool editable,
     int? likeCount,

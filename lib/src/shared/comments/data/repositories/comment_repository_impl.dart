@@ -9,16 +9,24 @@ class CommentRepositoryImpl with BaseRepository implements CommentRepository {
   CommentRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Result<List<Comment>>> getComments(int entityId) async {
-    final result = await _remoteDataSource.getComments(entityId);
+  Future<Result<List<Comment>>> getNewsComments(int newsId) async {
+    final result = await _remoteDataSource.getNewsComments(newsId);
     return result.map(
       (response) => response.comments.map((model) => model.toDomain()).toList(),
     );
   }
 
   @override
-  Future<Result<Comment>> addComment({
-    required int entityId,
+  Future<Result<List<Comment>>> getDiscountComments(int discountId) async {
+    final result = await _remoteDataSource.getDiscountComments(discountId);
+    return result.map(
+      (response) => response.comments.map((model) => model.toDomain()).toList(),
+    );
+  }
+
+  @override
+  Future<Result<Comment>> addNewsComment({
+    required int newsId,
     required String content,
     int? parent,
     List<int>? attachments,
@@ -28,16 +36,47 @@ class CommentRepositoryImpl with BaseRepository implements CommentRepository {
       content: content,
       attachments: attachments,
     );
-    final result = await _remoteDataSource.addComment(entityId, request);
+    final result = await _remoteDataSource.addNewsComment(newsId, request);
     return result.map((model) => model.toDomain());
   }
 
   @override
-  Future<Result<List<int>>> deleteComment({
-    required int entityId,
+  Future<Result<Comment>> addDiscountComment({
+    required int discountId,
+    required String content,
+    int? parent,
+    List<int>? attachments,
+  }) async {
+    final request = AddCommentRequest(
+      parent: parent,
+      content: content,
+      attachments: attachments,
+    );
+    final result = await _remoteDataSource.addDiscountComment(
+      discountId,
+      request,
+    );
+    return result.map((model) => model.toDomain());
+  }
+
+  @override
+  Future<Result<List<int>>> deleteNewsComment({
+    required int newsId,
     required int commentId,
   }) async {
-    final result = await _remoteDataSource.deleteComment(entityId, commentId);
+    final result = await _remoteDataSource.deleteNewsComment(newsId, commentId);
+    return result.map((response) => response.removedIds);
+  }
+
+  @override
+  Future<Result<List<int>>> deleteDiscountComment({
+    required int discountId,
+    required int commentId,
+  }) async {
+    final result = await _remoteDataSource.deleteDiscountComment(
+      discountId,
+      commentId,
+    );
     return result.map((response) => response.removedIds);
   }
 }

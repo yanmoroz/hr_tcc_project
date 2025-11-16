@@ -50,53 +50,81 @@ class _NewsPageState extends State<NewsPage> {
           body: state.when(
             initial: () => const Center(child: CircularProgressIndicator()),
             loading: () => const Center(child: CircularProgressIndicator()),
-            loaded: (newsItems, currentPage, hasMorePages, isLoadingMore, coverImages, category, search) {
-              if (newsItems.isEmpty) {
-                return const Center(child: Text('No news available'));
-              }
+            loaded:
+                (
+                  newsItems,
+                  currentPage,
+                  hasMorePages,
+                  isLoadingMore,
+                  coverImages,
+                  category,
+                  search,
+                ) {
+                  if (newsItems.isEmpty) {
+                    return const Center(child: Text('No news available'));
+                  }
 
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<NewsListBloc>().add(
-                    NewsListEvent.refreshNews(category: category, search: search),
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<NewsListBloc>().add(
+                        NewsListEvent.refreshNews(
+                          category: category,
+                          search: search,
+                        ),
+                      );
+                    },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: newsItems.length + (isLoadingMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index >= newsItems.length) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+
+                        final newsItem = newsItems[index];
+                        return NewsItemWidget(
+                          newsItem: newsItem,
+                          coverImage: coverImages[newsItem.id],
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/news-detail',
+                              arguments: newsItem.id,
+                            );
+                          },
+                        );
+                      },
+                    ),
                   );
                 },
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: newsItems.length + (isLoadingMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index >= newsItems.length) {
-                      return const Center(
-                        child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()),
-                      );
-                    }
-
-                    final newsItem = newsItems[index];
-                    return NewsItemWidget(
-                      newsItem: newsItem,
-                      coverImage: coverImages[newsItem.id],
-                      onTap: () {
-                        Navigator.pushNamed(context, '/news-detail', arguments: newsItem.id);
-                      },
-                    );
-                  },
-                ),
-              );
-            },
             error: (message) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                  Text(
+                    'Error: $message',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+                      final args =
+                          ModalRoute.of(context)?.settings.arguments
+                              as Map<String, dynamic>?;
                       final categoryCode = args?['category'] as int?;
                       final searchQuery = args?['search'] as String?;
                       context.read<NewsListBloc>().add(
-                        NewsListEvent.loadNews(category: categoryCode, search: searchQuery),
+                        NewsListEvent.loadNews(
+                          category: categoryCode,
+                          search: searchQuery,
+                        ),
                       );
                     },
                     child: const Text('Retry'),

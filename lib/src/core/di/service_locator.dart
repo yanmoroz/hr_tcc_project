@@ -17,6 +17,8 @@ import '../../features/resell/presentation/bloc/resell_detail_bloc.dart';
 import '../../features/resell/presentation/bloc/resell_items_bloc.dart';
 import '../../features/users/data/data.dart';
 import '../../features/users/domain/domain.dart';
+import '../../shared/comments/data/data.dart';
+import '../../shared/comments/domain/domain.dart';
 import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
 import '../master_data/datasources/master_data_remote_data_source.dart';
@@ -25,7 +27,6 @@ import '../master_data/master_data_cache.dart';
 import '../master_data/repositories/master_data_repository.dart';
 import '../master_data/repositories/master_data_repository_impl.dart';
 import '../network/api_client.dart';
-import '../network/api_constants.dart';
 
 final sl = GetIt.instance;
 
@@ -151,23 +152,8 @@ void _initializeDiscountDependencies() {
 
   // Shared comment data source with discount-specific endpoints
   sl.registerLazySingleton<CommentRemoteDataSource>(
-    () => CommentRemoteDataSourceImpl(
-      apiClient: sl(),
-      getCommentsEndpoint: ApiConstants.discountCommentsEndpoint,
-      addCommentEndpoint: ApiConstants.discountCommentsEndpoint,
-      deleteCommentEndpoint: ApiConstants.discountCommentEndpoint,
-    ),
+    () => CommentRemoteDataSourceImpl(apiClient: sl()),
     instanceName: 'discountComments',
-  );
-
-  // Shared like data source with discount-specific endpoints
-  sl.registerLazySingleton<LikeRemoteDataSource>(
-    () => LikeRemoteDataSourceImpl(
-      apiClient: sl(),
-      toggleEntityLikeEndpoint: ApiConstants.discountLikeEndpoint,
-      toggleCommentLikeEndpoint: ApiConstants.commentLikeEndpoint,
-    ),
-    instanceName: 'discountLikes',
   );
 
   // Repositories
@@ -177,10 +163,6 @@ void _initializeDiscountDependencies() {
   sl.registerLazySingleton<CommentRepository>(
     () => CommentRepositoryImpl(sl(instanceName: 'discountComments')),
     instanceName: 'discountCommentRepository',
-  );
-  sl.registerLazySingleton<LikeRepository>(
-    () => LikeRepositoryImpl(sl(instanceName: 'discountLikes')),
-    instanceName: 'discountLikeRepository',
   );
 
   // Use cases
@@ -192,23 +174,28 @@ void _initializeDiscountDependencies() {
     () => GetDiscountStatsUsecase(sl()),
   );
   sl.registerFactory<ToggleDiscountLikeUsecase>(
-    () => ToggleDiscountLikeUsecase(sl(instanceName: 'discountLikeRepository')),
+    () => ToggleDiscountLikeUsecase(sl<DiscountRepository>()),
   );
-  sl.registerFactory<GetCommentsUsecase>(
-    () => GetCommentsUsecase(sl(instanceName: 'discountCommentRepository')),
+  sl.registerFactory<GetDiscountCommentsUsecase>(
+    () => GetDiscountCommentsUsecase(
+      sl(instanceName: 'discountCommentRepository'),
+    ),
     instanceName: 'getDiscountCommentsUsecase',
   );
   sl.registerFactory<AddCommentUsecase>(
-    () => AddCommentUsecase(sl(instanceName: 'discountCommentRepository')),
+    () => AddDiscountCommentUsecase(
+      sl(instanceName: 'discountCommentRepository'),
+    ),
     instanceName: 'addDiscountCommentUsecase',
   );
   sl.registerFactory<DeleteCommentUsecase>(
-    () => DeleteCommentUsecase(sl(instanceName: 'discountCommentRepository')),
+    () => DeleteDiscountCommentUsecase(
+      sl(instanceName: 'discountCommentRepository'),
+    ),
     instanceName: 'deleteDiscountCommentUsecase',
   );
-  sl.registerFactory<ToggleCommentLikeUsecase>(
-    () => ToggleCommentLikeUsecase(sl(instanceName: 'discountLikeRepository')),
-    instanceName: 'toggleDiscountCommentLikeUsecase',
+  sl.registerFactory<ToggleDiscountCommentLikeUsecase>(
+    () => ToggleDiscountCommentLikeUsecase(sl<DiscountRepository>()),
   );
   sl.registerFactory<GetKpDiscountCategoriesUsecase>(
     () => GetKpDiscountCategoriesUsecase(sl()),
@@ -226,23 +213,8 @@ void _initializeNewsDependencies() {
 
   // Shared comment data source with news-specific endpoints
   sl.registerLazySingleton<CommentRemoteDataSource>(
-    () => CommentRemoteDataSourceImpl(
-      apiClient: sl(),
-      getCommentsEndpoint: ApiConstants.newsCommentsEndpoint,
-      addCommentEndpoint: ApiConstants.newsCommentsEndpoint,
-      deleteCommentEndpoint: ApiConstants.newsCommentEndpoint,
-    ),
+    () => CommentRemoteDataSourceImpl(apiClient: sl()),
     instanceName: 'newsComments',
-  );
-
-  // Shared like data source with news-specific endpoints
-  sl.registerLazySingleton<LikeRemoteDataSource>(
-    () => LikeRemoteDataSourceImpl(
-      apiClient: sl(),
-      toggleEntityLikeEndpoint: ApiConstants.newsLikeEndpoint,
-      toggleCommentLikeEndpoint: ApiConstants.newsCommentLikeEndpoint,
-    ),
-    instanceName: 'newsLikes',
   );
 
   // Repositories
@@ -251,10 +223,6 @@ void _initializeNewsDependencies() {
     () => CommentRepositoryImpl(sl(instanceName: 'newsComments')),
     instanceName: 'newsCommentRepository',
   );
-  sl.registerLazySingleton<LikeRepository>(
-    () => LikeRepositoryImpl(sl(instanceName: 'newsLikes')),
-    instanceName: 'newsLikeRepository',
-  );
 
   // Use cases
   sl.registerFactory<GetNewsListUsecase>(() => GetNewsListUsecase(sl()));
@@ -262,25 +230,24 @@ void _initializeNewsDependencies() {
   sl.registerFactory<GetNewsStatsUsecase>(() => GetNewsStatsUsecase(sl()));
   sl.registerFactory<GetNewsGalleryUsecase>(() => GetNewsGalleryUsecase(sl()));
   sl.registerFactory<ToggleNewsLikeUsecase>(
-    () => ToggleNewsLikeUsecase(sl(instanceName: 'newsLikeRepository')),
+    () => ToggleNewsLikeUsecase(sl<NewsRepository>()),
   );
 
   // Comment use cases for news feature
-  sl.registerFactory<GetCommentsUsecase>(
-    () => GetCommentsUsecase(sl(instanceName: 'newsCommentRepository')),
+  sl.registerFactory<GetNewsCommentsUsecase>(
+    () => GetNewsCommentsUsecase(sl(instanceName: 'newsCommentRepository')),
     instanceName: 'getNewsCommentsUsecase',
   );
   sl.registerFactory<AddCommentUsecase>(
-    () => AddCommentUsecase(sl(instanceName: 'newsCommentRepository')),
+    () => AddNewsCommentUsecase(sl(instanceName: 'newsCommentRepository')),
     instanceName: 'addNewsCommentUsecase',
   );
   sl.registerFactory<DeleteCommentUsecase>(
-    () => DeleteCommentUsecase(sl(instanceName: 'newsCommentRepository')),
+    () => DeleteNewsCommentUsecase(sl(instanceName: 'newsCommentRepository')),
     instanceName: 'deleteNewsCommentUsecase',
   );
-  sl.registerFactory<ToggleCommentLikeUsecase>(
-    () => ToggleCommentLikeUsecase(sl(instanceName: 'newsLikeRepository')),
-    instanceName: 'toggleNewsCommentLikeUsecase',
+  sl.registerFactory<ToggleNewsCommentLikeUsecase>(
+    () => ToggleNewsCommentLikeUsecase(sl<NewsRepository>()),
   );
 }
 
