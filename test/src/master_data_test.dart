@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import 'package:hr_tcc_project/src/core/entities/application_form.dart';
 import 'package:hr_tcc_project/src/core/entities/application_form_group.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
@@ -38,7 +39,7 @@ void main() {
 
       result1.fold(
         (failure) {
-          fail('Unexpected error: ${failure.toString()}');
+          fail('Unexpected error: ${failure.message}');
         },
         (applicationForms) {
           expect(applicationForms, isA<List<ApplicationForm>>());

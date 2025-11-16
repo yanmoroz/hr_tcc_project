@@ -44,6 +44,8 @@ class ApiConstants {
 
   // User endpoints
   static const String usersEndpoint = '/users';
+  static const String addressBookEndpoint = '/users/addressbook';
+  static const String currentUserEndpoint = '/users/me';
 
   // Discount endpoints
   static const String discountsEndpoint = '/discount';

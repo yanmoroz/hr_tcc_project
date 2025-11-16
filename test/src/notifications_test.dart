@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/notifications/data/data.dart';
@@ -33,7 +34,7 @@ void main() {
       final notificationsResult = await getNotificationsUsecase();
       await notificationsResult.fold(
         (failure) {
-          fail('Unexpected error: ${failure.toString()}');
+          fail('Unexpected error: ${failure.message}');
         },
         (notifications) async {
           expect(notifications, isA<List<Notification>>());
@@ -43,7 +44,7 @@ void main() {
               await markNotificationAsReadUsecase(notifications.first.id);
           markNotificationAsReadResult.fold(
             (failure) {
-              fail('Unexpected error: ${failure.toString()}');
+              fail('Unexpected error: ${failure.message}');
             },
             (_) => AppLogger.d(
               'Marked notification as read: ${notifications.first.id}',

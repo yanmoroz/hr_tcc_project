@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
-
+import '../../../../core/value_objects/system_type.dart';
 import '../entities/entities.dart';
 
 abstract class FileRepository {

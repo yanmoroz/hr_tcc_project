@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hr_tcc_project/src/core/di/service_locator.dart';
-import 'package:hr_tcc_project/src/shared/files/domain/entities/system_type.dart';
-import 'package:hr_tcc_project/src/features/users/domain/entities/user.dart';
-import 'package:hr_tcc_project/src/features/users/domain/usecases/get_users_usecase.dart';
+
+import '../../../../core/di/service_locator.dart';
+import '../../../../core/value_objects/system_type.dart';
+import '../../domain/domain.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -72,9 +72,15 @@ class _UsersPageState extends State<UsersPage> {
                 // System Type Dropdown
                 DropdownButtonFormField<SystemType>(
                   initialValue: _selectedSystemType,
-                  decoration: const InputDecoration(labelText: 'System Type', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'System Type',
+                    border: OutlineInputBorder(),
+                  ),
                   items: SystemType.values.map((type) {
-                    return DropdownMenuItem(value: type, child: Text(type.name));
+                    return DropdownMenuItem(
+                      value: type,
+                      child: Text(type.name),
+                    );
                   }).toList(),
                   onChanged: (value) {
                     if (value != null) {
@@ -92,7 +98,10 @@ class _UsersPageState extends State<UsersPage> {
                   decoration: InputDecoration(
                     labelText: 'Search by name',
                     border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(icon: const Icon(Icons.search), onPressed: _loadUsers),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: _loadUsers,
+                    ),
                   ),
                   onSubmitted: (_) => _loadUsers(),
                 ),
@@ -141,15 +150,27 @@ class _UsersPageState extends State<UsersPage> {
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: ListTile(
-            leading: CircleAvatar(child: Text(user.title.isNotEmpty ? user.title[0].toUpperCase() : '?')),
+            leading: CircleAvatar(
+              child: Text(
+                user.title.isNotEmpty ? user.title[0].toUpperCase() : '?',
+              ),
+            ),
             title: Text(user.title),
             subtitle: Text(user.position.toString()),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (user.idPersonElma != null) const Text('ELMA', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                if (user.idPersonKp != null) const Text('KP', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                if (user.idPersonElma != null)
+                  const Text(
+                    'ELMA',
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                  ),
+                if (user.idPersonKp != null)
+                  const Text(
+                    'KP',
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                  ),
               ],
             ),
           ),

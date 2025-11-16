@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'system_type.dart';
+import '../../../../core/value_objects/system_type.dart';
 
 part 'uploaded_file.freezed.dart';
 

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../shared/files/domain/entities/system_type.dart';
+import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/usecases/usecases.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';

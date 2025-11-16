@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
 
+import '../../../../core/value_objects/system_type.dart';
 import '../../domain/entities/entities.dart';
 import '../models/models.dart';
 

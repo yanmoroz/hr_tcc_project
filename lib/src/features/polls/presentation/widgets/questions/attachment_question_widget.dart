@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/entities/entities.dart';
 import '../../../../../shared/files/domain/usecases/usecases.dart';
 import '../../../domain/domain.dart';

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
 
-import '../entities/entities.dart';
+import '../../../../core/value_objects/system_type.dart';
 import '../repositories/repositories.dart';
 
 class DownloadFileUsecase {

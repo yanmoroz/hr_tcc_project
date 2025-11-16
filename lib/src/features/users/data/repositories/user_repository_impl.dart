@@ -1,10 +1,10 @@
-import 'package:hr_tcc_project/src/core/base_types/base_repository.dart';
-import 'package:hr_tcc_project/src/shared/files/domain/entities/system_type.dart';
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-import 'package:hr_tcc_project/src/features/users/data/datasources/user_remote_data_source.dart';
-import 'package:hr_tcc_project/src/features/users/data/models/user_model.dart';
-import 'package:hr_tcc_project/src/features/users/domain/entities/user.dart';
-import 'package:hr_tcc_project/src/features/users/domain/repositories/user_repository.dart';
+import '../../../../core/base_types/base_repository.dart';
+import '../../../../core/base_types/result.dart';
+import '../../../../core/value_objects/system_type.dart';
+import '../../domain/domain.dart';
+import '../datasources/user_remote_data_source.dart';
+import '../models/address_book_user_model.dart';
+import '../models/user_model.dart';
 
 class UserRepositoryImpl with BaseRepository implements UserRepository {
   final UserRemoteDataSource _remoteDataSource;
@@ -21,5 +21,32 @@ class UserRepositoryImpl with BaseRepository implements UserRepository {
       search: search,
     );
     return mapResultList(result, (model) => model.toDomain());
+  }
+
+  @override
+  Future<Result<List<AddressBookUser>>> getAddressBook({
+    String? organizationCode,
+    String? departmentCode,
+    String? search,
+    required int page,
+    required int pageSize,
+  }) async {
+    final result = await _remoteDataSource.getAddressBook(
+      organizationCode: organizationCode,
+      departmentCode: departmentCode,
+      search: search,
+      page: page,
+      pageSize: pageSize,
+    );
+    return result.map(
+      (response) =>
+          response.employees.map((model) => model.toDomain()).toList(),
+    );
+  }
+
+  @override
+  Future<Result<AddressBookUser>> getCurrentUserInfo() async {
+    final result = await _remoteDataSource.getCurrentUserInfo();
+    return result.map((model) => model.toDomain());
   }
 }

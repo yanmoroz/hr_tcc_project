@@ -1,3 +1,4 @@
+import '../../../../core/value_objects/system_type.dart';
 import '../../domain/entities/entities.dart';
 import 'elma_upload_file_response_model.dart';
 import 'jira_upload_file_response_model.dart';
@@ -40,7 +41,10 @@ class UploadedFileModel {
   }
 
   factory UploadedFileModel.oneC(Map<String, dynamic> data) {
-    return UploadedFileModel._(oneCData: data, systemType: SystemType.values.firstWhere((e) => e.value == '_1C'));
+    return UploadedFileModel._(
+      oneCData: data,
+      systemType: SystemType.values.firstWhere((e) => e.value == '_1C'),
+    );
   }
 
   /// Parse JSON response with automatic systemType detection from JSON (like Java JsonTypeInfo)
@@ -54,12 +58,19 @@ class UploadedFileModel {
   }
 
   /// Parse JSON response with explicit systemType (for backward compatibility)
-  factory UploadedFileModel.fromJsonWithSystemType(Map<String, dynamic> json, SystemType systemType) {
+  factory UploadedFileModel.fromJsonWithSystemType(
+    Map<String, dynamic> json,
+    SystemType systemType,
+  ) {
     switch (systemType) {
       case SystemType.elma:
-        return UploadedFileModel.elma(ElmaUploadFileResponseModel.fromJson(json));
+        return UploadedFileModel.elma(
+          ElmaUploadFileResponseModel.fromJson(json),
+        );
       case SystemType.jira:
-        return UploadedFileModel.jira(JiraUploadFileResponseModel.fromJson(json));
+        return UploadedFileModel.jira(
+          JiraUploadFileResponseModel.fromJson(json),
+        );
       case SystemType.kp:
         return UploadedFileModel.kp(KpUploadFileResponseModel.fromJson(json));
       case SystemType.tcc:

@@ -1,4 +1,4 @@
-import 'package:hr_tcc_project/src/shared/files/domain/entities/system_type.dart';
+import 'package:hr_tcc_project/src/core/value_objects/system_type.dart';
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 import 'package:hr_tcc_project/src/features/users/domain/entities/user.dart';
 import 'package:hr_tcc_project/src/features/users/domain/repositories/user_repository.dart';

@@ -137,6 +137,10 @@ void _initializeUserDependencies() {
 
   // Use cases
   sl.registerFactory<GetUsersUsecase>(() => GetUsersUsecase(sl()));
+  sl.registerFactory<GetAddressBookUsecase>(() => GetAddressBookUsecase(sl()));
+  sl.registerFactory<GetCurrentUserInfoUsecase>(
+    () => GetCurrentUserInfoUsecase(sl()),
+  );
 }
 
 void _initializeDiscountDependencies() {
