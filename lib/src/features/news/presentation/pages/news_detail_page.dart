@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/widgets/comments_button.dart';
+import '../../../../core/widgets/like_button.dart';
 import '../bloc/news_detail_page/news_detail_bloc.dart';
 import '../bloc/news_detail_page/news_detail_event.dart';
 import '../bloc/news_detail_page/news_detail_state.dart';
@@ -105,23 +107,18 @@ class NewsDetailPage extends StatelessWidget {
                       // Like and Comment buttons
                       Row(
                         children: [
-                          ElevatedButton.icon(
+                          LikeButton(
+                            isLiked: liked,
+                            likeCount: likeCount,
                             onPressed: () {
                               context.read<NewsDetailBloc>().add(
                                 const NewsDetailEvent.toggleLike(),
                               );
                             },
-                            icon: Icon(
-                              liked ? Icons.favorite : Icons.favorite_border,
-                            ),
-                            label: Text('$likeCount'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: liked ? Colors.red[50] : null,
-                              foregroundColor: liked ? Colors.red : null,
-                            ),
                           ),
                           const SizedBox(width: 16),
-                          ElevatedButton.icon(
+                          CommentsButton(
+                            commentCount: commentCount,
                             onPressed: () {
                               Navigator.pushNamed(
                                 context,
@@ -132,8 +129,6 @@ class NewsDetailPage extends StatelessWidget {
                                 },
                               );
                             },
-                            icon: const Icon(Icons.comment),
-                            label: Text('$commentCount'),
                           ),
                         ],
                       ),

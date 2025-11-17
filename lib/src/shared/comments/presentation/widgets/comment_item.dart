@@ -39,108 +39,99 @@ class CommentItem extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           // Comment content container
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Author name and timestamp
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          comment.author.title,
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w600),
+          Flexible(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 247),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Author name and timestamp
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            comment.author.title,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
                         ),
-                      ),
-                      Text(
-                        _formatTime(comment.createdData),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      // Delete button (if editable)
-                      if (onDelete != null) ...[
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.delete, size: 20),
-                          onPressed: onDelete,
-                          color: Colors.red,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
+                        Text(
+                          _formatTime(comment.createdData),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[600]),
                         ),
                       ],
-                    ],
-                  ),
-                  const SizedBox(height: 12),
+                    ),
+                    const SizedBox(height: 12),
 
-                  // Comment content
-                  Text(
-                    comment.content,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 12),
+                    // Comment content
+                    Text(
+                      comment.content,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 12),
 
-                  // Like and reply buttons
-                  Row(
-                    children: [
-                      // Like button
-                      InkWell(
-                        onTap: onLike,
-                        borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                (comment.like ?? false)
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                size: 20,
-                                color: const Color(0xFF0A3899),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${comment.likeCount ?? 0}',
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: Colors.black87),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Reply button
-                      if (onReply != null)
+                    // Like and reply buttons
+                    Row(
+                      children: [
+                        // Like button
                         InkWell(
-                          onTap: onReply,
+                          onTap: onLike,
                           borderRadius: BorderRadius.circular(20),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                              horizontal: 0,
+                              vertical: 0,
                             ),
-                            child: Text(
-                              'Ответить',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: Colors.grey[600]),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  (comment.like ?? false)
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  size: 20,
+                                  color: const Color(0xFF0A3899),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${comment.likeCount ?? 0}',
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(color: Colors.black87),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                ],
+                        if (onReply != null) ...[
+                          const Spacer(),
+                          InkWell(
+                            onTap: onReply,
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 0,
+                                vertical: 0,
+                              ),
+                              child: Text(
+                                'Ответить',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: Colors.grey[600]),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

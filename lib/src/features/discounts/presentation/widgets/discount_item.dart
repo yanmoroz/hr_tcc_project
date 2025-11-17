@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/widgets/comments_button.dart';
+import '../../../../core/widgets/like_button.dart';
 import '../../domain/domain.dart';
 
 class DiscountItem extends StatelessWidget {
@@ -51,9 +53,9 @@ class DiscountItem extends StatelessWidget {
               // Title
               Text(
                 discount.title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
 
@@ -80,13 +82,17 @@ class DiscountItem extends StatelessWidget {
               if (discount.dateFrom != null && discount.dateTo != null)
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
+                    Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${_formatDate(discount.dateFrom!)} - ${_formatDate(discount.dateTo!)}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -113,32 +119,15 @@ class DiscountItem extends StatelessWidget {
                   ),
 
                   // Likes
-                  Row(
-                    children: [
-                      Icon(
-                        discount.like ? Icons.favorite : Icons.favorite_border,
-                        size: 16,
-                        color: discount.like ? Colors.red : Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${discount.likeCount}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+                  LikeButton(
+                    isLiked: discount.like,
+                    likeCount: discount.likeCount,
                   ),
                   const SizedBox(width: 16),
 
                   // Comments
-                  Row(
-                    children: [
-                      Icon(Icons.comment, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${discount.commentCount}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+                  CommentsButton(
+                    commentCount: discount.commentCount,
                   ),
                 ],
               ),

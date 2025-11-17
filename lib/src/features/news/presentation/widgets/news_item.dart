@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/widgets/comments_button.dart';
+import '../../../../core/widgets/like_button.dart';
 import '../../domain/domain.dart';
 
 class NewsItemWidget extends StatelessWidget {
@@ -110,32 +112,15 @@ class NewsItemWidget extends StatelessWidget {
                   ),
 
                   // Likes
-                  Row(
-                    children: [
-                      Icon(
-                        newsItem.like ? Icons.favorite : Icons.favorite_border,
-                        size: 16,
-                        color: newsItem.like ? Colors.red : Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${newsItem.likeCount}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+                  LikeButton(
+                    isLiked: newsItem.like,
+                    likeCount: newsItem.likeCount,
                   ),
                   const SizedBox(width: 16),
 
                   // Comments
-                  Row(
-                    children: [
-                      Icon(Icons.comment, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${newsItem.commentCount}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+                  CommentsButton(
+                    commentCount: newsItem.commentCount,
                   ),
                 ],
               ),

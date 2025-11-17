@@ -72,7 +72,7 @@ abstract class BaseApiClient implements ApiClient {
         request: true,
         requestHeader: false,
         requestBody: true,
-        responseBody: false,
+        responseBody: true,
         responseHeader: false,
         error: true,
         compact: true,

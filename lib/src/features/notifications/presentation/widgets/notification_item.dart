@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Notification;
+import 'package:flutter_html/flutter_html.dart';
 
 import '../../domain/domain.dart';
 
@@ -25,16 +26,37 @@ class NotificationItem extends StatelessWidget {
                 (notification.text?.isNotEmpty ?? false))
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  notification.text!,
-                  style: Theme.of(context).textTheme.titleMedium,
+                child: Html(
+                  data: notification.text!,
+                  style: {
+                    "body": Style(
+                      margin: Margins.zero,
+                      padding: HtmlPaddings.zero,
+                      fontSize: FontSize(
+                        Theme.of(context).textTheme.titleMedium?.fontSize ??
+                            16.0,
+                      ),
+                      fontWeight:
+                          Theme.of(context).textTheme.titleMedium?.fontWeight,
+                    ),
+                  },
                 ),
               ),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                notification.notificationText,
-                style: Theme.of(context).textTheme.bodyMedium,
+              child: Html(
+                data: notification.notificationText,
+                style: {
+                  "body": Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                    fontSize: FontSize(
+                      Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14.0,
+                    ),
+                    fontWeight:
+                        Theme.of(context).textTheme.bodyMedium?.fontWeight,
+                  ),
+                },
               ),
             ),
             Padding(

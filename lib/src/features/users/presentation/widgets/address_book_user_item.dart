@@ -45,8 +45,12 @@ class AddressBookUserItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -54,13 +58,13 @@ class AddressBookUserItem extends StatelessWidget {
           children: [
             // Avatar
             CircleAvatar(
-              radius: 24,
+              radius: 28,
               backgroundColor: _getAvatarColor(),
               child: Text(
                 _getInitials(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -75,63 +79,82 @@ class AddressBookUserItem extends StatelessWidget {
                   Text(
                     user.title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  // Position
-                  if (user.position != null && user.position!.isNotEmpty)
-                    Text(
-                      user.position!,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                    ),
                   const SizedBox(height: 8),
-                  // Contact info
-                  // Mobile phone
-                  InkWell(
-                    onTap: () => _launchPhone(user.mobile),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
+                  // Position pill
+                  if (user.position != null && user.position!.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                       child: Text(
-                        '${user.mobile} (моб.)',
+                        user.position!,
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
+                          color: Colors.black,
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
+                  // Department pill
+                  if (user.department.name != null &&
+                      user.department.name!.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        user.department.name!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  // Contact info
+                  // Mobile phone
+                  GestureDetector(
+                    onTap: () => _launchPhone(user.mobile),
+                    child: Text(
+                      '${user.mobile} (моб.)',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                   ),
                   // Work phone
-                  if (user.workPhone != null)
-                    InkWell(
+                  if (user.workPhone != null) ...[
+                    const SizedBox(height: 4),
+                    GestureDetector(
                       onTap: () => _launchPhone(user.workPhone!),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2),
-                        child: Text(
-                          '${user.workPhone}, 1234 (раб.)',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
+                      child: Text(
+                        '${user.workPhone} (раб.)',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                       ),
                     ),
+                  ],
                   // Email
-                  InkWell(
+                  const SizedBox(height: 4),
+                  GestureDetector(
                     onTap: () => _launchEmail(user.mail),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        user.mail,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                    child: Text(
+                      user.mail,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                   ),
                 ],

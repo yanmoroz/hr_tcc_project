@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/widgets/page_with_profile_header.dart';
 import '../widgets/home_icon_button.dart';
 
 class HomePage extends StatelessWidget {
@@ -16,8 +17,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Главная')),
+    return PageWithProfileHeader(
+      title: 'Главная',
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(

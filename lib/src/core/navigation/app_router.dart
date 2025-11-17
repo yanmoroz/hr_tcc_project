@@ -24,6 +24,8 @@ import '../../features/resell/presentation/pages/resell_items_page.dart';
 import '../../features/resell/presentation/pages/resell_detail_page.dart';
 import '../../features/users/presentation/pages/address_book_page.dart';
 import '../../features/users/presentation/bloc/address_book_page/address_book_event.dart';
+import '../../features/users/presentation/bloc/user_profile_header/user_profile_header_event.dart';
+import '../../features/users/presentation/widgets/user_profile_header.dart';
 import '../../shared/comments/presentation/pages/comments_page.dart';
 import '../../shared/comments/presentation/bloc/comments_page/comments_event.dart';
 import '../../shared/comments/domain/domain.dart';
@@ -41,7 +43,12 @@ class AppRouter {
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
-          return ScaffoldWithNavBar(child: child);
+          return BlocProvider(
+            create: (context) =>
+                BlocFactory.createUserProfileHeaderBloc()
+                  ..add(const UserProfileHeaderEvent.loadUserProfile()),
+            child: ScaffoldWithNavBar(child: child),
+          );
         },
         routes: [
           GoRoute(
@@ -218,8 +225,12 @@ class ApplicationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Мои заявки')),
-      body: Center(child: Placeholder()),
+      body: Column(
+        children: [
+          const UserProfileHeader(),
+          Expanded(child: Center(child: Placeholder())),
+        ],
+      ),
     );
   }
 }
@@ -242,8 +253,12 @@ class MorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ещё')),
-      body: Center(child: Placeholder()),
+      body: Column(
+        children: [
+          const UserProfileHeader(),
+          Expanded(child: Center(child: Placeholder())),
+        ],
+      ),
     );
   }
 }

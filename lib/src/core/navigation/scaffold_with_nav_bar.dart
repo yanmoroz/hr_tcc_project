@@ -12,7 +12,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
     final currentIndex = _calculateSelectedIndex(context);
 
     return Scaffold(
-      body: child,
+      backgroundColor: Colors.white,
+      body: SafeArea(child: child),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
           splashColor: Colors.transparent,

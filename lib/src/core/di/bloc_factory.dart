@@ -7,6 +7,7 @@ import '../../features/discounts/presentation/bloc/discount_page/discount_detail
 import '../../features/news/presentation/bloc/news_page/news_list_bloc.dart';
 import '../../features/news/presentation/bloc/news_detail_page/news_detail_bloc.dart';
 import '../../features/users/presentation/bloc/address_book_page/address_book_bloc.dart';
+import '../../features/users/presentation/bloc/user_profile_header/user_profile_header_bloc.dart';
 import '../../shared/comments/domain/domain.dart';
 import '../../shared/comments/presentation/bloc/comments_page/comments_bloc.dart';
 import 'service_locator.dart';
@@ -111,5 +112,10 @@ class BlocFactory {
   /// Creates an [AddressBookBloc] instance.
   static AddressBookBloc createAddressBookBloc() {
     return AddressBookBloc(getAddressBookUsecase: sl());
+  }
+
+  /// Creates a [UserProfileHeaderBloc] instance.
+  static UserProfileHeaderBloc createUserProfileHeaderBloc() {
+    return UserProfileHeaderBloc(getCurrentUserInfoUsecase: sl());
   }
 }
