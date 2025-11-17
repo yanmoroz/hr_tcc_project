@@ -8,6 +8,8 @@ import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/resell/data/data.dart';
 import 'package:hr_tcc_project/src/features/resell/domain/domain.dart';
 
+import 'helpers/result_helper.dart';
+
 void main() {
   group('Resell', () {
     late AuthTokenProvider authTokenProvider;
@@ -35,79 +37,43 @@ void main() {
     });
 
     test('E2E', () async {
-      final resellItemsResult = await getResellItemsUsecase(
-        status: ResellStatus.onSale,
-        page: 0,
-        pageSize: 20,
+      final items = await getOrFail(
+        getResellItemsUsecase(
+          status: ResellStatus.onSale,
+          page: 0,
+          pageSize: 20,
+        ),
       );
+      expect(items, isA<List<ResellItem>>());
+      AppLogger.d('Fetched resell items: ${items.length} items');
 
-      await resellItemsResult.fold(
-        (failure) {
-          fail('Unexpected error: ${failure.message}');
-        },
-        (items) async {
-          expect(items, isA<List<ResellItem>>());
-          AppLogger.d('Fetched resell items: ${items.length} items');
+      final detail = await getOrFail(getResellDetailUsecase(items.first.id));
+      expect(detail, isA<ResellDetail>());
+      AppLogger.d('Fetched resell detail: ${detail.toString()}');
 
-          final resellDetailResult = await getResellDetailUsecase(
-            items.first.id,
-          );
-          await resellDetailResult.fold(
-            (failure) {
-              fail('Unexpected error: ${failure.message}');
-            },
-            (detail) async {
-              expect(detail, isA<ResellDetail>());
-              AppLogger.d('Fetched resell detail: ${detail.toString()}');
+      await getOrFail(bookResellItemUsecase(detail.id));
+      AppLogger.d('Booked resell item: ${detail.id}');
 
-              final bookingResult = await bookResellItemUsecase(detail.id);
-              await bookingResult.fold(
-                (failure) {
-                  fail('Unexpected error: ${failure.message}');
-                },
-                (_) async {
-                  AppLogger.d('Booked resell item: ${detail.id}');
-
-                  final confirmParams = ConfirmResellBookingUsecaseParams(
-                    id: detail.id,
-                    transition: BookingTransition.confirm,
-                    inn: '520205004556',
-                    address: 'Test address',
-                    employeePlace: 'Test workplace',
-                    pickupLotMyself: true,
-                  );
-                  final confirmResult = await confirmResellBookingUsecase(
-                    params: confirmParams,
-                  );
-                  await confirmResult.fold(
-                    (failure) {
-                      fail('Unexpected error: ${failure.message}');
-                    },
-                    (_) async {
-                      AppLogger.d('Confirmed resell item: ${detail.id}');
-
-                      final cancelResult = await confirmResellBookingUsecase(
-                        params: ConfirmResellBookingUsecaseParams(
-                          id: detail.id,
-                          transition: BookingTransition.cancel,
-                        ),
-                      );
-                      await cancelResult.fold(
-                        (failure) {
-                          fail('Unexpected error: ${failure.message}');
-                        },
-                        (_) {
-                          AppLogger.d('Cancelled resell item: ${detail.id}');
-                        },
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          );
-        },
+      final confirmParams = ConfirmResellBookingUsecaseParams(
+        id: detail.id,
+        transition: BookingTransition.confirm,
+        inn: '520205004556',
+        address: 'Test address',
+        employeePlace: 'Test workplace',
+        pickupLotMyself: true,
       );
+      await getOrFail(confirmResellBookingUsecase(params: confirmParams));
+      AppLogger.d('Confirmed resell item: ${detail.id}');
+
+      await getOrFail(
+        confirmResellBookingUsecase(
+          params: ConfirmResellBookingUsecaseParams(
+            id: detail.id,
+            transition: BookingTransition.cancel,
+          ),
+        ),
+      );
+      AppLogger.d('Cancelled resell item: ${detail.id}');
     });
   });
 }
