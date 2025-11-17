@@ -7,12 +7,17 @@ class DiscountsListEvent with _$DiscountsListEvent {
   const factory DiscountsListEvent.loadDiscounts({
     int? category,
     int? source,
+    String? categoryName,
   }) = LoadDiscounts;
 
   const factory DiscountsListEvent.refreshDiscounts({
     int? category,
     int? source,
+    String? categoryName,
   }) = RefreshDiscounts;
 
   const factory DiscountsListEvent.loadMoreDiscounts() = LoadMoreDiscounts;
+
+  const factory DiscountsListEvent.toggleLike({required int discountId}) =
+      ToggleLike;
 }

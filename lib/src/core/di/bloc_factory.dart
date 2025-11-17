@@ -51,6 +51,7 @@ class BlocFactory {
     return DiscountsListBloc(
       getDiscountsUsecase: sl(),
       downloadFileUsecase: sl(),
+      toggleDiscountLikeUsecase: sl(),
     );
   }
 
@@ -101,8 +102,6 @@ class BlocFactory {
 
   /// Creates an [AddressBookBloc] instance.
   static AddressBookBloc createAddressBookBloc() {
-    return AddressBookBloc(
-      getAddressBookUsecase: sl(),
-    );
+    return AddressBookBloc(getAddressBookUsecase: sl());
   }
 }

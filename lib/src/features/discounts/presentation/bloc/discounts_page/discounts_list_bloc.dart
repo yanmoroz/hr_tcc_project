@@ -12,16 +12,20 @@ import 'discounts_list_state.dart';
 class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
   final GetDiscountsUsecase _getDiscountsUsecase;
   final DownloadFileUsecase _downloadFileUsecase;
+  final ToggleDiscountLikeUsecase _toggleDiscountLikeUsecase;
 
   DiscountsListBloc({
     required GetDiscountsUsecase getDiscountsUsecase,
     required DownloadFileUsecase downloadFileUsecase,
+    required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
   }) : _getDiscountsUsecase = getDiscountsUsecase,
        _downloadFileUsecase = downloadFileUsecase,
+       _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
        super(const DiscountsListState.initial()) {
     on<LoadDiscounts>(_onLoadDiscounts);
     on<RefreshDiscounts>(_onRefreshDiscounts);
     on<LoadMoreDiscounts>(_onLoadMoreDiscounts);
+    on<ToggleLike>(_onToggleLike);
   }
 
   Future<void> _onLoadDiscounts(
@@ -34,6 +38,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
       page: 0,
       category: event.category,
       source: event.source,
+      categoryName: event.categoryName,
     );
   }
 
@@ -47,6 +52,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
       page: 0,
       category: event.category,
       source: event.source,
+      categoryName: event.categoryName,
     );
   }
 
@@ -62,6 +68,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     Map<int, Uint8List>? coverImages;
     int? category;
     int? source;
+    String? categoryName;
 
     state.maybeWhen(
       loaded:
@@ -73,6 +80,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
             loadedCoverImages,
             loadedCategory,
             loadedSource,
+            loadedCategoryName,
           ) {
             discounts = loadedDiscounts;
             currentPage = loadedCurrentPage;
@@ -81,6 +89,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
             coverImages = loadedCoverImages;
             category = loadedCategory;
             source = loadedSource;
+            categoryName = loadedCategoryName;
           },
       orElse: () {},
     );
@@ -101,6 +110,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
           coverImages: coverImages ?? {},
           category: category,
           source: source,
+          categoryName: categoryName,
         ),
       );
 
@@ -112,6 +122,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
         nextPage: currentPage! + 1,
         category: category,
         source: source,
+        categoryName: categoryName,
       );
     }
   }
@@ -121,6 +132,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     required int page,
     int? category,
     int? source,
+    String? categoryName,
   }) async {
     final result = await _getDiscountsUsecase(
       category: category ?? 0,
@@ -140,6 +152,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
             isLoadingMore: false,
             category: category,
             source: source,
+            categoryName: categoryName,
           ),
         );
         await _loadCoverImages(discounts, emit);
@@ -154,6 +167,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     required int nextPage,
     int? category,
     int? source,
+    String? categoryName,
   }) async {
     final result = await _getDiscountsUsecase(
       category: category ?? 0,
@@ -173,6 +187,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
             coverImages: currentCoverImages,
             category: category,
             source: source,
+            categoryName: categoryName,
           ),
         );
       },
@@ -187,6 +202,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
             coverImages: currentCoverImages,
             category: category,
             source: source,
+            categoryName: categoryName,
           ),
         );
         // Load cover images for new discounts only
@@ -236,6 +252,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
             existingCoverImages,
             category,
             source,
+            categoryName,
           ) {
             final mergedCoverImages = {...existingCoverImages, ...coverImages};
             emit(
@@ -247,10 +264,111 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
                 coverImages: mergedCoverImages,
                 category: category,
                 source: source,
+                categoryName: categoryName,
               ),
             );
           },
       orElse: () {},
+    );
+  }
+
+  Future<void> _onToggleLike(
+    ToggleLike event,
+    Emitter<DiscountsListState> emit,
+  ) async {
+    // Extract current state values
+    List<Discount>? discounts;
+    int? currentPage;
+    bool? hasMorePages;
+    bool? isLoadingMore;
+    Map<int, Uint8List>? coverImages;
+    int? category;
+    int? source;
+    String? categoryName;
+
+    state.maybeWhen(
+      loaded:
+          (
+            loadedDiscounts,
+            loadedCurrentPage,
+            loadedHasMorePages,
+            loadedIsLoadingMore,
+            loadedCoverImages,
+            loadedCategory,
+            loadedSource,
+            loadedCategoryName,
+          ) {
+            discounts = loadedDiscounts;
+            currentPage = loadedCurrentPage;
+            hasMorePages = loadedHasMorePages;
+            isLoadingMore = loadedIsLoadingMore;
+            coverImages = loadedCoverImages;
+            category = loadedCategory;
+            source = loadedSource;
+            categoryName = loadedCategoryName;
+          },
+      orElse: () {},
+    );
+
+    // Only proceed if we're in loaded state
+    if (discounts == null || currentPage == null || hasMorePages == null)
+      return;
+
+    // Find the discount to update
+    final discountIndex = discounts!.indexWhere(
+      (d) => d.id == event.discountId,
+    );
+    if (discountIndex == -1) return;
+
+    final discount = discounts![discountIndex];
+
+    // Optimistic update
+    final updatedDiscounts = List<Discount>.from(discounts!);
+    updatedDiscounts[discountIndex] = discount.copyWith(
+      like: !discount.like,
+      likeCount: discount.like
+          ? discount.likeCount - 1
+          : discount.likeCount + 1,
+    );
+
+    emit(
+      DiscountsListState.loaded(
+        discounts: updatedDiscounts,
+        currentPage: currentPage!,
+        hasMorePages: hasMorePages!,
+        isLoadingMore: isLoadingMore ?? false,
+        coverImages: coverImages ?? {},
+        category: category,
+        source: source,
+        categoryName: categoryName,
+      ),
+    );
+
+    // Store original discounts for potential revert
+    final originalDiscounts = discounts!;
+
+    // Make API call
+    final result = await _toggleDiscountLikeUsecase(event.discountId);
+
+    result.fold(
+      (error) {
+        // Revert on error
+        emit(
+          DiscountsListState.loaded(
+            discounts: originalDiscounts,
+            currentPage: currentPage!,
+            hasMorePages: hasMorePages!,
+            isLoadingMore: isLoadingMore ?? false,
+            coverImages: coverImages ?? {},
+            category: category,
+            source: source,
+            categoryName: categoryName,
+          ),
+        );
+      },
+      (_) {
+        // Success - state already updated optimistically
+      },
     );
   }
 }

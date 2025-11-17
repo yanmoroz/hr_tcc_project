@@ -18,6 +18,7 @@ class DiscountsListState with _$DiscountsListState {
     @Default({}) Map<int, Uint8List> coverImages,
     int? category,
     int? source,
+    String? categoryName,
   }) = DiscountsListLoaded;
   const factory DiscountsListState.error(String message) = DiscountsListError;
 }

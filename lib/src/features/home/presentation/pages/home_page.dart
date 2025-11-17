@@ -31,17 +31,17 @@ class HomePage extends StatelessWidget {
             HomeIconButton(
               iconPath: 'assets/icons/discounts-icon.svg',
               label: 'Льготы\nи возмож...',
-              onTap: () => context.go('/discount-categories'),
+              onTap: () => context.push('/discount-categories'),
             ),
             HomeIconButton(
               iconPath: 'assets/icons/polls-icon.svg',
               label: 'Опросы',
-              onTap: () => context.go('/polls'),
+              onTap: () => context.push('/polls'),
             ),
             HomeIconButton(
               iconPath: 'assets/icons/resell-icon.svg',
               label: 'Ресейл',
-              onTap: () => context.go('/resell'),
+              onTap: () => context.push('/resell'),
             ),
             HomeIconButton(
               iconPath: 'assets/icons/s8-icon.svg',

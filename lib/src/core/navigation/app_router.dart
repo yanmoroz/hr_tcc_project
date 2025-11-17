@@ -122,8 +122,9 @@ class AppRouter {
       GoRoute(
         path: '/discounts',
         builder: (context, state) {
-          final category = state.uri.queryParameters['category'];
-          final source = state.uri.queryParameters['source'];
+          final category = state.getExtra<String>('category');
+          final source = state.getExtra<String>('source');
+          final categoryName = state.getExtra<String>('categoryName');
           final categoryCode = category != null ? int.tryParse(category) : null;
           final sourceCode = source != null ? int.tryParse(source) : null;
           return BlocProvider(
@@ -132,6 +133,7 @@ class AppRouter {
                 DiscountsListEvent.loadDiscounts(
                   category: categoryCode,
                   source: sourceCode,
+                  categoryName: categoryName,
                 ),
               ),
             child: const DiscountsPage(),
@@ -199,6 +201,14 @@ class AppRouter {
       ),
     ],
   );
+}
+
+// TODO: Move?
+extension GoRouterStateExtension on GoRouterState {
+  T? getExtra<T>(String key) {
+    final extra = this.extra as Map<String, dynamic>?;
+    return extra?[key] as T?;
+  }
 }
 
 // Placeholder pages for bottom navigation tabs
