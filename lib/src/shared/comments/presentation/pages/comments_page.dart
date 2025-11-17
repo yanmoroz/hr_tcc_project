@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../bloc/comments_page/comments_bloc.dart';
 import '../bloc/comments_page/comments_event.dart';
 import '../bloc/comments_page/comments_state.dart';
+import '../widgets/comment_item.dart';
+import '../widgets/date_separator.dart';
 import '../../domain/domain.dart';
 
 class CommentsPage extends StatefulWidget {
@@ -33,7 +34,29 @@ class _CommentsPageState extends State<CommentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Comments')),
+      backgroundColor: const Color(0xFFF2F2F6),
+      appBar: AppBar(
+        title: BlocBuilder<CommentsBloc, CommentsState>(
+          builder: (context, state) {
+            final commentCount = state.maybeWhen(
+              loaded: (comments, _) => comments.length,
+              orElse: () => 0,
+            );
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Комментарии'),
+                Text(
+                  _getCommentCountText(commentCount),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
       body: Column(
         children: [
           // Comments list
@@ -47,8 +70,15 @@ class _CommentsPageState extends State<CommentsPage> {
                       const Center(child: CircularProgressIndicator()),
                   loaded: (comments, isAddingComment) {
                     if (comments.isEmpty) {
-                      return const Center(child: Text('No comments yet'));
+                      return const Center(child: Text('Комментариев пока нет'));
                     }
+
+                    // Sort comments by createdData (ascending - oldest first)
+                    final sortedComments = List<Comment>.from(comments)
+                      ..sort((a, b) => a.createdData.compareTo(b.createdData));
+
+                    // Group comments by day
+                    final groupedItems = _groupCommentsByDay(sortedComments);
 
                     return RefreshIndicator(
                       onRefresh: () async {
@@ -58,10 +88,18 @@ class _CommentsPageState extends State<CommentsPage> {
                       },
                       child: ListView.builder(
                         padding: const EdgeInsets.all(16),
-                        itemCount: comments.length,
+                        itemCount: groupedItems.length,
                         itemBuilder: (context, index) {
-                          final comment = comments[index];
-                          return _CommentItem(
+                          final item = groupedItems[index];
+
+                          // Check if this is a date separator
+                          if (item is DateTime) {
+                            return DateSeparator(date: item);
+                          }
+
+                          // Otherwise it's a Comment
+                          final comment = item as Comment;
+                          return CommentItem(
                             comment: comment,
                             onLike: () {
                               context.read<CommentsBloc>().add(
@@ -73,6 +111,9 @@ class _CommentsPageState extends State<CommentsPage> {
                                     _showDeleteDialog(context, comment.id);
                                   }
                                 : null,
+                            onReply: () {
+                              // TODO: Implement reply functionality
+                            },
                           );
                         },
                       ),
@@ -83,7 +124,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Error: $message',
+                          'Ошибка: $message',
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
@@ -94,7 +135,7 @@ class _CommentsPageState extends State<CommentsPage> {
                               const CommentsEvent.loadComments(),
                             );
                           },
-                          child: const Text('Retry'),
+                          child: const Text('Повторить'),
                         ),
                       ],
                     ),
@@ -130,7 +171,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       child: TextField(
                         controller: _commentController,
                         decoration: const InputDecoration(
-                          hintText: 'Write a comment...',
+                          hintText: 'Ваш комментарий',
                           border: OutlineInputBorder(),
                         ),
                         maxLines: null,
@@ -173,12 +214,12 @@ class _CommentsPageState extends State<CommentsPage> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Comment'),
-        content: const Text('Are you sure you want to delete this comment?'),
+        title: const Text('Удалить комментарий'),
+        content: const Text('Вы уверены, что хотите удалить этот комментарий?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('Отмена'),
           ),
           TextButton(
             onPressed: () {
@@ -187,104 +228,51 @@ class _CommentsPageState extends State<CommentsPage> {
               );
               Navigator.pop(dialogContext);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Удалить', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
-}
 
-class _CommentItem extends StatelessWidget {
-  final Comment comment;
-  final VoidCallback onLike;
-  final VoidCallback? onDelete;
+  List<Object> _groupCommentsByDay(List<Comment> comments) {
+    final List<Object> groupedItems = [];
+    DateTime? lastDate;
 
-  const _CommentItem({
-    required this.comment,
-    required this.onLike,
-    this.onDelete,
-  });
+    for (final comment in comments) {
+      final commentDate = DateTime(
+        comment.createdData.year,
+        comment.createdData.month,
+        comment.createdData.day,
+      );
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Author info
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 16,
-                  child: Text(comment.author.title[0].toUpperCase()),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        comment.author.title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (comment.author.position != null)
-                        Text(
-                          comment.author.position!,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                    ],
-                  ),
-                ),
-                if (onDelete != null)
-                  IconButton(
-                    icon: const Icon(Icons.delete, size: 20),
-                    onPressed: onDelete,
-                    color: Colors.red,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
+      // Add date separator if this is a new day
+      if (lastDate == null || !_isSameDay(lastDate, commentDate)) {
+        groupedItems.add(commentDate);
+        lastDate = commentDate;
+      }
 
-            // Content
-            Text(comment.content),
-            const SizedBox(height: 8),
+      // Add the comment
+      groupedItems.add(comment);
+    }
 
-            // Date and like button
-            Row(
-              children: [
-                Text(
-                  _formatDate(comment.createdData),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: Icon(
-                    (comment.like ?? false)
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    size: 20,
-                    color: (comment.like ?? false) ? Colors.red : null,
-                  ),
-                  onPressed: onLike,
-                ),
-                Text('${comment.likeCount ?? 0}'),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+    return groupedItems;
   }
 
-  String _formatDate(DateTime date) {
-    return DateFormat('dd.MM.yyyy HH:mm').format(date);
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  String _getCommentCountText(int count) {
+    if (count % 10 == 1 && count % 100 != 11) {
+      return '$count комментарий';
+    } else if ([2, 3, 4].contains(count % 10) &&
+        ![12, 13, 14].contains(count % 100)) {
+      return '$count комментария';
+    } else {
+      return '$count комментариев';
+    }
   }
 }
