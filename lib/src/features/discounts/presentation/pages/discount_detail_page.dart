@@ -75,7 +75,10 @@ class DiscountDetailPage extends StatelessWidget {
                         Text(
                           discount.title,
                           style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                         ),
                         const SizedBox(height: 16),
 
@@ -105,12 +108,6 @@ class DiscountDetailPage extends StatelessWidget {
 
                         // Description
                         if (discount.description != null) ...[
-                          Text(
-                            'Description',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
                           Html(data: discount.description),
                           const SizedBox(height: 16),
                         ],
@@ -120,12 +117,6 @@ class DiscountDetailPage extends StatelessWidget {
                             discount.phone != null ||
                             discount.email != null ||
                             discount.site != null) ...[
-                          Text(
-                            'Contact Information',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
                           if (discount.contact != null)
                             _buildInfoRow(
                               context,
@@ -218,6 +209,7 @@ class DiscountDetailPage extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 32),
                       ],
                     ),
                   ),

@@ -51,6 +51,7 @@ class AppRouter {
           );
         },
         routes: [
+          // Bottom navigation tab routes
           GoRoute(
             path: '/home',
             pageBuilder: (context, state) =>
@@ -77,134 +78,139 @@ class AppRouter {
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: MorePage()),
           ),
+          // Navigable routes (with persistent bottom nav)
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNotificationsListBloc()
+                      ..add(const NotificationsListEvent.loadNotifications()),
+                child: const NotificationsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/polls',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createPollsListBloc()
+                      ..add(const PollsListEvent.loadPolls()),
+                child: const PollsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/poll/:id',
+            builder: (context, state) {
+              final pollId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createPollDetailBloc(pollId)
+                      ..add(const PollDetailEvent.loadPollDetail()),
+                child: PollPage(pollId: pollId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/users',
+            builder: (context, state) => const UsersPage(),
+          ),
+          GoRoute(
+            path: '/discount-categories',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createDiscountCategoriesBloc()
+                      ..add(const DiscountCategoriesEvent.loadCategories()),
+                child: const DiscountCategoriesPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/discounts',
+            builder: (context, state) {
+              final category = state.getExtra<String>('category');
+              final source = state.getExtra<String>('source');
+              final categoryName = state.getExtra<String>('categoryName');
+              final categoryCode = category != null
+                  ? int.tryParse(category)
+                  : null;
+              final sourceCode = source != null ? int.tryParse(source) : null;
+              return BlocProvider(
+                create: (context) => BlocFactory.createDiscountsListBloc()
+                  ..add(
+                    DiscountsListEvent.loadDiscounts(
+                      category: categoryCode,
+                      source: sourceCode,
+                      categoryName: categoryName,
+                    ),
+                  ),
+                child: const DiscountsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/discount/:id',
+            builder: (context, state) {
+              final discountId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createDiscountDetailBloc(discountId)
+                      ..add(const DiscountDetailEvent.loadDetail()),
+                child: DiscountDetailPage(discountId: discountId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/news',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNewsListBloc()
+                      ..add(const NewsListEvent.loadNews()),
+                child: const NewsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/news-detail/:id',
+            builder: (context, state) {
+              final newsId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNewsDetailBloc(newsId)
+                      ..add(const NewsDetailEvent.loadDetail()),
+                child: NewsDetailPage(newsId: newsId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/comments/:entityType/:entityId',
+            builder: (context, state) {
+              final entityId = int.parse(state.pathParameters['entityId']!);
+              final entityType = CommentableEntityType.fromString(
+                state.pathParameters['entityType']!,
+              );
+              return BlocProvider(
+                create: (context) => BlocFactory.createCommentsBloc(
+                  entityId: entityId,
+                  entityType: entityType,
+                )..add(const CommentsEvent.loadComments()),
+                child: CommentsPage(entityId: entityId, entityType: entityType),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/resell',
+            builder: (context, state) => const ResellItemsPage(),
+          ),
+          GoRoute(
+            path: '/resell-detail',
+            builder: (context, state) => const ResellDetailPage(),
+          ),
         ],
-      ),
-      // Non-shell routes (full screen pages)
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) {
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createNotificationsListBloc()
-                  ..add(const NotificationsListEvent.loadNotifications()),
-            child: const NotificationsPage(),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/polls',
-        builder: (context, state) {
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createPollsListBloc()
-                  ..add(const PollsListEvent.loadPolls()),
-            child: const PollsPage(),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/poll/:id',
-        builder: (context, state) {
-          final pollId = int.parse(state.pathParameters['id']!);
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createPollDetailBloc(pollId)
-                  ..add(const PollDetailEvent.loadPollDetail()),
-            child: PollPage(pollId: pollId),
-          );
-        },
-      ),
-      GoRoute(path: '/users', builder: (context, state) => const UsersPage()),
-      GoRoute(
-        path: '/discount-categories',
-        builder: (context, state) {
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createDiscountCategoriesBloc()
-                  ..add(const DiscountCategoriesEvent.loadCategories()),
-            child: const DiscountCategoriesPage(),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/discounts',
-        builder: (context, state) {
-          final category = state.getExtra<String>('category');
-          final source = state.getExtra<String>('source');
-          final categoryName = state.getExtra<String>('categoryName');
-          final categoryCode = category != null ? int.tryParse(category) : null;
-          final sourceCode = source != null ? int.tryParse(source) : null;
-          return BlocProvider(
-            create: (context) => BlocFactory.createDiscountsListBloc()
-              ..add(
-                DiscountsListEvent.loadDiscounts(
-                  category: categoryCode,
-                  source: sourceCode,
-                  categoryName: categoryName,
-                ),
-              ),
-            child: const DiscountsPage(),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/discount/:id',
-        builder: (context, state) {
-          final discountId = int.parse(state.pathParameters['id']!);
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createDiscountDetailBloc(discountId)
-                  ..add(const DiscountDetailEvent.loadDetail()),
-            child: DiscountDetailPage(discountId: discountId),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/news',
-        builder: (context, state) {
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createNewsListBloc()
-                  ..add(const NewsListEvent.loadNews()),
-            child: const NewsPage(),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/news-detail/:id',
-        builder: (context, state) {
-          final newsId = int.parse(state.pathParameters['id']!);
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createNewsDetailBloc(newsId)
-                  ..add(const NewsDetailEvent.loadDetail()),
-            child: NewsDetailPage(newsId: newsId),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/comments/:entityType/:entityId',
-        builder: (context, state) {
-          final entityId = int.parse(state.pathParameters['entityId']!);
-          final entityType = CommentableEntityType.fromString(
-            state.pathParameters['entityType']!,
-          );
-          return BlocProvider(
-            create: (context) => BlocFactory.createCommentsBloc(
-              entityId: entityId,
-              entityType: entityType,
-            )..add(const CommentsEvent.loadComments()),
-            child: CommentsPage(entityId: entityId, entityType: entityType),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/resell',
-        builder: (context, state) => const ResellItemsPage(),
-      ),
-      GoRoute(
-        path: '/resell-detail',
-        builder: (context, state) => const ResellDetailPage(),
       ),
     ],
   );

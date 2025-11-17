@@ -48,18 +48,16 @@ class _DiscountsPageState extends State<DiscountsPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<DiscountsListBloc, DiscountsListState>(
       builder: (context, state) {
-        String appBarTitle = 'Льготы и возможности';
+        String? appBarTitle;
         state.maybeWhen(
           loaded: (_, __, ___, ____, _____, ______, _______, categoryName) {
-            if (categoryName != null) {
-              appBarTitle = categoryName;
-            }
+            appBarTitle = categoryName;
           },
           orElse: () {},
         );
 
         return Scaffold(
-          appBar: AppBar(title: Text(appBarTitle)),
+          appBar: AppBar(title: Text(appBarTitle ?? '')),
           body: state.when(
             initial: () => const Center(child: CircularProgressIndicator()),
             loading: () => const Center(child: CircularProgressIndicator()),

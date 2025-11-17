@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../domain/domain.dart';
 import '../bloc/discounts_page/discounts_list_bloc.dart';
 import '../bloc/discounts_page/discounts_list_event.dart';
+import '../bloc/discounts_page/discounts_list_state.dart';
 
 class DiscountCard extends StatelessWidget {
   final Discount discount;
@@ -153,7 +154,32 @@ class DiscountCard extends StatelessWidget {
                           // Comments
                           GestureDetector(
                             onTap: () {
-                              context.push('/comments/discount/${discount.id}');
+                              // TODO: Optimize this
+                              // Get current state to preserve filters when refreshing
+                              final bloc = context.read<DiscountsListBloc>();
+                              final currentState = bloc.state;
+                              int? category;
+                              int? source;
+                              String? categoryName;
+
+                              if (currentState is DiscountsListLoaded) {
+                                category = currentState.category;
+                                source = currentState.source;
+                                categoryName = currentState.categoryName;
+                              }
+
+                              context
+                                  .push('/comments/discount/${discount.id}')
+                                  .then((_) {
+                                    // Refresh discounts list when returning from comments
+                                    bloc.add(
+                                      DiscountsListEvent.refreshDiscounts(
+                                        category: category,
+                                        source: source,
+                                        categoryName: categoryName,
+                                      ),
+                                    );
+                                  });
                             },
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
