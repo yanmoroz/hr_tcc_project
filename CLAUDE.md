@@ -309,11 +309,30 @@ The home feature provides the main landing page with quick access navigation:
 - NoTransitionPage for smooth tab switching without animations
 - Routes: `/home`, `/applications`, `/contacts`, `/more`
 
+**Bottom Navigation Bar Styling (ScaffoldWithNavBar):**
+- White background with 16px top-left and top-right border radius
+- Subtle shadow for elevation effect (8px blur, -2px offset)
+- 12px top padding between container edge and navigation items
+- Custom SVG icons (24x24px) for each tab:
+  - home-icon.svg, applications-icon.svg, contacts-icon.svg, more-icon.svg
+- Selected tab styling:
+  - Icon background: 32x32px with 8px border radius, `#0A3899` color
+  - Icon color: White
+  - Text color: `#0A3899`
+  - Font size: 10px
+- Unselected tab styling:
+  - Icon background: Transparent
+  - Icon color: Grey (600)
+  - Text color: Grey (600)
+  - Font size: 10px
+- Tap animations disabled (transparent splash and highlight colors)
+
 **Implementation Notes:**
 - SVG icons stored in `assets/icons/` directory
 - Uses flutter_svg package for SVG rendering
 - url_launcher package for external URLs (LaunchMode.externalApplication)
 - Fixed height text containers ensure proper button alignment
+- Theme override removes default Material ripple effects
 
 ### Address Book (Users Feature)
 
