@@ -1,9 +1,9 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-import 'package:hr_tcc_project/src/shared/comments/domain/usecases/toggle_comment_like.dart';
-import '../repositories/discount_repository.dart';
+import '../../../../../core/base_types/result.dart';
+import '../../repositories/comment_repository.dart';
+import 'toggle_comment_like.dart';
 
 class ToggleDiscountCommentLikeUsecase implements ToggleCommentLikeUsecase {
-  final DiscountRepository repository;
+  final CommentRepository repository;
 
   ToggleDiscountCommentLikeUsecase(this.repository);
 

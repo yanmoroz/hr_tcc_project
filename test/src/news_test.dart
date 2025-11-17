@@ -45,7 +45,9 @@ void main() {
       getNewsCommentsUsecase = GetNewsCommentsUsecase(commentRepository);
       addCommentUsecase = AddNewsCommentUsecase(commentRepository);
       deleteCommentUsecase = DeleteNewsCommentUsecase(commentRepository);
-      toggleCommentLikeUsecase = ToggleNewsCommentLikeUsecase(repository);
+      toggleCommentLikeUsecase = ToggleNewsCommentLikeUsecase(
+        commentRepository,
+      );
     });
 
     test('E2E Comments', () async {

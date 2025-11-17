@@ -1,4 +1,4 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
+import '../../../../core/base_types/result.dart';
 import '../entities/gallery_image.dart';
 import '../repositories/news_repository.dart';
 

@@ -5,9 +5,14 @@ part 'add_comment_request.g.dart';
 
 @freezed
 abstract class AddCommentRequest with _$AddCommentRequest {
-  const factory AddCommentRequest({int? parent, required String content, List<int>? attachments}) = _AddCommentRequest;
+  const factory AddCommentRequest({
+    int? parent,
+    required String content,
+    List<int>? attachments,
+  }) = _AddCommentRequest;
 
-  factory AddCommentRequest.fromJson(Map<String, dynamic> json) => _$AddCommentRequestFromJson(json);
+  factory AddCommentRequest.fromJson(Map<String, dynamic> json) =>
+      _$AddCommentRequestFromJson(json);
 
   Map<String, dynamic> toJson() => {
     if (parent != null) 'parent': parent,

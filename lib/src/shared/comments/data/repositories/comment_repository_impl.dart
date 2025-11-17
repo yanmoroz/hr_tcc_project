@@ -1,5 +1,5 @@
-import 'package:hr_tcc_project/src/core/base_types/base_repository.dart';
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
+import '../../../../core/base_types/base_repository.dart';
+import '../../../../core/base_types/result.dart';
 import '../../domain/domain.dart';
 import '../data.dart';
 
@@ -78,5 +78,21 @@ class CommentRepositoryImpl with BaseRepository implements CommentRepository {
       commentId,
     );
     return result.map((response) => response.removedIds);
+  }
+
+  @override
+  Future<Result<bool>> toggleDiscountCommentLike(
+    int discountId,
+    int commentId,
+  ) async {
+    return await _remoteDataSource.toggleDiscountCommentLike(
+      discountId,
+      commentId,
+    );
+  }
+
+  @override
+  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId) async {
+    return await _remoteDataSource.toggleNewsCommentLike(newsId, commentId);
   }
 }

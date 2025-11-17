@@ -14,5 +14,4 @@ export 'usecases/get_news_detail_usecase.dart';
 export 'usecases/get_news_stats_usecase.dart';
 export 'usecases/get_news_gallery_usecase.dart';
 export 'usecases/toggle_news_like_usecase.dart';
-export 'usecases/toggle_news_comment_like_usecase.dart';
 export 'usecases/get_kp_news_categories_usecase.dart';

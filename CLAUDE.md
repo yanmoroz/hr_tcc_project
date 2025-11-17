@@ -138,9 +138,10 @@ feature/
 
 **Shared Functionality Pattern:**
 - Comments system is shared between news/discounts features
-- Like functionality is feature-specific (each feature has its own use cases)
+- Comment like functionality is also shared (in `shared/comments/domain/usecases/toggle_comment_like/`)
 - Shared comment use cases use abstract interfaces (`GetCommentsUsecase`, `AddCommentUsecase`, `DeleteCommentUsecase`, `ToggleCommentLikeUsecase`)
-- Feature-specific implementations inject their own repositories
+- Feature-specific implementations inject their own repositories for comments
+- Comment like use cases (`ToggleNewsCommentLikeUsecase`, `ToggleDiscountCommentLikeUsecase`) use shared `CommentRepository`
 - `BlocFactory` selects the correct implementation based on `CommentableEntityType`
 
 **Master Data Cache:**
@@ -250,7 +251,7 @@ The users feature has been extended with comprehensive employee/address book fun
 
 ### Comments and Likes Feature
 
-The comments system is shared between news and discounts features, while like functionality is feature-specific:
+The comments system is shared between news and discounts features, including comment like functionality:
 
 **Shared Comments Structure:**
 - `lib/src/shared/comments/` - Shared comment infrastructure
@@ -259,26 +260,36 @@ The comments system is shared between news and discounts features, while like fu
   - `get_comments_usecase/` - GetNewsCommentsUsecase, GetDiscountCommentsUsecase
   - `add_comment_usecase/` - AddNewsCommentUsecase, AddDiscountCommentUsecase
   - `delete_comment_usecase/` - DeleteNewsCommentUsecase, DeleteDiscountCommentUsecase
+  - `toggle_comment_like/` - ToggleNewsCommentLikeUsecase, ToggleDiscountCommentLikeUsecase (shared implementations)
 - `CommentableEntityType` enum to distinguish between news and discounts
 - Single `CommentsBloc` works with both features via dependency injection
 
-**Feature-Specific Likes:**
-- News: `ToggleNewsLikeUsecase`, `ToggleNewsCommentLikeUsecase` (in `features/news/domain/usecases/`)
-- Discounts: `ToggleDiscountLikeUsecase`, `ToggleDiscountCommentLikeUsecase` (in `features/discounts/domain/usecases/`)
-- Each feature extends its own repository with like methods
-- No shared `LikeRepository` - each feature manages its own like endpoints
+**Feature-Specific Entity Likes:**
+- News: `ToggleNewsLikeUsecase` (in `features/news/domain/usecases/`)
+- Discounts: `ToggleDiscountLikeUsecase` (in `features/discounts/domain/usecases/`)
+- Each feature repository has methods for liking the main entity (news item, discount)
 - All like operations return `Result<bool>` directly (no response models)
+
+**Comment Like Architecture:**
+- Comment like use cases are in shared layer but feature-specific
+- Both use shared `CommentRepository` which has methods: `toggleNewsCommentLike()` and `toggleDiscountCommentLike()`
+- `CommentRepository` delegates to `CommentRemoteDataSource` which calls the appropriate API endpoints
+- This consolidates comment like logic in the shared layer while maintaining feature-specific API routes
 
 **Implementation Notes:**
 - Comment like use cases implement `ToggleCommentLikeUsecase` interface
 - `BlocFactory.createCommentsBloc()` injects correct implementations based on `CommentableEntityType`
 - Named instances in service locator for comment repositories (`'newsComments'`, `'discountComments'`)
-- Like use cases registered without named instances (typed resolution)
+- Comment like use cases registered without named instances (typed resolution)
 
 ## Current Development State
 
 Based on git status, recent work includes:
-- **Refactored comments and likes architecture** - Extracted like functionality from shared comments to feature-specific implementations
+- **Refactored comments and likes architecture** - Consolidated comment like functionality into shared layer
+  - Moved comment like use cases from feature-specific to shared layer (`lib/src/shared/comments/domain/usecases/toggle_comment_like/`)
+  - Added like methods to shared `CommentRepository` and `CommentRemoteDataSource`
+  - Removed like methods from `NewsRepository` and `DiscountRepository` for comments
+  - Entity likes (liking news/discount items themselves) remain feature-specific
 - **Extended users feature** with address book and current user endpoints
 - Added comprehensive employee data models (AddressBookUser, Organization, Department)
 - Implemented pagination support for address book

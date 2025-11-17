@@ -19,4 +19,6 @@ export 'usecases/add_comment_usecase/add_discount_comment_usecase.dart';
 export 'usecases/delete_comment_usecase/delete_comment_usecase.dart';
 export 'usecases/delete_comment_usecase/delete_news_comment_usecase.dart';
 export 'usecases/delete_comment_usecase/delete_discount_comment_usecase.dart';
-export 'usecases/toggle_comment_like.dart';
+export 'usecases/toggle_comment_like/toggle_comment_like.dart';
+export 'usecases/toggle_comment_like/toggle_news_comment_like_usecase.dart';
+export 'usecases/toggle_comment_like/toggle_discount_comment_like_usecase.dart';

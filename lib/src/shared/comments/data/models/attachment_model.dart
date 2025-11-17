@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/domain.dart';
 
 part 'attachment_model.freezed.dart';
@@ -22,7 +23,8 @@ abstract class AttachmentModel with _$AttachmentModel {
     required int fileType,
   }) = _AttachmentModel;
 
-  factory AttachmentModel.fromJson(Map<String, dynamic> json) => _$AttachmentModelFromJson(json);
+  factory AttachmentModel.fromJson(Map<String, dynamic> json) =>
+      _$AttachmentModelFromJson(json);
 }
 
 extension AttachmentModelX on AttachmentModel {

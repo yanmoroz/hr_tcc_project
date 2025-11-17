@@ -22,6 +22,4 @@ abstract class NewsRemoteDataSource {
   Future<Result<List<KpNewsCategoryModel>>> getKpNewsCategories();
 
   Future<Result<bool>> toggleNewsLike(int newsId);
-
-  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId);
 }

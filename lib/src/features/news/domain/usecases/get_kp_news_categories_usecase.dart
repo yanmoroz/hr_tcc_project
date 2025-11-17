@@ -1,5 +1,4 @@
 import '../../../../core/base_types/result.dart';
-
 import '../entities/kp_news_category.dart';
 import '../repositories/news_repository.dart';
 

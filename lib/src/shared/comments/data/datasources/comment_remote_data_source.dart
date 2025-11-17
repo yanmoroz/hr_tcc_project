@@ -33,6 +33,10 @@ abstract class CommentRemoteDataSource {
     int discountId,
     int commentId,
   );
+
+  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId);
+
+  Future<Result<bool>> toggleDiscountCommentLike(int discountId, int commentId);
 }
 
 /// Implementation with configurable endpoint paths
@@ -129,6 +133,35 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
         return CommentRemoveResponse.fromJson(data);
+      },
+    );
+  }
+
+  @override
+  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId) async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.post(
+        ApiConstants.newsCommentLikeEndpoint(newsId, commentId),
+      ),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        return data['like'] as bool;
+      },
+    );
+  }
+
+  @override
+  Future<Result<bool>> toggleDiscountCommentLike(
+    int discountId,
+    int commentId,
+  ) async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.post(
+        ApiConstants.commentLikeEndpoint(discountId, commentId),
+      ),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        return data['like'] as bool;
       },
     );
   }

@@ -67,9 +67,4 @@ class NewsRepositoryImpl with BaseRepository implements NewsRepository {
   Future<Result<bool>> toggleNewsLike(int newsId) async {
     return await _remoteDataSource.toggleNewsLike(newsId);
   }
-
-  @override
-  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId) async {
-    return await _remoteDataSource.toggleNewsCommentLike(newsId, commentId);
-  }
 }

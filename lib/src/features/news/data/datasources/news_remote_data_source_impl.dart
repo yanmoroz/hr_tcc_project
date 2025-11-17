@@ -105,17 +105,4 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
       },
     );
   }
-
-  @override
-  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId) async {
-    return ApiCallExecutor.executeApiCall(
-      apiCall: () => _apiClient.post(
-        ApiConstants.newsCommentLikeEndpoint(newsId, commentId),
-      ),
-      successParser: (response) {
-        final data = response.data as Map<String, dynamic>;
-        return data['like'] as bool;
-      },
-    );
-  }
 }

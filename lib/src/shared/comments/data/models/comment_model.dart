@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/domain.dart';
 import 'attachment_model.dart';
 import 'author_model.dart';

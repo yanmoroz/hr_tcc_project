@@ -29,4 +29,8 @@ abstract class CommentRepository {
     required int discountId,
     required int commentId,
   });
+
+  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId);
+
+  Future<Result<bool>> toggleDiscountCommentLike(int discountId, int commentId);
 }

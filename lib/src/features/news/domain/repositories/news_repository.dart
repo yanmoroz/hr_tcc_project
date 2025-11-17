@@ -23,6 +23,4 @@ abstract class NewsRepository {
   Future<Result<List<KpNewsCategory>>> getKpNewsCategories();
 
   Future<Result<bool>> toggleNewsLike(int newsId);
-
-  Future<Result<bool>> toggleNewsCommentLike(int newsId, int commentId);
 }

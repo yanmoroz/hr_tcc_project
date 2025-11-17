@@ -195,7 +195,7 @@ void _initializeDiscountDependencies() {
     instanceName: 'deleteDiscountCommentUsecase',
   );
   sl.registerFactory<ToggleDiscountCommentLikeUsecase>(
-    () => ToggleDiscountCommentLikeUsecase(sl<DiscountRepository>()),
+    () => ToggleDiscountCommentLikeUsecase(sl()),
   );
   sl.registerFactory<GetKpDiscountCategoriesUsecase>(
     () => GetKpDiscountCategoriesUsecase(sl()),
@@ -247,7 +247,7 @@ void _initializeNewsDependencies() {
     instanceName: 'deleteNewsCommentUsecase',
   );
   sl.registerFactory<ToggleNewsCommentLikeUsecase>(
-    () => ToggleNewsCommentLikeUsecase(sl<NewsRepository>()),
+    () => ToggleNewsCommentLikeUsecase(sl()),
   );
 }
 
