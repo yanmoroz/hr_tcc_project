@@ -282,9 +282,86 @@ The comments system is shared between news and discounts features, including com
 - Named instances in service locator for comment repositories (`'newsComments'`, `'discountComments'`)
 - Comment like use cases registered without named instances (typed resolution)
 
+### Home Feature
+
+The home feature provides the main landing page with quick access navigation:
+
+**Structure:**
+- `lib/src/features/home/` - Home feature module
+- `presentation/pages/home_page.dart` - Main home page with icon buttons
+- `presentation/widgets/home_icon_button.dart` - Reusable icon button widget
+
+**HomePage Implementation:**
+- Five icon buttons in horizontal layout
+- External URL launching for Telegram channel and IT portal (using url_launcher)
+- Internal navigation for discounts, polls, and resell features
+- Custom SVG icons (20x20px) with white color filter on blue backgrounds
+
+**HomeIconButton Widget:**
+- 56x56px blue container with 12px border radius
+- 20x20px SVG icon centered in container (12px padding)
+- Two-line text label (72px width, 28px height fixed)
+- Handles both navigation and URL launching via callback
+
+**Navigation Setup:**
+- Bottom navigation bar with 4 tabs (home, applications, contacts, more)
+- Uses go_router with ShellRoute for persistent bottom navigation
+- NoTransitionPage for smooth tab switching without animations
+- Routes: `/home`, `/applications`, `/contacts`, `/more`
+
+**Implementation Notes:**
+- SVG icons stored in `assets/icons/` directory
+- Uses flutter_svg package for SVG rendering
+- url_launcher package for external URLs (LaunchMode.externalApplication)
+- Fixed height text containers ensure proper button alignment
+
+### Address Book (Users Feature)
+
+The address book provides a searchable, paginated employee directory:
+
+**AddressBookPage Implementation:**
+- Full BLoC pattern with state management (AddressBookBloc)
+- Search functionality with 300ms debouncing (SearchBarWidget)
+- Infinite scroll pagination (90% threshold, page size 20)
+- Pull-to-refresh support
+- Empty state: "Таких сотрудников нет" when no results
+
+**AddressBookBloc:**
+- Events: loadAddressBook, refreshAddressBook, loadMoreAddressBook, searchAddressBook
+- States: initial, loading, loaded(users, currentPage, hasMorePages, isLoadingMore, searchQuery), error
+- Uses GetAddressBookUsecase with organizationCode and departmentCode set to null
+
+**AddressBookUserItem Widget:**
+- Card-based layout with avatar, name, position, and contact info
+- Color-coded avatars with initials (based on user ID hash)
+- Clickable phone numbers (tel: URI scheme)
+- Clickable email addresses (mailto: URI scheme)
+- Shows mobile, work phone (with extension), and email
+
+**SearchBarWidget (Core Widget):**
+- Reusable search input component in `core/widgets/`
+- 300ms debounce to reduce API calls
+- Clear button when text is present
+- Customizable hint text and debounce duration
+
+**Dependencies:**
+- BlocProvider in route configuration injects AddressBookBloc
+- BlocFactory.createAddressBookBloc() for dependency resolution
+- Uses url_launcher for phone/email interaction
+
 ## Current Development State
 
 Based on git status, recent work includes:
+- **Implemented bottom navigation and home feature**
+  - Created home feature with HomePage and HomeIconButton widgets
+  - Added ShellRoute-based bottom navigation with 4 tabs
+  - Integrated custom SVG icons with url_launcher for external links
+  - Fixed button alignment with fixed-height text containers
+- **Implemented address book feature**
+  - Created AddressBookPage with full BLoC pattern
+  - Added infinite scroll pagination and pull-to-refresh
+  - Implemented reusable SearchBarWidget with debouncing
+  - Created AddressBookUserItem with clickable contact info
 - **Refactored comments and likes architecture** - Consolidated comment like functionality into shared layer
   - Moved comment like use cases from feature-specific to shared layer (`lib/src/shared/comments/domain/usecases/toggle_comment_like/`)
   - Added like methods to shared `CommentRepository` and `CommentRemoteDataSource`
@@ -292,7 +369,6 @@ Based on git status, recent work includes:
   - Entity likes (liking news/discount items themselves) remain feature-specific
 - **Extended users feature** with address book and current user endpoints
 - Added comprehensive employee data models (AddressBookUser, Organization, Department)
-- Implemented pagination support for address book
 - Refactoring notifications structure (flattening, removing barrel files)
 - Moving shared entities to core (e.g., `SystemType`)
 - Consolidating master data infrastructure

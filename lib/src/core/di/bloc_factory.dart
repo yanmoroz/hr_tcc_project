@@ -6,6 +6,7 @@ import '../../features/discounts/presentation/bloc/discounts_page/discounts_list
 import '../../features/discounts/presentation/bloc/discount_page/discount_detail_bloc.dart';
 import '../../features/news/presentation/bloc/news_page/news_list_bloc.dart';
 import '../../features/news/presentation/bloc/news_detail_page/news_detail_bloc.dart';
+import '../../features/users/presentation/bloc/address_book_page/address_book_bloc.dart';
 import '../../shared/comments/domain/domain.dart';
 import '../../shared/comments/presentation/bloc/comments_page/comments_bloc.dart';
 import 'service_locator.dart';
@@ -95,6 +96,13 @@ class BlocFactory {
       toggleCommentLikeUsecase: entityType == CommentableEntityType.news
           ? sl<ToggleNewsCommentLikeUsecase>()
           : sl<ToggleDiscountCommentLikeUsecase>(),
+    );
+  }
+
+  /// Creates an [AddressBookBloc] instance.
+  static AddressBookBloc createAddressBookBloc() {
+    return AddressBookBloc(
+      getAddressBookUsecase: sl(),
     );
   }
 }
