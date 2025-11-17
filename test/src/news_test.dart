@@ -7,8 +7,8 @@ import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/features/news/data/data.dart';
 import 'package:hr_tcc_project/src/features/news/domain/domain.dart';
-import 'package:hr_tcc_project/src/shared/comments/data/data.dart';
-import 'package:hr_tcc_project/src/shared/comments/domain/domain.dart';
+import 'package:hr_tcc_project/src/features/comments/data/data.dart';
+import 'package:hr_tcc_project/src/features/comments/domain/domain.dart';
 
 void main() {
   group('News', () {
@@ -22,7 +22,7 @@ void main() {
     late ToggleNewsLikeUsecase toggleNewsLikeUsecase;
     late CommentRemoteDataSource commentDataSource;
     late CommentRepository commentRepository;
-    late GetNewsCommentsUsecase getNewsCommentsUsecase;
+    late GetCommentsUsecase getCommentsUsecase;
     late AddCommentUsecase addCommentUsecase;
     late DeleteCommentUsecase deleteCommentUsecase;
     late ToggleCommentLikeUsecase toggleCommentLikeUsecase;
@@ -40,14 +40,12 @@ void main() {
       getNewsDetailUsecase = GetNewsDetailUsecase(repository);
       getNewsStatsUsecase = GetNewsStatsUsecase(repository);
       toggleNewsLikeUsecase = ToggleNewsLikeUsecase(repository);
-      commentDataSource = CommentRemoteDataSourceImpl(apiClient: apiClient);
+      commentDataSource = CommentRemoteDataSourceImpl(apiClient);
       commentRepository = CommentRepositoryImpl(commentDataSource);
-      getNewsCommentsUsecase = GetNewsCommentsUsecase(commentRepository);
-      addCommentUsecase = AddNewsCommentUsecase(commentRepository);
-      deleteCommentUsecase = DeleteNewsCommentUsecase(commentRepository);
-      toggleCommentLikeUsecase = ToggleNewsCommentLikeUsecase(
-        commentRepository,
-      );
+      getCommentsUsecase = GetCommentsUsecase(commentRepository);
+      addCommentUsecase = AddCommentUsecase(commentRepository);
+      deleteCommentUsecase = DeleteCommentUsecase(commentRepository);
+      toggleCommentLikeUsecase = ToggleCommentLikeUsecase(commentRepository);
     });
 
     test('E2E Comments', () async {
@@ -85,8 +83,9 @@ void main() {
                     'Fetched news stats: likeCount: ${newsStats.likeCount}, like: ${newsStats.like}, commentCount: ${newsStats.commentCount}',
                   );
 
-                  final newsCommentsResult = await getNewsCommentsUsecase(
-                    newsDetail.id,
+                  final newsCommentsResult = await getCommentsUsecase(
+                    entityId: newsDetail.id,
+                    entityType: CommentableEntityType.news,
                   );
                   await newsCommentsResult.fold(
                     (failure) {
@@ -100,6 +99,7 @@ void main() {
 
                       final addCommentResult = await addCommentUsecase(
                         entityId: newsDetail.id,
+                        entityType: CommentableEntityType.news,
                         content: 'Test comment',
                         parent: null,
                         attachments: null,
@@ -133,6 +133,7 @@ void main() {
                               final deleteCommentResult =
                                   await deleteCommentUsecase(
                                     entityId: newsDetail.id,
+                                    entityType: CommentableEntityType.news,
                                     commentId: comment.id,
                                   );
                               await deleteCommentResult.fold(
@@ -279,8 +280,9 @@ void main() {
               expect(newsDetail, isA<NewsDetail>());
               AppLogger.d('Fetched news detail: ${newsDetail.toString()}');
 
-              final newsCommentsResult = await getNewsCommentsUsecase(
-                newsDetail.id,
+              final newsCommentsResult = await getCommentsUsecase(
+                entityId: newsDetail.id,
+                entityType: CommentableEntityType.news,
               );
               await newsCommentsResult.fold(
                 (failure) {
@@ -296,6 +298,7 @@ The 1st comment: ${newsComments.first}''',
                   final toggleCommentLikeResult =
                       await toggleCommentLikeUsecase(
                         entityId: newsDetail.id,
+                        entityType: CommentableEntityType.news,
                         commentId: newsComments.first.id,
                       );
                   await toggleCommentLikeResult.fold(

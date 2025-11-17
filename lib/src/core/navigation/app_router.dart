@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/comments/domain/domain.dart';
+import '../../features/comments/presentation/bloc/comments_page/comments_event.dart';
+import '../../features/comments/presentation/pages/comments_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/notifications/presentation/bloc/notifications_page/notifications_list_event.dart';
@@ -26,9 +29,6 @@ import '../../features/users/presentation/pages/address_book_page.dart';
 import '../../features/users/presentation/bloc/address_book_page/address_book_event.dart';
 import '../../features/users/presentation/bloc/user_profile_header/user_profile_header_event.dart';
 import '../../features/users/presentation/widgets/user_profile_header.dart';
-import '../../shared/comments/presentation/pages/comments_page.dart';
-import '../../shared/comments/presentation/bloc/comments_page/comments_event.dart';
-import '../../shared/comments/domain/domain.dart';
 import '../di/bloc_factory.dart';
 import 'scaffold_with_nav_bar.dart';
 

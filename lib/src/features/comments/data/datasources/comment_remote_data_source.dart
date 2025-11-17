@@ -43,8 +43,7 @@ abstract class CommentRemoteDataSource {
 class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   final ApiClient _apiClient;
 
-  CommentRemoteDataSourceImpl({required ApiClient apiClient})
-    : _apiClient = apiClient;
+  CommentRemoteDataSourceImpl(this._apiClient);
 
   @override
   Future<Result<CommentListResponse>> getNewsComments(int newsId) async {

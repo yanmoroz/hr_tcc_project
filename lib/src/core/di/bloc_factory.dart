@@ -1,3 +1,5 @@
+import '../../features/comments/domain/domain.dart';
+import '../../features/comments/presentation/bloc/comments_page/comments_bloc.dart';
 import '../../features/polls/presentation/bloc/poll_page/poll_detail_bloc.dart';
 import '../../features/polls/presentation/bloc/polls_page/polls_list_bloc.dart';
 import '../../features/notifications/presentation/bloc/notifications_page/notifications_list_bloc.dart';
@@ -8,8 +10,6 @@ import '../../features/news/presentation/bloc/news_page/news_list_bloc.dart';
 import '../../features/news/presentation/bloc/news_detail_page/news_detail_bloc.dart';
 import '../../features/users/presentation/bloc/address_book_page/address_book_bloc.dart';
 import '../../features/users/presentation/bloc/user_profile_header/user_profile_header_bloc.dart';
-import '../../shared/comments/domain/domain.dart';
-import '../../shared/comments/presentation/bloc/comments_page/comments_bloc.dart';
 import 'service_locator.dart';
 
 /// Factory for creating BLoC instances.
@@ -90,22 +90,11 @@ class BlocFactory {
   }) {
     return CommentsBloc(
       entityId: entityId,
-      getCommentsUsecase: entityType == CommentableEntityType.news
-          ? GetNewsCommentsUsecase(sl())
-          : GetDiscountCommentsUsecase(sl()),
-      addCommentUsecase: sl(
-        instanceName: entityType == CommentableEntityType.news
-            ? 'addNewsCommentUsecase'
-            : 'addDiscountCommentUsecase',
-      ),
-      deleteCommentUsecase: sl(
-        instanceName: entityType == CommentableEntityType.news
-            ? 'deleteNewsCommentUsecase'
-            : 'deleteDiscountCommentUsecase',
-      ),
-      toggleCommentLikeUsecase: entityType == CommentableEntityType.news
-          ? sl(instanceName: 'toggleNewsCommentLikeUsecase')
-          : sl(instanceName: 'toggleDiscountCommentLikeUsecase'),
+      entityType: entityType,
+      getCommentsUsecase: sl(),
+      addCommentUsecase: sl(),
+      deleteCommentUsecase: sl(),
+      toggleCommentLikeUsecase: sl(),
     );
   }
 

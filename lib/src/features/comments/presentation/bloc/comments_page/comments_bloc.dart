@@ -7,6 +7,7 @@ import 'comments_state.dart';
 
 class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   final int entityId;
+  final CommentableEntityType entityType;
   final GetCommentsUsecase _getCommentsUsecase;
   final AddCommentUsecase _addCommentUsecase;
   final DeleteCommentUsecase _deleteCommentUsecase;
@@ -14,6 +15,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
   CommentsBloc({
     required this.entityId,
+    required this.entityType,
     required GetCommentsUsecase getCommentsUsecase,
     required AddCommentUsecase addCommentUsecase,
     required DeleteCommentUsecase deleteCommentUsecase,
@@ -67,6 +69,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
       final result = await _addCommentUsecase(
         entityId: entityId,
+        entityType: entityType,
         content: event.content,
         parent: event.parentId,
       );
@@ -95,6 +98,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   ) async {
     final result = await _deleteCommentUsecase(
       entityId: entityId,
+      entityType: entityType,
       commentId: event.commentId,
     );
 
@@ -143,6 +147,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     // Make API call
     final result = await _toggleCommentLikeUsecase(
       entityId: entityId,
+      entityType: entityType,
       commentId: event.commentId,
     );
 
@@ -182,7 +187,10 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   }
 
   Future<void> _loadComments(Emitter<CommentsState> emit) async {
-    final result = await _getCommentsUsecase(entityId);
+    final result = await _getCommentsUsecase(
+      entityId: entityId,
+      entityType: entityType,
+    );
 
     result.fold(
       (error) => emit(CommentsState.error(error.message)),

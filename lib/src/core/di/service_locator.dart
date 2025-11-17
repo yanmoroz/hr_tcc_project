@@ -2,6 +2,8 @@ import 'package:get_it/get_it.dart';
 
 import '../../features/applications/data/data.dart';
 import '../../features/applications/domain/domain.dart';
+import '../../features/comments/data/data.dart';
+import '../../features/comments/domain/domain.dart';
 import '../../features/discounts/data/data.dart';
 import '../../features/discounts/domain/domain.dart';
 import '../../features/news/data/data.dart';
@@ -17,8 +19,6 @@ import '../../features/resell/presentation/bloc/resell_detail_bloc.dart';
 import '../../features/resell/presentation/bloc/resell_items_bloc.dart';
 import '../../features/users/data/data.dart';
 import '../../features/users/domain/domain.dart';
-import '../../shared/comments/data/data.dart';
-import '../../shared/comments/domain/domain.dart';
 import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
 import '../master_data/datasources/master_data_remote_data_source.dart';
@@ -32,16 +32,9 @@ final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
   _initializeCoreDependencies();
-
-  sl.registerLazySingleton<CommentRemoteDataSource>(
-    () => CommentRemoteDataSourceImpl(apiClient: sl()),
-  );
-  sl.registerLazySingleton<CommentRepository>(
-    () => CommentRepositoryImpl(sl()),
-  );
-
   _initializeFileDependencies();
   _initializeMasterDataDependencies();
+  _initializeCommentDependencies();
   _initializeNotificationDependencies();
   _initializePollDependencies();
   _initializeUserDependencies();
@@ -78,6 +71,21 @@ void _initializeMasterDataDependencies() {
   );
   sl.registerLazySingleton<MasterDataRepository>(
     () => MasterDataRepositoryImpl(sl(), sl()),
+  );
+}
+
+void _initializeCommentDependencies() {
+  sl.registerLazySingleton<CommentRemoteDataSource>(
+    () => CommentRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<CommentRepository>(
+    () => CommentRepositoryImpl(sl()),
+  );
+  sl.registerFactory<GetCommentsUsecase>(() => GetCommentsUsecase(sl()));
+  sl.registerFactory<AddCommentUsecase>(() => AddCommentUsecase(sl()));
+  sl.registerFactory<DeleteCommentUsecase>(() => DeleteCommentUsecase(sl()));
+  sl.registerFactory<ToggleCommentLikeUsecase>(
+    () => ToggleCommentLikeUsecase(sl()),
   );
 }
 
@@ -174,25 +182,6 @@ void _initializeDiscountDependencies() {
   sl.registerFactory<ToggleDiscountLikeUsecase>(
     () => ToggleDiscountLikeUsecase(sl<DiscountRepository>()),
   );
-  sl.registerFactory<GetDiscountCommentsUsecase>(
-    () => GetDiscountCommentsUsecase(sl()),
-  );
-  sl.registerFactory<AddCommentUsecase>(
-    () => AddDiscountCommentUsecase(sl()),
-    instanceName: 'addDiscountCommentUsecase',
-  );
-  sl.registerFactory<DeleteCommentUsecase>(
-    () => DeleteDiscountCommentUsecase(sl()),
-    instanceName: 'deleteDiscountCommentUsecase',
-  );
-  sl.registerFactory<ToggleDiscountCommentLikeUsecase>(
-    () => ToggleDiscountCommentLikeUsecase(sl()),
-    instanceName: 'toggleDiscountCommentLikeUsecase',
-  );
-  sl.registerFactory<ToggleCommentLikeUsecase>(
-    () => ToggleDiscountCommentLikeUsecase(sl()),
-    instanceName: 'toggleDiscountCommentLikeUsecase',
-  );
   sl.registerFactory<GetKpDiscountCategoriesUsecase>(
     () => GetKpDiscountCategoriesUsecase(sl()),
   );
@@ -217,27 +206,6 @@ void _initializeNewsDependencies() {
   sl.registerFactory<GetNewsGalleryUsecase>(() => GetNewsGalleryUsecase(sl()));
   sl.registerFactory<ToggleNewsLikeUsecase>(
     () => ToggleNewsLikeUsecase(sl<NewsRepository>()),
-  );
-
-  // Comment use cases for news feature
-  sl.registerFactory<GetNewsCommentsUsecase>(
-    () => GetNewsCommentsUsecase(sl()),
-  );
-  sl.registerFactory<AddCommentUsecase>(
-    () => AddNewsCommentUsecase(sl()),
-    instanceName: 'addNewsCommentUsecase',
-  );
-  sl.registerFactory<DeleteCommentUsecase>(
-    () => DeleteNewsCommentUsecase(sl()),
-    instanceName: 'deleteNewsCommentUsecase',
-  );
-  sl.registerFactory<ToggleNewsCommentLikeUsecase>(
-    () => ToggleNewsCommentLikeUsecase(sl()),
-    instanceName: 'toggleNewsCommentLikeUsecase',
-  );
-  sl.registerFactory<ToggleCommentLikeUsecase>(
-    () => ToggleNewsCommentLikeUsecase(sl()),
-    instanceName: 'toggleNewsCommentLikeUsecase',
   );
 }
 
