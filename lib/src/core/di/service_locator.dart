@@ -177,12 +177,21 @@ void _initializeDiscountDependencies() {
   sl.registerFactory<GetDiscountCommentsUsecase>(
     () => GetDiscountCommentsUsecase(sl()),
   );
-  sl.registerFactory<AddCommentUsecase>(() => AddDiscountCommentUsecase(sl()));
+  sl.registerFactory<AddCommentUsecase>(
+    () => AddDiscountCommentUsecase(sl()),
+    instanceName: 'addDiscountCommentUsecase',
+  );
   sl.registerFactory<DeleteCommentUsecase>(
     () => DeleteDiscountCommentUsecase(sl()),
+    instanceName: 'deleteDiscountCommentUsecase',
   );
   sl.registerFactory<ToggleDiscountCommentLikeUsecase>(
     () => ToggleDiscountCommentLikeUsecase(sl()),
+    instanceName: 'toggleDiscountCommentLikeUsecase',
+  );
+  sl.registerFactory<ToggleCommentLikeUsecase>(
+    () => ToggleDiscountCommentLikeUsecase(sl()),
+    instanceName: 'toggleDiscountCommentLikeUsecase',
   );
   sl.registerFactory<GetKpDiscountCategoriesUsecase>(
     () => GetKpDiscountCategoriesUsecase(sl()),
@@ -214,12 +223,21 @@ void _initializeNewsDependencies() {
   sl.registerFactory<GetNewsCommentsUsecase>(
     () => GetNewsCommentsUsecase(sl()),
   );
-  sl.registerFactory<AddCommentUsecase>(() => AddNewsCommentUsecase(sl()));
+  sl.registerFactory<AddCommentUsecase>(
+    () => AddNewsCommentUsecase(sl()),
+    instanceName: 'addNewsCommentUsecase',
+  );
   sl.registerFactory<DeleteCommentUsecase>(
     () => DeleteNewsCommentUsecase(sl()),
+    instanceName: 'deleteNewsCommentUsecase',
   );
   sl.registerFactory<ToggleNewsCommentLikeUsecase>(
     () => ToggleNewsCommentLikeUsecase(sl()),
+    instanceName: 'toggleNewsCommentLikeUsecase',
+  );
+  sl.registerFactory<ToggleCommentLikeUsecase>(
+    () => ToggleNewsCommentLikeUsecase(sl()),
+    instanceName: 'toggleNewsCommentLikeUsecase',
   );
 }
 

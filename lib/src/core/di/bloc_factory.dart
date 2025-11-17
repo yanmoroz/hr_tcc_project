@@ -92,11 +92,19 @@ class BlocFactory {
       getCommentsUsecase: entityType == CommentableEntityType.news
           ? GetNewsCommentsUsecase(sl())
           : GetDiscountCommentsUsecase(sl()),
-      addCommentUsecase: sl(),
-      deleteCommentUsecase: sl(),
+      addCommentUsecase: sl(
+        instanceName: entityType == CommentableEntityType.news
+            ? 'addNewsCommentUsecase'
+            : 'addDiscountCommentUsecase',
+      ),
+      deleteCommentUsecase: sl(
+        instanceName: entityType == CommentableEntityType.news
+            ? 'deleteNewsCommentUsecase'
+            : 'deleteDiscountCommentUsecase',
+      ),
       toggleCommentLikeUsecase: entityType == CommentableEntityType.news
-          ? sl<ToggleNewsCommentLikeUsecase>()
-          : sl<ToggleDiscountCommentLikeUsecase>(),
+          ? sl(instanceName: 'toggleNewsCommentLikeUsecase')
+          : sl(instanceName: 'toggleDiscountCommentLikeUsecase'),
     );
   }
 
