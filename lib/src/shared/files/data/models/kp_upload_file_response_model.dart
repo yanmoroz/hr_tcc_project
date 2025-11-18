@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/entities.dart';
+import '../../domain/domain.dart';
 
 part 'kp_upload_file_response_model.freezed.dart';
 part 'kp_upload_file_response_model.g.dart';
@@ -25,7 +25,8 @@ abstract class KpUploadFileResponseModel with _$KpUploadFileResponseModel {
     int? priority,
   }) = _KpUploadFileResponseModel;
 
-  factory KpUploadFileResponseModel.fromJson(Map<String, dynamic> json) => _$KpUploadFileResponseModelFromJson(json);
+  factory KpUploadFileResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$KpUploadFileResponseModelFromJson(json);
 }
 
 DateTime _dateTimeFromJson(dynamic value) {

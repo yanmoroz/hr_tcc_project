@@ -12,6 +12,7 @@ export 'models/poll_detail/poll_answer_model.dart';
 export 'models/poll_detail/poll_answers_request_model.dart';
 
 // Data Sources
+export 'datasources/poll_remote_data_source.dart';
 export 'datasources/poll_remote_data_source_impl.dart';
 
 // Repositories

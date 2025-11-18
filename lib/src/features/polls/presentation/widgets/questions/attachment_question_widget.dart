@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
-import '../../../../../shared/files/domain/entities/entities.dart';
-import '../../../../../shared/files/domain/usecases/usecases.dart';
+import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'question_widget_factory.dart';
-import '../../../../../core/base_types/result.dart';
 
 class AttachmentQuestionWidget extends StatefulWidget {
   final Question question;

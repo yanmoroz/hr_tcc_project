@@ -1,14 +1,14 @@
-import '../../base_types/result.dart';
-import '../../network/api_call_executor.dart';
-import '../../network/api_client.dart';
-import '../../network/api_constants.dart';
+import '../../../base_types/result.dart';
+import '../../../network/api_call_executor.dart';
+import '../../../network/api_client.dart';
+import '../../../network/api_constants.dart';
 import '../models/core_dictionaries_response_model.dart';
-import 'master_data_remote_data_source.dart';
+import 'dictionaries_remote_data_source.dart';
 
-class MasterDataRemoteDataSourceImpl implements MasterDataRemoteDataSource {
+class DictionariesRemoteDataSourceImpl implements DictionariesRemoteDataSource {
   final ApiClient _apiClient;
 
-  MasterDataRemoteDataSourceImpl(this._apiClient);
+  DictionariesRemoteDataSourceImpl(this._apiClient);
 
   Future<Result<CoreDictionariesResponseModel>>
   fetchAllCoreDictionaries() async {

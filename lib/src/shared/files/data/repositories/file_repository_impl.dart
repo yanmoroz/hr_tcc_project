@@ -11,9 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/value_objects/system_type.dart';
-import '../../domain/entities/entities.dart';
-import '../../domain/repositories/repositories.dart';
-import '../datasources/data_sources.dart';
+import '../../domain/domain.dart';
+import '../datasources/file_remote_data_source.dart';
 import '../models/uploaded_file_model.dart';
 
 class FileRepositoryImpl with BaseRepository implements FileRepository {

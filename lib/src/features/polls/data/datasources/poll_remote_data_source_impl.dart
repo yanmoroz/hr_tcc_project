@@ -5,7 +5,6 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../domain/entities/shared_types/staff_target.dart';
 import '../data.dart';
-import 'poll_remote_data_source.dart';
 
 class PollRemoteDataSourceImpl implements PollRemoteDataSource {
   final ApiClient _apiClient;

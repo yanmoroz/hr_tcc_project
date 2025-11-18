@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
 
 import '../../../../core/value_objects/system_type.dart';
-import '../repositories/repositories.dart';
+import '../repositories/file_repository.dart';
 
 class DownloadFileUsecase {
   final FileRepository fileRepository;

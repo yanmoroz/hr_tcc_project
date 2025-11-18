@@ -19,13 +19,10 @@ import '../../features/resell/presentation/bloc/resell_detail_bloc.dart';
 import '../../features/resell/presentation/bloc/resell_items_bloc.dart';
 import '../../features/users/data/data.dart';
 import '../../features/users/domain/domain.dart';
-import '../../shared/files/files.dart';
+import '../../shared/files/data/data.dart';
+import '../../shared/files/domain/domain.dart';
 import '../auth/auth_token_provider.dart';
-import '../master_data/datasources/master_data_remote_data_source.dart';
-import '../master_data/datasources/master_data_remote_data_source_impl.dart';
-import '../master_data/master_data_cache.dart';
-import '../master_data/repositories/master_data_repository.dart';
-import '../master_data/repositories/master_data_repository_impl.dart';
+import '../dictionaries/dictionaries.dart';
 import '../network/api_client.dart';
 
 final sl = GetIt.instance;
@@ -61,16 +58,15 @@ void _initializeFileDependencies() {
   // Use cases
   sl.registerFactory<UploadFileUsecase>(() => UploadFileUsecase(sl()));
   sl.registerFactory<DownloadFileUsecase>(() => DownloadFileUsecase(sl()));
-  sl.registerFactory<ClearFileCacheUsecase>(() => ClearFileCacheUsecase());
 }
 
 void _initializeMasterDataDependencies() {
-  sl.registerLazySingleton<MasterDataCache>(() => MasterDataCache());
-  sl.registerLazySingleton<MasterDataRemoteDataSource>(
-    () => MasterDataRemoteDataSourceImpl(sl()),
+  sl.registerLazySingleton<DictionariesCache>(() => DictionariesCache());
+  sl.registerLazySingleton<DictionariesRemoteDataSource>(
+    () => DictionariesRemoteDataSourceImpl(sl()),
   );
-  sl.registerLazySingleton<MasterDataRepository>(
-    () => MasterDataRepositoryImpl(sl(), sl()),
+  sl.registerLazySingleton<DictionariesRepository>(
+    () => DictionariesRepositoryImpl(sl(), sl()),
   );
 }
 
@@ -120,19 +116,9 @@ void _initializePollDependencies() {
   sl.registerLazySingleton<PollRemoteDataSource>(
     () => PollRemoteDataSourceImpl(sl()),
   );
-  sl.registerLazySingleton<StaffRemoteDataSource>(
-    () => StaffRemoteDataSourceImpl(sl()),
-  );
-  sl.registerLazySingleton<PollDetailRemoteDataSource>(
-    () => PollDetailRemoteDataSourceImpl(sl()),
-  );
 
   // Repositories
   sl.registerLazySingleton<PollRepository>(() => PollRepositoryImpl(sl()));
-  sl.registerLazySingleton<StaffRepository>(() => StaffRepositoryImpl(sl()));
-  sl.registerLazySingleton<PollDetailRepository>(
-    () => PollDetailRepositoryImpl(sl()),
-  );
 
   // Use cases
   sl.registerFactory<GetPollsUsecase>(() => GetPollsUsecase(sl()));

@@ -1,8 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hr_tcc_project/src/features/applications/domain/domain.dart';
 
-import '../../../../core/master_data/models/alpina_digital_prev_access_model.dart';
-import '../../../../core/master_data/models/system_status_model.dart';
+import '../../../../core/dictionaries/data/models/models.dart';
 
 part 'application_detail_model.freezed.dart';
 part 'application_detail_model.g.dart';

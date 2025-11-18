@@ -1,5 +1,5 @@
 import '../../../../core/value_objects/system_type.dart';
-import '../../domain/entities/entities.dart';
+import '../../domain/domain.dart';
 import 'elma_upload_file_response_model.dart';
 import 'jira_upload_file_response_model.dart';
 import 'kp_upload_file_response_model.dart';

@@ -5,8 +5,8 @@ import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
 
 import '../../../../core/value_objects/system_type.dart';
-import '../../domain/entities/entities.dart';
-import '../models/models.dart';
+import '../../domain/domain.dart';
+import '../models/uploaded_file_model.dart';
 
 abstract class FileRemoteDataSource {
   /// Uploads a file to the server

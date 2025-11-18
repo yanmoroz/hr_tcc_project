@@ -1,6 +1,6 @@
-import '../../base_types/result.dart';
+import '../../../base_types/result.dart';
 import '../models/core_dictionaries_response_model.dart';
 
-abstract class MasterDataRemoteDataSource {
+abstract class DictionariesRemoteDataSource {
   Future<Result<CoreDictionariesResponseModel>> fetchAllCoreDictionaries();
 }

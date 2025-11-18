@@ -1,16 +1,16 @@
-import '../../base_types/result.dart';
-import '../../entities/application_form_group.dart';
-import '../../entities/application_form.dart';
-import '../../entities/system_status_group.dart';
-import '../../entities/system_status.dart';
-import '../../entities/trip_purpose.dart';
-import '../../entities/training_type.dart';
-import '../../entities/training_form.dart';
-import '../../entities/training_month.dart';
-import '../../entities/alpina_digital_prev_access.dart';
-import '../../entities/office.dart';
+import '../../../base_types/result.dart';
+import '../../../entities/alpina_digital_prev_access.dart';
+import '../../../entities/application_form.dart';
+import '../../../entities/application_form_group.dart';
+import '../../../entities/office.dart';
+import '../../../entities/system_status.dart';
+import '../../../entities/system_status_group.dart';
+import '../../../entities/training_form.dart';
+import '../../../entities/training_month.dart';
+import '../../../entities/training_type.dart';
+import '../../../entities/trip_purpose.dart';
 
-abstract class MasterDataRepository {
+abstract class DictionariesRepository {
   Future<Result<void>> fetchAndCacheAllDictionaries();
   Future<Result<List<ApplicationFormGroup>>> getApplicationFormGroups();
   Future<Result<List<ApplicationForm>>> getApplicationForms();

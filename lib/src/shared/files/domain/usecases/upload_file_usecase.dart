@@ -4,8 +4,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
 
 import '../../../../core/value_objects/system_type.dart';
-import '../entities/entities.dart';
-import '../repositories/repositories.dart';
+import '../domain.dart';
 
 class UploadFileUsecase {
   final FileRepository fileRepository;

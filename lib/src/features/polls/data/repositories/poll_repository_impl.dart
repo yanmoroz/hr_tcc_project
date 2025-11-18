@@ -2,7 +2,6 @@ import '../../../../core/base_types/result.dart';
 import '../../../../core/base_types/base_repository.dart';
 import '../../domain/domain.dart';
 import '../data.dart';
-import '../datasources/poll_remote_data_source.dart';
 
 class PollRepositoryImpl with BaseRepository implements PollRepository {
   final PollRemoteDataSource _remoteDataSource;
