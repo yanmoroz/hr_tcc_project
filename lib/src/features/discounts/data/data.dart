@@ -12,7 +12,7 @@ export 'models/kp_discount_category_model.dart';
 export 'models/kp_discount_source_model.dart';
 
 // Data sources
-export 'datasources/discount_remote_data_source.dart';
+export 'datasources/discount_remote_data_source_impl.dart';
 
 // Repository implementations
 export 'repositories/discount_repository_impl.dart';

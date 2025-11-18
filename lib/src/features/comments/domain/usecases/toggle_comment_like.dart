@@ -1,5 +1,4 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
+import '../../../../core/base_types/result.dart';
 import '../repositories/comment_repository.dart';
 import '../value_objects/commentable_entity_type.dart';
 

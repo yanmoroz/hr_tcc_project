@@ -15,12 +15,10 @@ export 'entities/poll_detail/poll_answer.dart';
 export 'entities/poll_detail/poll_answers_request.dart';
 
 // Repositories
-export 'repositories/poll/poll_repository.dart';
-export 'repositories/poll/staff_repository.dart';
-export 'repositories/poll_detail/poll_detail_repository.dart';
+export 'repositories/poll_repository.dart';
 
 // Usecases
-export 'usecases/poll/get_polls_usecase.dart';
-export 'usecases/poll/get_staff_usecase.dart';
-export 'usecases/poll_detail/get_poll_detail_usecase.dart';
-export 'usecases/poll_detail/submit_poll_answers_usecase.dart';
+export 'usecases/get_polls_usecase.dart';
+export 'usecases/get_staff_usecase.dart';
+export 'usecases/get_poll_detail_usecase.dart';
+export 'usecases/submit_poll_answers_usecase.dart';

@@ -12,11 +12,7 @@ export 'models/poll_detail/poll_answer_model.dart';
 export 'models/poll_detail/poll_answers_request_model.dart';
 
 // Data Sources
-export 'datasources/poll/poll_remote_data_source.dart';
-export 'datasources/poll/staff_remote_data_source.dart';
-export 'datasources/poll_detail/poll_detail_remote_data_source.dart';
+export 'datasources/poll_remote_data_source_impl.dart';
 
 // Repositories
-export 'repositories/poll/poll_repository_impl.dart';
-export 'repositories/poll/staff_repository_impl.dart';
-export 'repositories/poll_detail/poll_detail_repository_impl.dart';
+export 'repositories/poll_repository_impl.dart';

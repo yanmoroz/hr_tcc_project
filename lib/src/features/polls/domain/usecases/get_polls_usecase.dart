@@ -1,5 +1,5 @@
-import '../../../../../core/base_types/result.dart';
-import '../../domain.dart';
+import '../../../../core/base_types/result.dart';
+import '../domain.dart';
 
 class GetPollsUsecase {
   final PollRepository pollRepository;
