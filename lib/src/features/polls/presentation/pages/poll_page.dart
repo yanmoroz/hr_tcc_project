@@ -205,6 +205,7 @@ class _PollPageState extends State<PollPage> {
 
   Widget _buildQuestion(BuildContext context, Question question) {
     final hasError = question.isRequired == true && !_answers.containsKey(question.id);
+    final bloc = context.read<PollDetailBloc>();
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12.0),
@@ -213,7 +214,17 @@ class _PollPageState extends State<PollPage> {
           : Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: buildQuestionWidget(question: question, onAnswerChanged: _onAnswerChanged),
+        child: buildQuestionWidget(
+          question: question,
+          onAnswerChanged: _onAnswerChanged,
+          onFileUpload: ({required file, required systemType, required onProgress}) {
+            return bloc.uploadFileUsecase(
+              file: file,
+              systemType: systemType,
+              onProgress: onProgress,
+            );
+          },
+        ),
       ),
     );
   }

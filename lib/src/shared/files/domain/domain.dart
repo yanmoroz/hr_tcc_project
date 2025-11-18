@@ -1,5 +1,6 @@
 // Entities
 export 'entities/file_group.dart';
+export 'entities/jira_author.dart';
 export 'entities/uploaded_file.dart';
 
 // Repositories

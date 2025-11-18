@@ -26,6 +26,7 @@ class BlocFactory {
       getPollDetailUsecase: sl(),
       submitPollAnswersUsecase: sl(),
       getStaffUsecase: sl(),
+      uploadFileUsecase: sl(),
     );
   }
 

@@ -2,10 +2,10 @@ import '../../../../core/base_types/result.dart';
 import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
-import '../models/gallery_response.dart';
+import '../models/gallery_response_model.dart';
 import '../models/kp_news_category_model.dart';
 import '../models/news_detail_model.dart';
-import '../models/news_list_response.dart';
+import '../models/news_list_response_model.dart';
 import 'news_remote_data_source.dart';
 
 class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
@@ -14,7 +14,7 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   NewsRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Result<NewsListResponse>> getNewsList({
+  Future<Result<NewsListResponseModel>> getNewsList({
     int? category,
     String? search,
     required int page,
@@ -33,7 +33,7 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return NewsListResponse.fromJson(data);
+        return NewsListResponseModel.fromJson(data);
       },
     );
   }
@@ -67,13 +67,13 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
   }
 
   @override
-  Future<Result<GalleryResponse>> getNewsGallery(int galleryId) async {
+  Future<Result<GalleryResponseModel>> getNewsGallery(int galleryId) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () =>
           _apiClient.get(ApiConstants.newsGalleryEndpoint(galleryId)),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return GalleryResponse.fromJson(data);
+        return GalleryResponseModel.fromJson(data);
       },
     );
   }

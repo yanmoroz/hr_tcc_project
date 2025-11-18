@@ -1,20 +1,23 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../core/base_types/result.dart';
+import '../../../../../shared/files/domain/usecases/upload_file_usecase.dart';
 import '../../../domain/domain.dart';
 import 'poll_detail_event.dart';
 import 'poll_detail_state.dart';
-import '../../../../../core/base_types/result.dart';
 
 class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
   final int pollId;
   final GetPollDetailUsecase getPollDetailUsecase;
   final SubmitPollAnswersUsecase submitPollAnswersUsecase;
   final GetStaffUsecase getStaffUsecase;
+  final UploadFileUsecase uploadFileUsecase;
 
   PollDetailBloc({
     required this.pollId,
     required this.getPollDetailUsecase,
     required this.submitPollAnswersUsecase,
     required this.getStaffUsecase,
+    required this.uploadFileUsecase,
   }) : super(const PollDetailState.initial()) {
     on<PollDetailEvent>((event, emit) async {
       await event.when(

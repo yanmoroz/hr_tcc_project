@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
 
 import '../../../../core/value_objects/system_type.dart';
+import '../../../../core/value_objects/tcc_image_destination_type.dart';
 import '../repositories/file_repository.dart';
 
 class DownloadFileUsecase {
@@ -17,6 +18,8 @@ class DownloadFileUsecase {
     String? idFile,
     String? uriFile,
     String? urlFile,
+    TccImageDestinationType? imageDestination,
+    String? destinationId,
     ProgressCallback? onProgress,
   }) async {
     return await fileRepository.downloadFile(
@@ -25,6 +28,8 @@ class DownloadFileUsecase {
       idFile: idFile,
       uriFile: uriFile,
       urlFile: urlFile,
+      imageDestination: imageDestination,
+      destinationId: destinationId,
       onProgress: onProgress,
     );
   }

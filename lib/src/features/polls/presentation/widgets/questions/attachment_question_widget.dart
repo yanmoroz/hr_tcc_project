@@ -1,23 +1,31 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
-import 'question_widget_factory.dart';
+
+typedef AnswerChangedCallback = void Function(Question question, Object? answer);
+
+typedef FileUploadCallback = Future<Result<UploadedFile>> Function({
+  required File file,
+  required SystemType systemType,
+  required void Function(int sent, int total) onProgress,
+});
 
 class AttachmentQuestionWidget extends StatefulWidget {
   final Question question;
   final AnswerChangedCallback onAnswerChanged;
+  final FileUploadCallback onFileUpload;
 
   const AttachmentQuestionWidget({
     super.key,
     required this.question,
     required this.onAnswerChanged,
+    required this.onFileUpload,
   });
 
   @override
@@ -28,8 +36,6 @@ class AttachmentQuestionWidget extends StatefulWidget {
 class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
   final List<XFile> _selectedFiles = [];
   final ImagePicker _picker = ImagePicker();
-  final UploadFileUsecase _uploadFileUsecase =
-      GetIt.instance<UploadFileUsecase>();
   final Map<int, bool> _uploadingFiles =
       {}; // Track which files are being uploaded
   final Map<int, double> _uploadProgress = {}; // Track upload progress
@@ -101,7 +107,7 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
 
     try {
       final fileToUpload = File(file.path);
-      final result = await _uploadFileUsecase(
+      final result = await widget.onFileUpload(
         file: fileToUpload,
         systemType: SystemType.kp,
         onProgress: (sent, total) {

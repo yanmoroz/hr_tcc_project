@@ -9,6 +9,7 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/value_objects/system_type.dart';
+import '../../../../core/value_objects/tcc_image_destination_type.dart';
 import '../../domain/domain.dart';
 import '../models/uploaded_file_model.dart';
 import 'file_remote_data_source.dart';
@@ -24,6 +25,8 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
     required SystemType systemType,
     FileGroup? group,
     String? issueIdOrKey,
+    TccImageDestinationType? imageDestination,
+    String? destinationId,
     ProgressCallback? onProgress,
   }) async {
     try {
@@ -36,6 +39,15 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
 
       if (issueIdOrKey != null && systemType == SystemType.jira) {
         queryParameters['issueIdOrKey'] = issueIdOrKey;
+      }
+
+      if (systemType == SystemType.tcc) {
+        if (imageDestination != null) {
+          queryParameters['imageDestination'] = imageDestination.value;
+        }
+        if (destinationId != null) {
+          queryParameters['destinationId'] = destinationId;
+        }
       }
 
       // Create FormData with file
@@ -56,14 +68,8 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
         ),
         successParser: (response) {
           final json = response.data as Map<String, dynamic>;
-          // Try to parse with automatic systemType detection from JSON (like Java JsonTypeInfo)
-          // Fallback to explicit systemType for backward compatibility
-          try {
-            return UploadedFileModel.fromJson(json);
-          } catch (e) {
-            // If systemType is not in JSON, use the provided systemType
-            return UploadedFileModel.fromJsonWithSystemType(json, systemType);
-          }
+          // Freezed union automatically handles systemType discrimination
+          return UploadedFileModel.fromJson(json);
         },
         validStatusCodes: [200],
       );
@@ -82,6 +88,8 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
     String? idFile,
     String? uriFile,
     String? urlFile,
+    TccImageDestinationType? imageDestination,
+    String? destinationId,
     ProgressCallback? onProgress,
   }) async {
     try {
@@ -100,6 +108,16 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
       }
       if (urlFile != null) {
         queryParameters['urlFile'] = urlFile;
+      }
+
+      // Add TCC-specific parameters
+      if (systemType == SystemType.tcc) {
+        if (imageDestination != null) {
+          queryParameters['imageDestination'] = imageDestination.value;
+        }
+        if (destinationId != null) {
+          queryParameters['destinationId'] = destinationId;
+        }
       }
 
       // Execute download

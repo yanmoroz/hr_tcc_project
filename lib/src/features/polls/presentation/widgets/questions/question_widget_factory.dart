@@ -10,7 +10,11 @@ import 'attachment_question_widget.dart';
 
 typedef AnswerChangedCallback = void Function(Question question, Object? answer);
 
-Widget buildQuestionWidget({required Question question, required AnswerChangedCallback onAnswerChanged}) {
+Widget buildQuestionWidget({
+  required Question question,
+  required AnswerChangedCallback onAnswerChanged,
+  FileUploadCallback? onFileUpload,
+}) {
   switch (question.type) {
     case QuestionType.multiLineText:
       return MultiLineTextQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
@@ -23,6 +27,11 @@ Widget buildQuestionWidget({required Question question, required AnswerChangedCa
     case QuestionType.scale:
       return ScaleQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
     case QuestionType.attachment:
-      return AttachmentQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
+      assert(onFileUpload != null, 'onFileUpload callback is required for attachment questions');
+      return AttachmentQuestionWidget(
+        question: question,
+        onAnswerChanged: onAnswerChanged,
+        onFileUpload: onFileUpload!,
+      );
   }
 }

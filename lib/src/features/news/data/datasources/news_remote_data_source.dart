@@ -1,11 +1,11 @@
 import '../../../../core/base_types/result.dart';
 import '../models/kp_news_category_model.dart';
-import '../models/news_list_response.dart';
+import '../models/news_list_response_model.dart';
 import '../models/news_detail_model.dart';
-import '../models/gallery_response.dart';
+import '../models/gallery_response_model.dart';
 
 abstract class NewsRemoteDataSource {
-  Future<Result<NewsListResponse>> getNewsList({
+  Future<Result<NewsListResponseModel>> getNewsList({
     int? category,
     String? search,
     required int page,
@@ -17,7 +17,7 @@ abstract class NewsRemoteDataSource {
     int newsId,
   );
 
-  Future<Result<GalleryResponse>> getNewsGallery(int galleryId);
+  Future<Result<GalleryResponseModel>> getNewsGallery(int galleryId);
 
   Future<Result<List<KpNewsCategoryModel>>> getKpNewsCategories();
 

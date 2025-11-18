@@ -3,9 +3,9 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../../../core/value_objects/system_type.dart';
-import '../models/address_book_response.dart';
+import '../models/address_book_response_model.dart';
 import '../models/address_book_user_model.dart';
-import '../models/get_users_response.dart';
+import '../models/get_users_response_model.dart';
 import '../models/user_model.dart';
 import 'user_remote_data_source.dart';
 
@@ -34,14 +34,14 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        final getUsersResponse = GetUsersResponse.fromJson(data);
+        final getUsersResponse = GetUsersResponseModel.fromJson(data);
         return getUsersResponse.users;
       },
     );
   }
 
   @override
-  Future<Result<AddressBookResponse>> getAddressBook({
+  Future<Result<AddressBookResponseModel>> getAddressBook({
     String? organizationCode,
     String? departmentCode,
     String? search,
@@ -70,7 +70,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return AddressBookResponse.fromJson(data);
+        return AddressBookResponseModel.fromJson(data);
       },
     );
   }

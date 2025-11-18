@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/base_types/result.dart';
 
 import '../../../../core/value_objects/system_type.dart';
+import '../../../../core/value_objects/tcc_image_destination_type.dart';
 import '../domain.dart';
 
 class UploadFileUsecase {
@@ -16,6 +17,8 @@ class UploadFileUsecase {
     required SystemType systemType,
     FileGroup? group,
     String? issueIdOrKey,
+    TccImageDestinationType? imageDestination,
+    String? destinationId,
     ProgressCallback? onProgress,
   }) async {
     return await fileRepository.uploadFile(
@@ -23,6 +26,8 @@ class UploadFileUsecase {
       systemType: systemType,
       group: group,
       issueIdOrKey: issueIdOrKey,
+      imageDestination: imageDestination,
+      destinationId: destinationId,
       onProgress: onProgress,
     );
   }

@@ -3,16 +3,16 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
 import '../models/add_comment_request.dart';
-import '../models/comment_list_response.dart';
+import '../models/comment_list_response_model.dart';
 import '../models/comment_model.dart';
-import '../models/comment_remove_response.dart';
+import '../models/comment_remove_response_model.dart';
 
 /// Generic comment data source that works with any entity type
 /// Requires endpoint factory functions to be provided
 abstract class CommentRemoteDataSource {
-  Future<Result<CommentListResponse>> getNewsComments(int newsId);
+  Future<Result<CommentListResponseModel>> getNewsComments(int newsId);
 
-  Future<Result<CommentListResponse>> getDiscountComments(int discountId);
+  Future<Result<CommentListResponseModel>> getDiscountComments(int discountId);
 
   Future<Result<CommentModel>> addNewsComment(
     int newsId,
@@ -24,12 +24,12 @@ abstract class CommentRemoteDataSource {
     AddCommentRequest request,
   );
 
-  Future<Result<CommentRemoveResponse>> deleteNewsComment(
+  Future<Result<CommentRemoveResponseModel>> deleteNewsComment(
     int newsId,
     int commentId,
   );
 
-  Future<Result<CommentRemoveResponse>> deleteDiscountComment(
+  Future<Result<CommentRemoveResponseModel>> deleteDiscountComment(
     int discountId,
     int commentId,
   );
@@ -46,18 +46,18 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   CommentRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Result<CommentListResponse>> getNewsComments(int newsId) async {
+  Future<Result<CommentListResponseModel>> getNewsComments(int newsId) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.get(ApiConstants.newsCommentsEndpoint(newsId)),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return CommentListResponse.fromJson(data);
+        return CommentListResponseModel.fromJson(data);
       },
     );
   }
 
   @override
-  Future<Result<CommentListResponse>> getDiscountComments(
+  Future<Result<CommentListResponseModel>> getDiscountComments(
     int discountId,
   ) async {
     return ApiCallExecutor.executeApiCall(
@@ -65,7 +65,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
           _apiClient.get(ApiConstants.discountCommentsEndpoint(discountId)),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return CommentListResponse.fromJson(data);
+        return CommentListResponseModel.fromJson(data);
       },
     );
   }
@@ -105,7 +105,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   }
 
   @override
-  Future<Result<CommentRemoveResponse>> deleteNewsComment(
+  Future<Result<CommentRemoveResponseModel>> deleteNewsComment(
     int newsId,
     int commentId,
   ) async {
@@ -115,13 +115,13 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       ),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return CommentRemoveResponse.fromJson(data);
+        return CommentRemoveResponseModel.fromJson(data);
       },
     );
   }
 
   @override
-  Future<Result<CommentRemoveResponse>> deleteDiscountComment(
+  Future<Result<CommentRemoveResponseModel>> deleteDiscountComment(
     int discountId,
     int commentId,
   ) async {
@@ -131,7 +131,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       ),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return CommentRemoveResponse.fromJson(data);
+        return CommentRemoveResponseModel.fromJson(data);
       },
     );
   }

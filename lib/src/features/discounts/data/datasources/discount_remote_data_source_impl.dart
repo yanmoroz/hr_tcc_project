@@ -3,10 +3,10 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
 import '../models/discount_detail_model.dart';
-import '../models/discount_list_response.dart';
+import '../models/discount_list_response_model.dart';
 import '../models/kp_discount_category_model.dart';
 import '../models/kp_discount_source_model.dart';
-import '../models/stats_response.dart';
+import '../models/stats_response_model.dart';
 import 'discount_remote_data_source.dart';
 
 class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
@@ -15,7 +15,7 @@ class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
   DiscountRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<Result<DiscountListResponse>> getDiscounts({
+  Future<Result<DiscountListResponseModel>> getDiscounts({
     required int category,
     required int source,
     required int page,
@@ -35,7 +35,7 @@ class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return DiscountListResponse.fromJson(data);
+        return DiscountListResponseModel.fromJson(data);
       },
     );
   }
@@ -54,14 +54,14 @@ class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {
   }
 
   @override
-  Future<Result<StatsResponse>> getDiscountStats(int id) async {
+  Future<Result<StatsResponseModel>> getDiscountStats(int id) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () {
         return _apiClient.get(ApiConstants.discountStatsEndpoint(id));
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return StatsResponse.fromJson(data);
+        return StatsResponseModel.fromJson(data);
       },
     );
   }

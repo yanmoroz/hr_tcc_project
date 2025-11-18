@@ -14,7 +14,8 @@
       "Bash(mkdir:*)",
       "Bash(xargs cat:*)",
       "Bash(cat:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
