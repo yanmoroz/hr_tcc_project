@@ -1,11 +1,11 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
+import '../../../../core/base_types/result.dart';
 import '../../../../core/dictionaries/data/models/models.dart';
 import '../../../../core/entities/system_status.dart';
 import '../../../../core/value_objects/application_status.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../../domain/domain.dart';
 import '../datasources/application_remote_data_source.dart';
+import '../mappers/create_application_params_mapper.dart';
 
 class ApplicationRepositoryImpl implements ApplicationRepository {
   final ApplicationRemoteDataSource _remoteDataSource;
@@ -55,8 +55,9 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
       })
     >
   >
-  createApplication(Map<String, dynamic> request) async {
-    final result = await _remoteDataSource.createApplication(request);
+  createApplication(CreateApplicationParams params) async {
+    final requestModel = params.toRequestModel();
+    final result = await _remoteDataSource.createApplication(requestModel);
     return result.map(
       (model) => (
         status: model.parsedStatus,

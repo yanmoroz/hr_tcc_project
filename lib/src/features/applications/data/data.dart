@@ -8,7 +8,9 @@ export 'models/responses/application_info_model.dart';
 export 'models/responses/application_list_response_model.dart';
 export 'models/responses/application_statistics_model.dart';
 export 'models/responses/cancel_application_result_model.dart';
+export 'models/requests/candidate_info_model.dart';
 export 'models/requests/check_application_request_model.dart';
+export 'models/requests/create_application_request_model.dart';
 export 'models/responses/create_application_result_model.dart';
 
 // Repositories

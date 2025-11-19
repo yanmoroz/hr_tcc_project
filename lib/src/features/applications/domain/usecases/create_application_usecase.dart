@@ -1,6 +1,7 @@
 import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/application_status.dart';
 import '../repositories/application_repository.dart';
+import '../params/create_application_params.dart';
 
 class CreateApplicationUsecase {
   final ApplicationRepository _repository;
@@ -17,7 +18,7 @@ class CreateApplicationUsecase {
       })
     >
   >
-  call(Map<String, dynamic> request) async {
-    return await _repository.createApplication(request);
+  call(CreateApplicationParams params) async {
+    return await _repository.createApplication(params);
   }
 }

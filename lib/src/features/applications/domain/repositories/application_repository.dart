@@ -5,6 +5,7 @@ import '../../../../core/value_objects/status_group_type.dart';
 import '../entities/application_detail.dart';
 import '../entities/application_info.dart';
 import '../entities/application_statistics.dart';
+import '../params/create_application_params.dart';
 
 abstract class ApplicationRepository {
   /// Get paginated list of applications with filtering and statistics
@@ -31,7 +32,7 @@ abstract class ApplicationRepository {
       })
     >
   >
-  createApplication(Map<String, dynamic> request);
+  createApplication(CreateApplicationParams params);
 
   /// Cancel an application
   /// Returns result with status (ok/processing), applicationId, and systemStatus

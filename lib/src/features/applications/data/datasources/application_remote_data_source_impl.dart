@@ -3,6 +3,7 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../../../core/value_objects/status_group_type.dart';
+import '../models/requests/create_application_request_model.dart';
 import '../models/responses/application_detail_model.dart';
 import '../models/responses/application_list_response_model.dart';
 import '../models/responses/cancel_application_result_model.dart';
@@ -50,11 +51,13 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
 
   @override
   Future<Result<CreateApplicationResultModel>> createApplication(
-    Map<String, dynamic> request,
+    CreateApplicationRequestModel request,
   ) async {
     return ApiCallExecutor.executeApiCall(
-      apiCall: () =>
-          _apiClient.post(ApiConstants.applicationsEndpoint, data: request),
+      apiCall: () => _apiClient.post(
+        ApiConstants.applicationsEndpoint,
+        data: request.toJson(),
+      ),
       successParser: (response) {
         return CreateApplicationResultModel.fromJson(response.data);
       },

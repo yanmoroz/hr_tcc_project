@@ -1,5 +1,6 @@
 import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/status_group_type.dart';
+import '../models/requests/create_application_request_model.dart';
 import '../models/responses/application_detail_model.dart';
 import '../models/responses/application_list_response_model.dart';
 import '../models/responses/cancel_application_result_model.dart';
@@ -19,7 +20,7 @@ abstract class ApplicationRemoteDataSource {
 
   /// Create a new application
   Future<Result<CreateApplicationResultModel>> createApplication(
-    Map<String, dynamic> request,
+    CreateApplicationRequestModel request,
   );
 
   /// Cancel an application

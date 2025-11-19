@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/features/applications/domain/domain.dart';
 
 import '../../../../../core/dictionaries/data/models/models.dart';
+import '../../../domain/domain.dart';
 
 part 'application_detail_model.freezed.dart';
 part 'application_detail_model.g.dart';
