@@ -1,7 +1,7 @@
 // Models
 export 'models/responses/author_model.dart';
 export 'models/responses/attachment_model.dart';
-export 'models/requests/add_comment_request.dart';
+export 'models/requests/add_comment_request_model.dart';
 export 'models/responses/comment_model.dart';
 export 'models/responses/comment_list_response_model.dart';
 

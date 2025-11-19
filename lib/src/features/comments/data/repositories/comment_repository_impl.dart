@@ -4,7 +4,7 @@ import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/base_types/result.dart';
 import '../../domain/domain.dart';
 import '../datasources/comment_remote_data_source.dart';
-import '../models/requests/add_comment_request.dart';
+import '../models/requests/add_comment_request_model.dart';
 
 class CommentRepositoryImpl with BaseRepository implements CommentRepository {
   final CommentRemoteDataSource _remoteDataSource;
@@ -34,7 +34,7 @@ class CommentRepositoryImpl with BaseRepository implements CommentRepository {
     int? parent,
     List<int>? attachments,
   }) async {
-    final request = AddCommentRequest(
+    final request = AddCommentRequestModel(
       parent: parent,
       content: content,
       attachments: attachments,

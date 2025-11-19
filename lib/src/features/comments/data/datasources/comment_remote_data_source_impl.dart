@@ -2,7 +2,7 @@ import '../../../../core/base_types/result.dart';
 import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
-import '../models/requests/add_comment_request.dart';
+import '../models/requests/add_comment_request_model.dart';
 import '../models/responses/comment_list_response_model.dart';
 import '../models/responses/comment_model.dart';
 import 'comment_remote_data_source.dart';
@@ -40,7 +40,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   @override
   Future<Result<CommentModel>> addNewsComment(
     int newsId,
-    AddCommentRequest request,
+    AddCommentRequestModel request,
   ) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.post(
@@ -57,7 +57,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   @override
   Future<Result<CommentModel>> addDiscountComment(
     int discountId,
-    AddCommentRequest request,
+    AddCommentRequestModel request,
   ) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.post(

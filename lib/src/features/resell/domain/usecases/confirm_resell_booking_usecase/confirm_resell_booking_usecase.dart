@@ -1,7 +1,7 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
 import '../../repositories/resell_repository.dart';
-import 'confirm_resell_booking_usecase_params.dart';
+import '../../params/confirm_resell_booking_params.dart';
 
 class ConfirmResellBookingUsecase {
   final ResellRepository resellRepository;
@@ -9,7 +9,7 @@ class ConfirmResellBookingUsecase {
   ConfirmResellBookingUsecase(this.resellRepository);
 
   Future<Result<void>> call({
-    required ConfirmResellBookingUsecaseParams params,
+    required ConfirmResellBookingParams params,
   }) async {
     return await resellRepository.confirmBooking(
       id: params.id,

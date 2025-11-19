@@ -16,3 +16,10 @@ export 'usecases/get_applications_usecase.dart';
 
 // Params
 export 'params/create_application_params.dart';
+
+// Results
+export 'results/cancel_application_result.dart';
+export 'results/check_application_status_result.dart';
+export 'results/get_applications_result.dart';
+export 'results/create_application_result.dart';
+export 'results/check_cancel_status_result.dart';

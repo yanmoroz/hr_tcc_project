@@ -62,10 +62,7 @@ void main() {
       final discountStats = await getOrFail(
         getDiscountStatsUsecase(discountDetail.id),
       );
-      expect(
-        discountStats,
-        isA<({int likeCount, bool like, int commentCount})>(),
-      );
+      expect(discountStats, isA<GetDiscountStatsResult>());
       AppLogger.d('Fetched discount stats: ${discountStats.toString()}');
 
       final comment = await getOrFail(
@@ -83,10 +80,7 @@ void main() {
       final updatedDiscountStats = await getOrFail(
         getDiscountStatsUsecase(discountDetail.id),
       );
-      expect(
-        updatedDiscountStats,
-        isA<({int commentCount, bool like, int likeCount})>(),
-      );
+      expect(updatedDiscountStats, isA<GetDiscountStatsResult>());
       AppLogger.d('Updated discount stats: ${updatedDiscountStats.toString()}');
 
       final removedIds = await getOrFail(
@@ -102,10 +96,7 @@ void main() {
       final finalDiscountStats = await getOrFail(
         getDiscountStatsUsecase(discountDetail.id),
       );
-      expect(
-        finalDiscountStats,
-        isA<({int commentCount, bool like, int likeCount})>(),
-      );
+      expect(finalDiscountStats, isA<GetDiscountStatsResult>());
       AppLogger.d('Updated discount stats: ${finalDiscountStats.toString()}');
     });
 
@@ -131,10 +122,7 @@ void main() {
       final updatedDiscountStats = await getOrFail(
         getDiscountStatsUsecase(discountDetail.id),
       );
-      expect(
-        updatedDiscountStats,
-        isA<({int commentCount, bool like, int likeCount})>(),
-      );
+      expect(updatedDiscountStats, isA<GetDiscountStatsResult>());
       AppLogger.d('Updated discount stats: ${updatedDiscountStats.toString()}');
     });
 

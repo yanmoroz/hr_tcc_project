@@ -54,7 +54,7 @@ void main() {
 
       await getOrFail(
         confirmResellBookingUsecase(
-          params: ConfirmResellBookingUsecaseParams(
+          params: ConfirmResellBookingParams(
             id: detail.id,
             transition: BookingTransition.confirm,
             inn: '520205004556',
@@ -68,7 +68,7 @@ void main() {
 
       await getOrFail(
         confirmResellBookingUsecase(
-          params: ConfirmResellBookingUsecaseParams(
+          params: ConfirmResellBookingParams(
             id: detail.id,
             transition: BookingTransition.cancel,
           ),

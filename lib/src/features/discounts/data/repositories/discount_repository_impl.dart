@@ -36,11 +36,10 @@ class DiscountRepositoryImpl with BaseRepository implements DiscountRepository {
   }
 
   @override
-  Future<Result<({int likeCount, bool like, int commentCount})>>
-  getDiscountStats(int id) async {
+  Future<Result<GetDiscountStatsResult>> getDiscountStats(int id) async {
     final result = await _remoteDataSource.getDiscountStats(id);
     return result.map(
-      (response) => (
+      (response) => GetDiscountStatsResult(
         likeCount: response.likeCount,
         like: response.like,
         commentCount: response.commentCount,

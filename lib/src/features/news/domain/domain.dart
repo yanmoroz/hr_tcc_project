@@ -15,3 +15,6 @@ export 'usecases/get_news_stats_usecase.dart';
 export 'usecases/get_news_gallery_usecase.dart';
 export 'usecases/toggle_news_like_usecase.dart';
 export 'usecases/get_kp_news_categories_usecase.dart';
+
+// Results
+export 'results/get_news_stats_results.dart';

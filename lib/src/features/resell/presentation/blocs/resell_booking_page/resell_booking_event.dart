@@ -7,6 +7,6 @@ part 'resell_booking_event.freezed.dart';
 @freezed
 abstract class ResellBookingEvent with _$ResellBookingEvent {
   const factory ResellBookingEvent.confirmBooking({
-    required ConfirmResellBookingUsecaseParams params,
+    required ConfirmResellBookingParams params,
   }) = ConfirmBooking;
 }

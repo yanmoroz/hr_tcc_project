@@ -19,3 +19,6 @@ export 'usecases/get_discount_stats_usecase.dart';
 export 'usecases/toggle_discount_like_usecase.dart';
 export 'usecases/get_kp_discount_categories_usecase.dart';
 export 'usecases/get_kp_discount_sources_usecase.dart';
+
+// Results
+export 'results/get_discount_stats_result.dart';

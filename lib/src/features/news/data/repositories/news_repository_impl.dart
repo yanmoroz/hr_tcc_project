@@ -36,12 +36,10 @@ class NewsRepositoryImpl with BaseRepository implements NewsRepository {
   }
 
   @override
-  Future<Result<({int likeCount, bool like, int commentCount})>> getNewsStats(
-    int newsId,
-  ) async {
+  Future<Result<GetNewsStatsResults>> getNewsStats(int newsId) async {
     final result = await _remoteDataSource.getNewsStats(newsId);
     return result.map(
-      (response) => (
+      (response) => GetNewsStatsResults(
         likeCount: response.likeCount,
         like: response.like,
         commentCount: response.commentCount,

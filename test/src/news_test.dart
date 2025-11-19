@@ -59,7 +59,7 @@ void main() {
       AppLogger.d('Fetched news detail: ${newsDetail.toString()}');
 
       final newsStats = await getOrFail(getNewsStatsUsecase(newsDetail.id));
-      expect(newsStats, isA<({int likeCount, bool like, int commentCount})>());
+      expect(newsStats, isA<GetNewsStatsResults>());
       AppLogger.d('Fetched news stats: ${newsStats.toString()}');
 
       final newsComments = await getOrFail(
@@ -86,10 +86,7 @@ void main() {
       final updatedNewsStats = await getOrFail(
         getNewsStatsUsecase(newsDetail.id),
       );
-      expect(
-        updatedNewsStats,
-        isA<({int likeCount, bool like, int commentCount})>(),
-      );
+      expect(updatedNewsStats, isA<GetNewsStatsResults>());
       AppLogger.d('Updated news stats: ${updatedNewsStats.toString()}');
 
       final removedIds = await getOrFail(
@@ -105,10 +102,7 @@ void main() {
       final finalNewsStats = await getOrFail(
         getNewsStatsUsecase(newsDetail.id),
       );
-      expect(
-        finalNewsStats,
-        isA<({int likeCount, bool like, int commentCount})>(),
-      );
+      expect(finalNewsStats, isA<GetNewsStatsResults>());
       AppLogger.d('Updated news stats: ${finalNewsStats.toString()}');
     });
 
@@ -124,7 +118,7 @@ void main() {
       AppLogger.d('Fetched news detail: ${newsDetail.toString()}');
 
       final newsStats = await getOrFail(getNewsStatsUsecase(newsDetail.id));
-      expect(newsStats, isA<({int likeCount, bool like, int commentCount})>());
+      expect(newsStats, isA<GetNewsStatsResults>());
       AppLogger.d('Fetched news stats: ${newsStats.toString()}');
 
       final liked = await getOrFail(toggleNewsLikeUsecase(newsDetail.id));
@@ -134,10 +128,7 @@ void main() {
       final updatedNewsStats = await getOrFail(
         getNewsStatsUsecase(newsDetail.id),
       );
-      expect(
-        updatedNewsStats,
-        isA<({int likeCount, bool like, int commentCount})>(),
-      );
+      expect(updatedNewsStats, isA<GetNewsStatsResults>());
       AppLogger.d('Updated news stats: ${updatedNewsStats.toString()}');
     });
 

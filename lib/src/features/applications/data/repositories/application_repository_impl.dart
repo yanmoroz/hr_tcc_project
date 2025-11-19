@@ -1,7 +1,5 @@
 import '../../../../core/base_types/result.dart';
 import '../../../../core/dictionaries/data/models/models.dart';
-import '../../../../core/entities/system_status.dart';
-import '../../../../core/value_objects/application_status.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../../domain/domain.dart';
 import '../datasources/application_remote_data_source.dart';
@@ -13,8 +11,7 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   ApplicationRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Result<(List<ApplicationInfo>, int, List<ApplicationStatistics>)>>
-  getApplications({
+  Future<Result<GetApplicationsResult>> getApplications({
     required int page,
     required int pageSize,
     StatusGroupType? statusGroup,
@@ -34,7 +31,11 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
       final statistics = responseModel.statistics
           .map((model) => model.toDomain())
           .toList();
-      return (applications, responseModel.total, statistics);
+      return GetApplicationsResult(
+        applications: applications,
+        total: responseModel.total,
+        statistics: statistics,
+      );
     });
   }
 
@@ -45,21 +46,13 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   }
 
   @override
-  Future<
-    Result<
-      ({
-        ApplicationStatus status,
-        String? instance,
-        String? id,
-        String? idApplication,
-      })
-    >
-  >
-  createApplication(CreateApplicationParams params) async {
+  Future<Result<CreateApplicationResult>> createApplication(
+    CreateApplicationParams params,
+  ) async {
     final requestModel = params.toRequestModel();
     final result = await _remoteDataSource.createApplication(requestModel);
     return result.map(
-      (model) => (
+      (model) => CreateApplicationResult(
         status: model.parsedStatus,
         instance: model.instance,
         id: model.id,
@@ -69,13 +62,10 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   }
 
   @override
-  Future<
-    Result<({ApplicationStatus status, String id, SystemStatus systemStatus})>
-  >
-  cancelApplication(String id) async {
+  Future<Result<CancelApplicationResult>> cancelApplication(String id) async {
     final result = await _remoteDataSource.cancelApplication(id);
     return result.map(
-      (model) => (
+      (model) => CancelApplicationResult(
         status: model.parsedStatus,
         id: model.id,
         systemStatus: model.systemStatusModel.toDomain(),
@@ -84,13 +74,10 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   }
 
   @override
-  Future<
-    Result<({ApplicationStatus status, String id, SystemStatus systemStatus})>
-  >
-  checkCancelStatus(String id) async {
+  Future<Result<CheckCancelStatusResult>> checkCancelStatus(String id) async {
     final result = await _remoteDataSource.checkCancelStatus(id);
     return result.map(
-      (model) => (
+      (model) => CheckCancelStatusResult(
         status: model.parsedStatus,
         id: model.id,
         systemStatus: model.systemStatusModel.toDomain(),
@@ -99,17 +86,7 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   }
 
   @override
-  Future<
-    Result<
-      ({
-        ApplicationStatus status,
-        String? instance,
-        String? id,
-        String? idApplication,
-      })
-    >
-  >
-  checkApplicationStatus({
+  Future<Result<CheckApplicationStatusResult>> checkApplicationStatus({
     required String applicationFormCode,
     required String instance,
   }) async {
@@ -118,7 +95,7 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
       instance: instance,
     );
     return result.map(
-      (model) => (
+      (model) => CheckApplicationStatusResult(
         status: model.parsedStatus,
         instance: model.instance,
         id: model.id,

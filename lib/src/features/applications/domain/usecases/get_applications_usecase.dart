@@ -1,16 +1,14 @@
 import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/status_group_type.dart';
-import '../entities/application_info.dart';
-import '../entities/application_statistics.dart';
 import '../repositories/application_repository.dart';
+import '../results/get_applications_result.dart';
 
 class GetApplicationsUsecase {
   final ApplicationRepository _repository;
 
   GetApplicationsUsecase(this._repository);
 
-  Future<Result<(List<ApplicationInfo>, int, List<ApplicationStatistics>)>>
-  call({
+  Future<Result<GetApplicationsResult>> call({
     required int page,
     required int pageSize,
     StatusGroupType? statusGroup,

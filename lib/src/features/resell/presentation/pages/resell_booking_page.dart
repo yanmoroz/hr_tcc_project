@@ -252,7 +252,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
 
   void _submitForm(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
-      final confirmation = ConfirmResellBookingUsecaseParams(
+      final confirmation = ConfirmResellBookingParams(
         id: widget.itemId,
         transition: _selectedTransition,
         inn: _innController.text.isEmpty ? null : _innController.text,
