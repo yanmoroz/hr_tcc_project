@@ -2,10 +2,9 @@ import '../../../../core/base_types/result.dart';
 import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
-import '../models/add_comment_request.dart';
-import '../models/comment_list_response_model.dart';
-import '../models/comment_model.dart';
-import '../models/comment_remove_response_model.dart';
+import '../models/requests/add_comment_request.dart';
+import '../models/responses/comment_list_response_model.dart';
+import '../models/responses/comment_model.dart';
 import 'comment_remote_data_source.dart';
 
 class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
@@ -73,23 +72,20 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   }
 
   @override
-  Future<Result<CommentRemoveResponseModel>> deleteNewsComment(
-    int newsId,
-    int commentId,
-  ) async {
+  Future<Result<List<int>>> deleteNewsComment(int newsId, int commentId) async {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.delete(
         ApiConstants.newsCommentEndpoint(newsId, commentId),
       ),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return CommentRemoveResponseModel.fromJson(data);
+        return data['removedIds'] as List<int>;
       },
     );
   }
 
   @override
-  Future<Result<CommentRemoveResponseModel>> deleteDiscountComment(
+  Future<Result<List<int>>> deleteDiscountComment(
     int discountId,
     int commentId,
   ) async {
@@ -99,7 +95,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       ),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return CommentRemoveResponseModel.fromJson(data);
+        return data['removedIds'] as List<int>;
       },
     );
   }

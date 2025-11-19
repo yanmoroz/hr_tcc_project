@@ -1,8 +1,7 @@
 import '../../../../core/base_types/result.dart';
-import '../models/add_comment_request.dart';
-import '../models/comment_list_response_model.dart';
-import '../models/comment_model.dart';
-import '../models/comment_remove_response_model.dart';
+import '../models/requests/add_comment_request.dart';
+import '../models/responses/comment_list_response_model.dart';
+import '../models/responses/comment_model.dart';
 
 abstract class CommentRemoteDataSource {
   Future<Result<CommentListResponseModel>> getNewsComments(int newsId);
@@ -19,12 +18,9 @@ abstract class CommentRemoteDataSource {
     AddCommentRequest request,
   );
 
-  Future<Result<CommentRemoveResponseModel>> deleteNewsComment(
-    int newsId,
-    int commentId,
-  );
+  Future<Result<List<int>>> deleteNewsComment(int newsId, int commentId);
 
-  Future<Result<CommentRemoveResponseModel>> deleteDiscountComment(
+  Future<Result<List<int>>> deleteDiscountComment(
     int discountId,
     int commentId,
   );

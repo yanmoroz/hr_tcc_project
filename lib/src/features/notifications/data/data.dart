@@ -1,7 +1,7 @@
 // Models
-export 'models/author_model.dart';
-export 'models/department_model.dart';
-export 'models/notification_model.dart';
+export 'models/responses/author_model.dart';
+export 'models/responses/department_model.dart';
+export 'models/responses/notification_model.dart';
 
 // Data Sources
 export 'datasources/notification_remote_data_source.dart';

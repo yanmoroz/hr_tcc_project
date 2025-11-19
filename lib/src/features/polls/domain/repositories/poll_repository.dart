@@ -9,7 +9,7 @@ abstract class PollRepository {
 
   Future<Result<void>> submitPollAnswers({
     required int pollId,
-    required PollAnswersRequest request,
+    required List<PollAnswer> answers,
   });
 
   Future<Result<List<StaffItem>>> getStaff({

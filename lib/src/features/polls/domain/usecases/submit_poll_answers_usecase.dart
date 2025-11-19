@@ -8,11 +8,11 @@ class SubmitPollAnswersUsecase {
 
   Future<Result<void>> call({
     required int pollId,
-    required PollAnswersRequest request,
+    required List<PollAnswer> answers,
   }) async {
     return await pollRepository.submitPollAnswers(
       pollId: pollId,
-      request: request,
+      answers: answers,
     );
   }
 }

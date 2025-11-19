@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../shared_types/period_type.dart';
+import '../../value_objects/period_type.dart';
 import 'employee.dart';
 
 part 'poll.freezed.dart';

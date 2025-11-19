@@ -15,8 +15,12 @@ abstract class PollAnswer with _$PollAnswer {
   }) = PollAnswerType0;
 
   // Type 1: choice
-  const factory PollAnswer.type1({required int type, required int questionId, required int answerId, String? text}) =
-      PollAnswerType1;
+  const factory PollAnswer.type1({
+    required int type,
+    required int questionId,
+    required int answerId,
+    String? text,
+  }) = PollAnswerType1;
 
   // Type 2: tableLookup
   const factory PollAnswer.type2({
@@ -27,8 +31,12 @@ abstract class PollAnswer with _$PollAnswer {
   }) = PollAnswerType2;
 
   // Type 3: dropdown
-  const factory PollAnswer.type3({required int type, required int questionId, required int answerId, String? text}) =
-      PollAnswerType3;
+  const factory PollAnswer.type3({
+    required int type,
+    required int questionId,
+    required int answerId,
+    String? text,
+  }) = PollAnswerType3;
 
   // Type 4: scale
   const factory PollAnswer.type4({

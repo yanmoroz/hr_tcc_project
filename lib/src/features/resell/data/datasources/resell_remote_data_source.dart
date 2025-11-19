@@ -1,8 +1,8 @@
 import '../../../../core/base_types/result.dart';
 import '../../domain/domain.dart';
-import '../models/resell_detail_model.dart';
-import '../models/resell_equipment_type_model.dart';
-import '../models/resell_list_response_model.dart';
+import '../models/responses/resell_detail_model.dart';
+import '../models/responses/resell_equipment_type_model.dart';
+import '../models/responses/resell_list_response_model.dart';
 
 abstract class ResellRemoteDataSource {
   /// Get paginated list of resell items with filtering

@@ -2,7 +2,7 @@ import '../../../../core/base_types/result.dart';
 import '../../../../core/base_types/base_repository.dart';
 import '../../domain/domain.dart';
 import '../datasources/notification_remote_data_source.dart';
-import '../models/notification_model.dart';
+import '../models/responses/notification_model.dart';
 
 class NotificationRepositoryImpl
     with BaseRepository

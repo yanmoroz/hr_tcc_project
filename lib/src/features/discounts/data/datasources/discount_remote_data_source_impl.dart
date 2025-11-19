@@ -2,11 +2,11 @@ import '../../../../core/base_types/result.dart';
 import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
-import '../models/discount_detail_model.dart';
-import '../models/discount_list_response_model.dart';
-import '../models/kp_discount_category_model.dart';
-import '../models/kp_discount_source_model.dart';
-import '../models/stats_response_model.dart';
+import '../models/responses/discount_detail_model.dart';
+import '../models/responses/discount_list_response_model.dart';
+import '../models/responses/kp_discount_category_model.dart';
+import '../models/responses/kp_discount_source_model.dart';
+import '../models/responses/stats_response_model.dart';
 import 'discount_remote_data_source.dart';
 
 class DiscountRemoteDataSourceImpl implements DiscountRemoteDataSource {

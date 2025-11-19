@@ -1,8 +1,8 @@
 // Models
-export 'models/address_book_user_model.dart';
-export 'models/department_model.dart';
-export 'models/organization_model.dart';
-export 'models/user_model.dart';
+export 'models/responses/address_book_user_model.dart';
+export 'models/responses/department_model.dart';
+export 'models/responses/organization_model.dart';
+export 'models/responses/user_model.dart';
 
 // Data Sources
 export 'datasources/user_remote_data_source.dart';

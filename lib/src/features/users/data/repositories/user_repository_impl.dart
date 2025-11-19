@@ -3,8 +3,8 @@ import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/system_type.dart';
 import '../../domain/domain.dart';
 import '../datasources/user_remote_data_source.dart';
-import '../models/address_book_user_model.dart';
-import '../models/user_model.dart';
+import '../models/responses/address_book_user_model.dart';
+import '../models/responses/user_model.dart';
 
 class UserRepositoryImpl with BaseRepository implements UserRepository {
   final UserRemoteDataSource _remoteDataSource;

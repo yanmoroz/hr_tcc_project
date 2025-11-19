@@ -2,10 +2,10 @@ import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/base_types/result.dart';
 import '../../domain/domain.dart';
 import '../datasources/news_remote_data_source.dart';
-import '../models/kp_news_category_model.dart';
-import '../models/news_detail_model.dart';
-import '../models/gallery_image_model.dart';
-import '../models/news_item_model.dart';
+import '../models/responses/kp_news_category_model.dart';
+import '../models/responses/news_detail_model.dart';
+import '../models/responses/gallery_image_model.dart';
+import '../models/responses/news_item_model.dart';
 
 class NewsRepositoryImpl with BaseRepository implements NewsRepository {
   final NewsRemoteDataSource _remoteDataSource;

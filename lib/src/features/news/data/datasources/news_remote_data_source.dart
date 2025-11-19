@@ -1,8 +1,8 @@
 import '../../../../core/base_types/result.dart';
-import '../models/kp_news_category_model.dart';
-import '../models/news_list_response_model.dart';
-import '../models/news_detail_model.dart';
-import '../models/gallery_response_model.dart';
+import '../models/responses/kp_news_category_model.dart';
+import '../models/responses/news_list_response_model.dart';
+import '../models/responses/news_detail_model.dart';
+import '../models/responses/gallery_response_model.dart';
 
 abstract class NewsRemoteDataSource {
   Future<Result<NewsListResponseModel>> getNewsList({

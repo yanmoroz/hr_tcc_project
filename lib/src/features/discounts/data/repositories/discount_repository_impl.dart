@@ -2,10 +2,10 @@ import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/base_types/result.dart';
 import '../../domain/domain.dart';
 import '../datasources/discount_remote_data_source.dart';
-import '../models/discount_detail_model.dart';
-import '../models/kp_discount_category_model.dart';
-import '../models/kp_discount_source_model.dart';
-import '../models/discount_model.dart';
+import '../models/responses/discount_model.dart';
+import '../models/responses/discount_detail_model.dart';
+import '../models/responses/kp_discount_source_model.dart';
+import '../models/responses/kp_discount_category_model.dart';
 
 class DiscountRepositoryImpl with BaseRepository implements DiscountRepository {
   final DiscountRemoteDataSource _remoteDataSource;

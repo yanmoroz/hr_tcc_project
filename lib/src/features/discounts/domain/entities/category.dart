@@ -4,5 +4,9 @@ part 'category.freezed.dart';
 
 @freezed
 abstract class Category with _$Category {
-  const factory Category({required int id, required String title, required int discounts}) = _Category;
+  const factory Category({
+    required int id,
+    required String title,
+    required int discounts,
+  }) = _Category;
 }

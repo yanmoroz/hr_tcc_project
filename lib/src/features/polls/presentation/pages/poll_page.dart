@@ -60,10 +60,8 @@ class _PollPageState extends State<PollPage> {
     }
 
     final answersList = _answers.values.toList();
-    final request = PollAnswersRequest(answers: answersList);
-
     context.read<PollDetailBloc>().add(
-      PollDetailEvent.submitAnswers(request: request),
+      PollDetailEvent.submitAnswers(answers: answersList),
     );
   }
 

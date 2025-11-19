@@ -1,9 +1,9 @@
 import '../../../../core/base_types/result.dart';
-import '../models/discount_detail_model.dart';
-import '../models/discount_list_response_model.dart';
-import '../models/kp_discount_category_model.dart';
-import '../models/kp_discount_source_model.dart';
-import '../models/stats_response_model.dart';
+import '../models/responses/discount_detail_model.dart';
+import '../models/responses/discount_list_response_model.dart';
+import '../models/responses/kp_discount_category_model.dart';
+import '../models/responses/kp_discount_source_model.dart';
+import '../models/responses/stats_response_model.dart';
 
 abstract class DiscountRemoteDataSource {
   Future<Result<DiscountListResponseModel>> getDiscounts({

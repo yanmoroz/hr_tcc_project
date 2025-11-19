@@ -3,10 +3,9 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../../../core/value_objects/system_type.dart';
-import '../models/address_book_response_model.dart';
-import '../models/address_book_user_model.dart';
-import '../models/get_users_response_model.dart';
-import '../models/user_model.dart';
+import '../models/responses/address_book_response_model.dart';
+import '../models/responses/address_book_user_model.dart';
+import '../models/responses/user_model.dart';
 import 'user_remote_data_source.dart';
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -34,8 +33,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        final getUsersResponse = GetUsersResponseModel.fromJson(data);
-        return getUsersResponse.users;
+        return data.entries
+            .map((entry) => UserModel.fromJson(entry.value))
+            .toList();
       },
     );
   }

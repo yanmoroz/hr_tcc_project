@@ -1,5 +1,5 @@
 import '../../../../core/base_types/result.dart';
-import '../models/notification_model.dart';
+import '../models/responses/notification_model.dart';
 
 abstract class NotificationRemoteDataSource {
   Future<Result<List<NotificationModel>>> getNotifications();

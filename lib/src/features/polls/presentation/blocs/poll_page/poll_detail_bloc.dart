@@ -42,7 +42,7 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
   }
 
   Future<void> _onSubmitAnswers(
-    PollAnswersRequest request,
+    List<PollAnswer> answers,
     Emitter<PollDetailState> emit,
   ) async {
     final currentState = state.maybeWhen(
@@ -61,7 +61,7 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
 
     final result = await submitPollAnswersUsecase(
       pollId: pollId,
-      request: request,
+      answers: answers,
     );
 
     result.fold(

@@ -25,14 +25,11 @@ class PollRepositoryImpl with BaseRepository implements PollRepository {
   @override
   Future<Result<void>> submitPollAnswers({
     required int pollId,
-    required PollAnswersRequest request,
+    required List<PollAnswer> answers,
   }) async {
-    final requestModel = PollAnswersRequestModel(
-      answers: request.answers.map((answer) => answer.toModel()).toList(),
-    );
     return await _remoteDataSource.submitPollAnswers(
       pollId: pollId,
-      request: requestModel,
+      answers: answers.map((answer) => answer.toModel()).toList(),
     );
   }
 

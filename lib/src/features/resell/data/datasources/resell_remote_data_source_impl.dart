@@ -3,9 +3,9 @@ import '../../../../core/network/api_call_executor.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_constants.dart';
 import '../../domain/domain.dart';
-import '../models/resell_detail_model.dart';
-import '../models/resell_equipment_type_model.dart';
-import '../models/resell_list_response_model.dart';
+import '../models/responses/resell_detail_model.dart';
+import '../models/responses/resell_equipment_type_model.dart';
+import '../models/responses/resell_list_response_model.dart';
 import 'resell_remote_data_source.dart';
 
 class ResellRemoteDataSourceImpl implements ResellRemoteDataSource {

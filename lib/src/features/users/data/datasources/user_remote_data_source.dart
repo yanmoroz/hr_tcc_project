@@ -1,8 +1,8 @@
 import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/system_type.dart';
-import '../models/address_book_response_model.dart';
-import '../models/address_book_user_model.dart';
-import '../models/user_model.dart';
+import '../models/responses/address_book_response_model.dart';
+import '../models/responses/address_book_user_model.dart';
+import '../models/responses/user_model.dart';
 
 abstract class UserRemoteDataSource {
   Future<Result<List<UserModel>>> getUsers({
