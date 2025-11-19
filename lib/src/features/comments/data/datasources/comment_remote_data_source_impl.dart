@@ -79,7 +79,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       ),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return data['removedIds'] as List<int>;
+        return List<int>.from(data['removedIds'] as List);
       },
     );
   }
@@ -95,7 +95,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       ),
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return data['removedIds'] as List<int>;
+        return List<int>.from(data['removedIds'] as List);
       },
     );
   }

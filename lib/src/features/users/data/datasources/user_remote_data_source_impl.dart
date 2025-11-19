@@ -33,8 +33,12 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       },
       successParser: (response) {
         final data = response.data as Map<String, dynamic>;
-        return data.entries
-            .map((entry) => UserModel.fromJson(entry.value))
+        final users = data['users'] as List;
+        return users
+            .map(
+              (userJson) =>
+                  UserModel.fromJson(userJson as Map<String, dynamic>),
+            )
             .toList();
       },
     );
