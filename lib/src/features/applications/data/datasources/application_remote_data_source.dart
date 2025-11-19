@@ -1,10 +1,9 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
+import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/status_group_type.dart';
-import '../models/application_detail_model.dart';
-import '../models/application_list_response_model.dart';
-import '../models/cancel_application_result_model.dart';
-import '../models/create_application_result_model.dart';
+import '../models/responses/application_detail_model.dart';
+import '../models/responses/application_list_response_model.dart';
+import '../models/responses/cancel_application_result_model.dart';
+import '../models/responses/create_application_result_model.dart';
 
 abstract class ApplicationRemoteDataSource {
   /// Get paginated list of applications with filtering and statistics

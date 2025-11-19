@@ -1,6 +1,5 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
-import '../entities/create_application_result.dart';
+import '../../../../core/base_types/result.dart';
+import '../../../../core/value_objects/application_status.dart';
 import '../repositories/application_repository.dart';
 
 class CheckApplicationStatusUsecase {
@@ -8,10 +7,17 @@ class CheckApplicationStatusUsecase {
 
   CheckApplicationStatusUsecase(this._repository);
 
-  Future<Result<CreateApplicationResult>> call({
-    required String applicationFormCode,
-    required String instance,
-  }) async {
+  Future<
+    Result<
+      ({
+        ApplicationStatus status,
+        String? instance,
+        String? id,
+        String? idApplication,
+      })
+    >
+  >
+  call({required String applicationFormCode, required String instance}) async {
     return await _repository.checkApplicationStatus(
       applicationFormCode: applicationFormCode,
       instance: instance,

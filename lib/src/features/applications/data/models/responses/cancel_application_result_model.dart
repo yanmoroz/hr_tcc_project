@@ -1,8 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/value_objects/application_status.dart';
-import '../../../../core/dictionaries/data/models/models.dart';
-import '../../domain/domain.dart';
+import '../../../../../core/value_objects/application_status.dart';
+import '../../../../../core/dictionaries/data/models/models.dart';
 
 part 'cancel_application_result_model.freezed.dart';
 part 'cancel_application_result_model.g.dart';
@@ -21,11 +20,7 @@ abstract class CancelApplicationResultModel
   factory CancelApplicationResultModel.fromJson(Map<String, dynamic> json) =>
       _$CancelApplicationResultModelFromJson(json);
 
-  CancelApplicationResult toDomain() => CancelApplicationResult(
-    status: _parseApplicationStatus(status),
-    id: id,
-    systemStatus: systemStatusModel.toDomain(),
-  );
+  ApplicationStatus get parsedStatus => _parseApplicationStatus(status);
 
   ApplicationStatus _parseApplicationStatus(String status) {
     switch (status.toLowerCase()) {

@@ -2,8 +2,6 @@
 export 'entities/application_detail.dart';
 export 'entities/application_info.dart';
 export 'entities/application_statistics.dart';
-export 'entities/cancel_application_result.dart';
-export 'entities/create_application_result.dart';
 
 // Repositories
 export 'repositories/application_repository.dart';

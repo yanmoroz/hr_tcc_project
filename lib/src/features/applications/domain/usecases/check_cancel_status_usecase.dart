@@ -1,6 +1,6 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
-import '../entities/cancel_application_result.dart';
+import '../../../../core/base_types/result.dart';
+import '../../../../core/entities/system_status.dart';
+import '../../../../core/value_objects/application_status.dart';
 import '../repositories/application_repository.dart';
 
 class CheckCancelStatusUsecase {
@@ -8,7 +8,10 @@ class CheckCancelStatusUsecase {
 
   CheckCancelStatusUsecase(this._repository);
 
-  Future<Result<CancelApplicationResult>> call(String id) async {
+  Future<
+    Result<({ApplicationStatus status, String id, SystemStatus systemStatus})>
+  >
+  call(String id) async {
     return await _repository.checkCancelStatus(id);
   }
 }

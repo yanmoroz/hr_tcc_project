@@ -4,7 +4,8 @@ part 'check_application_request_model.freezed.dart';
 part 'check_application_request_model.g.dart';
 
 @freezed
-abstract class CheckApplicationRequestModel with _$CheckApplicationRequestModel {
+abstract class CheckApplicationRequestModel
+    with _$CheckApplicationRequestModel {
   const factory CheckApplicationRequestModel({
     required String applicationFormCode,
     required String instance,
@@ -14,7 +15,7 @@ abstract class CheckApplicationRequestModel with _$CheckApplicationRequestModel 
       _$CheckApplicationRequestModelFromJson(json);
 
   Map<String, dynamic> toJson() => {
-        'applicationFormCode': applicationFormCode,
-        'instance': instance,
-      };
+    'applicationFormCode': applicationFormCode,
+    'instance': instance,
+  };
 }

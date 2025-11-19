@@ -1,14 +1,13 @@
-import 'package:hr_tcc_project/src/core/network/api_call_executor.dart';
-import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/core/network/api_constants.dart';
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
+import '../../../../core/base_types/result.dart';
+import '../../../../core/network/api_call_executor.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_constants.dart';
 import '../../../../core/value_objects/status_group_type.dart';
-import '../models/application_detail_model.dart';
-import '../models/application_list_response_model.dart';
-import '../models/cancel_application_result_model.dart';
-import '../models/check_application_request_model.dart';
-import '../models/create_application_result_model.dart';
+import '../models/responses/application_detail_model.dart';
+import '../models/responses/application_list_response_model.dart';
+import '../models/responses/cancel_application_result_model.dart';
+import '../models/requests/check_application_request_model.dart';
+import '../models/responses/create_application_result_model.dart';
 import 'application_remote_data_source.dart';
 
 class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {

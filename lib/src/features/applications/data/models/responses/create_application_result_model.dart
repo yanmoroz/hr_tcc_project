@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hr_tcc_project/src/features/applications/domain/domain.dart';
 
-import '../../../../core/value_objects/application_status.dart';
+import '../../../../../core/value_objects/application_status.dart';
 
 part 'create_application_result_model.freezed.dart';
 part 'create_application_result_model.g.dart';
@@ -21,12 +20,7 @@ abstract class CreateApplicationResultModel
   factory CreateApplicationResultModel.fromJson(Map<String, dynamic> json) =>
       _$CreateApplicationResultModelFromJson(json);
 
-  CreateApplicationResult toDomain() => CreateApplicationResult(
-    status: _parseApplicationStatus(status),
-    instance: instance,
-    id: id,
-    idApplication: idApplication,
-  );
+  ApplicationStatus get parsedStatus => _parseApplicationStatus(status);
 
   ApplicationStatus _parseApplicationStatus(String status) {
     switch (status.toLowerCase()) {

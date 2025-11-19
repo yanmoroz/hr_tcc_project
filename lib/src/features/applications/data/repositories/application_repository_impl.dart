@@ -1,5 +1,8 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
+import '../../../../core/dictionaries/data/models/models.dart';
+import '../../../../core/entities/system_status.dart';
+import '../../../../core/value_objects/application_status.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../../domain/domain.dart';
 import '../datasources/application_remote_data_source.dart';
@@ -42,27 +45,70 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   }
 
   @override
-  Future<Result<CreateApplicationResult>> createApplication(
-    Map<String, dynamic> request,
-  ) async {
+  Future<
+    Result<
+      ({
+        ApplicationStatus status,
+        String? instance,
+        String? id,
+        String? idApplication,
+      })
+    >
+  >
+  createApplication(Map<String, dynamic> request) async {
     final result = await _remoteDataSource.createApplication(request);
-    return result.map((model) => model.toDomain());
+    return result.map(
+      (model) => (
+        status: model.parsedStatus,
+        instance: model.instance,
+        id: model.id,
+        idApplication: model.idApplication,
+      ),
+    );
   }
 
   @override
-  Future<Result<CancelApplicationResult>> cancelApplication(String id) async {
+  Future<
+    Result<({ApplicationStatus status, String id, SystemStatus systemStatus})>
+  >
+  cancelApplication(String id) async {
     final result = await _remoteDataSource.cancelApplication(id);
-    return result.map((model) => model.toDomain());
+    return result.map(
+      (model) => (
+        status: model.parsedStatus,
+        id: model.id,
+        systemStatus: model.systemStatusModel.toDomain(),
+      ),
+    );
   }
 
   @override
-  Future<Result<CancelApplicationResult>> checkCancelStatus(String id) async {
+  Future<
+    Result<({ApplicationStatus status, String id, SystemStatus systemStatus})>
+  >
+  checkCancelStatus(String id) async {
     final result = await _remoteDataSource.checkCancelStatus(id);
-    return result.map((model) => model.toDomain());
+    return result.map(
+      (model) => (
+        status: model.parsedStatus,
+        id: model.id,
+        systemStatus: model.systemStatusModel.toDomain(),
+      ),
+    );
   }
 
   @override
-  Future<Result<CreateApplicationResult>> checkApplicationStatus({
+  Future<
+    Result<
+      ({
+        ApplicationStatus status,
+        String? instance,
+        String? id,
+        String? idApplication,
+      })
+    >
+  >
+  checkApplicationStatus({
     required String applicationFormCode,
     required String instance,
   }) async {
@@ -70,6 +116,13 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
       applicationFormCode: applicationFormCode,
       instance: instance,
     );
-    return result.map((model) => model.toDomain());
+    return result.map(
+      (model) => (
+        status: model.parsedStatus,
+        instance: model.instance,
+        id: model.id,
+        idApplication: model.idApplication,
+      ),
+    );
   }
 }

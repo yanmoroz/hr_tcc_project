@@ -7,7 +7,8 @@ part 'application_list_response_model.freezed.dart';
 part 'application_list_response_model.g.dart';
 
 @freezed
-abstract class ApplicationListResponseModel with _$ApplicationListResponseModel {
+abstract class ApplicationListResponseModel
+    with _$ApplicationListResponseModel {
   const factory ApplicationListResponseModel({
     required List<ApplicationInfoModel> applicationInfos,
     required int total,

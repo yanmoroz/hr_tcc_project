@@ -1,11 +1,10 @@
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
+import '../../../../core/base_types/result.dart';
+import '../../../../core/entities/system_status.dart';
+import '../../../../core/value_objects/application_status.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../entities/application_detail.dart';
 import '../entities/application_info.dart';
 import '../entities/application_statistics.dart';
-import '../entities/cancel_application_result.dart';
-import '../entities/create_application_result.dart';
 
 abstract class ApplicationRepository {
   /// Get paginated list of applications with filtering and statistics
@@ -22,19 +21,43 @@ abstract class ApplicationRepository {
 
   /// Create a new application
   /// Returns result with status (ok/processing), instanceId, and applicationId
-  Future<Result<CreateApplicationResult>> createApplication(
-    Map<String, dynamic> request,
-  );
+  Future<
+    Result<
+      ({
+        ApplicationStatus status,
+        String? instance,
+        String? id,
+        String? idApplication,
+      })
+    >
+  >
+  createApplication(Map<String, dynamic> request);
 
   /// Cancel an application
   /// Returns result with status (ok/processing), applicationId, and systemStatus
-  Future<Result<CancelApplicationResult>> cancelApplication(String id);
+  Future<
+    Result<({ApplicationStatus status, String id, SystemStatus systemStatus})>
+  >
+  cancelApplication(String id);
 
   /// Check the completion status of application cancellation
-  Future<Result<CancelApplicationResult>> checkCancelStatus(String id);
+  Future<
+    Result<({ApplicationStatus status, String id, SystemStatus systemStatus})>
+  >
+  checkCancelStatus(String id);
 
   /// Check the success of application creation by process ID
-  Future<Result<CreateApplicationResult>> checkApplicationStatus({
+  Future<
+    Result<
+      ({
+        ApplicationStatus status,
+        String? instance,
+        String? id,
+        String? idApplication,
+      })
+    >
+  >
+  checkApplicationStatus({
     required String applicationFormCode,
     required String instance,
   });
