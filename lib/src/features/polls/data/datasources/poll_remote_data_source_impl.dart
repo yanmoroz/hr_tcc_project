@@ -56,7 +56,7 @@ class PollRemoteDataSourceImpl implements PollRemoteDataSource {
     return ApiCallExecutor.executeApiCall(
       apiCall: () => _apiClient.post(
         ApiConstants.pollVoteEndpoint(pollId),
-        data: answers.map((answer) => answer.toJson()).toList(),
+        data: {'answers': answers.map((answer) => answer.toJson()).toList()},
       ),
       successParser: (_) => null,
       validStatusCodes: [200],
