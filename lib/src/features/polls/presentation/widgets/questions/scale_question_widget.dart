@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/domain.dart';
-import 'question_widget_factory.dart';
+import 'question_callbacks.dart';
 
 class ScaleQuestionWidget extends StatefulWidget {
   final Question question;

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+
 import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/system_type.dart';
 import '../../../../core/value_objects/tcc_image_destination_type.dart';

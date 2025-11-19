@@ -7,13 +7,16 @@ import 'table_lookup_question_widget.dart';
 import 'dropdown_question_widget.dart';
 import 'scale_question_widget.dart';
 import 'attachment_question_widget.dart';
-
-typedef AnswerChangedCallback = void Function(Question question, Object? answer);
+import 'question_callbacks.dart';
 
 Widget buildQuestionWidget({
   required Question question,
   required AnswerChangedCallback onAnswerChanged,
   FileUploadCallback? onFileUpload,
+  StaffSearchCallback? onStaffSearch,
+  bool isSearchingStaff = false,
+  List<StaffItem>? staffItems,
+  String? staffSearchError,
 }) {
   switch (question.type) {
     case QuestionType.multiLineText:
@@ -21,7 +24,15 @@ Widget buildQuestionWidget({
     case QuestionType.choice:
       return ChoiceQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
     case QuestionType.tableLookup:
-      return TableLookupQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
+      assert(onStaffSearch != null, 'onStaffSearch callback is required for tableLookup questions');
+      return TableLookupQuestionWidget(
+        question: question,
+        onAnswerChanged: onAnswerChanged,
+        onStaffSearch: onStaffSearch!,
+        isSearchingStaff: isSearchingStaff,
+        staffItems: staffItems,
+        staffSearchError: staffSearchError,
+      );
     case QuestionType.dropdown:
       return DropdownQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
     case QuestionType.scale:

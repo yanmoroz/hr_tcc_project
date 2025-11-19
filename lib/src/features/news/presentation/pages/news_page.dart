@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/news_page/news_list_bloc.dart';
-import '../bloc/news_page/news_list_event.dart';
-import '../bloc/news_page/news_list_state.dart';
+import '../bloc/news_page/bloc.dart';
 import '../widgets/news_item.dart';
 
 class NewsPage extends StatefulWidget {

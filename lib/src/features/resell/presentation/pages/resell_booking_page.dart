@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../domain/domain.dart';
-import '../bloc/resell_booking_bloc.dart';
-import '../bloc/resell_booking_event.dart';
-import '../bloc/resell_booking_state.dart';
+import '../bloc/resell_booking_page/bloc.dart';
 
 class ResellBookingPage extends StatefulWidget {
   final String itemId;

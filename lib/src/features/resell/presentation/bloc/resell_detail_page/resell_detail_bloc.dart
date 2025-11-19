@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/logging/app_logger.dart';
-import '../../domain/domain.dart';
+import '../../../../../core/logging/app_logger.dart';
+import '../../../domain/domain.dart';
 
 import 'resell_detail_event.dart';
 import 'resell_detail_state.dart';

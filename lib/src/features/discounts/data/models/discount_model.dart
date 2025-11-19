@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/domain.dart';
 import 'author_model.dart';
 import 'category_model.dart';
@@ -23,7 +24,8 @@ abstract class DiscountModel with _$DiscountModel {
     required int commentCount,
   }) = _DiscountModel;
 
-  factory DiscountModel.fromJson(Map<String, dynamic> json) => _$DiscountModelFromJson(json);
+  factory DiscountModel.fromJson(Map<String, dynamic> json) =>
+      _$DiscountModelFromJson(json);
 }
 
 extension DiscountModelX on DiscountModel {

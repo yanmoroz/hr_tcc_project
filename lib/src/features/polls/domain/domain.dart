@@ -1,7 +1,9 @@
+// Value Objects
+export 'value_objects/question_type.dart';
+
 // Entities
 export 'entities/shared_types/period_type.dart';
 export 'entities/shared_types/staff_target.dart';
-export 'entities/poll_detail/question_type.dart';
 export 'entities/poll/poll.dart';
 export 'entities/poll/employee.dart';
 export 'entities/poll/department.dart';

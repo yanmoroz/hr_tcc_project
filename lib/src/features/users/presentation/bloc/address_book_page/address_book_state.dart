@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../domain/entities/address_book_user.dart';
+import '../../../domain/domain.dart';
 
 part 'address_book_state.freezed.dart';
 

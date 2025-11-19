@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
-import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'news_list_event.dart';
 import 'news_list_state.dart';

@@ -13,10 +13,4 @@ abstract class AddCommentRequest with _$AddCommentRequest {
 
   factory AddCommentRequest.fromJson(Map<String, dynamic> json) =>
       _$AddCommentRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => {
-    if (parent != null) 'parent': parent,
-    'content': content,
-    if (attachments != null) 'attachments': attachments,
-  };
 }

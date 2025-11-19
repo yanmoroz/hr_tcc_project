@@ -3,18 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
-
-typedef AnswerChangedCallback = void Function(Question question, Object? answer);
-
-typedef FileUploadCallback = Future<Result<UploadedFile>> Function({
-  required File file,
-  required SystemType systemType,
-  required void Function(int sent, int total) onProgress,
-});
+import 'question_callbacks.dart';
 
 class AttachmentQuestionWidget extends StatefulWidget {
   final Question question;
@@ -125,7 +117,7 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Failed to upload ${file.name}: ${failure.message}',
+                  'Failed to upload ${file.name}: ${failure.toString()}',
                 ),
               ),
             );

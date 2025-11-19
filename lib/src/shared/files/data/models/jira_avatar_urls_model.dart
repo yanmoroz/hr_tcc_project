@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/jira_avatar_urls.dart';
+import '../../domain/domain.dart';
 
 part 'jira_avatar_urls_model.freezed.dart';
 part 'jira_avatar_urls_model.g.dart';

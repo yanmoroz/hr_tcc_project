@@ -1,7 +1,7 @@
-import 'package:hr_tcc_project/src/core/value_objects/system_type.dart';
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-import 'package:hr_tcc_project/src/features/users/domain/entities/user.dart';
-import 'package:hr_tcc_project/src/features/users/domain/repositories/user_repository.dart';
+import '../../../../core/base_types/result.dart';
+import '../../../../core/value_objects/system_type.dart';
+import '../entities/user.dart';
+import '../repositories/user_repository.dart';
 
 class GetUsersUsecase {
   final UserRepository userRepository;

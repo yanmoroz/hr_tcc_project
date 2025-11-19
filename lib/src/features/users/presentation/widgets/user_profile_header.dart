@@ -3,10 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../domain/entities/address_book_user.dart';
-import '../bloc/user_profile_header/user_profile_header_bloc.dart';
-import '../bloc/user_profile_header/user_profile_header_event.dart';
-import '../bloc/user_profile_header/user_profile_header_state.dart';
+import '../../domain/domain.dart';
+import '../bloc/user_profile_header/bloc.dart';
 
 class UserProfileHeader extends StatelessWidget {
   const UserProfileHeader({this.child, super.key});

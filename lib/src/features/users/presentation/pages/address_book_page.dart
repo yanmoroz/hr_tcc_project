@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/search_bar_widget.dart';
-import '../bloc/address_book_page/address_book_bloc.dart';
-import '../bloc/address_book_page/address_book_event.dart';
-import '../bloc/address_book_page/address_book_state.dart';
+import '../bloc/address_book_page/bloc.dart';
 import '../widgets/address_book_user_item.dart';
 import '../widgets/user_profile_header.dart';
 

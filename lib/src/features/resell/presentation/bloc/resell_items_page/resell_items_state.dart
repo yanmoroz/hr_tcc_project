@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/domain.dart';
+import '../../../domain/domain.dart';
 
 part 'resell_items_state.freezed.dart';
 

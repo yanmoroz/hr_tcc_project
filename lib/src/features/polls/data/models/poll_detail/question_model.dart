@@ -34,7 +34,8 @@ abstract class QuestionModel with _$QuestionModel {
     String? image,
   }) = _QuestionModel;
 
-  factory QuestionModel.fromJson(Map<String, dynamic> json) => _$QuestionModelFromJson(json);
+  factory QuestionModel.fromJson(Map<String, dynamic> json) =>
+      _$QuestionModelFromJson(json);
 }
 
 extension QuestionModelX on QuestionModel {

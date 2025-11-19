@@ -1,11 +1,6 @@
-import 'package:hr_tcc_project/src/core/base_types/base_repository.dart';
-import 'package:hr_tcc_project/src/core/base_types/result.dart';
-
-import '../../domain/entities/discount.dart';
-import '../../domain/entities/discount_detail.dart';
-import '../../domain/entities/kp_discount_category.dart';
-import '../../domain/entities/kp_discount_source.dart';
-import '../../domain/repositories/discount_repository.dart';
+import '../../../../core/base_types/base_repository.dart';
+import '../../../../core/base_types/result.dart';
+import '../../domain/domain.dart';
 import '../datasources/discount_remote_data_source.dart';
 import '../models/discount_detail_model.dart';
 import '../models/kp_discount_category_model.dart';

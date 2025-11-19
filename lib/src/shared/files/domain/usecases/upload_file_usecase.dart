@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import '../../../../core/base_types/result.dart';
 
+import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/system_type.dart';
 import '../../../../core/value_objects/tcc_image_destination_type.dart';
 import '../domain.dart';

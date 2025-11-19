@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/comments_page/comments_bloc.dart';
-import '../bloc/comments_page/comments_event.dart';
-import '../bloc/comments_page/comments_state.dart';
+import '../../domain/domain.dart';
+import '../bloc/comments_page/bloc.dart';
 import '../widgets/comment_item.dart';
 import '../widgets/date_separator.dart';
-import '../../domain/domain.dart';
 
 class CommentsPage extends StatefulWidget {
   final int entityId;

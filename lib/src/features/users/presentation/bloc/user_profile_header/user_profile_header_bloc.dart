@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/usecases/get_current_user_info_usecase.dart';
+import '../../../domain/domain.dart';
+
 import 'user_profile_header_event.dart';
 import 'user_profile_header_state.dart';
 
@@ -10,8 +11,8 @@ class UserProfileHeaderBloc
 
   UserProfileHeaderBloc({
     required GetCurrentUserInfoUsecase getCurrentUserInfoUsecase,
-  })  : _getCurrentUserInfoUsecase = getCurrentUserInfoUsecase,
-        super(const UserProfileHeaderState.initial()) {
+  }) : _getCurrentUserInfoUsecase = getCurrentUserInfoUsecase,
+       super(const UserProfileHeaderState.initial()) {
     on<LoadUserProfile>(_onLoadUserProfile);
     on<RefreshUserProfile>(_onRefreshUserProfile);
   }

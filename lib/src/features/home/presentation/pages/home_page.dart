@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/bloc_factory.dart';
 import '../../../../core/widgets/page_with_profile_header.dart';
-import '../../../news/presentation/bloc/news_page/news_list_event.dart';
+import '../../../news/presentation/bloc/news_page/bloc.dart';
 import '../widgets/home_icon_button.dart';
 import '../widgets/home_news_section.dart';
 

@@ -1,4 +1,5 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
+
 import '../repositories/discount_repository.dart';
 
 class GetDiscountStatsUsecase {

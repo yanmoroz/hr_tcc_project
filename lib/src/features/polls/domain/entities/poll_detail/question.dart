@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'question_type.dart';
+import '../../value_objects/question_type.dart';
 import 'answer.dart';
 import 'page.dart';
 

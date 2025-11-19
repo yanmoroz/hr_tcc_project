@@ -1,5 +1,5 @@
 import '../../../../core/base_types/result.dart';
-import '../../domain/entities/shared_types/staff_target.dart';
+import '../../domain/domain.dart';
 import '../models/poll/poll_model.dart';
 import '../models/poll/staff_item_model.dart';
 import '../models/poll_detail/poll_answers_request_model.dart';

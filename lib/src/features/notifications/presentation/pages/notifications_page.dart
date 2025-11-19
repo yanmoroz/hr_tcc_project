@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/notifications_page/notifications_list_bloc.dart';
-import '../bloc/notifications_page/notifications_list_event.dart';
-import '../bloc/notifications_page/notifications_list_state.dart';
+import '../bloc/notifications_page/bloc.dart';
 import '../widgets/notification_item.dart';
 
 class NotificationsPage extends StatelessWidget {

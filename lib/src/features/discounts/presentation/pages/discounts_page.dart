@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../bloc/discounts_page/discounts_list_bloc.dart';
-import '../bloc/discounts_page/discounts_list_event.dart';
-import '../bloc/discounts_page/discounts_list_state.dart';
+import '../bloc/discounts_page/bloc.dart';
 import '../widgets/discount_card.dart';
 
 class DiscountsPage extends StatefulWidget {
@@ -105,6 +103,40 @@ class _DiscountsPageState extends State<DiscountsPage> {
                           discount: discount,
                           onTap: () {
                             context.push('/discount/${discount.id}');
+                          },
+                          onLikeTap: () {
+                            context.read<DiscountsListBloc>().add(
+                              DiscountsListEvent.toggleLike(
+                                discountId: discount.id,
+                              ),
+                            );
+                          },
+                          onCommentTap: () {
+                            // Get current state to preserve filters when refreshing
+                            final bloc = context.read<DiscountsListBloc>();
+                            final currentState = bloc.state;
+                            int? category;
+                            int? source;
+                            String? categoryName;
+
+                            if (currentState is DiscountsListLoaded) {
+                              category = currentState.category;
+                              source = currentState.source;
+                              categoryName = currentState.categoryName;
+                            }
+
+                            context
+                                .push('/comments/discount/${discount.id}')
+                                .then((_) {
+                              // Refresh discounts list when returning from comments
+                              bloc.add(
+                                DiscountsListEvent.refreshDiscounts(
+                                  category: category,
+                                  source: source,
+                                  categoryName: categoryName,
+                                ),
+                              );
+                            });
                           },
                         );
                       },

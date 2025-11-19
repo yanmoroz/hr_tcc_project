@@ -1,6 +1,9 @@
+// Value objects
+export 'value_objects/file_group.dart';
+
 // Entities
-export 'entities/file_group.dart';
 export 'entities/jira_author.dart';
+export 'entities/jira_avatar_urls.dart';
 export 'entities/uploaded_file.dart';
 
 // Repositories

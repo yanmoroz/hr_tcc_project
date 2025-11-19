@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
-import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'discount_detail_event.dart';
 import 'discount_detail_state.dart';

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../news/presentation/bloc/news_page/news_list_bloc.dart';
-import '../../../news/presentation/bloc/news_page/news_list_state.dart';
+import '../../../news/presentation/bloc/news_page/bloc.dart';
 import '../../../news/presentation/widgets/compact_news_card.dart';
 
 class HomeNewsSection extends StatelessWidget {

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../bloc/discount_categories_page/discount_categories_bloc.dart';
-import '../bloc/discount_categories_page/discount_categories_event.dart';
-import '../bloc/discount_categories_page/discount_categories_state.dart';
+import '../bloc/discount_categories_page/bloc.dart';
 import '../widgets/discount_category_card.dart';
 
 class DiscountCategoriesPage extends StatelessWidget {

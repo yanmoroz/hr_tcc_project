@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/domain.dart';
-import '../../../domain/entities/poll_detail/poll_answer.dart';
 import 'attachment_file_model.dart';
 
 part 'poll_answer_model.freezed.dart';
@@ -98,7 +97,9 @@ abstract class PollAnswerModel with _$PollAnswerModel {
           type: type,
           questionId: json['questionId'] as int,
           answerData: (json['answerData'] as List<dynamic>)
-              .map((e) => AttachmentFileModel.fromJson(e as Map<String, dynamic>))
+              .map(
+                (e) => AttachmentFileModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList(),
         );
       default:
@@ -156,16 +157,24 @@ extension PollAnswerModelX on PollAnswerModel {
         answerId: model.answerId,
         answerData: model.answerData,
       ),
-      type1: (model) =>
-          PollAnswer.type1(type: model.type, questionId: model.questionId, answerId: model.answerId, text: model.text),
+      type1: (model) => PollAnswer.type1(
+        type: model.type,
+        questionId: model.questionId,
+        answerId: model.answerId,
+        text: model.text,
+      ),
       type2: (model) => PollAnswer.type2(
         type: model.type,
         questionId: model.questionId,
         answerId: model.answerId,
         answerData: model.answerData,
       ),
-      type3: (model) =>
-          PollAnswer.type3(type: model.type, questionId: model.questionId, answerId: model.answerId, text: model.text),
+      type3: (model) => PollAnswer.type3(
+        type: model.type,
+        questionId: model.questionId,
+        answerId: model.answerId,
+        text: model.text,
+      ),
       type4: (model) => PollAnswer.type4(
         type: model.type,
         questionId: model.questionId,

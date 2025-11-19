@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/usecases/get_address_book_usecase.dart';
+import '../../../domain/domain.dart';
 
 import 'address_book_event.dart';
 import 'address_book_state.dart';
