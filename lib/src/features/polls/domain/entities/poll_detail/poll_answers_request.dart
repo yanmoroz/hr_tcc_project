@@ -6,5 +6,6 @@ part 'poll_answers_request.freezed.dart';
 
 @freezed
 abstract class PollAnswersRequest with _$PollAnswersRequest {
-  const factory PollAnswersRequest({required List<PollAnswer> answers}) = _PollAnswersRequest;
+  const factory PollAnswersRequest({required List<PollAnswer> answers}) =
+      _PollAnswersRequest;
 }

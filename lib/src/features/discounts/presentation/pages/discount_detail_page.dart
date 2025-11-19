@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
-import '../bloc/discount_page/bloc.dart';
+import '../blocs/discount_page/bloc.dart';
 
 class DiscountDetailPage extends StatelessWidget {
   final int discountId;

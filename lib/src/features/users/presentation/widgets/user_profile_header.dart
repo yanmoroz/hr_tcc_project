@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/domain.dart';
-import '../bloc/user_profile_header/bloc.dart';
+import '../blocs/user_profile_header/bloc.dart';
 
 class UserProfileHeader extends StatelessWidget {
   const UserProfileHeader({this.child, super.key});

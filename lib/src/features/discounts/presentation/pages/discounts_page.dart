@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../bloc/discounts_page/bloc.dart';
+import '../blocs/discounts_page/bloc.dart';
 import '../widgets/discount_card.dart';
 
 class DiscountsPage extends StatefulWidget {
@@ -125,9 +125,9 @@ class _DiscountsPageState extends State<DiscountsPage> {
                               categoryName = currentState.categoryName;
                             }
 
-                            context
-                                .push('/comments/discount/${discount.id}')
-                                .then((_) {
+                            context.push('/comments/discount/${discount.id}').then((
+                              _,
+                            ) {
                               // Refresh discounts list when returning from comments
                               bloc.add(
                                 DiscountsListEvent.refreshDiscounts(

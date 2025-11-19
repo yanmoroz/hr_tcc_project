@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/polls_page/bloc.dart';
+import '../blocs/polls_page/bloc.dart';
 import '../widgets/poll_item.dart';
 import '../widgets/poll_item_view_model.dart';
 

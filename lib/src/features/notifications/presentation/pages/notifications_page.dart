@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/notifications_page/bloc.dart';
+import '../blocs/notifications_page/bloc.dart';
 import '../widgets/notification_item.dart';
 
 class NotificationsPage extends StatelessWidget {
@@ -14,7 +14,8 @@ class NotificationsPage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: state.maybeWhen(
-              loaded: (notifications, unreadCount) => Text('Notifications ($unreadCount unread)'),
+              loaded: (notifications, unreadCount) =>
+                  Text('Notifications ($unreadCount unread)'),
               orElse: () => const Text('Notifications'),
             ),
             actions: [
@@ -24,7 +25,9 @@ class NotificationsPage extends StatelessWidget {
                     return IconButton(
                       icon: const Icon(Icons.done_all),
                       onPressed: () {
-                        context.read<NotificationsListBloc>().add(const NotificationsListEvent.markAllAsRead());
+                        context.read<NotificationsListBloc>().add(
+                          const NotificationsListEvent.markAllAsRead(),
+                        );
                       },
                       tooltip: 'Mark All As Read',
                     );
@@ -50,7 +53,9 @@ class NotificationsPage extends StatelessWidget {
                   return NotificationItem(
                     notification: notification,
                     onMarkAsRead: () {
-                      context.read<NotificationsListBloc>().add(NotificationsListEvent.markAsRead(notification.id));
+                      context.read<NotificationsListBloc>().add(
+                        NotificationsListEvent.markAsRead(notification.id),
+                      );
                     },
                   );
                 },
@@ -60,11 +65,17 @@ class NotificationsPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: $message', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                  Text(
+                    'Error: $message',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<NotificationsListBloc>().add(const NotificationsListEvent.loadNotifications());
+                      context.read<NotificationsListBloc>().add(
+                        const NotificationsListEvent.loadNotifications(),
+                      );
                     },
                     child: const Text('Retry'),
                   ),

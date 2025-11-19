@@ -4,10 +4,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/features/news/data/data.dart';
-import 'package:hr_tcc_project/src/features/news/domain/domain.dart';
-import 'package:hr_tcc_project/src/features/comments/data/data.dart';
-import 'package:hr_tcc_project/src/features/comments/domain/domain.dart';
+import 'package:hr_tcc_project/src/features/comments/comments.dart';
+import 'package:hr_tcc_project/src/features/news/news.dart';
+
 import 'helpers/result_helper.dart';
 
 void main() {
@@ -61,9 +60,7 @@ void main() {
 
       final newsStats = await getOrFail(getNewsStatsUsecase(newsDetail.id));
       expect(newsStats, isA<({int likeCount, bool like, int commentCount})>());
-      AppLogger.d(
-        'Fetched news stats: likeCount: ${newsStats.likeCount}, like: ${newsStats.like}, commentCount: ${newsStats.commentCount}',
-      );
+      AppLogger.d('Fetched news stats: ${newsStats.toString()}');
 
       final newsComments = await getOrFail(
         getCommentsUsecase(
@@ -128,9 +125,7 @@ void main() {
 
       final newsStats = await getOrFail(getNewsStatsUsecase(newsDetail.id));
       expect(newsStats, isA<({int likeCount, bool like, int commentCount})>());
-      AppLogger.d(
-        'Fetched news stats: commentCount: ${newsStats.commentCount}, like: ${newsStats.like}, likeCount: ${newsStats.likeCount}',
-      );
+      AppLogger.d('Fetched news stats: ${newsStats.toString()}');
 
       final liked = await getOrFail(toggleNewsLikeUsecase(newsDetail.id));
       expect(liked, isA<bool>());

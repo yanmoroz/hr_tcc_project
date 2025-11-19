@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/news_page/bloc.dart';
+import '../blocs/news_page/bloc.dart';
 import '../widgets/news_item.dart';
 
 class NewsPage extends StatefulWidget {

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/domain.dart';
-// import '../../domain/entities/poll_detail/page.dart' as poll_page;
-import '../bloc/poll_page/bloc.dart';
+import '../blocs/poll_page/bloc.dart';
 import '../widgets/questions/question_widget_factory.dart';
 
 class PollPage extends StatefulWidget {

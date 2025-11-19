@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
-import '../bloc/resell_items_page/bloc.dart';
+import '../blocs/resell_items_page/bloc.dart';
 import '../widgets/resell_item_card.dart';
 import '../widgets/resell_status_chip.dart';
 

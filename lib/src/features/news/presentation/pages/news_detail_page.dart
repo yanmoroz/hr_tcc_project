@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
-import '../bloc/news_detail_page/bloc.dart';
+import '../blocs/news_detail_page/bloc.dart';
 
 class NewsDetailPage extends StatelessWidget {
   final int newsId;

@@ -4,8 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/features/notifications/data/data.dart';
-import 'package:hr_tcc_project/src/features/notifications/domain/domain.dart';
+import 'package:hr_tcc_project/src/features/notifications/notifications.dart';
+
 import 'helpers/result_helper.dart';
 
 void main() {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/domain.dart';
-import '../bloc/comments_page/bloc.dart';
+import '../blocs/comments_page/bloc.dart';
 import '../widgets/comment_item.dart';
 import '../widgets/date_separator.dart';
 

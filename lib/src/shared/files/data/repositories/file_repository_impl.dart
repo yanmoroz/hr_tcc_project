@@ -115,7 +115,8 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
   ) {
     final identifier = idFile ?? uriFile ?? urlFile ?? destinationId ?? '';
     final imageDestStr = imageDestination?.value ?? '';
-    final input = '${systemType.value}_${download ? 'dl' : 'view'}_$identifier\_$imageDestStr';
+    final input =
+        '${systemType.value}_${download ? 'dl' : 'view'}_$identifier\_$imageDestStr';
     final bytes = utf8.encode(input);
     final hash = md5.convert(bytes);
     return hash.toString();
@@ -232,8 +233,9 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
 
           // Extract cache key from file name
           final cacheKey = fileName.replaceFirst('file_cache_', '');
-          final metadataFile =
-              File('${cacheDir.path}/file_cache_${cacheKey}_meta');
+          final metadataFile = File(
+            '${cacheDir.path}/file_cache_${cacheKey}_meta',
+          );
 
           bool shouldDelete = false;
 
@@ -250,7 +252,9 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
               if (cachedAtMs == null) {
                 shouldDelete = true;
               } else {
-                final cachedAt = DateTime.fromMillisecondsSinceEpoch(cachedAtMs);
+                final cachedAt = DateTime.fromMillisecondsSinceEpoch(
+                  cachedAtMs,
+                );
                 final age = DateTime.now().difference(cachedAt);
                 if (age > _cacheTtl) {
                   shouldDelete = true;

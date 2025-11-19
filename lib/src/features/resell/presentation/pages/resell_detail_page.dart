@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../domain/domain.dart';
-import '../bloc/resell_detail_page/bloc.dart';
+import '../blocs/resell_detail_page/bloc.dart';
 import 'resell_booking_page.dart';
 
 class ResellDetailPage extends StatelessWidget {

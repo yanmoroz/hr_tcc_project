@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/bloc_factory.dart';
 import '../../../../core/widgets/page_with_profile_header.dart';
-import '../../../news/presentation/bloc/news_page/bloc.dart';
+import '../../../news/presentation/blocs/news_page/bloc.dart';
 import '../widgets/home_icon_button.dart';
 import '../widgets/home_news_section.dart';
 
@@ -22,8 +22,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => BlocFactory.createNewsListBloc()
-        ..add(const NewsListEvent.loadNews()),
+      create: (context) =>
+          BlocFactory.createNewsListBloc()..add(const NewsListEvent.loadNews()),
       child: PageWithProfileHeader(
         title: 'Главная',
         body: SingleChildScrollView(

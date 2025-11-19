@@ -1,15 +1,15 @@
 import '../../features/comments/domain/domain.dart';
-import '../../features/comments/presentation/bloc/comments_page/comments_bloc.dart';
-import '../../features/polls/presentation/bloc/poll_page/poll_detail_bloc.dart';
-import '../../features/polls/presentation/bloc/polls_page/polls_list_bloc.dart';
-import '../../features/notifications/presentation/bloc/notifications_page/notifications_list_bloc.dart';
-import '../../features/discounts/presentation/bloc/discount_categories_page/discount_categories_bloc.dart';
-import '../../features/discounts/presentation/bloc/discounts_page/discounts_list_bloc.dart';
-import '../../features/discounts/presentation/bloc/discount_page/discount_detail_bloc.dart';
-import '../../features/news/presentation/bloc/news_page/news_list_bloc.dart';
-import '../../features/news/presentation/bloc/news_detail_page/news_detail_bloc.dart';
-import '../../features/users/presentation/bloc/address_book_page/address_book_bloc.dart';
-import '../../features/users/presentation/bloc/user_profile_header/user_profile_header_bloc.dart';
+import '../../features/comments/presentation/blocs/comments_page/comments_bloc.dart';
+import '../../features/polls/presentation/blocs/poll_page/poll_detail_bloc.dart';
+import '../../features/polls/presentation/blocs/polls_page/polls_list_bloc.dart';
+import '../../features/notifications/presentation/blocs/notifications_page/notifications_list_bloc.dart';
+import '../../features/discounts/presentation/blocs/discount_categories_page/discount_categories_bloc.dart';
+import '../../features/discounts/presentation/blocs/discounts_page/discounts_list_bloc.dart';
+import '../../features/discounts/presentation/blocs/discount_page/discount_detail_bloc.dart';
+import '../../features/news/presentation/blocs/news_page/news_list_bloc.dart';
+import '../../features/news/presentation/blocs/news_detail_page/news_detail_bloc.dart';
+import '../../features/users/presentation/blocs/address_book_page/address_book_bloc.dart';
+import '../../features/users/presentation/blocs/user_profile_header/user_profile_header_bloc.dart';
 import 'service_locator.dart';
 
 /// Factory for creating BLoC instances.
