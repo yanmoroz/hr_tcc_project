@@ -1,10 +1,9 @@
-import 'package:hr_tcc_project/src/features/comments/data/models/responses/comment_model.dart';
-
 import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/base_types/result.dart';
 import '../../domain/domain.dart';
 import '../datasources/comment_remote_data_source.dart';
 import '../models/requests/add_comment_request_model.dart';
+import '../models/responses/comment_model.dart';
 
 class CommentRepositoryImpl with BaseRepository implements CommentRepository {
   final CommentRemoteDataSource _remoteDataSource;

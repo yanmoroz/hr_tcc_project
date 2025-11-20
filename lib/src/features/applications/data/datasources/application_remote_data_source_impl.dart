@@ -9,6 +9,7 @@ import '../models/responses/application_list_response_model.dart';
 import '../models/responses/cancel_application_result_model.dart';
 import '../models/requests/check_application_request_model.dart';
 import '../models/responses/create_application_result_model.dart';
+import '../models/responses/kp_absence_category_model.dart';
 import 'application_remote_data_source.dart';
 
 class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
@@ -107,6 +108,21 @@ class ApplicationRemoteDataSourceImpl implements ApplicationRemoteDataSource {
       ),
       successParser: (response) {
         return CreateApplicationResultModel.fromJson(response.data);
+      },
+    );
+  }
+
+  @override
+  Future<Result<List<KpAbsenceCategoryModel>>> getKpAbsenceCategories() async {
+    return ApiCallExecutor.executeApiCall(
+      apiCall: () => _apiClient.get(ApiConstants.kpAbsenceCategoryEndpoint),
+      successParser: (response) {
+        final data = response.data as Map<String, dynamic>;
+        final absenceCategoriesJson =
+            data['absenceCategories'] as List<dynamic>;
+        return absenceCategoriesJson
+            .map((json) => KpAbsenceCategoryModel.fromJson(json))
+            .toList();
       },
     );
   }

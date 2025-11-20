@@ -46,44 +46,55 @@ void main() {
 
     test('Create Application - Alpina Digital Access', () async {
       final params = CreateApplicationParams.alpinaDigitalAccess(
-        desiredStartDate: DateTime(
-          2025,
-          12,
-          10,
-          13,
-          3,
-          45,
-        ).toUtc().toIso8601String(),
+        desiredStartDate: DateTime.now()
+            .add(const Duration(days: 1))
+            .toUtc()
+            .toIso8601String(),
         comment: 'Хочу доступ',
         alpinaDigitalPrevAccessCode: 'ne_znayu',
         agreementAcceptance: true,
       );
 
       final application = await getOrFail(repository.createApplication(params));
-
       expect(application, isA<CreateApplicationResult>());
       AppLogger.d('Created application: ${application.toString()}');
+    });
+
+    test('Get KP Absence Categories', () async {
+      final categories = await getOrFail(repository.getKpAbsenceCategories());
+      expect(categories, isA<List<KpAbsenceCategory>>());
+      AppLogger.d('Fetched KP absence categories: ${categories.length} items');
     });
 
     test('Create Application - Absence', () async {
       final params = CreateApplicationParams.absence(
         category: 3,
         note: 'Захотел выспаться',
-        fromDateTime: DateTime(
-          2025,
-          10,
-          15,
-          13,
-          0,
-          0,
-        ).toUtc().toIso8601String(),
-        toDateTime: DateTime(2025, 10, 15, 18, 0, 0).toUtc().toIso8601String(),
+        fromDateTime: DateTime.now()
+            .add(const Duration(days: 1))
+            .toUtc()
+            .toIso8601String(),
+        toDateTime: DateTime.now()
+            .add(const Duration(days: 2))
+            .toUtc()
+            .toIso8601String(),
       );
 
       final application = await getOrFail(repository.createApplication(params));
-
       expect(application, isA<CreateApplicationResult>());
       AppLogger.d('Created absence application: ${application.toString()}');
+    });
+
+    test('Create Application - Violation', () async {
+      final params = CreateApplicationParams.violation(
+        securityLevelId: '1',
+        summary: 'Summary',
+        description: 'Description',
+      );
+
+      final application = await getOrFail(repository.createApplication(params));
+      expect(application, isA<CreateApplicationResult>());
+      AppLogger.d('Created violation application: ${application.toString()}');
     });
   });
 }

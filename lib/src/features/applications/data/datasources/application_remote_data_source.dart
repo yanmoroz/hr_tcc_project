@@ -5,6 +5,7 @@ import '../models/responses/application_detail_model.dart';
 import '../models/responses/application_list_response_model.dart';
 import '../models/responses/cancel_application_result_model.dart';
 import '../models/responses/create_application_result_model.dart';
+import '../models/responses/kp_absence_category_model.dart';
 
 abstract class ApplicationRemoteDataSource {
   /// Get paginated list of applications with filtering and statistics
@@ -34,4 +35,7 @@ abstract class ApplicationRemoteDataSource {
     required String applicationFormCode,
     required String instance,
   });
+
+  /// Get KP absence categories
+  Future<Result<List<KpAbsenceCategoryModel>>> getKpAbsenceCategories();
 }

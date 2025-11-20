@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/applications/applications.dart';
+import '../../core/entities/application_form.dart';
 import '../../features/comments/domain/domain.dart';
 import '../../features/comments/presentation/blocs/comments_page/comments_event.dart';
 import '../../features/comments/presentation/pages/comments_page.dart';
@@ -226,6 +227,16 @@ class AppRouter {
                       ..add(const ApplicationCreationEvent
                           .loadApplicationForms()),
                 child: const ApplicationCreationPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/application-form/:formCode',
+            builder: (context, state) {
+              final applicationForm = state.extra as ApplicationForm;
+              return BlocProvider(
+                create: (context) => BlocFactory.createApplicationFormBloc(),
+                child: ApplicationFormPage(applicationForm: applicationForm),
               );
             },
           ),

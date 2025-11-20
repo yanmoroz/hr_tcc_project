@@ -2,6 +2,7 @@
 export 'entities/application_detail.dart';
 export 'entities/application_info.dart';
 export 'entities/application_statistics.dart';
+export 'entities/kp_absence_category.dart';
 
 // Repositories
 export 'repositories/application_repository.dart';
@@ -13,6 +14,7 @@ export 'usecases/check_cancel_status_usecase.dart';
 export 'usecases/create_application_usecase.dart';
 export 'usecases/get_application_detail_usecase.dart';
 export 'usecases/get_applications_usecase.dart';
+export 'usecases/get_kp_absence_categories_usecase.dart';
 
 // Params
 export 'params/create_application_params.dart';

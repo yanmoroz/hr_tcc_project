@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/entities/application_form.dart';
 import '../../../../core/entities/application_form_group.dart';
@@ -143,12 +144,9 @@ class ApplicationCreationPage extends StatelessWidget {
                               return ApplicationFormItem(
                                 applicationForm: form,
                                 onTap: () {
-                                  // TODO: Navigate to form detail/fill page
-                                  // For now, just close and show a message
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Selected: ${form.name}'),
-                                    ),
+                                  context.push(
+                                    '/application-form/${form.code}',
+                                    extra: form,
                                   );
                                 },
                               );

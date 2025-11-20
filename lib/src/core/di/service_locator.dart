@@ -241,4 +241,7 @@ void _initializeApplicationDependencies() {
   sl.registerFactory<CheckApplicationStatusUsecase>(
     () => CheckApplicationStatusUsecase(sl()),
   );
+  sl.registerFactory<GetKpAbsenceCategoriesUsecase>(
+    () => GetKpAbsenceCategoriesUsecase(sl()),
+  );
 }

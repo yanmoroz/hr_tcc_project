@@ -1,6 +1,7 @@
 import '../../../../core/base_types/result.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../entities/application_detail.dart';
+import '../entities/kp_absence_category.dart';
 import '../params/create_application_params.dart';
 import '../results/cancel_application_result.dart';
 import '../results/check_application_status_result.dart';
@@ -38,4 +39,7 @@ abstract class ApplicationRepository {
     required String applicationFormCode,
     required String instance,
   });
+
+  /// Get KP absence categories
+  Future<Result<List<KpAbsenceCategory>>> getKpAbsenceCategories();
 }

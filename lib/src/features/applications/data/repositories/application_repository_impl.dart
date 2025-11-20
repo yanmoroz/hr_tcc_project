@@ -1,3 +1,4 @@
+import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/base_types/result.dart';
 import '../../../../core/dictionaries/data/models/models.dart';
 import '../../../../core/value_objects/status_group_type.dart';
@@ -5,7 +6,7 @@ import '../../domain/domain.dart';
 import '../datasources/application_remote_data_source.dart';
 import '../mappers/create_application_params_mapper.dart';
 
-class ApplicationRepositoryImpl implements ApplicationRepository {
+class ApplicationRepositoryImpl with BaseRepository implements ApplicationRepository {
   final ApplicationRemoteDataSource _remoteDataSource;
 
   ApplicationRepositoryImpl(this._remoteDataSource);
@@ -102,5 +103,11 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
         idApplication: model.idApplication,
       ),
     );
+  }
+
+  @override
+  Future<Result<List<KpAbsenceCategory>>> getKpAbsenceCategories() async {
+    final result = await _remoteDataSource.getKpAbsenceCategories();
+    return mapResultList(result, (model) => model.toDomain());
   }
 }

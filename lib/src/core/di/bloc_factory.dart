@@ -1,4 +1,5 @@
 import '../../features/applications/presentation/blocs/application_creation_page/application_creation_bloc.dart';
+import '../../features/applications/presentation/blocs/application_form_page/application_form_bloc.dart';
 import '../../features/applications/presentation/blocs/applications_list_page/applications_list_bloc.dart';
 import '../../features/comments/domain/domain.dart';
 import '../../features/comments/presentation/blocs/comments_page/comments_bloc.dart';
@@ -119,5 +120,13 @@ class BlocFactory {
   /// Creates an [ApplicationCreationBloc] instance.
   static ApplicationCreationBloc createApplicationCreationBloc() {
     return ApplicationCreationBloc(dictionariesRepository: sl());
+  }
+
+  /// Creates an [ApplicationFormBloc] instance.
+  static ApplicationFormBloc createApplicationFormBloc() {
+    return ApplicationFormBloc(
+      createApplicationUsecase: sl(),
+      getKpAbsenceCategoriesUsecase: sl(),
+    );
   }
 }

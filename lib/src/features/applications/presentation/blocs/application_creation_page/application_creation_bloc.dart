@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/dictionaries/domain/domain.dart';
 import '../../../../../core/entities/application_form.dart';
 import '../../../../../core/entities/application_form_group.dart';
+
 import 'application_creation_event.dart';
 import 'application_creation_state.dart';
 
@@ -112,8 +113,23 @@ class ApplicationCreationBloc
     final allForms = formsResult.fold((l) => <ApplicationForm>[], (r) => r);
     final groups = groupsResult.fold((l) => <ApplicationFormGroup>[], (r) => r);
 
+    // TODO: Temporary filter - will be removed in the future
+    // Keep only specific form codes
+    const allowedFormCodes = {
+      'alpinaAccess',
+      'courierDelivery',
+      'unplannedTraining',
+      'referralProgram',
+      'violation',
+      'absence',
+      'businessTrip',
+    };
+    final filteredForms = allForms
+        .where((form) => allowedFormCodes.contains(form.code))
+        .toList();
+
     // Filter out archived forms
-    final activeForms = allForms.where((form) => !form.archive).toList();
+    final activeForms = filteredForms.where((form) => !form.archive).toList();
 
     emit(
       ApplicationCreationState.loaded(

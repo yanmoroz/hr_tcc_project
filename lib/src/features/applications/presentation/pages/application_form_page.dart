@@ -1,0 +1,171 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/entities/application_form.dart';
+import '../../domain/domain.dart';
+import '../blocs/application_form_page/bloc.dart';
+import '../widgets/application_forms/absence_form.dart';
+import '../widgets/application_forms/alpina_access_form.dart';
+
+class ApplicationFormPage extends StatefulWidget {
+  final ApplicationForm applicationForm;
+
+  const ApplicationFormPage({super.key, required this.applicationForm});
+
+  @override
+  State<ApplicationFormPage> createState() => _ApplicationFormPageState();
+}
+
+class _ApplicationFormPageState extends State<ApplicationFormPage> {
+  CreateApplicationParams? _currentParams;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Создание заявки'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: BlocListener<ApplicationFormBloc, ApplicationFormState>(
+        listener: (context, state) {
+          state.when(
+            initial: () {},
+            submitting: () {},
+            success: () {
+              // Show success message and navigate back
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Заявка успешно создана'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              // Navigate back to applications list
+              context.pop();
+            },
+            error: (message) {
+              // Show error message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Ошибка: $message'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
+          );
+        },
+        child: Column(
+          children: [
+            // Form title
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                widget.applicationForm.name,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            // Form content
+            Expanded(child: _buildFormContent()),
+
+            // Submit button
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: BlocBuilder<ApplicationFormBloc, ApplicationFormState>(
+                builder: (context, state) {
+                  final isSubmitting = state is ApplicationFormSubmitting;
+
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isSubmitting || _currentParams == null
+                          ? null
+                          : () {
+                              context.read<ApplicationFormBloc>().add(
+                                ApplicationFormEvent.submitForm(
+                                  _currentParams!,
+                                ),
+                              );
+                            },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: const Color(0xFF5E6AD2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: isSubmitting
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : const Text(
+                              'Создать',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFormContent() {
+    // Switch on form code to display appropriate form
+    switch (widget.applicationForm.code) {
+      case 'alpinaAccess':
+        return AlpinaAccessForm(
+          onFormChanged: (params) {
+            setState(() {
+              _currentParams = params;
+            });
+          },
+        );
+
+      case 'absence':
+        return AbsenceForm(
+          onFormChanged: (params) {
+            setState(() {
+              _currentParams = params;
+            });
+          },
+        );
+
+      default:
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.construction, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(
+                'Форма для "${widget.applicationForm.name}" еще не реализована',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+    }
+  }
+}
