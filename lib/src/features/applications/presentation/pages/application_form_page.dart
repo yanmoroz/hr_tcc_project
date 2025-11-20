@@ -34,6 +34,8 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
         listener: (context, state) {
           state.when(
             initial: () {},
+            loadingData: () {},
+            dataLoaded: (_, __) {},
             submitting: () {},
             success: () {
               // Show success message and navigate back

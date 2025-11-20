@@ -220,6 +220,73 @@ class FeatureState with _$FeatureState {
 }
 ```
 
+#### Polymorphic BLoC Pattern
+
+For features with multiple form types or variations (like application forms), use polymorphic event/state handling:
+
+**Event with discriminator:**
+```dart
+@freezed
+class ApplicationFormEvent with _$ApplicationFormEvent {
+  const factory ApplicationFormEvent.loadFormData(String formCode) = LoadFormData;
+  const factory ApplicationFormEvent.submitForm(CreateApplicationParams params) = SubmitForm;
+}
+```
+
+**State with generic data:**
+```dart
+@freezed
+class ApplicationFormState with _$ApplicationFormState {
+  const factory ApplicationFormState.initial() = _Initial;
+  const factory ApplicationFormState.loadingData() = _LoadingData;
+  const factory ApplicationFormState.dataLoaded(String formCode, Object? data) = _DataLoaded;
+  const factory ApplicationFormState.submitting() = _Submitting;
+  const factory ApplicationFormState.success() = _Success;
+  const factory ApplicationFormState.error(String message) = _Error;
+}
+```
+
+**BLoC with switch-based polymorphism:**
+```dart
+class ApplicationFormBloc extends Bloc<ApplicationFormEvent, ApplicationFormState> {
+  final CreateApplicationUsecase createApplicationUsecase;
+  final GetCategoriesUsecase getCategoriesUsecase;
+  final GetOtherDataUsecase getOtherDataUsecase;
+
+  ApplicationFormBloc({...}) : super(const ApplicationFormState.initial()) {
+    on<LoadFormData>(_onLoadFormData);
+    on<SubmitForm>(_onSubmitForm);
+  }
+
+  Future<void> _onLoadFormData(LoadFormData event, Emitter emit) async {
+    emit(const ApplicationFormState.loadingData());
+
+    switch (event.formCode) {
+      case 'formTypeA':
+        final result = await getCategoriesUsecase();
+        result.fold(
+          (error) => emit(ApplicationFormState.error(error.toString())),
+          (data) => emit(ApplicationFormState.dataLoaded('formTypeA', data)),
+        );
+      case 'formTypeB':
+        final result = await getOtherDataUsecase();
+        result.fold(
+          (error) => emit(ApplicationFormState.error(error.toString())),
+          (data) => emit(ApplicationFormState.dataLoaded('formTypeB', data)),
+        );
+      default:
+        emit(ApplicationFormState.dataLoaded(event.formCode, null));
+    }
+  }
+}
+```
+
+**Benefits:**
+- Single BLoC handles multiple form types
+- Easy to add new form types (just add switch case)
+- No event/state explosion
+- Maintains clean architecture principles
+
 ### API Integration
 
 Remote data sources handle all API communication:

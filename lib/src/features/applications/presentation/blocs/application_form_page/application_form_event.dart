@@ -6,6 +6,9 @@ part 'application_form_event.freezed.dart';
 
 @freezed
 class ApplicationFormEvent with _$ApplicationFormEvent {
+  const factory ApplicationFormEvent.loadFormData(String formCode) =
+      LoadFormData;
+
   const factory ApplicationFormEvent.submitForm(
     CreateApplicationParams params,
   ) = SubmitForm;

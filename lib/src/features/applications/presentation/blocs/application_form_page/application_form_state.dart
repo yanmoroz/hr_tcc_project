@@ -6,6 +6,14 @@ part 'application_form_state.freezed.dart';
 class ApplicationFormState with _$ApplicationFormState {
   const factory ApplicationFormState.initial() = ApplicationFormInitial;
 
+  const factory ApplicationFormState.loadingData() =
+      ApplicationFormLoadingData;
+
+  const factory ApplicationFormState.dataLoaded(
+    String formCode,
+    Object? data,
+  ) = ApplicationFormDataLoaded;
+
   const factory ApplicationFormState.submitting() = ApplicationFormSubmitting;
 
   const factory ApplicationFormState.success() = ApplicationFormSuccess;

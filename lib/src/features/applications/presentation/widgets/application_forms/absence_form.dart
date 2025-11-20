@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import '../../blocs/application_form_page/bloc.dart';
 import '../form_fields/date_picker_field.dart';
@@ -71,52 +70,31 @@ class _AbsenceFormState extends State<AbsenceForm> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: FIX ASAP
-    final usecase = context
-        .read<ApplicationFormBloc>()
-        .getKpAbsenceCategoriesUsecase;
-
-    return Form(
-      key: _formKey,
-      child: FutureBuilder<Result<List<KpAbsenceCategory>>>(
-        future: usecase.call(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+    return BlocBuilder<ApplicationFormBloc, ApplicationFormState>(
+      builder: (context, state) {
+        return state.when(
+          initial: () {
+            // Trigger loading when form is initialized
+            context
+                .read<ApplicationFormBloc>()
+                .add(const ApplicationFormEvent.loadFormData('absence'));
             return const Center(child: CircularProgressIndicator());
-          }
+          },
+          loadingData: () => const Center(child: CircularProgressIndicator()),
+          dataLoaded: (formCode, data) {
+            // Check if this is absence form data
+            if (formCode != 'absence' || data == null) {
+              return const Center(
+                child: Text('Неверные данные формы'),
+              );
+            }
 
-          if (snapshot.hasError || !snapshot.hasData) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Ошибка загрузки категорий',
-                    style: const TextStyle(fontSize: 16, color: Colors.red),
-                  ),
-                ],
-              ),
-            );
-          }
+            // Cast data to expected type
+            final categories = data as List<KpAbsenceCategory>;
 
-          final result = snapshot.data!;
-          return result.fold(
-            (error) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Ошибка: ${error.toString()}',
-                    style: const TextStyle(fontSize: 16, color: Colors.red),
-                  ),
-                ],
-              ),
-            ),
-            (categories) => ListView(
+            return Form(
+            key: _formKey,
+            child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
                 // Category dropdown
@@ -188,8 +166,43 @@ class _AbsenceFormState extends State<AbsenceForm> {
               ],
             ),
           );
-        },
-      ),
+          },
+          submitting: () => Form(
+            key: _formKey,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+          success: () => Form(
+            key: _formKey,
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle, size: 64, color: Colors.green),
+                  SizedBox(height: 16),
+                  Text('Заявка успешно создана'),
+                ],
+              ),
+            ),
+          ),
+          error: (message) => Form(
+            key: _formKey,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Ошибка: $message',
+                    style: const TextStyle(fontSize: 16, color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
