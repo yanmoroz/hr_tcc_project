@@ -51,36 +51,36 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      onChanged: _onSearchChanged,
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
-        prefixIcon: Icon(Icons.search, color: Colors.grey[600], size: 24),
-        suffixIcon: _controller.text.isNotEmpty
-            ? IconButton(
-                icon: Icon(Icons.clear, color: Colors.grey[600]),
-                onPressed: _clearSearch,
-              )
-            : null,
-        filled: true,
-        fillColor: const Color(0xFFF5F4F8),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+    return SizedBox(
+      height: 40,
+      child: TextField(
+        controller: _controller,
+        onChanged: _onSearchChanged,
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
+          prefixIcon: Icon(Icons.search, color: Colors.grey[600], size: 24),
+          suffixIcon: _controller.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear, color: Colors.grey[600]),
+                  onPressed: _clearSearch,
+                )
+              : null,
+          filled: true,
+          fillColor: const Color(0xFFF5F4F8),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         ),
       ),
     );

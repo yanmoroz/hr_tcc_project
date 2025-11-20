@@ -71,8 +71,8 @@ abstract class BaseApiClient implements ApiClient {
       PrettyDioLogger(
         request: true,
         requestHeader: false,
-        requestBody: true,
-        responseBody: false,
+        requestBody: false,
+        responseBody: true,
         responseHeader: false,
         error: true,
         compact: true,

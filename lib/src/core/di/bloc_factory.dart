@@ -1,3 +1,5 @@
+import '../../features/applications/presentation/blocs/application_creation_page/application_creation_bloc.dart';
+import '../../features/applications/presentation/blocs/applications_list_page/applications_list_bloc.dart';
 import '../../features/comments/domain/domain.dart';
 import '../../features/comments/presentation/blocs/comments_page/comments_bloc.dart';
 import '../../features/polls/presentation/blocs/poll_page/poll_detail_bloc.dart';
@@ -107,5 +109,15 @@ class BlocFactory {
   /// Creates a [UserProfileHeaderBloc] instance.
   static UserProfileHeaderBloc createUserProfileHeaderBloc() {
     return UserProfileHeaderBloc(getCurrentUserInfoUsecase: sl());
+  }
+
+  /// Creates an [ApplicationsListBloc] instance.
+  static ApplicationsListBloc createApplicationsListBloc() {
+    return ApplicationsListBloc(getApplicationsUsecase: sl());
+  }
+
+  /// Creates an [ApplicationCreationBloc] instance.
+  static ApplicationCreationBloc createApplicationCreationBloc() {
+    return ApplicationCreationBloc(dictionariesRepository: sl());
   }
 }

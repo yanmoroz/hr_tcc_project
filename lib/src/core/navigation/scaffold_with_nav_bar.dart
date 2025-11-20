@@ -121,7 +121,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
     if (location.startsWith('/home')) {
       return 0;
     }
-    if (location.startsWith('/applications')) {
+    if (location.startsWith('/applications') ||
+        location.startsWith('/application-')) {
       return 1;
     }
     if (location.startsWith('/contacts')) {
