@@ -220,6 +220,88 @@ class FeatureState with _$FeatureState {
 }
 ```
 
+#### Detail Page Pattern
+
+**CRITICAL: ALL detail pages MUST follow this consistent pattern.** Do NOT reuse list BLoCs for detail pages.
+
+Examples: `NewsDetailPage`, `PollDetailPage`, `DiscountDetailPage`, `ApplicationDetailPage`, `NotificationDetailPage`, `ResellDetailPage`
+
+**Pattern requirements:**
+1. Each detail page has its own dedicated BLoC (e.g., `NewsDetailBloc`, `PollDetailBloc`)
+2. Pages receive only the entity ID as a parameter (not the full object)
+3. BLoC fetches data by ID and emits appropriate states
+4. Route uses path parameters (e.g., `/news-detail/:id`)
+5. BLoC is created via `BlocProvider` with factory method from `BlocFactory`
+6. BLoC is registered in `lib/src/core/di/bloc_factory.dart`
+
+**Example detail page structure:**
+
+```dart
+// Route definition
+GoRoute(
+  path: '/news-detail/:id',
+  builder: (context, state) {
+    final newsId = int.parse(state.pathParameters['id']!);
+    return BlocProvider(
+      create: (context) => BlocFactory.createNewsDetailBloc(newsId)
+        ..add(const NewsDetailEvent.loadDetail()),
+      child: NewsDetailPage(newsId: newsId),
+    );
+  },
+),
+
+// Page widget
+class NewsDetailPage extends StatelessWidget {
+  final int newsId;  // ID only, not full object
+
+  const NewsDetailPage({super.key, required this.newsId});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<NewsDetailBloc, NewsDetailState>(
+      builder: (context, state) {
+        return state.when(
+          initial: () => const CircularProgressIndicator(),
+          loading: () => const CircularProgressIndicator(),
+          loaded: (news) => // Display UI
+          error: (message) => // Error UI with retry
+        );
+      },
+    );
+  }
+}
+
+// BLoC
+class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
+  final int newsId;
+  final GetNewsDetailUsecase getNewsDetailUsecase;
+
+  NewsDetailBloc({
+    required this.newsId,
+    required this.getNewsDetailUsecase,
+  }) : super(const NewsDetailState.initial()) {
+    on<LoadDetail>(_onLoadDetail);
+    on<RefreshDetail>(_onRefreshDetail);
+  }
+
+  Future<void> _onLoadDetail(LoadDetail event, Emitter emit) async {
+    emit(const NewsDetailState.loading());
+    final result = await getNewsDetailUsecase(newsId);
+    result.fold(
+      (error) => emit(NewsDetailState.error(error.toString())),
+      (news) => emit(NewsDetailState.loaded(news)),
+    );
+  }
+}
+```
+
+**Why this pattern:**
+- Maintains architectural consistency across all features
+- Each page has clear, single responsibility
+- Supports proper state management (loading, error, refresh)
+- Enables deep linking and navigation
+- Follows separation of concerns principle
+
 #### Polymorphic BLoC Pattern
 
 For features with multiple form types or variations (like application forms), use polymorphic event/state handling:

@@ -26,8 +26,11 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
   bool _agreementAccepted = false;
 
   // Map radio button selection to code values
-  static const String _yesCode = 'yes';
-  static const String _noCode = 'no';
+  // static const String _yesCode = 'yes';
+  // static const String _noCode = 'no';
+  // TODO: ASK BE ABOUT THIS
+  static const String _yesCode = 'ne_znayu';
+  static const String _noCode = 'ne_znayu';
 
   @override
   void dispose() {

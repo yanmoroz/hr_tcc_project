@@ -13,7 +13,7 @@ sealed class ApplicationDetail with _$ApplicationDetail {
     required DateTime applicationDate,
     required SystemStatus systemStatus,
     required DateTime desiredStartDate,
-    required String comment,
+    String? comment,
     required AlpinaDigitalPrevAccess alpinaDigitalPrevAccess,
     required bool agreementAcceptance,
   }) = AlpinaDigitalAccessDetail;

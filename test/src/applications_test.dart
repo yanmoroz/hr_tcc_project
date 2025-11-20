@@ -27,21 +27,23 @@ void main() {
     });
 
     test('Application Detail', () async {
-      final applications = await getOrFail(
+      final applicationsResult = await getOrFail(
         repository.getApplications(page: 0, pageSize: 10),
       );
-      expect(applications.applications, isA<List<ApplicationInfo>>());
+      expect(applicationsResult.applications, isA<List<ApplicationInfo>>());
       AppLogger.d(
-        'Fetched applications: ${applications.applications.length} items',
+        'Fetched applications: ${applicationsResult.applications.length} items',
       );
 
-      // final applicationDetail = await getOrFail(
-      //   repository.getApplicationDetail(applications.applications.first.id),
-      // );
-      // expect(applicationDetail, isA<ApplicationDetail>());
-      // AppLogger.d(
-      //   'Fetched application detail: ${applicationDetail.toString()}',
-      // );
+      final applicationDetail = await getOrFail(
+        repository.getApplicationDetail(
+          applicationsResult.applications.first.id,
+        ),
+      );
+      expect(applicationDetail, isA<ApplicationDetail>());
+      AppLogger.d(
+        'Fetched application detail: ${applicationDetail.toString()}',
+      );
     });
 
     test('Create Application - Alpina Digital Access', () async {

@@ -6,7 +6,9 @@ import '../../domain/domain.dart';
 import '../datasources/application_remote_data_source.dart';
 import '../mappers/create_application_params_mapper.dart';
 
-class ApplicationRepositoryImpl with BaseRepository implements ApplicationRepository {
+class ApplicationRepositoryImpl
+    with BaseRepository
+    implements ApplicationRepository {
   final ApplicationRemoteDataSource _remoteDataSource;
 
   ApplicationRepositoryImpl(this._remoteDataSource);

@@ -17,7 +17,7 @@ sealed class ApplicationDetailModel with _$ApplicationDetailModel {
     required DateTime applicationDate,
     @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
     required DateTime desiredStartDate,
-    required String comment,
+    String? comment,
     @JsonKey(name: 'alpinaDigitalPrevAccess')
     required AlpinaDigitalPrevAccessModel alpinaDigitalPrevAccessModel,
     required bool agreementAcceptance,

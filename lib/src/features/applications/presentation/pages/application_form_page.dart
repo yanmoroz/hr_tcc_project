@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/entities/application_form.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/application_form_page/bloc.dart';
 import '../widgets/application_forms/absence_form.dart';
@@ -38,15 +39,19 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
             dataLoaded: (_, __) {},
             submitting: () {},
             success: () {
-              // Show success message and navigate back
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Заявка успешно создана'),
-                  backgroundColor: Colors.green,
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                barrierColor: Colors.transparent,
+                builder: (dialogContext) => SubmitResultWidget(
+                  message: 'Заявка успешно создана',
+                  isSuccess: true,
+                  onClose: () {
+                    Navigator.of(dialogContext).pop(); // Close dialog
+                    context.pop(); // Navigate back to applications list
+                  },
                 ),
               );
-              // Navigate back to applications list
-              context.pop();
             },
             error: (message) {
               // Show error message

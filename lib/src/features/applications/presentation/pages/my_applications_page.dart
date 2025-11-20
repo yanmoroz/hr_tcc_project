@@ -207,7 +207,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                                   application: application,
                                   onTap: () {
                                     // Navigate to application detail page
-                                    // context.push('/application/${application.id}');
+                                    context.push('/application/${application.id}');
                                   },
                                 );
                               },

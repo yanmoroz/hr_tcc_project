@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,7 +18,9 @@ import '../../features/news/presentation/blocs/news_detail_page/news_detail_even
 import '../../features/news/presentation/blocs/news_page/news_list_event.dart';
 import '../../features/news/presentation/pages/news_detail_page.dart';
 import '../../features/news/presentation/pages/news_page.dart';
+import '../../features/notifications/presentation/blocs/notification_detail_page/notification_detail_event.dart';
 import '../../features/notifications/presentation/blocs/notifications_page/notifications_list_event.dart';
+import '../../features/notifications/presentation/pages/notification_detail_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/polls/presentation/blocs/poll_page/poll_detail_event.dart';
 import '../../features/polls/presentation/blocs/polls_page/polls_list_event.dart';
@@ -222,10 +224,8 @@ class AppRouter {
             path: '/application-creation',
             builder: (context, state) {
               return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createApplicationCreationBloc()
-                      ..add(const ApplicationCreationEvent
-                          .loadApplicationForms()),
+                create: (context) => BlocFactory.createApplicationCreationBloc()
+                  ..add(const ApplicationCreationEvent.loadApplicationForms()),
                 child: const ApplicationCreationPage(),
               );
             },
@@ -237,6 +237,28 @@ class AppRouter {
               return BlocProvider(
                 create: (context) => BlocFactory.createApplicationFormBloc(),
                 child: ApplicationFormPage(applicationForm: applicationForm),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/application/:id',
+            builder: (context, state) {
+              final applicationId = state.pathParameters['id']!;
+              return BlocProvider(
+                create: (context) => BlocFactory.createApplicationDetailBloc(),
+                child: ApplicationDetailPage(applicationId: applicationId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/notification/:id',
+            builder: (context, state) {
+              final notificationId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNotificationDetailBloc()
+                      ..add(NotificationDetailEvent.loadDetail(notificationId)),
+                child: NotificationDetailPage(notificationId: notificationId),
               );
             },
           ),
