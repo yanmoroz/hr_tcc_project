@@ -204,11 +204,6 @@ void _initializeResellDependencies() {
   sl.registerFactory<GetResellEquipmentTypesUsecase>(
     () => GetResellEquipmentTypesUsecase(sl()),
   );
-
-  // BLoCs
-  sl.registerFactory<ResellItemsBloc>(() => ResellItemsBloc(sl()));
-  sl.registerFactory<ResellDetailBloc>(() => ResellDetailBloc(sl(), sl()));
-  sl.registerFactory<ResellBookingBloc>(() => ResellBookingBloc(sl()));
 }
 
 void _initializeApplicationDependencies() {

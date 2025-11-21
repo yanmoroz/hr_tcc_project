@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../blocs/news_page/bloc.dart';
 import '../widgets/news_item.dart';
@@ -90,11 +91,7 @@ class _NewsPageState extends State<NewsPage> {
                           newsItem: newsItem,
                           coverImage: coverImages[newsItem.id],
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/news-detail',
-                              arguments: newsItem.id,
-                            );
+                            context.push('/news-detail/${newsItem.id}');
                           },
                         );
                       },

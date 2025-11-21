@@ -2,11 +2,9 @@ import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/applications/applications.dart';
 import '../../core/entities/application_form.dart';
-import '../../features/comments/domain/domain.dart';
-import '../../features/comments/presentation/blocs/comments_page/comments_event.dart';
-import '../../features/comments/presentation/pages/comments_page.dart';
+import '../../features/applications/applications.dart';
+import '../../features/comments/comments.dart';
 import '../../features/discounts/presentation/blocs/discount_categories_page/discount_categories_event.dart';
 import '../../features/discounts/presentation/blocs/discount_page/discount_detail_event.dart';
 import '../../features/discounts/presentation/blocs/discounts_page/discounts_list_event.dart';
@@ -26,6 +24,8 @@ import '../../features/polls/presentation/blocs/poll_page/poll_detail_event.dart
 import '../../features/polls/presentation/blocs/polls_page/polls_list_event.dart';
 import '../../features/polls/presentation/pages/poll_page.dart';
 import '../../features/polls/presentation/pages/polls_page.dart';
+import '../../features/resell/presentation/blocs/resell_detail_page/bloc.dart';
+import '../../features/resell/presentation/blocs/resell_items_page/bloc.dart';
 import '../../features/resell/presentation/pages/resell_detail_page.dart';
 import '../../features/resell/presentation/pages/resell_items_page.dart';
 import '../../features/users/presentation/blocs/address_book_page/address_book_event.dart';
@@ -214,11 +214,24 @@ class AppRouter {
           ),
           GoRoute(
             path: '/resell',
-            builder: (context, state) => const ResellItemsPage(),
+            builder: (context, state) => BlocProvider(
+              create: (context) =>
+                  BlocFactory.createResellItemsBloc()
+                    ..add(const ResellItemsEvent.loadResellItems()),
+              child: const ResellItemsPage(),
+            ),
           ),
           GoRoute(
-            path: '/resell-detail',
-            builder: (context, state) => const ResellDetailPage(),
+            path: '/resell-detail/:id',
+            builder: (context, state) {
+              final itemId = state.pathParameters['id']!;
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createResellDetailBloc()
+                      ..add(ResellDetailEvent.loadResellDetail(itemId)),
+                child: ResellDetailPage(itemId: itemId),
+              );
+            },
           ),
           GoRoute(
             path: '/application-creation',

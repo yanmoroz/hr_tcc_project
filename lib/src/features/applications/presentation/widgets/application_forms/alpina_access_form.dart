@@ -115,31 +115,26 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
                       color: const Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Column(
-                      children: [
-                        RadioListTile<String>(
-                          title: const Text('Да'),
-                          value: _yesCode,
-                          groupValue: _prevAccessCode,
-                          onChanged: (value) {
-                            setState(() {
-                              _prevAccessCode = value;
-                            });
-                            _updateForm();
-                          },
-                        ),
-                        RadioListTile<String>(
-                          title: const Text('Нет'),
-                          value: _noCode,
-                          groupValue: _prevAccessCode,
-                          onChanged: (value) {
-                            setState(() {
-                              _prevAccessCode = value;
-                            });
-                            _updateForm();
-                          },
-                        ),
-                      ],
+                    child: RadioGroup<String>(
+                      groupValue: _prevAccessCode,
+                      onChanged: (value) {
+                        setState(() {
+                          _prevAccessCode = value;
+                        });
+                        _updateForm();
+                      },
+                      child: Column(
+                        children: [
+                          RadioListTile<String>(
+                            title: const Text('Да'),
+                            value: _yesCode,
+                          ),
+                          RadioListTile<String>(
+                            title: const Text('Нет'),
+                            value: _noCode,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

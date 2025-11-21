@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../blocs/polls_page/bloc.dart';
 import '../widgets/poll_item.dart';
@@ -39,11 +40,7 @@ class PollsPage extends StatelessWidget {
                     return PollItem(
                       viewModel: viewModel,
                       onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/poll',
-                          arguments: poll.id,
-                        );
+                        context.push('/poll/${poll.id}');
                       },
                     );
                   },

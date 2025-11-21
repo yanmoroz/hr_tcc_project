@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/di/service_locator.dart';
+import '../../../../core/di/bloc_factory.dart';
 import '../../domain/domain.dart';
 import '../blocs/resell_detail_page/bloc.dart';
 import 'resell_booking_page.dart';
 
 class ResellDetailPage extends StatelessWidget {
-  const ResellDetailPage({super.key});
+  final String itemId;
+
+  const ResellDetailPage({super.key, required this.itemId});
 
   @override
   Widget build(BuildContext context) {
-    final itemId = ModalRoute.of(context)!.settings.arguments as String;
-
     return BlocProvider(
       create: (context) =>
-          sl<ResellDetailBloc>()
+          BlocFactory.createResellDetailBloc()
             ..add(ResellDetailEvent.loadResellDetail(itemId)),
       child: BlocListener<ResellDetailBloc, ResellDetailState>(
         listener: (context, state) {
@@ -26,7 +26,11 @@ class ResellDetailPage extends StatelessWidget {
               Navigator.of(context)
                   .push(
                     MaterialPageRoute(
-                      builder: (context) => ResellBookingPage(itemId: itemId),
+                      builder: (context) => BlocProvider(
+                        create: (context) =>
+                            BlocFactory.createResellBookingBloc(),
+                        child: ResellBookingPage(itemId: itemId),
+                      ),
                       fullscreenDialog: true,
                     ),
                   )
@@ -281,7 +285,7 @@ class ResellDetailPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<ResellDetailBloc>().add(
-                          ResellDetailEvent.bookResellItem(detail.id),
+                          ResellDetailEvent.bookResellItem(itemId),
                         );
                       },
                       style: ElevatedButton.styleFrom(

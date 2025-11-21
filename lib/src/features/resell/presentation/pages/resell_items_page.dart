@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/di/service_locator.dart';
 import '../blocs/resell_items_page/bloc.dart';
 import '../widgets/resell_item_card.dart';
 import '../widgets/resell_status_chip.dart';
@@ -30,7 +30,7 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
 
   void _onScroll() {
     if (_isBottom) {
-      sl<ResellItemsBloc>().add(const ResellItemsEvent.loadMore());
+      context.read<ResellItemsBloc>().add(const ResellItemsEvent.loadMore());
     }
   }
 
@@ -45,7 +45,8 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          sl<ResellItemsBloc>()..add(const ResellItemsEvent.loadResellItems()),
+          context.read<ResellItemsBloc>()
+            ..add(const ResellItemsEvent.loadResellItems()),
       child: Scaffold(
         appBar: AppBar(title: const Text('Барахолка')),
         body: Column(
@@ -128,11 +129,7 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
                             return ResellItemCard(
                               item: item,
                               onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/resell-detail',
-                                  arguments: item.id,
-                                );
+                                context.push('/resell-detail/${item.id}');
                               },
                             );
                           },

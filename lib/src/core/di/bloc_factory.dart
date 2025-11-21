@@ -13,6 +13,7 @@ import '../../features/discounts/presentation/blocs/discounts_page/discounts_lis
 import '../../features/discounts/presentation/blocs/discount_page/discount_detail_bloc.dart';
 import '../../features/news/presentation/blocs/news_page/news_list_bloc.dart';
 import '../../features/news/presentation/blocs/news_detail_page/news_detail_bloc.dart';
+import '../../features/resell/resell.dart';
 import '../../features/users/presentation/blocs/address_book_page/address_book_bloc.dart';
 import '../../features/users/presentation/blocs/user_profile_header/user_profile_header_bloc.dart';
 import 'service_locator.dart';
@@ -146,5 +147,20 @@ class BlocFactory {
       getApplicationDetailUsecase: sl(),
       cancelApplicationUsecase: sl(),
     );
+  }
+
+  /// Creates a [ResellItemsBloc] instance.
+  static ResellItemsBloc createResellItemsBloc() {
+    return ResellItemsBloc(sl());
+  }
+
+  /// Creates a [ResellDetailBloc] instance with the given [itemId].
+  static ResellDetailBloc createResellDetailBloc() {
+    return ResellDetailBloc(sl(), sl());
+  }
+
+  /// Creates a [ResellBookingBloc] instance.
+  static ResellBookingBloc createResellBookingBloc() {
+    return ResellBookingBloc(sl());
   }
 }

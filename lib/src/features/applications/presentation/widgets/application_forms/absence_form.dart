@@ -75,97 +75,95 @@ class _AbsenceFormState extends State<AbsenceForm> {
         return state.when(
           initial: () {
             // Trigger loading when form is initialized
-            context
-                .read<ApplicationFormBloc>()
-                .add(const ApplicationFormEvent.loadFormData('absence'));
+            context.read<ApplicationFormBloc>().add(
+              const ApplicationFormEvent.loadFormData('absence'),
+            );
             return const Center(child: CircularProgressIndicator());
           },
           loadingData: () => const Center(child: CircularProgressIndicator()),
           dataLoaded: (formCode, data) {
             // Check if this is absence form data
             if (formCode != 'absence' || data == null) {
-              return const Center(
-                child: Text('Неверные данные формы'),
-              );
+              return const Center(child: Text('Неверные данные формы'));
             }
 
             // Cast data to expected type
             final categories = data as List<KpAbsenceCategory>;
 
             return Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                // Category dropdown
-                DropdownButtonFormField<int>(
-                  decoration: const InputDecoration(
-                    labelText: 'Тип',
-                    border: OutlineInputBorder(),
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  // Category dropdown
+                  DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(
+                      labelText: 'Тип',
+                      border: OutlineInputBorder(),
+                    ),
+                    initialValue: _category,
+                    items: categories.map((category) {
+                      return DropdownMenuItem(
+                        value: category.id,
+                        child: Text(category.name),
+                      );
+                    }).toList(),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Выберите тип отсутствия';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        _category = value;
+                      });
+                      _updateForm();
+                    },
                   ),
-                  value: _category,
-                  items: categories.map((category) {
-                    return DropdownMenuItem(
-                      value: category.id,
-                      child: Text(category.name),
-                    );
-                  }).toList(),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Выберите тип отсутствия';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      _category = value;
-                    });
-                    _updateForm();
-                  },
-                ),
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // Date field
-                DatePickerField(
-                  label: 'Дата',
-                  selectedDate: _selectedDate,
-                  onDateSelected: (date) {
-                    setState(() {
-                      _selectedDate = date;
-                    });
-                    _updateForm();
-                  },
-                ),
-                const SizedBox(height: 16),
+                  // Date field
+                  DatePickerField(
+                    label: 'Дата',
+                    selectedDate: _selectedDate,
+                    onDateSelected: (date) {
+                      setState(() {
+                        _selectedDate = date;
+                      });
+                      _updateForm();
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                // Time field
-                TimePickerField(
-                  label: 'Время',
-                  selectedTime: _selectedTime,
-                  onTimeSelected: (time) {
-                    setState(() {
-                      _selectedTime = time;
-                    });
-                    _updateForm();
-                  },
-                ),
-                const SizedBox(height: 16),
+                  // Time field
+                  TimePickerField(
+                    label: 'Время',
+                    selectedTime: _selectedTime,
+                    onTimeSelected: (time) {
+                      setState(() {
+                        _selectedTime = time;
+                      });
+                      _updateForm();
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                // Note field
-                CommentField(
-                  label: 'Причина',
-                  controller: _noteController,
-                  maxLines: 5,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Укажите причину отсутствия';
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
-          );
+                  // Note field
+                  CommentField(
+                    label: 'Причина',
+                    controller: _noteController,
+                    maxLines: 5,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Укажите причину отсутствия';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            );
           },
           submitting: () => Form(
             key: _formKey,
