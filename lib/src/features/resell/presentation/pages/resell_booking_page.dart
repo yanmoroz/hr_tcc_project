@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/di/service_locator.dart';
+import '../../../../core/di/bloc_factory.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/resell_booking_page/bloc.dart';
 
@@ -34,17 +36,22 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<ResellBookingBloc>(),
+      create: (context) => BlocFactory.createResellBookingBloc(),
       child: BlocListener<ResellBookingBloc, ResellBookingState>(
         listener: (context, state) {
           state.maybeWhen(
             bookingConfirmed: () {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Бронирование успешно подтверждено!'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 3),
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                barrierColor: Colors.transparent,
+                builder: (dialogContext) => SubmitResultWidget(
+                  message: 'Товар забронирован',
+                  isSuccess: true,
+                  onClose: () {
+                    Navigator.of(dialogContext).pop(); // Close dialog
+                    context.pop(); // Navigate back to applications list
+                  },
                 ),
               );
             },

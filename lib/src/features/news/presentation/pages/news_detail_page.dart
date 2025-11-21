@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/widgets/comments_button.dart';
@@ -103,32 +104,42 @@ class NewsDetailPage extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // Like and Comment buttons
-                      Row(
-                        children: [
-                          LikeButton(
-                            isLiked: liked,
-                            likeCount: likeCount,
-                            onPressed: () {
-                              context.read<NewsDetailBloc>().add(
-                                const NewsDetailEvent.toggleLike(),
-                              );
-                            },
-                          ),
-                          const SizedBox(width: 16),
-                          CommentsButton(
-                            commentCount: commentCount,
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/comments',
-                                arguments: {
-                                  'entityId': newsId,
-                                  'feature': 'news',
-                                },
-                              );
-                            },
-                          ),
-                        ],
+                      Container(
+                        color: Colors.blue,
+                        child: Row(
+                          children: [
+                            LikeButton(
+                              isLiked: liked,
+                              likeCount: likeCount,
+                              onPressed: () {
+                                context.read<NewsDetailBloc>().add(
+                                  const NewsDetailEvent.toggleLike(),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 16),
+                            CommentsButton(
+                              commentCount: commentCount,
+                              onPressed: () {
+                                // Navigator.pushNamed(
+                                //   context,
+                                //   '/comments',
+                                //   arguments: {
+                                //     'entityId': newsId,
+                                //     'feature': 'news',
+                                //   },
+                                // );
+                                context.push(
+                                  '/comments/news/$newsId',
+                                  extra: {
+                                    'entityId': newsId,
+                                    'entityType': 'news',
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

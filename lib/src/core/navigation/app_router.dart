@@ -12,6 +12,7 @@ import '../../features/discounts/presentation/pages/discount_categories_page.dar
 import '../../features/discounts/presentation/pages/discount_detail_page.dart';
 import '../../features/discounts/presentation/pages/discounts_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/more/presentation/pages/more_page.dart';
 import '../../features/news/presentation/blocs/news_detail_page/news_detail_event.dart';
 import '../../features/news/presentation/blocs/news_page/news_list_event.dart';
 import '../../features/news/presentation/pages/news_detail_page.dart';
@@ -32,7 +33,6 @@ import '../../features/users/presentation/blocs/address_book_page/address_book_e
 import '../../features/users/presentation/blocs/user_profile_header/user_profile_header_event.dart';
 import '../../features/users/presentation/pages/address_book_page.dart';
 import '../../features/users/presentation/pages/users_page.dart';
-import '../../features/users/presentation/widgets/user_profile_header.dart';
 import '../di/bloc_factory.dart';
 import 'scaffold_with_nav_bar.dart';
 
@@ -286,50 +286,5 @@ extension GoRouterStateExtension on GoRouterState {
   T? getExtra<T>(String key) {
     final extra = this.extra as Map<String, dynamic>?;
     return extra?[key] as T?;
-  }
-}
-
-// Placeholder pages for bottom navigation tabs
-class ApplicationsPage extends StatelessWidget {
-  const ApplicationsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          const UserProfileHeader(),
-          Expanded(child: Center(child: Placeholder())),
-        ],
-      ),
-    );
-  }
-}
-
-class ContactsPage extends StatelessWidget {
-  const ContactsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Контакты')),
-      body: Center(child: Placeholder()),
-    );
-  }
-}
-
-class MorePage extends StatelessWidget {
-  const MorePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          const UserProfileHeader(),
-          Expanded(child: Center(child: Placeholder())),
-        ],
-      ),
-    );
   }
 }
