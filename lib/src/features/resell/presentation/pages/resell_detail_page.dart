@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/di/bloc_factory.dart';
 import '../../domain/domain.dart';
 import '../blocs/resell_detail_page/bloc.dart';
-import 'resell_booking_page.dart';
 
 class ResellDetailPage extends StatelessWidget {
   final String itemId;
@@ -14,81 +13,65 @@ class ResellDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          BlocFactory.createResellDetailBloc()
-            ..add(ResellDetailEvent.loadResellDetail(itemId)),
-      child: BlocListener<ResellDetailBloc, ResellDetailState>(
-        listener: (context, state) {
-          state.maybeWhen(
-            bookingSuccess: () {
-              // Show modal booking page
-              Navigator.of(context)
-                  .push(
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) =>
-                            BlocFactory.createResellBookingBloc(),
-                        child: ResellBookingPage(itemId: itemId),
-                      ),
-                      fullscreenDialog: true,
-                    ),
-                  )
-                  .then((_) {
-                    // Reload detail when booking page is closed
-                    context.read<ResellDetailBloc>().add(
-                      ResellDetailEvent.loadResellDetail(itemId),
-                    );
-                  });
-            },
-            error: (message) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Ошибка: $message')));
-            },
-            orElse: () {},
-          );
-        },
-        child: Scaffold(
-          appBar: AppBar(title: const Text('Детали товара')),
-          body: BlocBuilder<ResellDetailBloc, ResellDetailState>(
-            builder: (context, state) {
-              return state.when(
-                initial: () => const Center(child: CircularProgressIndicator()),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                loaded: (detail) => _buildDetailContent(context, detail),
-                error: (message) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Ошибка: $message'),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<ResellDetailBloc>().add(
-                            ResellDetailEvent.loadResellDetail(itemId),
-                          );
-                        },
-                        child: const Text('Повторить'),
-                      ),
-                    ],
-                  ),
-                ),
-                bookingInProgress: () => const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
-                      Text('Бронирование...'),
-                    ],
-                  ),
-                ),
-                bookingSuccess: () =>
-                    const Center(child: CircularProgressIndicator()),
+    return BlocListener<ResellDetailBloc, ResellDetailState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          bookingSuccess: () {
+            // Show modal booking page
+            context.push('/resell-booking/$itemId').then((_) {
+              // Reload detail when booking page is closed
+              context.read<ResellDetailBloc>().add(
+                const ResellDetailEvent.loadResellDetail(),
               );
-            },
-          ),
+            });
+          },
+          error: (message) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Ошибка: $message')));
+          },
+          orElse: () {},
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Детали товара')),
+        body: BlocBuilder<ResellDetailBloc, ResellDetailState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              loaded: (detail) => _buildDetailContent(context, detail),
+              error: (message) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Ошибка: $message'),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<ResellDetailBloc>().add(
+                          const ResellDetailEvent.loadResellDetail(),
+                        );
+                      },
+                      child: const Text('Повторить'),
+                    ),
+                  ],
+                ),
+              ),
+              bookingInProgress: () => const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Бронирование...'),
+                  ],
+                ),
+              ),
+              bookingSuccess: () =>
+                  const Center(child: CircularProgressIndicator()),
+            );
+          },
         ),
       ),
     );
@@ -285,7 +268,7 @@ class ResellDetailPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<ResellDetailBloc>().add(
-                          ResellDetailEvent.bookResellItem(itemId),
+                          const ResellDetailEvent.bookResellItem(),
                         );
                       },
                       style: ElevatedButton.styleFrom(

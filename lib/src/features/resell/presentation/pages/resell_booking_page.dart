@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/di/bloc_factory.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/resell_booking_page/bloc.dart';
 
 class ResellBookingPage extends StatefulWidget {
-  final String itemId;
-
-  const ResellBookingPage({super.key, required this.itemId});
+  const ResellBookingPage({super.key});
 
   @override
   State<ResellBookingPage> createState() => _ResellBookingPageState();
@@ -35,214 +32,211 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BlocFactory.createResellBookingBloc(),
-      child: BlocListener<ResellBookingBloc, ResellBookingState>(
-        listener: (context, state) {
-          state.maybeWhen(
-            bookingConfirmed: () {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                barrierColor: Colors.transparent,
-                builder: (dialogContext) => SubmitResultWidget(
-                  message: 'Товар забронирован',
-                  isSuccess: true,
-                  onClose: () {
-                    Navigator.of(dialogContext).pop(); // Close dialog
-                    context.pop(); // Navigate back to applications list
-                  },
-                ),
-              );
-            },
-            error: (message) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Ошибка: $message'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            },
-            orElse: () {},
-          );
-        },
-        child: Scaffold(
-          appBar: AppBar(title: const Text('Подтверждение бронирования')),
-          body: BlocBuilder<ResellBookingBloc, ResellBookingState>(
-            builder: (context, state) {
-              final isLoading = state.maybeWhen(
-                confirmingBooking: () => true,
-                orElse: () => false,
-              );
+    return BlocListener<ResellBookingBloc, ResellBookingState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          bookingConfirmed: () {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              barrierColor: Colors.transparent,
+              builder: (dialogContext) => SubmitResultWidget(
+                message: 'Товар забронирован',
+                isSuccess: true,
+                onClose: () {
+                  Navigator.of(dialogContext).pop(); // Close dialog
+                  context.pop(); // Navigate back to applications list
+                },
+              ),
+            );
+          },
+          error: (message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Ошибка: $message'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          },
+          orElse: () {},
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Подтверждение бронирования')),
+        body: BlocBuilder<ResellBookingBloc, ResellBookingState>(
+          builder: (context, state) {
+            final isLoading = state.maybeWhen(
+              confirmingBooking: () => true,
+              orElse: () => false,
+            );
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Booking Info
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Информация о бронировании',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Booking Info
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Информация о бронировании',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                    ),
+                    const SizedBox(height: 24),
 
-                      // Transition Dropdown
-                      Text(
-                        'Переход',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    // Transition Dropdown
+                    Text(
+                      'Переход',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 8),
-                      DropdownButtonFormField<BookingTransition>(
-                        initialValue: _selectedTransition,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Выберите переход',
-                        ),
-                        items: BookingTransition.values.map((transition) {
-                          return DropdownMenuItem(
-                            value: transition,
-                            child: Text(_getTransitionLabel(transition)),
-                          );
-                        }).toList(),
-                        onChanged: isLoading
-                            ? null
-                            : (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _selectedTransition = value;
-                                  });
-                                }
-                              },
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Выберите переход';
-                          }
-                          return null;
-                        },
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<BookingTransition>(
+                      initialValue: _selectedTransition,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Выберите переход',
                       ),
-                      const SizedBox(height: 16),
-
-                      // INN Field
-                      Text(
-                        'ИНН',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _innController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Введите ИНН',
-                        ),
-                        enabled: !isLoading,
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Address Field
-                      Text(
-                        'Адрес',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _addressController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Введите адрес',
-                        ),
-                        enabled: !isLoading,
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Employee Place Field
-                      Text(
-                        'Место работы сотрудника',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _employeePlaceController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Введите место работы',
-                        ),
-                        enabled: !isLoading,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Pickup Checkbox
-                      CheckboxListTile(
-                        title: const Text('Забрать лот самостоятельно'),
-                        value: _pickupLotMyself,
-                        onChanged: isLoading
-                            ? null
-                            : (value) {
+                      items: BookingTransition.values.map((transition) {
+                        return DropdownMenuItem(
+                          value: transition,
+                          child: Text(_getTransitionLabel(transition)),
+                        );
+                      }).toList(),
+                      onChanged: isLoading
+                          ? null
+                          : (value) {
+                              if (value != null) {
                                 setState(() {
-                                  _pickupLotMyself = value ?? false;
+                                  _selectedTransition = value;
                                 });
-                              },
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      const SizedBox(height: 24),
+                              }
+                            },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Выберите переход';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
 
-                      // Submit Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => _submitForm(context),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text(
-                                  'Подтвердить бронирование',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
+                    // INN Field
+                    Text(
+                      'ИНН',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _innController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Введите ИНН',
+                      ),
+                      enabled: !isLoading,
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Address Field
+                    Text(
+                      'Адрес',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _addressController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Введите адрес',
+                      ),
+                      enabled: !isLoading,
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Employee Place Field
+                    Text(
+                      'Место работы сотрудника',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _employeePlaceController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Введите место работы',
+                      ),
+                      enabled: !isLoading,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Pickup Checkbox
+                    CheckboxListTile(
+                      title: const Text('Забрать лот самостоятельно'),
+                      value: _pickupLotMyself,
+                      onChanged: isLoading
+                          ? null
+                          : (value) {
+                              setState(() {
+                                _pickupLotMyself = value ?? false;
+                              });
+                            },
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Submit Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: isLoading
+                            ? null
+                            : () => _submitForm(context),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Подтвердить бронирование',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -260,7 +254,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   void _submitForm(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
       final confirmation = ConfirmResellBookingParams(
-        id: widget.itemId,
+        id: context.read<ResellBookingBloc>().itemId,
         transition: _selectedTransition,
         inn: _innController.text.isEmpty ? null : _innController.text,
         address: _addressController.text.isEmpty

@@ -243,13 +243,24 @@ class AppRouter {
             ),
           ),
           GoRoute(
+            path: '/resell-booking/:id',
+            builder: (context, state) {
+              final itemId = state.pathParameters['id']!;
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createResellBookingBloc(itemId),
+                child: const ResellBookingPage(),
+              );
+            },
+          ),
+          GoRoute(
             path: '/resell-detail/:id',
             builder: (context, state) {
               final itemId = state.pathParameters['id']!;
               return BlocProvider(
                 create: (context) =>
-                    BlocFactory.createResellDetailBloc()
-                      ..add(ResellDetailEvent.loadResellDetail(itemId)),
+                    BlocFactory.createResellDetailBloc(itemId)
+                      ..add(const ResellDetailEvent.loadResellDetail()),
                 child: ResellDetailPage(itemId: itemId),
               );
             },

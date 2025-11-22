@@ -147,13 +147,17 @@ class BlocFactory {
   }
 
   /// Creates a [ResellBookingBloc] instance.
-  static ResellBookingBloc createResellBookingBloc() {
-    return ResellBookingBloc(sl());
+  static ResellBookingBloc createResellBookingBloc(String itemId) {
+    return ResellBookingBloc(itemId, sl());
   }
 
   /// Creates a [ResellDetailBloc] instance with the given [itemId].
-  static ResellDetailBloc createResellDetailBloc() {
-    return ResellDetailBloc(sl(), sl());
+  static ResellDetailBloc createResellDetailBloc(String itemId) {
+    return ResellDetailBloc(
+      itemId: itemId,
+      getResellDetailUsecase: sl(),
+      bookResellItemUsecase: sl(),
+    );
   }
 
   /// Creates a [ResellItemsBloc] instance.

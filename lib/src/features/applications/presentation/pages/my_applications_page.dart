@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/di/bloc_factory.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../../../../core/widgets/search_bar_widget.dart';
 import '../../../users/presentation/widgets/user_profile_header.dart';
@@ -46,236 +45,224 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          BlocFactory.createApplicationsListBloc()
-            ..add(const ApplicationsListEvent.loadApplications()),
-      child: Column(
-        children: [
-          const UserProfileHeader(),
-          // Status filter tabs - only rebuilds when statistics or selected filter changes
-            BlocSelector<
-              ApplicationsListBloc,
-              ApplicationsListState,
-              _FilterTabsState
-            >(
-              selector: (state) {
-                return state.maybeWhen(
-                  loaded: (_, statistics, __, ___, ____, statusGroup, _____) =>
-                      _FilterTabsState(
-                        statistics: statistics,
-                        selectedStatusGroup: statusGroup,
-                      ),
-                  orElse: () => const _FilterTabsState(
-                    statistics: [],
-                    selectedStatusGroup: null,
+    return Column(
+      children: [
+        const UserProfileHeader(),
+        // Status filter tabs - only rebuilds when statistics or selected filter changes
+        BlocSelector<
+          ApplicationsListBloc,
+          ApplicationsListState,
+          _FilterTabsState
+        >(
+          selector: (state) {
+            return state.maybeWhen(
+              loaded: (_, statistics, __, ___, ____, statusGroup, _____) =>
+                  _FilterTabsState(
+                    statistics: statistics,
+                    selectedStatusGroup: statusGroup,
                   ),
-                );
-              },
-              builder: (context, filterTabsState) {
-                if (filterTabsState.statistics.isEmpty) {
-                  return const SizedBox.shrink();
-                }
+              orElse: () => const _FilterTabsState(
+                statistics: [],
+                selectedStatusGroup: null,
+              ),
+            );
+          },
+          builder: (context, filterTabsState) {
+            if (filterTabsState.statistics.isEmpty) {
+              return const SizedBox.shrink();
+            }
 
-                return Column(
-                  children: [
-                    const SizedBox(height: 8),
-                    StatusFilterTabs(
-                      statistics: filterTabsState.statistics,
-                      selectedStatusGroup: filterTabsState.selectedStatusGroup,
-                      onStatusGroupChanged: (newStatusGroup) {
-                        context.read<ApplicationsListBloc>().add(
-                          ApplicationsListEvent.changeStatusFilter(
-                            newStatusGroup,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
+            return Column(
+              children: [
+                const SizedBox(height: 8),
+                StatusFilterTabs(
+                  statistics: filterTabsState.statistics,
+                  selectedStatusGroup: filterTabsState.selectedStatusGroup,
+                  onStatusGroupChanged: (newStatusGroup) {
+                    context.read<ApplicationsListBloc>().add(
+                      ApplicationsListEvent.changeStatusFilter(newStatusGroup),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
 
-            // Search bar - never rebuilds on state changes
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child:
-                  BlocSelector<
-                    ApplicationsListBloc,
-                    ApplicationsListState,
-                    _SearchBarState
-                  >(
-                    selector: (state) {
-                      return state.maybeWhen(
-                        loaded:
-                            (_, __, ___, ____, _____, statusGroup, ______) =>
-                                _SearchBarState(statusGroup: statusGroup),
-                        orElse: () => const _SearchBarState(statusGroup: null),
+        // Search bar - never rebuilds on state changes
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child:
+              BlocSelector<
+                ApplicationsListBloc,
+                ApplicationsListState,
+                _SearchBarState
+              >(
+                selector: (state) {
+                  return state.maybeWhen(
+                    loaded: (_, __, ___, ____, _____, statusGroup, ______) =>
+                        _SearchBarState(statusGroup: statusGroup),
+                    orElse: () => const _SearchBarState(statusGroup: null),
+                  );
+                },
+                builder: (context, searchBarState) {
+                  return SearchBarWidget(
+                    hintText: 'Поиск по заявкам',
+                    onSearchChanged: (query) {
+                      context.read<ApplicationsListBloc>().add(
+                        ApplicationsListEvent.loadApplications(
+                          search: query.isEmpty ? null : query,
+                          statusGroup: searchBarState.statusGroup,
+                        ),
                       );
                     },
-                    builder: (context, searchBarState) {
-                      return SearchBarWidget(
-                        hintText: 'Поиск по заявкам',
-                        onSearchChanged: (query) {
-                          context.read<ApplicationsListBloc>().add(
-                            ApplicationsListEvent.loadApplications(
-                              search: query.isEmpty ? null : query,
-                              statusGroup: searchBarState.statusGroup,
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-            ),
+                  );
+                },
+              ),
+        ),
 
-            // Main content area
-            Expanded(
-              child: BlocBuilder<ApplicationsListBloc, ApplicationsListState>(
-                builder: (context, state) {
-                  return state.when(
-                    initial: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    loaded:
-                        (
-                          applications,
-                          statistics,
-                          currentPage,
-                          hasMorePages,
-                          isLoadingMore,
-                          statusGroup,
-                          search,
-                        ) {
-                          // Check if we have no applications and no filters applied
-                          final hasNoApplications =
-                              applications.isEmpty &&
-                              statusGroup == null &&
-                              (search == null || search.isEmpty);
+        // Main content area
+        Expanded(
+          child: BlocBuilder<ApplicationsListBloc, ApplicationsListState>(
+            builder: (context, state) {
+              return state.when(
+                initial: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                loaded:
+                    (
+                      applications,
+                      statistics,
+                      currentPage,
+                      hasMorePages,
+                      isLoadingMore,
+                      statusGroup,
+                      search,
+                    ) {
+                      // Check if we have no applications and no filters applied
+                      final hasNoApplications =
+                          applications.isEmpty &&
+                          statusGroup == null &&
+                          (search == null || search.isEmpty);
 
-                          if (hasNoApplications) {
-                            return const EmptyApplicationsState();
-                          }
+                      if (hasNoApplications) {
+                        return const EmptyApplicationsState();
+                      }
 
-                          // Empty results with filters
-                          if (applications.isEmpty) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(32),
-                                child: Text(
-                                  'Заявок не найдено',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xFF757575),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-
-                          // Application list
-                          return RefreshIndicator(
-                            onRefresh: () async {
-                              context.read<ApplicationsListBloc>().add(
-                                ApplicationsListEvent.refreshApplications(
-                                  statusGroup: statusGroup,
-                                  search: search,
-                                ),
-                              );
-                            },
-                            child: ListView.builder(
-                              controller: _scrollController,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              itemCount:
-                                  applications.length + (isLoadingMore ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                if (index >= applications.length) {
-                                  return const Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(16),
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                }
-
-                                final application = applications[index];
-                                return ApplicationCard(
-                                  application: application,
-                                  onTap: () {
-                                    // Navigate to application detail page
-                                    context.push('/application/${application.id}');
-                                  },
-                                );
-                              },
-                            ),
-                          );
-                        },
-                    error: (message) => Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            size: 64,
-                            color: Color(0xFF757575),
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Ошибка загрузки',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF212121),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                      // Empty results with filters
+                      if (applications.isEmpty) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(32),
                             child: Text(
-                              message,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
+                              'Заявок не найдено',
+                              style: TextStyle(
+                                fontSize: 16,
                                 color: Color(0xFF757575),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<ApplicationsListBloc>().add(
-                                const ApplicationsListEvent.loadApplications(),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2196F3),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 12,
-                              ),
-                            ),
-                            child: const Text('Повторить'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                        );
+                      }
 
-            // Create application button - always visible
-            CreateApplicationButton(
-              onPressed: () {
-                context.push('/application-creation');
-              },
-            ),
-          ],
-      ),
+                      // Application list
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<ApplicationsListBloc>().add(
+                            ApplicationsListEvent.refreshApplications(
+                              statusGroup: statusGroup,
+                              search: search,
+                            ),
+                          );
+                        },
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount:
+                              applications.length + (isLoadingMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index >= applications.length) {
+                              return const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+
+                            final application = applications[index];
+                            return ApplicationCard(
+                              application: application,
+                              onTap: () {
+                                // Navigate to application detail page
+                                context.push('/application/${application.id}');
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    },
+                error: (message) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Color(0xFF757575),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Ошибка загрузки',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF212121),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF757575),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<ApplicationsListBloc>().add(
+                            const ApplicationsListEvent.loadApplications(),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2196F3),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 12,
+                          ),
+                        ),
+                        child: const Text('Повторить'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+
+        // Create application button - always visible
+        CreateApplicationButton(
+          onPressed: () {
+            context.push('/application-creation');
+          },
+        ),
+      ],
     );
   }
 

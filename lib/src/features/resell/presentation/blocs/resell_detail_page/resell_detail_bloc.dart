@@ -7,13 +7,17 @@ import 'resell_detail_event.dart';
 import 'resell_detail_state.dart';
 
 class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
+  final String itemId;
   final GetResellDetailUsecase _getResellDetailUsecase;
   final BookResellItemUsecase _bookResellItemUsecase;
 
-  ResellDetail? _currentDetail;
-
-  ResellDetailBloc(this._getResellDetailUsecase, this._bookResellItemUsecase)
-    : super(const ResellDetailState.initial()) {
+  ResellDetailBloc({
+    required this.itemId,
+    required GetResellDetailUsecase getResellDetailUsecase,
+    required BookResellItemUsecase bookResellItemUsecase,
+  })  : _getResellDetailUsecase = getResellDetailUsecase,
+        _bookResellItemUsecase = bookResellItemUsecase,
+        super(const ResellDetailState.initial()) {
     on<LoadResellDetail>(_onLoadResellDetail);
     on<BookResellItem>(_onBookResellItem);
   }
@@ -24,7 +28,7 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
   ) async {
     emit(const ResellDetailState.loading());
 
-    final result = await _getResellDetailUsecase(event.id);
+    final result = await _getResellDetailUsecase(itemId);
 
     if (!emit.isDone) {
       result.fold(
@@ -33,7 +37,6 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
           emit(ResellDetailState.error(error.toString()));
         },
         (detail) {
-          _currentDetail = detail;
           emit(ResellDetailState.loaded(detail));
         },
       );
@@ -44,18 +47,20 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
     BookResellItem event,
     Emitter<ResellDetailState> emit,
   ) async {
-    if (_currentDetail == null) return;
+    // Get current detail from state
+    final currentDetail = state.mapOrNull(loaded: (state) => state.detail);
+    if (currentDetail == null) return;
 
     emit(const ResellDetailState.bookingInProgress());
 
-    final result = await _bookResellItemUsecase(event.id);
+    final result = await _bookResellItemUsecase(itemId);
 
     if (!emit.isDone) {
       result.fold(
         (error) {
           AppLogger.e('Failed to book resell item: ${error.toString()}');
           // Return to loaded state with the detail
-          emit(ResellDetailState.loaded(_currentDetail!));
+          emit(ResellDetailState.loaded(currentDetail));
           emit(ResellDetailState.error(error.toString()));
         },
         (_) {
