@@ -6,6 +6,7 @@ import '../../features/notifications/notifications.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
 import '../../features/users/users.dart';
+import '../entities/application_form.dart';
 import 'service_locator.dart';
 
 /// Factory for creating BLoC instances.
@@ -21,16 +22,22 @@ class BlocFactory {
   }
 
   /// Creates an [ApplicationDetailBloc] instance.
-  static ApplicationDetailBloc createApplicationDetailBloc() {
+  static ApplicationDetailBloc createApplicationDetailBloc(
+    String applicationId,
+  ) {
     return ApplicationDetailBloc(
+      applicationId: applicationId,
       getApplicationDetailUsecase: sl(),
       cancelApplicationUsecase: sl(),
     );
   }
 
   /// Creates an [ApplicationFormBloc] instance.
-  static ApplicationFormBloc createApplicationFormBloc() {
+  static ApplicationFormBloc createApplicationFormBloc(
+    ApplicationForm applicationForm,
+  ) {
     return ApplicationFormBloc(
+      applicationForm: applicationForm,
       createApplicationUsecase: sl(),
       getKpAbsenceCategoriesUsecase: sl(),
     );

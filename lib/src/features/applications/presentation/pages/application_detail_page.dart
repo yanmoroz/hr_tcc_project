@@ -8,9 +8,7 @@ import '../blocs/application_detail_page/bloc.dart';
 import '../widgets/application_details/alpina_access_detail.dart';
 
 class ApplicationDetailPage extends StatelessWidget {
-  final String applicationId;
-
-  const ApplicationDetailPage({super.key, required this.applicationId});
+  const ApplicationDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +66,8 @@ class ApplicationDetailPage extends StatelessWidget {
               initial: () {
                 // Trigger loading on initial state
                 context.read<ApplicationDetailBloc>().add(
-                      ApplicationDetailEvent.loadDetail(applicationId),
-                    );
+                  ApplicationDetailEvent.loadDetail(),
+                );
                 return const Center(child: CircularProgressIndicator());
               },
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -80,8 +78,11 @@ class ApplicationDetailPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 48, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Ошибка: $message',
@@ -104,47 +105,81 @@ class ApplicationDetailPage extends StatelessWidget {
         // Detail content based on application type
         Expanded(
           child: detail.when(
-            alpinaDigitalAccess: (
-              id,
-              applicationFormCode,
-              applicationDate,
-              systemStatus,
-              desiredStartDate,
-              comment,
-              alpinaDigitalPrevAccess,
-              agreementAcceptance,
-            ) =>
-                AlpinaAccessDetail(
-              applicationDate: applicationDate,
-              systemStatus: systemStatus,
-              desiredStartDate: desiredStartDate,
-              comment: comment,
-              alpinaDigitalPrevAccess: alpinaDigitalPrevAccess,
-              agreementAcceptance: agreementAcceptance,
-            ),
-            courierDelivery: (id, applicationFormCode, applicationDate,
-                    systemStatus, deliveryType, deliveryAddress, deliveryDate,
-                    legalEntity, office, recepientCompanyName,
-                    recepientNameContact, recepientPhoneNumber, tripPurpose,
-                    urgency, recepientEmail, comments, choiceExplanation,
-                    contentDescription) =>
-                const Center(child: Text('Courier Delivery details (TBD)')),
-            businessTrip: (id, applicationFormCode, applicationDate,
-                    systemStatus, activityType, country, startDate, endDate,
-                    departure, destination, travelers, financeDivisionTripCode,
-                    financeDivisionTripString, tripPurposeId,
-                    tripPurposeString, plannedEvents, urgency,
-                    selectionHelpTripCode, comment, files, legalEntity) =>
-                const Center(child: Text('Business Trip details (TBD)')),
-            referralProgram: (id, applicationFormCode, applicationDate,
-                    systemStatus) =>
-                const Center(child: Text('Referral Program details (TBD)')),
-            unplannedTraining: (id, applicationFormCode, applicationDate,
-                    systemStatus) =>
-                const Center(child: Text('Unplanned Training details (TBD)')),
-            violation: (id, applicationFormCode, applicationDate,
-                    systemStatus) =>
-                const Center(child: Text('Violation details (TBD)')),
+            alpinaDigitalAccess:
+                (
+                  id,
+                  applicationFormCode,
+                  applicationDate,
+                  systemStatus,
+                  desiredStartDate,
+                  comment,
+                  alpinaDigitalPrevAccess,
+                  agreementAcceptance,
+                ) => AlpinaAccessDetail(
+                  applicationDate: applicationDate,
+                  systemStatus: systemStatus,
+                  desiredStartDate: desiredStartDate,
+                  comment: comment,
+                  alpinaDigitalPrevAccess: alpinaDigitalPrevAccess,
+                  agreementAcceptance: agreementAcceptance,
+                ),
+            courierDelivery:
+                (
+                  id,
+                  applicationFormCode,
+                  applicationDate,
+                  systemStatus,
+                  deliveryType,
+                  deliveryAddress,
+                  deliveryDate,
+                  legalEntity,
+                  office,
+                  recepientCompanyName,
+                  recepientNameContact,
+                  recepientPhoneNumber,
+                  tripPurpose,
+                  urgency,
+                  recepientEmail,
+                  comments,
+                  choiceExplanation,
+                  contentDescription,
+                ) =>
+                    const Center(child: Text('Courier Delivery details (TBD)')),
+            businessTrip:
+                (
+                  id,
+                  applicationFormCode,
+                  applicationDate,
+                  systemStatus,
+                  activityType,
+                  country,
+                  startDate,
+                  endDate,
+                  departure,
+                  destination,
+                  travelers,
+                  financeDivisionTripCode,
+                  financeDivisionTripString,
+                  tripPurposeId,
+                  tripPurposeString,
+                  plannedEvents,
+                  urgency,
+                  selectionHelpTripCode,
+                  comment,
+                  files,
+                  legalEntity,
+                ) => const Center(child: Text('Business Trip details (TBD)')),
+            referralProgram:
+                (id, applicationFormCode, applicationDate, systemStatus) =>
+                    const Center(child: Text('Referral Program details (TBD)')),
+            unplannedTraining:
+                (id, applicationFormCode, applicationDate, systemStatus) =>
+                    const Center(
+                      child: Text('Unplanned Training details (TBD)'),
+                    ),
+            violation:
+                (id, applicationFormCode, applicationDate, systemStatus) =>
+                    const Center(child: Text('Violation details (TBD)')),
             absence: (id, applicationFormCode, applicationDate, systemStatus) =>
                 const Center(child: Text('Absence details (TBD)')),
           ),
@@ -152,20 +187,27 @@ class ApplicationDetailPage extends StatelessWidget {
 
         // Cancel button (only if cancelable)
         detail.map(
-          alpinaDigitalAccess: (d) =>
-              d.systemStatus.cancelable ? _buildCancelButton(context) : const SizedBox.shrink(),
-          courierDelivery: (d) =>
-              d.systemStatus.cancelable ? _buildCancelButton(context) : const SizedBox.shrink(),
-          businessTrip: (d) =>
-              d.systemStatus.cancelable ? _buildCancelButton(context) : const SizedBox.shrink(),
-          referralProgram: (d) =>
-              d.systemStatus.cancelable ? _buildCancelButton(context) : const SizedBox.shrink(),
-          unplannedTraining: (d) =>
-              d.systemStatus.cancelable ? _buildCancelButton(context) : const SizedBox.shrink(),
-          violation: (d) =>
-              d.systemStatus.cancelable ? _buildCancelButton(context) : const SizedBox.shrink(),
-          absence: (d) =>
-              d.systemStatus.cancelable ? _buildCancelButton(context) : const SizedBox.shrink(),
+          alpinaDigitalAccess: (d) => d.systemStatus.cancelable
+              ? _buildCancelButton(context)
+              : const SizedBox.shrink(),
+          courierDelivery: (d) => d.systemStatus.cancelable
+              ? _buildCancelButton(context)
+              : const SizedBox.shrink(),
+          businessTrip: (d) => d.systemStatus.cancelable
+              ? _buildCancelButton(context)
+              : const SizedBox.shrink(),
+          referralProgram: (d) => d.systemStatus.cancelable
+              ? _buildCancelButton(context)
+              : const SizedBox.shrink(),
+          unplannedTraining: (d) => d.systemStatus.cancelable
+              ? _buildCancelButton(context)
+              : const SizedBox.shrink(),
+          violation: (d) => d.systemStatus.cancelable
+              ? _buildCancelButton(context)
+              : const SizedBox.shrink(),
+          absence: (d) => d.systemStatus.cancelable
+              ? _buildCancelButton(context)
+              : const SizedBox.shrink(),
         ),
       ],
     );
@@ -184,7 +226,8 @@ class ApplicationDetailPage extends StatelessWidget {
               builder: (dialogContext) => AlertDialog(
                 title: const Text('Отменить заявку?'),
                 content: const Text(
-                    'Вы уверены, что хотите отменить эту заявку?'),
+                  'Вы уверены, что хотите отменить эту заявку?',
+                ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(dialogContext).pop(),
@@ -194,8 +237,8 @@ class ApplicationDetailPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(dialogContext).pop();
                       context.read<ApplicationDetailBloc>().add(
-                            const ApplicationDetailEvent.cancelApplication(),
-                          );
+                        const ApplicationDetailEvent.cancelApplication(),
+                      );
                     },
                     child: const Text(
                       'Да, отменить',

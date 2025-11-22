@@ -9,9 +9,7 @@ import '../../../../core/widgets/like_button.dart';
 import '../blocs/discount_page/bloc.dart';
 
 class DiscountDetailPage extends StatelessWidget {
-  final int discountId;
-
-  const DiscountDetailPage({super.key, required this.discountId});
+  const DiscountDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {

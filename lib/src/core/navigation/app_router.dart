@@ -51,8 +51,10 @@ class AppRouter {
             builder: (context, state) {
               final applicationForm = state.extra as ApplicationForm;
               return BlocProvider(
-                create: (context) => BlocFactory.createApplicationFormBloc(),
-                child: ApplicationFormPage(applicationForm: applicationForm),
+                create: (context) => BlocFactory.createApplicationFormBloc(
+                  applicationForm,
+                )..add(ApplicationFormEvent.loadFormData(applicationForm.code)),
+                child: ApplicationFormPage(),
               );
             },
           ),
@@ -61,8 +63,10 @@ class AppRouter {
             builder: (context, state) {
               final applicationId = state.pathParameters['id']!;
               return BlocProvider(
-                create: (context) => BlocFactory.createApplicationDetailBloc(),
-                child: ApplicationDetailPage(applicationId: applicationId),
+                create: (context) =>
+                    BlocFactory.createApplicationDetailBloc(applicationId)
+                      ..add(ApplicationDetailEvent.loadDetail()),
+                child: const ApplicationDetailPage(),
               );
             },
           ),
@@ -89,7 +93,7 @@ class AppRouter {
                   entityId: entityId,
                   entityType: entityType,
                 )..add(const CommentsEvent.loadComments()),
-                child: CommentsPage(entityId: entityId, entityType: entityType),
+                child: const CommentsPage(),
               );
             },
           ),
@@ -123,7 +127,7 @@ class AppRouter {
                 create: (context) =>
                     BlocFactory.createDiscountDetailBloc(discountId)
                       ..add(const DiscountDetailEvent.loadDetail()),
-                child: DiscountDetailPage(discountId: discountId),
+                child: const DiscountDetailPage(),
               );
             },
           ),
@@ -179,7 +183,7 @@ class AppRouter {
                 create: (context) =>
                     BlocFactory.createNewsDetailBloc(newsId)
                       ..add(const NewsDetailEvent.loadDetail()),
-                child: NewsDetailPage(newsId: newsId),
+                child: const NewsDetailPage(),
               );
             },
           ),
@@ -191,7 +195,7 @@ class AppRouter {
                 create: (context) =>
                     BlocFactory.createNotificationDetailBloc()
                       ..add(NotificationDetailEvent.loadDetail(notificationId)),
-                child: NotificationDetailPage(notificationId: notificationId),
+                child: const NotificationDetailPage(),
               );
             },
           ),
@@ -214,7 +218,7 @@ class AppRouter {
                 create: (context) =>
                     BlocFactory.createPollDetailBloc(pollId)
                       ..add(const PollDetailEvent.loadPollDetail()),
-                child: PollPage(pollId: pollId),
+                child: const PollPage(),
               );
             },
           ),

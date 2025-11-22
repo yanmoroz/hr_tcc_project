@@ -6,9 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../blocs/notification_detail_page/bloc.dart';
 
 class NotificationDetailPage extends StatelessWidget {
-  final int notificationId;
-
-  const NotificationDetailPage({super.key, required this.notificationId});
+  const NotificationDetailPage({super.key});
 
   String _getRelativeTime(DateTime dateTime) {
     final now = DateTime.now();
@@ -64,10 +62,6 @@ class NotificationDetailPage extends StatelessWidget {
         builder: (context, state) {
           return state.when(
             initial: () {
-              // Trigger loading on initial state
-              context.read<NotificationDetailBloc>().add(
-                    NotificationDetailEvent.loadDetail(notificationId),
-                  );
               return const Center(child: CircularProgressIndicator());
             },
             loading: () => const Center(child: CircularProgressIndicator()),
@@ -75,8 +69,8 @@ class NotificationDetailPage extends StatelessWidget {
               return RefreshIndicator(
                 onRefresh: () async {
                   context.read<NotificationDetailBloc>().add(
-                        const NotificationDetailEvent.refreshDetail(),
-                      );
+                    const NotificationDetailEvent.refreshDetail(),
+                  );
                   // Wait a moment for the refresh
                   await Future.delayed(const Duration(milliseconds: 500));
                 },
@@ -162,8 +156,8 @@ class NotificationDetailPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       context.read<NotificationDetailBloc>().add(
-                            const NotificationDetailEvent.refreshDetail(),
-                          );
+                        const NotificationDetailEvent.refreshDetail(),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2196F3),

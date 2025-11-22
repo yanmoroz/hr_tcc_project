@@ -6,9 +6,7 @@ import '../blocs/poll_page/bloc.dart';
 import '../widgets/questions/question_widget_factory.dart';
 
 class PollPage extends StatefulWidget {
-  final int pollId;
-
-  const PollPage({super.key, required this.pollId});
+  const PollPage({super.key});
 
   @override
   State<PollPage> createState() => _PollPageState();

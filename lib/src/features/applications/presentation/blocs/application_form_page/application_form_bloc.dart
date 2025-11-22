@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/entities/application_form.dart';
 import '../../../domain/domain.dart';
 
 import 'application_form_event.dart';
@@ -7,10 +8,12 @@ import 'application_form_state.dart';
 
 class ApplicationFormBloc
     extends Bloc<ApplicationFormEvent, ApplicationFormState> {
+  final ApplicationForm applicationForm;
   final CreateApplicationUsecase createApplicationUsecase;
   final GetKpAbsenceCategoriesUsecase getKpAbsenceCategoriesUsecase;
 
   ApplicationFormBloc({
+    required this.applicationForm,
     required this.createApplicationUsecase,
     required this.getKpAbsenceCategoriesUsecase,
   }) : super(const ApplicationFormState.initial()) {

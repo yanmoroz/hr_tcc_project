@@ -7,14 +7,7 @@ import '../widgets/comment_item.dart';
 import '../widgets/date_separator.dart';
 
 class CommentsPage extends StatefulWidget {
-  final int entityId;
-  final CommentableEntityType entityType;
-
-  const CommentsPage({
-    super.key,
-    required this.entityId,
-    required this.entityType,
-  });
+  const CommentsPage({super.key});
 
   @override
   State<CommentsPage> createState() => _CommentsPageState();

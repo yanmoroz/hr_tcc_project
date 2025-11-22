@@ -10,9 +10,7 @@ import '../widgets/application_forms/absence_form.dart';
 import '../widgets/application_forms/alpina_access_form.dart';
 
 class ApplicationFormPage extends StatefulWidget {
-  final ApplicationForm applicationForm;
-
-  const ApplicationFormPage({super.key, required this.applicationForm});
+  const ApplicationFormPage({super.key});
 
   @override
   State<ApplicationFormPage> createState() => _ApplicationFormPageState();
@@ -70,7 +68,7 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                widget.applicationForm.name,
+                context.read<ApplicationFormBloc>().applicationForm.name,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -139,7 +137,7 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
 
   Widget _buildFormContent() {
     // Switch on form code to display appropriate form
-    switch (widget.applicationForm.code) {
+    switch (context.read<ApplicationFormBloc>().applicationForm.code) {
       case 'alpinaAccess':
         return AlpinaAccessForm(
           onFormChanged: (params) {
@@ -166,7 +164,7 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
               const Icon(Icons.construction, size: 64, color: Colors.grey),
               const SizedBox(height: 16),
               Text(
-                'Форма для "${widget.applicationForm.name}" еще не реализована',
+                'Форма для "${context.read<ApplicationFormBloc>().applicationForm.name}" еще не реализована',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),

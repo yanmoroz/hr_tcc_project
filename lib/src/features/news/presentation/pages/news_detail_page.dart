@@ -9,9 +9,7 @@ import '../../../../core/widgets/like_button.dart';
 import '../blocs/news_detail_page/bloc.dart';
 
 class NewsDetailPage extends StatelessWidget {
-  final int newsId;
-
-  const NewsDetailPage({super.key, required this.newsId});
+  const NewsDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -121,18 +119,10 @@ class NewsDetailPage extends StatelessWidget {
                             CommentsButton(
                               commentCount: commentCount,
                               onPressed: () {
-                                // Navigator.pushNamed(
-                                //   context,
-                                //   '/comments',
-                                //   arguments: {
-                                //     'entityId': newsId,
-                                //     'feature': 'news',
-                                //   },
-                                // );
                                 context.push(
-                                  '/comments/news/$newsId',
+                                  '/comments/news/${newsDetail.id}',
                                   extra: {
-                                    'entityId': newsId,
+                                    'entityId': newsDetail.id,
                                     'entityType': 'news',
                                   },
                                 );

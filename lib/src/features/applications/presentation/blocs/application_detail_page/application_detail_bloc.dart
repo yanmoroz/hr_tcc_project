@@ -6,12 +6,12 @@ import 'application_detail_state.dart';
 
 class ApplicationDetailBloc
     extends Bloc<ApplicationDetailEvent, ApplicationDetailState> {
+  final String applicationId;
   final GetApplicationDetailUsecase getApplicationDetailUsecase;
   final CancelApplicationUsecase cancelApplicationUsecase;
 
-  String? _currentApplicationId;
-
   ApplicationDetailBloc({
+    required this.applicationId,
     required this.getApplicationDetailUsecase,
     required this.cancelApplicationUsecase,
   }) : super(const ApplicationDetailState.initial()) {
@@ -23,10 +23,9 @@ class ApplicationDetailBloc
     LoadDetail event,
     Emitter<ApplicationDetailState> emit,
   ) async {
-    _currentApplicationId = event.applicationId;
     emit(const ApplicationDetailState.loading());
 
-    final result = await getApplicationDetailUsecase(event.applicationId);
+    final result = await getApplicationDetailUsecase(applicationId);
 
     result.fold(
       (exception) => emit(ApplicationDetailState.error(exception.toString())),
@@ -38,11 +37,9 @@ class ApplicationDetailBloc
     CancelApplication event,
     Emitter<ApplicationDetailState> emit,
   ) async {
-    if (_currentApplicationId == null) return;
-
     emit(const ApplicationDetailState.canceling());
 
-    final result = await cancelApplicationUsecase(_currentApplicationId!);
+    final result = await cancelApplicationUsecase(applicationId);
 
     result.fold(
       (exception) => emit(ApplicationDetailState.error(exception.toString())),

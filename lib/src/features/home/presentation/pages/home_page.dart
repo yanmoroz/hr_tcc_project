@@ -34,38 +34,38 @@ class HomePage extends StatelessWidget {
                 children: [
                   // Icon buttons row
                   Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  HomeIconButton(
-                    iconPath: 'assets/icons/telegram-icon.svg',
-                    label: 'Телеграм-\nканал S8',
-                    onTap: () => _launchUrl('http://telegram.org'),
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        HomeIconButton(
+                          iconPath: 'assets/icons/telegram-icon.svg',
+                          label: 'Телеграм-\nканал S8',
+                          onTap: () => _launchUrl('http://telegram.org'),
+                        ),
+                        HomeIconButton(
+                          iconPath: 'assets/icons/discounts-icon.svg',
+                          label: 'Льготы\nи возмож...',
+                          onTap: () => context.push('/discount-categories'),
+                        ),
+                        HomeIconButton(
+                          iconPath: 'assets/icons/polls-icon.svg',
+                          label: 'Опросы',
+                          onTap: () => context.push('/polls'),
+                        ),
+                        HomeIconButton(
+                          iconPath: 'assets/icons/resell-icon.svg',
+                          label: 'Ресейл',
+                          onTap: () => context.push('/resell'),
+                        ),
+                        HomeIconButton(
+                          iconPath: 'assets/icons/s8-icon.svg',
+                          label: 'ИТ-портал',
+                          onTap: () => _launchUrl('https://s8.capital'),
+                        ),
+                      ],
+                    ),
                   ),
-                  HomeIconButton(
-                    iconPath: 'assets/icons/discounts-icon.svg',
-                    label: 'Льготы\nи возмож...',
-                    onTap: () => context.push('/discount-categories'),
-                  ),
-                  HomeIconButton(
-                    iconPath: 'assets/icons/polls-icon.svg',
-                    label: 'Опросы',
-                    onTap: () => context.push('/polls'),
-                  ),
-                  HomeIconButton(
-                    iconPath: 'assets/icons/resell-icon.svg',
-                    label: 'Ресейл',
-                    onTap: () => context.push('/resell'),
-                  ),
-                  HomeIconButton(
-                    iconPath: 'assets/icons/s8-icon.svg',
-                    label: 'ИТ-портал',
-                    onTap: () => _launchUrl('https://s8.capital'),
-                  ),
-                ],
-              ),
-            ),
 
                   // News section
                   const SizedBox(height: 8),
