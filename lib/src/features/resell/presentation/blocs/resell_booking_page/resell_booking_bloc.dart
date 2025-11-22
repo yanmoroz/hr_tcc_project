@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/logging/app_logger.dart';
 import '../../../domain/domain.dart';
 
@@ -11,7 +12,7 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
   final ConfirmResellBookingUsecase _confirmResellBookingUsecase;
 
   ResellBookingBloc(this.itemId, this._confirmResellBookingUsecase)
-    : super(const ResellBookingState.initial()) {
+    : super(const ResellBookingState()) {
     on<ConfirmBooking>(_onConfirmBooking);
   }
 
@@ -19,7 +20,7 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
     ConfirmBooking event,
     Emitter<ResellBookingState> emit,
   ) async {
-    emit(const ResellBookingState.confirmingBooking());
+    emit(state.copyWith(isConfirming: true));
 
     final result = await _confirmResellBookingUsecase(
       params: event.params.copyWith(id: itemId),
@@ -29,11 +30,18 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
       result.fold(
         (error) {
           AppLogger.e('Failed to confirm booking: ${error.toString()}');
-          emit(ResellBookingState.error(error.toString()));
+          emit(state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: error.toString(),
+            isConfirming: false,
+          ));
         },
         (booking) {
           AppLogger.d('Booking confirmed successfully');
-          emit(const ResellBookingState.bookingConfirmed());
+          emit(state.copyWith(
+            status: LoadingStatus.success,
+            isConfirming: false,
+          ));
         },
       );
     }

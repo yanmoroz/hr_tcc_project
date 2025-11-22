@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/application_form_page/bloc.dart';
@@ -29,43 +30,43 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
         ),
       ),
       body: BlocListener<ApplicationFormBloc, ApplicationFormState>(
+        listenWhen: (previous, current) {
+          // Only listen when transitioning FROM submitting TO not submitting
+          return previous.isSubmitting && !current.isSubmitting;
+        },
         listener: (context, state) {
-          state.when(
-            initial: () {},
-            loadingData: () {},
-            dataLoaded: (_, __) {},
-            submitting: () {},
-            success: () {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                barrierColor: Colors.transparent,
-                builder: (dialogContext) => SubmitResultWidget(
-                  message: 'Заявка успешно создана',
-                  isSuccess: true,
-                  onClose: () {
-                    Navigator.of(dialogContext).pop();
-                    context.go('/applications');
-                  },
-                ),
-              );
-            },
-            error: (message) {
-              // Show error message
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                barrierColor: Colors.transparent,
-                builder: (dialogContext) => SubmitResultWidget(
-                  message: 'Ошибка: $message',
-                  isSuccess: false,
-                  onClose: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-              );
-            },
-          );
+          // Handle successful submission
+          if (state.status == LoadingStatus.success) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              barrierColor: Colors.transparent,
+              builder: (dialogContext) => SubmitResultWidget(
+                message: 'Заявка успешно создана',
+                isSuccess: true,
+                onClose: () {
+                  Navigator.of(dialogContext).pop();
+                  context.go('/applications');
+                },
+              ),
+            );
+          }
+
+          // Handle error during submission
+          if (state.status == LoadingStatus.error) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              barrierColor: Colors.transparent,
+              builder: (dialogContext) => SubmitResultWidget(
+                message: 'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
+                isSuccess: false,
+                onClose: () {
+                  Navigator.of(dialogContext).pop();
+                },
+              ),
+            );
+          }
         },
         child: Column(
           children: [
@@ -89,7 +90,7 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
               padding: const EdgeInsets.all(16),
               child: BlocBuilder<ApplicationFormBloc, ApplicationFormState>(
                 builder: (context, state) {
-                  final isSubmitting = state is ApplicationFormSubmitting;
+                  final isSubmitting = state.isSubmitting;
 
                   return SizedBox(
                     width: double.infinity,

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../domain/domain.dart';
 import '../blocs/resell_detail_page/bloc.dart';
 
@@ -14,67 +15,70 @@ class ResellDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ResellDetailBloc, ResellDetailState>(
+      listenWhen: (previous, current) =>
+          previous.isBooking != current.isBooking,
       listener: (context, state) {
-        state.maybeWhen(
-          bookingSuccess: () {
-            // Show modal booking page
-            context.push('/resell-booking/$itemId').then((_) {
-              // Reload detail when booking page is closed
-              context.read<ResellDetailBloc>().add(
-                const ResellDetailEvent.loadResellDetail(),
-              );
-            });
-          },
-          error: (message) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Ошибка: $message')));
-          },
-          orElse: () {},
-        );
+        // Navigate to booking page when booking is initiated
+        if (state.isBooking) {
+          context.push('/resell-booking/$itemId').then((_) {
+            // Reload detail when booking page is closed
+            context.read<ResellDetailBloc>().add(
+              const ResellDetailEvent.loadResellDetail(),
+            );
+          });
+        }
+
+        // Handle error
+        if (state.status == LoadingStatus.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка: ${state.errorMessage ?? 'Unknown error'}')),
+          );
+        }
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Детали товара')),
         body: BlocBuilder<ResellDetailBloc, ResellDetailState>(
           builder: (context, state) {
-            return state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (detail) => _buildDetailContent(context, detail),
-              error: (message) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Ошибка: $message'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<ResellDetailBloc>().add(
-                          const ResellDetailEvent.loadResellDetail(),
-                        );
-                      },
-                      child: const Text('Повторить'),
-                    ),
-                  ],
-                ),
-              ),
-              bookingInProgress: () => const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Бронирование...'),
-                  ],
-                ),
-              ),
-              bookingSuccess: () =>
-                  const Center(child: CircularProgressIndicator()),
-            );
+            return _buildBody(context, state);
           },
         ),
       ),
     );
+  }
+
+  Widget _buildBody(BuildContext context, ResellDetailState state) {
+    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.status == LoadingStatus.error && state.detail == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Ошибка: ${state.errorMessage ?? 'Unknown error'}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                context.read<ResellDetailBloc>().add(
+                  const ResellDetailEvent.loadResellDetail(),
+                );
+              },
+              child: const Text('Повторить'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Success state
+    final detail = state.detail;
+
+    if (detail == null) {
+      return const Center(child: Text('No data available'));
+    }
+
+    return _buildDetailContent(context, detail);
   }
 
   Widget _buildDetailContent(BuildContext context, ResellDetail detail) {

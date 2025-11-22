@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
@@ -18,14 +19,14 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     required DownloadFileUsecase downloadFileUsecase,
   }) : _getNewsListUsecase = getNewsListUsecase,
        _downloadFileUsecase = downloadFileUsecase,
-       super(const NewsListState.initial()) {
+       super(const NewsListState()) {
     on<LoadNews>(_onLoadNews);
     on<RefreshNews>(_onRefreshNews);
     on<LoadMoreNews>(_onLoadMoreNews);
   }
 
   Future<void> _onLoadNews(LoadNews event, Emitter<NewsListState> emit) async {
-    emit(const NewsListState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadNews(
       emit,
       page: 0,
@@ -51,66 +52,25 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     LoadMoreNews event,
     Emitter<NewsListState> emit,
   ) async {
-    // Extract state values first
-    List<NewsItem>? newsItems;
-    int? currentPage;
-    bool? hasMorePages;
-    bool? isLoadingMore;
-    Map<int, Uint8List>? coverImages;
-    int? category;
-    String? search;
-
-    state.maybeWhen(
-      loaded:
-          (
-            loadedNewsItems,
-            loadedCurrentPage,
-            loadedHasMorePages,
-            loadedIsLoadingMore,
-            loadedCoverImages,
-            loadedCategory,
-            loadedSearch,
-          ) {
-            newsItems = loadedNewsItems;
-            currentPage = loadedCurrentPage;
-            hasMorePages = loadedHasMorePages;
-            isLoadingMore = loadedIsLoadingMore;
-            coverImages = loadedCoverImages;
-            category = loadedCategory;
-            search = loadedSearch;
-          },
-      orElse: () {},
-    );
-
-    // Only load more if we're in loaded state and not already loading more
-    if (newsItems != null &&
-        currentPage != null &&
-        hasMorePages != null &&
-        !(isLoadingMore ?? false) &&
-        hasMorePages!) {
-      // Emit state with isLoadingMore = true
-      emit(
-        NewsListState.loaded(
-          newsItems: newsItems!,
-          currentPage: currentPage!,
-          hasMorePages: hasMorePages!,
-          isLoadingMore: true,
-          coverImages: coverImages ?? {},
-          category: category,
-          search: search,
-        ),
-      );
-
-      // Load next page
-      await _loadMoreNews(
-        emit,
-        currentNewsItems: newsItems!,
-        currentCoverImages: coverImages ?? {},
-        nextPage: currentPage! + 1,
-        category: category,
-        search: search,
-      );
+    // Only load more if we're in success state and not already loading more
+    if (state.status != LoadingStatus.success ||
+        state.isLoadingMore ||
+        !state.hasMorePages) {
+      return;
     }
+
+    // Emit state with isLoadingMore = true
+    emit(state.copyWith(isLoadingMore: true));
+
+    // Load next page
+    await _loadMoreNews(
+      emit,
+      currentNewsItems: state.newsItems,
+      currentCoverImages: state.coverImages,
+      nextPage: state.currentPage + 1,
+      category: state.category,
+      search: state.search,
+    );
   }
 
   Future<void> _loadNews(
@@ -126,19 +86,20 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     );
 
     await result.fold(
-      (error) async => emit(NewsListState.error(error.message)),
+      (error) async => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: error.message,
+      )),
       (newsItems) async {
-        emit(
-          NewsListState.loaded(
-            newsItems: newsItems,
-            currentPage: page,
-            hasMorePages:
-                newsItems.isNotEmpty, // Assume more pages if we got results
-            isLoadingMore: false,
-            category: category,
-            search: search,
-          ),
-        );
+        emit(state.copyWith(
+          status: LoadingStatus.success,
+          newsItems: newsItems,
+          currentPage: page,
+          hasMorePages: newsItems.isNotEmpty, // Assume more pages if we got results
+          isLoadingMore: false,
+          category: category,
+          search: search,
+        ));
         await _loadCoverImages(newsItems, emit);
       },
     );
@@ -161,31 +122,27 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     await result.fold(
       (error) async {
         // On error, revert to previous state without isLoadingMore
-        emit(
-          NewsListState.loaded(
-            newsItems: currentNewsItems,
-            currentPage: nextPage - 1,
-            hasMorePages: true,
-            isLoadingMore: false,
-            coverImages: currentCoverImages,
-            category: category,
-            search: search,
-          ),
-        );
+        emit(state.copyWith(
+          newsItems: currentNewsItems,
+          currentPage: nextPage - 1,
+          hasMorePages: true,
+          isLoadingMore: false,
+          coverImages: currentCoverImages,
+          category: category,
+          search: search,
+        ));
       },
       (newNewsItems) async {
         final allNewsItems = [...currentNewsItems, ...newNewsItems];
-        emit(
-          NewsListState.loaded(
-            newsItems: allNewsItems,
-            currentPage: nextPage,
-            hasMorePages: newNewsItems.isNotEmpty, // No more pages if empty
-            isLoadingMore: false,
-            coverImages: currentCoverImages,
-            category: category,
-            search: search,
-          ),
-        );
+        emit(state.copyWith(
+          newsItems: allNewsItems,
+          currentPage: nextPage,
+          hasMorePages: newNewsItems.isNotEmpty, // No more pages if empty
+          isLoadingMore: false,
+          coverImages: currentCoverImages,
+          category: category,
+          search: search,
+        ));
         // Load cover images for new news items only
         await _loadCoverImages(newNewsItems, emit);
       },
@@ -223,31 +180,9 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     await Future.wait(futures);
 
     // Emit updated state with cover images, merging with existing ones
-    state.maybeWhen(
-      loaded:
-          (
-            newsItems,
-            currentPage,
-            hasMorePages,
-            isLoadingMore,
-            existingCoverImages,
-            category,
-            search,
-          ) {
-            final mergedCoverImages = {...existingCoverImages, ...coverImages};
-            emit(
-              NewsListState.loaded(
-                newsItems: newsItems,
-                currentPage: currentPage,
-                hasMorePages: hasMorePages,
-                isLoadingMore: isLoadingMore,
-                coverImages: mergedCoverImages,
-                category: category,
-                search: search,
-              ),
-            );
-          },
-      orElse: () {},
-    );
+    if (state.status == LoadingStatus.success) {
+      final mergedCoverImages = {...state.coverImages, ...coverImages};
+      emit(state.copyWith(coverImages: mergedCoverImages));
+    }
   }
 }

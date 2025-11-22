@@ -1,23 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
+
 part 'application_form_state.freezed.dart';
 
 @freezed
-class ApplicationFormState with _$ApplicationFormState {
-  const factory ApplicationFormState.initial() = ApplicationFormInitial;
-
-  const factory ApplicationFormState.loadingData() =
-      ApplicationFormLoadingData;
-
-  const factory ApplicationFormState.dataLoaded(
-    String formCode,
+sealed class ApplicationFormState with _$ApplicationFormState {
+  const factory ApplicationFormState({
+    @Default(LoadingStatus.initial) LoadingStatus status,
+    String? formCode,
     Object? data,
-  ) = ApplicationFormDataLoaded;
-
-  const factory ApplicationFormState.submitting() = ApplicationFormSubmitting;
-
-  const factory ApplicationFormState.success() = ApplicationFormSuccess;
-
-  const factory ApplicationFormState.error(String message) =
-      ApplicationFormError;
+    @Default(false) bool isSubmitting,
+    String? errorMessage,
+  }) = _ApplicationFormState;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/logging/app_logger.dart';
 import '../../../domain/domain.dart';
 
@@ -12,7 +13,7 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
   static const int _pageSize = 20;
 
   ResellItemsBloc(this._getResellItemsUsecase)
-    : super(const ResellItemsState.initial()) {
+    : super(const ResellItemsState()) {
     on<LoadResellItems>(_onLoadResellItems);
     on<LoadMore>(_onLoadMore);
     on<RefreshItems>(_onRefreshItems);
@@ -23,7 +24,7 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
     LoadResellItems event,
     Emitter<ResellItemsState> emit,
   ) async {
-    emit(const ResellItemsState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadItems(emit, 0, 1); // Default status = 1 (Active)
   }
 
@@ -31,23 +32,18 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
     LoadMore event,
     Emitter<ResellItemsState> emit,
   ) async {
-    await state.maybeWhen(
-      loaded: (items, page, hasMore, isLoadingMore, status) async {
-        if (!isLoadingMore && hasMore) {
-          emit(
-            ResellItemsState.loaded(
-              items: items,
-              currentPage: page,
-              hasMorePages: hasMore,
-              isLoadingMore: true,
-              currentStatus: status,
-            ),
-          );
+    if (state.status != LoadingStatus.success ||
+        state.isLoadingMore ||
+        !state.hasMorePages) {
+      return;
+    }
 
-          await _loadItems(emit, page + 1, status, existingItems: items);
-        }
-      },
-      orElse: () async {},
+    emit(state.copyWith(isLoadingMore: true));
+    await _loadItems(
+      emit,
+      state.currentPage + 1,
+      state.currentStatus,
+      existingItems: state.items,
     );
   }
 
@@ -55,12 +51,9 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
     RefreshItems event,
     Emitter<ResellItemsState> emit,
   ) async {
-    final currentStatus = state.maybeWhen(
-      loaded: (_, __, ___, ____, status) => status,
-      orElse: () => 1,
-    );
+    final currentStatus = state.currentStatus;
 
-    emit(const ResellItemsState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadItems(emit, 1, currentStatus);
   }
 
@@ -68,7 +61,7 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
     FilterByStatus event,
     Emitter<ResellItemsState> emit,
   ) async {
-    emit(const ResellItemsState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadItems(emit, 1, event.status);
   }
 
@@ -90,17 +83,18 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
           AppLogger.e('Failed to load resell items: ${error.toString()}');
           if (existingItems != null) {
             // If loading more failed, revert to previous state
-            emit(
-              ResellItemsState.loaded(
-                items: existingItems,
-                currentPage: page - 1,
-                hasMorePages: true,
-                isLoadingMore: false,
-                currentStatus: status,
-              ),
-            );
+            emit(state.copyWith(
+              items: existingItems,
+              currentPage: page - 1,
+              hasMorePages: true,
+              isLoadingMore: false,
+              currentStatus: status,
+            ));
           } else {
-            emit(ResellItemsState.error(error.toString()));
+            emit(state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: error.toString(),
+            ));
           }
         },
         (items) {
@@ -108,15 +102,14 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
               ? [...existingItems, ...items]
               : items;
 
-          emit(
-            ResellItemsState.loaded(
-              items: allItems,
-              currentPage: page,
-              hasMorePages: items.length == _pageSize,
-              isLoadingMore: false,
-              currentStatus: status,
-            ),
-          );
+          emit(state.copyWith(
+            status: LoadingStatus.success,
+            items: allItems,
+            currentPage: page,
+            hasMorePages: items.length == _pageSize,
+            isLoadingMore: false,
+            currentStatus: status,
+          ));
         },
       );
     }

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/dictionaries/domain/domain.dart';
 import '../../../../../core/entities/application_form.dart';
 import '../../../../../core/entities/application_form_group.dart';
@@ -14,7 +15,7 @@ class ApplicationCreationBloc
   ApplicationCreationBloc({
     required DictionariesRepository dictionariesRepository,
   }) : _dictionariesRepository = dictionariesRepository,
-       super(const ApplicationCreationState.initial()) {
+       super(const ApplicationCreationState()) {
     on<LoadApplicationForms>(_onLoadApplicationForms);
     on<RefreshApplicationForms>(_onRefreshApplicationForms);
     on<FilterByGroup>(_onFilterByGroup);
@@ -25,7 +26,7 @@ class ApplicationCreationBloc
     LoadApplicationForms event,
     Emitter<ApplicationCreationState> emit,
   ) async {
-    emit(const ApplicationCreationState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadForms(emit);
   }
 
@@ -40,53 +41,37 @@ class ApplicationCreationBloc
     FilterByGroup event,
     Emitter<ApplicationCreationState> emit,
   ) async {
-    state.maybeWhen(
-      loaded: (allForms, groups, _, __, searchQuery) {
-        final filteredForms = _applyFilters(
-          allForms: allForms,
-          groupId: event.groupId,
-          searchQuery: searchQuery,
-        );
+    if (state.status == LoadingStatus.success) {
+      final filteredForms = _applyFilters(
+        allForms: state.allForms,
+        groupId: event.groupId,
+        searchQuery: state.searchQuery,
+      );
 
-        emit(
-          ApplicationCreationState.loaded(
-            allForms: allForms,
-            groups: groups,
-            filteredForms: filteredForms,
-            selectedGroupId: event.groupId,
-            searchQuery: searchQuery,
-          ),
-        );
-      },
-      orElse: () {},
-    );
+      emit(state.copyWith(
+        filteredForms: filteredForms,
+        selectedGroupId: event.groupId,
+      ));
+    }
   }
 
   Future<void> _onSearchForms(
     SearchForms event,
     Emitter<ApplicationCreationState> emit,
   ) async {
-    state.maybeWhen(
-      loaded: (allForms, groups, _, selectedGroupId, __) {
-        final searchQuery = event.query.isEmpty ? null : event.query;
-        final filteredForms = _applyFilters(
-          allForms: allForms,
-          groupId: selectedGroupId,
-          searchQuery: searchQuery,
-        );
+    if (state.status == LoadingStatus.success) {
+      final searchQuery = event.query.isEmpty ? null : event.query;
+      final filteredForms = _applyFilters(
+        allForms: state.allForms,
+        groupId: state.selectedGroupId,
+        searchQuery: searchQuery,
+      );
 
-        emit(
-          ApplicationCreationState.loaded(
-            allForms: allForms,
-            groups: groups,
-            filteredForms: filteredForms,
-            selectedGroupId: selectedGroupId,
-            searchQuery: searchQuery,
-          ),
-        );
-      },
-      orElse: () {},
-    );
+      emit(state.copyWith(
+        filteredForms: filteredForms,
+        searchQuery: searchQuery,
+      ));
+    }
   }
 
   Future<void> _loadForms(Emitter<ApplicationCreationState> emit) async {
@@ -100,12 +85,18 @@ class ApplicationCreationBloc
     final groupsError = groupsResult.fold((l) => l, (r) => null);
 
     if (formsError != null) {
-      emit(ApplicationCreationState.error(formsError.toString()));
+      emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: formsError.toString(),
+      ));
       return;
     }
 
     if (groupsError != null) {
-      emit(ApplicationCreationState.error(groupsError.toString()));
+      emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: groupsError.toString(),
+      ));
       return;
     }
 
@@ -131,15 +122,14 @@ class ApplicationCreationBloc
     // Filter out archived forms
     final activeForms = filteredForms.where((form) => !form.archive).toList();
 
-    emit(
-      ApplicationCreationState.loaded(
-        allForms: activeForms,
-        groups: groups,
-        filteredForms: activeForms,
-        selectedGroupId: null,
-        searchQuery: null,
-      ),
-    );
+    emit(state.copyWith(
+      status: LoadingStatus.success,
+      allForms: activeForms,
+      groups: groups,
+      filteredForms: activeForms,
+      selectedGroupId: null,
+      searchQuery: null,
+    ));
   }
 
   List<ApplicationForm> _applyFilters({

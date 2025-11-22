@@ -1,17 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 
 part 'notifications_list_state.freezed.dart';
 
 @freezed
-class NotificationsListState with _$NotificationsListState {
-  const factory NotificationsListState.initial() = NotificationsListInitial;
-  const factory NotificationsListState.loading() = NotificationsListLoading;
-  const factory NotificationsListState.loaded({
-    required List<Notification> notifications,
-    required int unreadCount,
-  }) = NotificationsListLoaded;
-  const factory NotificationsListState.error(String message) =
-      NotificationsListError;
+sealed class NotificationsListState with _$NotificationsListState {
+  const factory NotificationsListState({
+    @Default(LoadingStatus.initial) LoadingStatus status,
+    @Default([]) List<Notification> notifications,
+    @Default(0) int unreadCount,
+    String? errorMessage,
+  }) = _NotificationsListState;
 }

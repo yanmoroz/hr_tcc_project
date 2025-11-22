@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 
 import 'current_user_event.dart';
@@ -11,7 +12,7 @@ class CurrentUserBloc extends Bloc<CurrentUserEvent, CurrentUserState> {
   CurrentUserBloc({
     required GetCurrentUserInfoUsecase getCurrentUserInfoUsecase,
   }) : _getCurrentUserInfoUsecase = getCurrentUserInfoUsecase,
-       super(const CurrentUserState.initial()) {
+       super(const CurrentUserState()) {
     on<LoadCurrentUser>(_onLoadCurrentUser);
     on<RefreshCurrentUser>(_onRefreshCurrentUser);
   }
@@ -21,8 +22,8 @@ class CurrentUserBloc extends Bloc<CurrentUserEvent, CurrentUserState> {
     Emitter<CurrentUserState> emit,
   ) async {
     // Don't show loading if we already have data
-    if (state is! CurrentUserLoaded) {
-      emit(const CurrentUserState.loading());
+    if (state.status != LoadingStatus.success) {
+      emit(state.copyWith(status: LoadingStatus.loading));
     }
 
     await _loadProfile(emit);
@@ -39,8 +40,14 @@ class CurrentUserBloc extends Bloc<CurrentUserEvent, CurrentUserState> {
     final result = await _getCurrentUserInfoUsecase();
 
     result.fold(
-      (error) => emit(CurrentUserState.error(error.toString())),
-      (user) => emit(CurrentUserState.loaded(user: user)),
+      (error) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: error.toString(),
+      )),
+      (user) => emit(state.copyWith(
+        status: LoadingStatus.success,
+        user: user,
+      )),
     );
   }
 }

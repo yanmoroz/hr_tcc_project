@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
@@ -17,7 +18,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
   PollsListBloc({
     required this.getPollsUsecase,
     required this.downloadFileUsecase,
-  }) : super(const PollsListState.initial()) {
+  }) : super(const PollsListState()) {
     on<PollsListEvent>((event, emit) async {
       await event.when(
         loadPolls: (status) => _onLoadPolls(status, emit),
@@ -27,14 +28,20 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
   }
 
   Future<void> _onLoadPolls(int? status, Emitter<PollsListState> emit) async {
-    emit(const PollsListState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
 
     final result = await getPollsUsecase(status: status, page: 1);
 
     await result.fold(
-      (error) async => emit(PollsListState.error(error.message)),
+      (error) async => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: error.message,
+      )),
       (polls) async {
-        emit(PollsListState.loaded(polls: polls));
+        emit(state.copyWith(
+          status: LoadingStatus.success,
+          polls: polls,
+        ));
         await _loadCoverImages(polls, emit);
       },
     );
@@ -44,27 +51,26 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
     int? status,
     Emitter<PollsListState> emit,
   ) async {
-    final currentState = state.maybeWhen(
-      loaded: (polls, coverImages) => (polls, coverImages),
-      orElse: () => null,
-    );
-
-    if (currentState != null) {
-      // Keep showing current polls while refreshing
-      emit(
-        PollsListState.loaded(
-          polls: currentState.$1,
-          coverImages: currentState.$2,
-        ),
-      );
+    // Keep showing current polls while refreshing
+    if (state.status == LoadingStatus.success) {
+      emit(state.copyWith(
+        polls: state.polls,
+        coverImages: state.coverImages,
+      ));
     }
 
     final result = await getPollsUsecase(status: status, page: 1);
 
     await result.fold(
-      (error) async => emit(PollsListState.error(error.message)),
+      (error) async => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: error.message,
+      )),
       (polls) async {
-        emit(PollsListState.loaded(polls: polls));
+        emit(state.copyWith(
+          status: LoadingStatus.success,
+          polls: polls,
+        ));
         await _loadCoverImages(polls, emit);
       },
     );
@@ -99,10 +105,8 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
     await Future.wait(futures);
 
     // Emit updated state with cover images
-    state.maybeWhen(
-      loaded: (polls, _) =>
-          emit(PollsListState.loaded(polls: polls, coverImages: coverImages)),
-      orElse: () {},
-    );
+    if (state.status == LoadingStatus.success) {
+      emit(state.copyWith(coverImages: coverImages));
+    }
   }
 }

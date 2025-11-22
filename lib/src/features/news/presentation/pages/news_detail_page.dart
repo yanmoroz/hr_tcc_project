@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
 import '../blocs/news_detail_page/bloc.dart';
@@ -17,149 +18,165 @@ class NewsDetailPage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(title: const Text('News Detail')),
-          body: state.when(
-            initial: () => const Center(child: CircularProgressIndicator()),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            loaded: (newsDetail, likeCount, liked, commentCount, coverImage) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<NewsDetailBloc>().add(
-                    const NewsDetailEvent.refresh(),
-                  );
-                },
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Image
-                      if (coverImage != null)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.memory(
-                            coverImage,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                height: 200,
-                                color: Colors.grey[300],
-                                child: const Icon(
-                                  Icons.image_not_supported,
-                                  size: 64,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      if (coverImage != null) const SizedBox(height: 16),
+          body: _buildBody(context, state),
+        );
+      },
+    );
+  }
 
-                      // Title
-                      Text(
-                        newsDetail.title,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
+  Widget _buildBody(BuildContext context, NewsDetailState state) {
+    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.status == LoadingStatus.error) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Error: ${state.errorMessage ?? 'Unknown error'}',
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                context.read<NewsDetailBloc>().add(
+                  const NewsDetailEvent.loadDetail(),
+                );
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Success state
+    final newsDetail = state.newsDetail;
+    final likeCount = state.likeCount;
+    final liked = state.liked;
+    final commentCount = state.commentCount;
+    final coverImage = state.coverImage;
+
+    if (newsDetail == null) {
+      return const Center(child: Text('No data available'));
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<NewsDetailBloc>().add(
+          const NewsDetailEvent.refresh(),
+        );
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            if (coverImage != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.memory(
+                  coverImage,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 64,
                       ),
-                      const SizedBox(height: 8),
-
-                      // Date
-                      Row(
-                        children: [
-                          const Icon(Icons.calendar_today, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            _formatDate(newsDetail.createdData),
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Content (HTML)
-                      if (newsDetail.content.isNotEmpty) ...[
-                        Text(
-                          'Content',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Html(data: newsDetail.content),
-                        const SizedBox(height: 16),
-                      ],
-
-                      // Author
-                      Card(
-                        child: ListTile(
-                          leading: const Icon(Icons.person),
-                          title: Text(
-                            '${newsDetail.author.firstName} ${newsDetail.author.lastName}',
-                          ),
-                          subtitle: newsDetail.author.title.isNotEmpty
-                              ? Text(newsDetail.author.title)
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Like and Comment buttons
-                      Container(
-                        color: Colors.blue,
-                        child: Row(
-                          children: [
-                            LikeButton(
-                              isLiked: liked,
-                              likeCount: likeCount,
-                              onPressed: () {
-                                context.read<NewsDetailBloc>().add(
-                                  const NewsDetailEvent.toggleLike(),
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 16),
-                            CommentsButton(
-                              commentCount: commentCount,
-                              onPressed: () {
-                                context.push(
-                                  '/comments/news/${newsDetail.id}',
-                                  extra: {
-                                    'entityId': newsDetail.id,
-                                    'entityType': 'news',
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
-            error: (message) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              ),
+            if (coverImage != null) const SizedBox(height: 16),
+
+            // Title
+            Text(
+              newsDetail.title,
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+
+            // Date
+            Row(
+              children: [
+                const Icon(Icons.calendar_today, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  _formatDate(newsDetail.createdData),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Content (HTML)
+            if (newsDetail.content.isNotEmpty) ...[
+              Text(
+                'Content',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Html(data: newsDetail.content),
+              const SizedBox(height: 16),
+            ],
+
+            // Author
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(
+                  '${newsDetail.author.firstName} ${newsDetail.author.lastName}',
+                ),
+                subtitle: newsDetail.author.title.isNotEmpty
+                    ? Text(newsDetail.author.title)
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Like and Comment buttons
+            Container(
+              color: Colors.blue,
+              child: Row(
                 children: [
-                  Text(
-                    'Error: $message',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
+                  LikeButton(
+                    isLiked: liked,
+                    likeCount: likeCount,
                     onPressed: () {
                       context.read<NewsDetailBloc>().add(
-                        const NewsDetailEvent.loadDetail(),
+                        const NewsDetailEvent.toggleLike(),
                       );
                     },
-                    child: const Text('Retry'),
+                  ),
+                  const SizedBox(width: 16),
+                  CommentsButton(
+                    commentCount: commentCount,
+                    onPressed: () {
+                      context.push(
+                        '/comments/news/${newsDetail.id}',
+                        extra: {
+                          'entityId': newsDetail.id,
+                          'entityType': 'news',
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 

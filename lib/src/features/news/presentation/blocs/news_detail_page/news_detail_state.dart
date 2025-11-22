@@ -2,20 +2,20 @@ import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 
 part 'news_detail_state.freezed.dart';
 
 @freezed
-class NewsDetailState with _$NewsDetailState {
-  const factory NewsDetailState.initial() = NewsDetailInitial;
-  const factory NewsDetailState.loading() = NewsDetailLoading;
-  const factory NewsDetailState.loaded({
-    required NewsDetail newsDetail,
-    required int likeCount,
-    required bool liked,
-    required int commentCount,
+sealed class NewsDetailState with _$NewsDetailState {
+  const factory NewsDetailState({
+    @Default(LoadingStatus.initial) LoadingStatus status,
+    NewsDetail? newsDetail,
+    @Default(0) int likeCount,
+    @Default(false) bool liked,
+    @Default(0) int commentCount,
     Uint8List? coverImage,
-  }) = NewsDetailLoaded;
-  const factory NewsDetailState.error(String message) = NewsDetailError;
+    String? errorMessage,
+  }) = _NewsDetailState;
 }

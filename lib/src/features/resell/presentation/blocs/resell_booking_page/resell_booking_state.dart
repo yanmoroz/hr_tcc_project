@@ -1,12 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
+
 part 'resell_booking_state.freezed.dart';
 
 @freezed
-class ResellBookingState with _$ResellBookingState {
-  const factory ResellBookingState.initial() = ResellBookingInitial;
-  const factory ResellBookingState.confirmingBooking() =
-      ResellBookingConfirming;
-  const factory ResellBookingState.bookingConfirmed() = ResellBookingConfirmed;
-  const factory ResellBookingState.error(String message) = ResellBookingError;
+sealed class ResellBookingState with _$ResellBookingState {
+  const factory ResellBookingState({
+    @Default(LoadingStatus.initial) LoadingStatus status,
+    @Default(false) bool isConfirming,
+    String? errorMessage,
+  }) = _ResellBookingState;
 }

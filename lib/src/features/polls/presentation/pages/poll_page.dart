@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../domain/domain.dart';
 import '../blocs/poll_page/bloc.dart';
 import '../widgets/questions/question_widget_factory.dart';
@@ -67,56 +68,66 @@ class _PollPageState extends State<PollPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<PollDetailBloc, PollDetailState>(
       builder: (context, state) {
+        // Get poll title for app bar
+        final title = _getAppBarTitle(state);
+
         return Scaffold(
-          appBar: AppBar(
-            title: state.maybeWhen(
-              loaded:
-                  (
-                    pollDetail,
-                    isSearchingStaff,
-                    staffItems,
-                    staffSearchError,
-                  ) => Text(pollDetail.title),
-              submitted: (pollDetail) => Text(pollDetail.title),
-              orElse: () => const Text('Poll'),
-            ),
-          ),
-          body: state.when(
-            initial: () => const Center(child: CircularProgressIndicator()),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            loaded:
-                (pollDetail, isSearchingStaff, staffItems, staffSearchError) {
-                  _collectRequiredQuestions(pollDetail);
-                  return _buildPollDetail(context, pollDetail);
-                },
-            submitting: (pollDetail) =>
-                _buildPollDetail(context, pollDetail, isSubmitting: true),
-            submitted: (pollDetail) =>
-                _buildPollDetail(context, pollDetail, isSubmitted: true),
-            error: (message) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: $message',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<PollDetailBloc>().add(
-                        const PollDetailEvent.loadPollDetail(),
-                      );
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          appBar: AppBar(title: Text(title)),
+          body: _buildBody(context, state),
         );
       },
+    );
+  }
+
+  String _getAppBarTitle(PollDetailState state) {
+    if (state.status == LoadingStatus.success && state.pollDetail != null) {
+      return state.pollDetail!.title;
+    }
+    return 'Poll';
+  }
+
+  Widget _buildBody(BuildContext context, PollDetailState state) {
+    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.status == LoadingStatus.error) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Error: ${state.errorMessage ?? 'Unknown error'}',
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                context.read<PollDetailBloc>().add(
+                  const PollDetailEvent.loadPollDetail(),
+                );
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Success state
+    final pollDetail = state.pollDetail;
+
+    if (pollDetail == null) {
+      return const Center(child: Text('No data available'));
+    }
+
+    _collectRequiredQuestions(pollDetail);
+
+    return _buildPollDetail(
+      context,
+      pollDetail,
+      isSubmitting: state.isSubmitting,
     );
   }
 
@@ -124,24 +135,7 @@ class _PollPageState extends State<PollPage> {
     BuildContext context,
     PollDetail pollDetail, {
     bool isSubmitting = false,
-    bool isSubmitted = false,
   }) {
-    if (isSubmitted) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.check_circle, size: 64, color: Colors.green),
-            const SizedBox(height: 16),
-            Text(
-              'Answers submitted successfully!',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ],
-        ),
-      );
-    }
-
     return Column(
       children: [
         Expanded(
@@ -177,7 +171,7 @@ class _PollPageState extends State<PollPage> {
             ),
           ),
         ),
-        if (!isSubmitting && !isSubmitted)
+        if (!isSubmitting)
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
@@ -258,26 +252,9 @@ class _PollPageState extends State<PollPage> {
 
     return BlocBuilder<PollDetailBloc, PollDetailState>(
       builder: (context, state) {
-        final isSearchingStaff = state.maybeWhen(
-          loaded:
-              (pollDetail, isSearchingStaff, staffItems, staffSearchError) =>
-                  isSearchingStaff,
-          orElse: () => false,
-        );
-
-        final staffItems = state.maybeWhen(
-          loaded:
-              (pollDetail, isSearchingStaff, staffItems, staffSearchError) =>
-                  staffItems,
-          orElse: () => null,
-        );
-
-        final staffSearchError = state.maybeWhen(
-          loaded:
-              (pollDetail, isSearchingStaff, staffItems, staffSearchError) =>
-                  staffSearchError,
-          orElse: () => null,
-        );
+        final isSearchingStaff = state.isSearchingStaff;
+        final staffItems = state.staffItems;
+        final staffSearchError = state.staffSearchError;
 
         return Card(
           margin: const EdgeInsets.only(bottom: 12.0),

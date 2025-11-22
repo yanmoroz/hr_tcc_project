@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 
@@ -52,12 +53,7 @@ class UserProfileHeader extends StatelessWidget {
             children: [
               SizedBox(
                 height: 56,
-                child: state.when(
-                  initial: () => _buildLoadingPlaceholder(),
-                  loading: () => _buildLoadingPlaceholder(),
-                  loaded: (user) => _buildLoadedHeader(context, user),
-                  error: (message) => _buildErrorHeader(context, message),
-                ),
+                child: _buildHeader(context, state),
               ),
               if (child != null) ...[
                 Padding(
@@ -70,6 +66,25 @@ class UserProfileHeader extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget _buildHeader(BuildContext context, CurrentUserState state) {
+    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+      return _buildLoadingPlaceholder();
+    }
+
+    if (state.status == LoadingStatus.error) {
+      return _buildErrorHeader(context, state.errorMessage ?? 'Unknown error');
+    }
+
+    // Success state
+    final user = state.user;
+
+    if (user == null) {
+      return _buildLoadingPlaceholder();
+    }
+
+    return _buildLoadedHeader(context, user);
   }
 
   Widget _buildLoadingPlaceholder() {

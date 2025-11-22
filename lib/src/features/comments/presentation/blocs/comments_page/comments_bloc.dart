@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 
@@ -25,7 +26,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
        _addCommentUsecase = addCommentUsecase,
        _deleteCommentUsecase = deleteCommentUsecase,
        _toggleCommentLikeUsecase = toggleCommentLikeUsecase,
-       super(const CommentsState.initial()) {
+       super(const CommentsState()) {
     on<LoadComments>(_onLoadComments);
     on<RefreshComments>(_onRefreshComments);
     on<AddComment>(_onAddComment);
@@ -37,7 +38,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     LoadComments event,
     Emitter<CommentsState> emit,
   ) async {
-    emit(const CommentsState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadComments(emit);
   }
 
@@ -52,44 +53,32 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     AddComment event,
     Emitter<CommentsState> emit,
   ) async {
-    // Extract state values first
-    List<Comment>? comments;
-    bool? isAddingComment;
+    // Only proceed if we're in success state and not already adding
+    if (state.status != LoadingStatus.success || state.isAddingComment) {
+      return;
+    }
 
-    state.maybeWhen(
-      loaded: (loadedComments, loadedIsAddingComment) {
-        comments = loadedComments;
-        isAddingComment = loadedIsAddingComment;
-      },
-      orElse: () {},
+    emit(state.copyWith(isAddingComment: true));
+
+    final result = await _addCommentUsecase(
+      entityId: entityId,
+      entityType: entityType,
+      content: event.content,
+      parent: event.parentId,
     );
 
-    // Only proceed if we're in loaded state and not already adding
-    if (comments != null && !(isAddingComment ?? false)) {
-      emit(CommentsState.loaded(comments: comments!, isAddingComment: true));
+    result.fold(
+      (error) {
+        emit(state.copyWith(isAddingComment: false));
+      },
+      (_) {
+        // Success - will reload comments below
+      },
+    );
 
-      final result = await _addCommentUsecase(
-        entityId: entityId,
-        entityType: entityType,
-        content: event.content,
-        parent: event.parentId,
-      );
-
-      result.fold(
-        (error) {
-          emit(
-            CommentsState.loaded(comments: comments!, isAddingComment: false),
-          );
-        },
-        (_) {
-          // Success - will reload comments below
-        },
-      );
-
-      // Reload comments after successful add (outside fold to allow await)
-      if (result.isRight()) {
-        await _loadComments(emit);
-      }
+    // Reload comments after successful add (outside fold to allow await)
+    if (result.isRight()) {
+      await _loadComments(emit);
     }
   }
 
@@ -119,31 +108,23 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     Emitter<CommentsState> emit,
   ) async {
     // Optimistic update
-    state.maybeWhen(
-      loaded: (comments, isAddingComment) {
-        final updatedComments = comments.map((comment) {
-          if (comment.id == event.commentId) {
-            final currentLike = comment.like ?? false;
-            final currentLikeCount = comment.likeCount ?? 0;
-            return comment.copyWith(
-              like: !currentLike,
-              likeCount: currentLike
-                  ? currentLikeCount - 1
-                  : currentLikeCount + 1,
-            );
-          }
-          return comment;
-        }).toList();
+    if (state.status == LoadingStatus.success) {
+      final updatedComments = state.comments.map((comment) {
+        if (comment.id == event.commentId) {
+          final currentLike = comment.like ?? false;
+          final currentLikeCount = comment.likeCount ?? 0;
+          return comment.copyWith(
+            like: !currentLike,
+            likeCount: currentLike
+                ? currentLikeCount - 1
+                : currentLikeCount + 1,
+          );
+        }
+        return comment;
+      }).toList();
 
-        emit(
-          CommentsState.loaded(
-            comments: updatedComments,
-            isAddingComment: isAddingComment,
-          ),
-        );
-      },
-      orElse: () {},
-    );
+      emit(state.copyWith(comments: updatedComments));
+    }
 
     // Make API call
     final result = await _toggleCommentLikeUsecase(
@@ -155,31 +136,23 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     result.fold(
       (error) {
         // Revert on error
-        state.maybeWhen(
-          loaded: (comments, isAddingComment) {
-            final revertedComments = comments.map((comment) {
-              if (comment.id == event.commentId) {
-                final currentLike = comment.like ?? false;
-                final currentLikeCount = comment.likeCount ?? 0;
-                return comment.copyWith(
-                  like: !currentLike,
-                  likeCount: currentLike
-                      ? currentLikeCount - 1
-                      : currentLikeCount + 1,
-                );
-              }
-              return comment;
-            }).toList();
+        if (state.status == LoadingStatus.success) {
+          final revertedComments = state.comments.map((comment) {
+            if (comment.id == event.commentId) {
+              final currentLike = comment.like ?? false;
+              final currentLikeCount = comment.likeCount ?? 0;
+              return comment.copyWith(
+                like: !currentLike,
+                likeCount: currentLike
+                    ? currentLikeCount - 1
+                    : currentLikeCount + 1,
+              );
+            }
+            return comment;
+          }).toList();
 
-            emit(
-              CommentsState.loaded(
-                comments: revertedComments,
-                isAddingComment: isAddingComment,
-              ),
-            );
-          },
-          orElse: () {},
-        );
+          emit(state.copyWith(comments: revertedComments));
+        }
       },
       (_) {
         // Success - state already updated optimistically
@@ -194,8 +167,15 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     );
 
     result.fold(
-      (error) => emit(CommentsState.error(error.message)),
-      (comments) => emit(CommentsState.loaded(comments: comments)),
+      (error) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: error.message,
+      )),
+      (comments) => emit(state.copyWith(
+        status: LoadingStatus.success,
+        comments: comments,
+        isAddingComment: false,
+      )),
     );
   }
 }

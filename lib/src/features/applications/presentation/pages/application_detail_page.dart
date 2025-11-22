@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/application_detail_page/bloc.dart';
@@ -21,60 +22,64 @@ class ApplicationDetailPage extends StatelessWidget {
         ),
       ),
       body: BlocListener<ApplicationDetailBloc, ApplicationDetailState>(
+        listenWhen: (previous, current) =>
+            previous.status != current.status ||
+            previous.isCanceling != current.isCanceling,
         listener: (context, state) {
-          state.when(
-            initial: () {},
-            loading: () {},
-            loaded: (_) {},
-            canceling: () {},
-            canceled: () {
-              // Show success modal and navigate back
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                barrierColor: Colors.transparent,
-                builder: (dialogContext) => SubmitResultWidget(
-                  message: 'Заявка отменена',
-                  isSuccess: true,
-                  onClose: () {
-                    Navigator.of(dialogContext).pop(); // Close dialog
-                    context.pop(); // Navigate back to applications list
-                  },
-                ),
-              );
-            },
-            error: (message) {
-              // Show error modal
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                barrierColor: Colors.transparent,
-                builder: (dialogContext) => SubmitResultWidget(
-                  message: message,
-                  isSuccess: false,
-                  onClose: () {
-                    Navigator.of(dialogContext).pop(); // Close dialog
-                  },
-                ),
-              );
-            },
-          );
+          // Handle successful cancellation
+          if (state.status == LoadingStatus.success &&
+              !state.isCanceling &&
+              state.detail == null) {
+            // Show success modal and navigate back
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              barrierColor: Colors.transparent,
+              builder: (dialogContext) => SubmitResultWidget(
+                message: 'Заявка отменена',
+                isSuccess: true,
+                onClose: () {
+                  Navigator.of(dialogContext).pop(); // Close dialog
+                  context.pop(); // Navigate back to applications list
+                },
+              ),
+            );
+          }
+
+          // Handle error
+          if (state.status == LoadingStatus.error) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              barrierColor: Colors.transparent,
+              builder: (dialogContext) => SubmitResultWidget(
+                message: state.errorMessage ?? 'Unknown error',
+                isSuccess: false,
+                onClose: () {
+                  Navigator.of(dialogContext).pop(); // Close dialog
+                },
+              ),
+            );
+          }
         },
         child: BlocBuilder<ApplicationDetailBloc, ApplicationDetailState>(
           builder: (context, state) {
-            return state.when(
-              initial: () {
-                // Trigger loading on initial state
-                context.read<ApplicationDetailBloc>().add(
-                  ApplicationDetailEvent.loadDetail(),
-                );
-                return const Center(child: CircularProgressIndicator());
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              loaded: (detail) => _buildDetailContent(context, detail),
-              canceling: () => const Center(child: CircularProgressIndicator()),
-              canceled: () => const Center(child: CircularProgressIndicator()),
-              error: (message) => Center(
+            // Initial state - trigger loading
+            if (state.status == LoadingStatus.initial) {
+              context.read<ApplicationDetailBloc>().add(
+                    const ApplicationDetailEvent.loadDetail(),
+                  );
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            // Loading or canceling
+            if (state.status == LoadingStatus.loading || state.isCanceling) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            // Error state
+            if (state.status == LoadingStatus.error) {
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -85,14 +90,22 @@ class ApplicationDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Ошибка: $message',
+                      'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
                       style: const TextStyle(fontSize: 16, color: Colors.red),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-              ),
-            );
+              );
+            }
+
+            // Success state with detail
+            if (state.detail != null) {
+              return _buildDetailContent(context, state.detail!);
+            }
+
+            // Fallback
+            return const Center(child: CircularProgressIndicator());
           },
         ),
       ),

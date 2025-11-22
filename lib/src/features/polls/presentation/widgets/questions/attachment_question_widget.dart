@@ -149,51 +149,34 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
 
   void _updateAnswerWithUploadedFile(UploadedFile uploadedFile, int index) {
     // Convert UploadedFile (KP system) to AttachmentFile
-    uploadedFile.maybeWhen(
-      kp:
-          (
-            id,
-            name,
-            url,
-            folder,
-            extension,
-            size,
-            created,
-            fileType,
-            icon,
-            width,
-            height,
-            thumbnail,
-            priority,
-          ) {
-            final attachmentFile = AttachmentFile(
-              id: id,
-              name: name,
-              url: url,
-              folder: folder,
-              extension: extension,
-              size: size,
-              created: created,
-              fileType: fileType,
-              systemType: 'KP',
-              icon: icon,
-              width: width,
-              height: height,
-              thumbnail: thumbnail,
-            );
+    // Use asKp extension method to get KP-specific fields
+    final kpFile = uploadedFile.asKp;
 
-            // Store uploaded file
-            setState(() {
-              _uploadedFiles[index] = attachmentFile;
-            });
+    if (kpFile != null) {
+      final attachmentFile = AttachmentFile(
+        id: kpFile.id,
+        name: kpFile.name,
+        url: kpFile.url,
+        folder: kpFile.folder,
+        extension: kpFile.extension,
+        size: kpFile.size,
+        created: kpFile.created,
+        fileType: kpFile.fileType,
+        systemType: 'KP',
+        icon: kpFile.icon,
+        width: kpFile.width,
+        height: kpFile.height,
+        thumbnail: kpFile.thumbnail,
+      );
 
-            // Update answer with all uploaded files
-            _updateAnswerFromUploadedFiles();
-          },
-      orElse: () {
-        // Only KP files are supported for polls
-      },
-    );
+      // Store uploaded file
+      setState(() {
+        _uploadedFiles[index] = attachmentFile;
+      });
+
+      // Update answer with all uploaded files
+      _updateAnswerFromUploadedFiles();
+    }
   }
 
   void _updateAnswerFromUploadedFiles() {

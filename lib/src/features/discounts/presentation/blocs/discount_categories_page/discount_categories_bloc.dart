@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../domain/domain.dart';
 import 'discount_categories_event.dart';
@@ -13,9 +14,9 @@ class DiscountCategoriesBloc
   DiscountCategoriesBloc({
     required GetKpDiscountCategoriesUsecase getKpDiscountCategoriesUsecase,
     required GetKpDiscountSourcesUsecase getKpDiscountSourcesUsecase,
-  }) : _getKpDiscountCategoriesUsecase = getKpDiscountCategoriesUsecase,
-       _getKpDiscountSourcesUsecase = getKpDiscountSourcesUsecase,
-       super(const DiscountCategoriesState.initial()) {
+  })  : _getKpDiscountCategoriesUsecase = getKpDiscountCategoriesUsecase,
+        _getKpDiscountSourcesUsecase = getKpDiscountSourcesUsecase,
+        super(const DiscountCategoriesState()) {
     on<LoadCategories>(_onLoadCategories);
     on<RefreshCategories>(_onRefreshCategories);
   }
@@ -24,7 +25,7 @@ class DiscountCategoriesBloc
     LoadCategories event,
     Emitter<DiscountCategoriesState> emit,
   ) async {
-    emit(const DiscountCategoriesState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadCategoriesAndSources(emit);
   }
 
@@ -32,7 +33,6 @@ class DiscountCategoriesBloc
     RefreshCategories event,
     Emitter<DiscountCategoriesState> emit,
   ) async {
-    // Keep current state while refreshing, then reload
     await _loadCategoriesAndSources(emit);
   }
 
@@ -51,7 +51,12 @@ class DiscountCategoriesBloc
     final sourcesError = sourcesResult.fold((e) => e.message, (_) => null);
 
     if (categoriesError != null || sourcesError != null) {
-      emit(DiscountCategoriesState.error(categoriesError ?? sourcesError!));
+      emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: categoriesError ?? sourcesError!,
+        ),
+      );
       return;
     }
 
@@ -59,7 +64,8 @@ class DiscountCategoriesBloc
     categoriesResult.fold((_) => null, (categories) {
       sourcesResult.fold((_) => null, (sources) {
         emit(
-          DiscountCategoriesState.loaded(
+          state.copyWith(
+            status: LoadingStatus.success,
             categories: categories,
             sources: sources,
           ),

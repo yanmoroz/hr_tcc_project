@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../../../shared/files/domain/usecases/upload_file_usecase.dart';
 import '../../../domain/domain.dart';
@@ -20,7 +21,7 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     required this.submitPollAnswersUsecase,
     required this.getStaffUsecase,
     required this.uploadFileUsecase,
-  }) : super(const PollDetailState.initial()) {
+  }) : super(const PollDetailState()) {
     on<PollDetailEvent>((event, emit) async {
       await event.when(
         loadPollDetail: () => _onLoadPollDetail(emit),
@@ -31,13 +32,19 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
   }
 
   Future<void> _onLoadPollDetail(Emitter<PollDetailState> emit) async {
-    emit(const PollDetailState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
 
     final result = await getPollDetailUsecase(pollId);
 
     result.fold(
-      (error) => emit(PollDetailState.error(error.message)),
-      (pollDetail) => emit(PollDetailState.loaded(pollDetail: pollDetail)),
+      (error) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: error.message,
+      )),
+      (pollDetail) => emit(state.copyWith(
+        status: LoadingStatus.success,
+        pollDetail: pollDetail,
+      )),
     );
   }
 
@@ -45,19 +52,15 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     List<PollAnswer> answers,
     Emitter<PollDetailState> emit,
   ) async {
-    final currentState = state.maybeWhen(
-      loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) =>
-          pollDetail,
-      submitted: (pollDetail) => pollDetail,
-      orElse: () => null,
-    );
-
-    if (currentState == null) {
-      emit(const PollDetailState.error('Poll detail not loaded yet'));
+    if (state.pollDetail == null) {
+      emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: 'Poll detail not loaded yet',
+      ));
       return;
     }
 
-    emit(PollDetailState.submitting(pollDetail: currentState));
+    emit(state.copyWith(isSubmitting: true));
 
     final result = await submitPollAnswersUsecase(
       pollId: pollId,
@@ -65,8 +68,15 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     );
 
     result.fold(
-      (error) => emit(PollDetailState.error(error.message)),
-      (_) => emit(PollDetailState.submitted(pollDetail: currentState)),
+      (error) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: error.message,
+        isSubmitting: false,
+      )),
+      (_) => emit(state.copyWith(
+        status: LoadingStatus.success,
+        isSubmitting: false,
+      )),
     );
   }
 
@@ -75,37 +85,24 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     String? search,
     Emitter<PollDetailState> emit,
   ) async {
-    final currentState = state.maybeWhen(
-      loaded: (pollDetail, isSearchingStaff, staffItems, staffSearchError) =>
-          pollDetail,
-      submitted: (pollDetail) => pollDetail,
-      submitting: (pollDetail) => pollDetail,
-      orElse: () => null,
-    );
-
-    if (currentState == null) {
+    if (state.pollDetail == null) {
       return;
     }
 
-    emit(
-      PollDetailState.loaded(pollDetail: currentState, isSearchingStaff: true),
-    );
+    emit(state.copyWith(isSearchingStaff: true));
 
     final result = await getStaffUsecase(target: target, search: search);
 
     result.fold(
-      (error) => emit(
-        PollDetailState.loaded(
-          pollDetail: currentState,
-          staffSearchError: error.message,
-        ),
-      ),
-      (staffItems) => emit(
-        PollDetailState.loaded(
-          pollDetail: currentState,
-          staffItems: staffItems,
-        ),
-      ),
+      (error) => emit(state.copyWith(
+        staffSearchError: error.message,
+        isSearchingStaff: false,
+      )),
+      (staffItems) => emit(state.copyWith(
+        staffItems: staffItems,
+        isSearchingStaff: false,
+        staffSearchError: null,
+      )),
     );
   }
 }

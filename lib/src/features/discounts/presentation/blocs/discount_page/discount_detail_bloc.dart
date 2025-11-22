@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
@@ -21,11 +22,11 @@ class DiscountDetailBloc
     required GetDiscountStatsUsecase getDiscountStatsUsecase,
     required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
     required DownloadFileUsecase downloadFileUsecase,
-  }) : _getDiscountDetailUsecase = getDiscountDetailUsecase,
-       _getDiscountStatsUsecase = getDiscountStatsUsecase,
-       _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
-       _downloadFileUsecase = downloadFileUsecase,
-       super(const DiscountDetailState.initial()) {
+  })  : _getDiscountDetailUsecase = getDiscountDetailUsecase,
+        _getDiscountStatsUsecase = getDiscountStatsUsecase,
+        _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
+        _downloadFileUsecase = downloadFileUsecase,
+        super(const DiscountDetailState()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleLike>(_onToggleLike);
     on<RefreshDetail>(_onRefreshDetail);
@@ -35,7 +36,7 @@ class DiscountDetailBloc
     LoadDetail event,
     Emitter<DiscountDetailState> emit,
   ) async {
-    emit(const DiscountDetailState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadDetail(emit);
   }
 
@@ -51,19 +52,11 @@ class DiscountDetailBloc
     Emitter<DiscountDetailState> emit,
   ) async {
     // Optimistic update
-    state.maybeWhen(
-      loaded: (discount, likeCount, liked, commentCount, coverImage) {
-        emit(
-          DiscountDetailState.loaded(
-            discount: discount,
-            likeCount: liked ? likeCount - 1 : likeCount + 1,
-            liked: !liked,
-            commentCount: commentCount,
-            coverImage: coverImage,
-          ),
-        );
-      },
-      orElse: () {},
+    emit(
+      state.copyWith(
+        likeCount: state.liked ? state.likeCount - 1 : state.likeCount + 1,
+        liked: !state.liked,
+      ),
     );
 
     // Make API call
@@ -72,19 +65,11 @@ class DiscountDetailBloc
     result.fold(
       (error) {
         // Revert on error
-        state.maybeWhen(
-          loaded: (discount, likeCount, liked, commentCount, coverImage) {
-            emit(
-              DiscountDetailState.loaded(
-                discount: discount,
-                likeCount: liked ? likeCount - 1 : likeCount + 1,
-                liked: !liked,
-                commentCount: commentCount,
-                coverImage: coverImage,
-              ),
-            );
-          },
-          orElse: () {},
+        emit(
+          state.copyWith(
+            likeCount: state.liked ? state.likeCount - 1 : state.likeCount + 1,
+            liked: !state.liked,
+          ),
         );
       },
       (_) {
@@ -101,14 +86,20 @@ class DiscountDetailBloc
     final statsError = statsResult.fold((e) => e.message, (_) => null);
 
     if (detailError != null || statsError != null) {
-      emit(DiscountDetailState.error(detailError ?? statsError!));
+      emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: detailError ?? statsError!,
+        ),
+      );
       return;
     }
 
     await detailResult.fold((_) async => null, (discount) async {
       await statsResult.fold((_) async => null, (stats) async {
         emit(
-          DiscountDetailState.loaded(
+          state.copyWith(
+            status: LoadingStatus.success,
             discount: discount,
             likeCount: stats.likeCount,
             liked: stats.like,
@@ -139,20 +130,7 @@ class DiscountDetailBloc
         // Silently fail for image download
       },
       (imageBytes) {
-        state.maybeWhen(
-          loaded: (discount, likeCount, liked, commentCount, _) {
-            emit(
-              DiscountDetailState.loaded(
-                discount: discount,
-                likeCount: likeCount,
-                liked: liked,
-                commentCount: commentCount,
-                coverImage: imageBytes,
-              ),
-            );
-          },
-          orElse: () {},
-        );
+        emit(state.copyWith(coverImage: imageBytes));
       },
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/resell_booking_page/bloc.dart';
@@ -33,48 +34,47 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ResellBookingBloc, ResellBookingState>(
+      listenWhen: (previous, current) =>
+          previous.status != current.status,
       listener: (context, state) {
-        state.maybeWhen(
-          bookingConfirmed: () {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              barrierColor: Colors.transparent,
-              builder: (dialogContext) => SubmitResultWidget(
-                message: 'Товар забронирован',
-                isSuccess: true,
-                onClose: () {
-                  Navigator.of(dialogContext).pop(); // Close dialog
-                  context.go('/resell'); // Navigate back to applications list
-                },
-              ),
-            );
-          },
-          error: (message) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              barrierColor: Colors.transparent,
-              builder: (dialogContext) => SubmitResultWidget(
-                message: 'Ошибка: $message',
-                isSuccess: false,
-                onClose: () {
-                  Navigator.of(dialogContext).pop();
-                },
-              ),
-            );
-          },
-          orElse: () {},
-        );
+        // Handle successful booking
+        if (state.status == LoadingStatus.success && !state.isConfirming) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            barrierColor: Colors.transparent,
+            builder: (dialogContext) => SubmitResultWidget(
+              message: 'Товар забронирован',
+              isSuccess: true,
+              onClose: () {
+                Navigator.of(dialogContext).pop(); // Close dialog
+                context.go('/resell'); // Navigate back to applications list
+              },
+            ),
+          );
+        }
+
+        // Handle error
+        if (state.status == LoadingStatus.error) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            barrierColor: Colors.transparent,
+            builder: (dialogContext) => SubmitResultWidget(
+              message: 'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
+              isSuccess: false,
+              onClose: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          );
+        }
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Подтверждение бронирования')),
         body: BlocBuilder<ResellBookingBloc, ResellBookingState>(
           builder: (context, state) {
-            final isLoading = state.maybeWhen(
-              confirmingBooking: () => true,
-              orElse: () => false,
-            );
+            final isLoading = state.isConfirming;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),

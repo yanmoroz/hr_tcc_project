@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 import 'notification_detail_event.dart';
 import 'notification_detail_state.dart';
@@ -15,7 +16,7 @@ class NotificationDetailBloc
   NotificationDetailBloc({
     required this.getNotificationsUsecase,
     required this.markNotificationAsReadUsecase,
-  }) : super(const NotificationDetailState.initial()) {
+  }) : super(const NotificationDetailState()) {
     on<LoadDetail>(_onLoadDetail);
     on<MarkAsRead>(_onMarkAsRead);
     on<RefreshDetail>(_onRefreshDetail);
@@ -26,28 +27,36 @@ class NotificationDetailBloc
     Emitter<NotificationDetailState> emit,
   ) async {
     _currentNotificationId = event.notificationId;
-    emit(const NotificationDetailState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
 
     // Fetch all notifications and filter by ID
     final result = await getNotificationsUsecase();
 
     result.fold(
-      (exception) => emit(NotificationDetailState.error(exception.toString())),
+      (exception) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: exception.toString(),
+      )),
       (notifications) {
         try {
           final notification = notifications.firstWhere(
             (n) => n.id == event.notificationId,
           );
           _currentNotification = notification;
-          emit(NotificationDetailState.loaded(notification: notification));
+          emit(state.copyWith(
+            status: LoadingStatus.success,
+            notification: notification,
+          ));
 
           // Automatically mark as read if unread
           if (!notification.isRead) {
             add(const NotificationDetailEvent.markAsRead());
           }
         } catch (e) {
-          emit(const NotificationDetailState.error(
-              'Уведомление не найдено'));
+          emit(state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: 'Уведомление не найдено',
+          ));
         }
       },
     );
@@ -64,7 +73,7 @@ class NotificationDetailBloc
     _currentNotification = updatedNotification;
 
     // Update UI optimistically
-    emit(NotificationDetailState.loaded(notification: updatedNotification));
+    emit(state.copyWith(notification: updatedNotification));
 
     // Mark as read on backend
     final result =
@@ -75,7 +84,7 @@ class NotificationDetailBloc
         // Rollback on error
         final revertedNotification = updatedNotification.copyWith(isRead: false);
         _currentNotification = revertedNotification;
-        emit(NotificationDetailState.loaded(notification: revertedNotification));
+        emit(state.copyWith(notification: revertedNotification));
       },
       (_) {
         // Success - notification stays marked as read

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../blocs/resell_items_page/bloc.dart';
 import '../widgets/resell_item_card.dart';
 import '../widgets/resell_status_chip.dart';
@@ -47,10 +48,9 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
       appBar: AppBar(title: const Text('Барахолка')),
       body: BlocBuilder<ResellItemsBloc, ResellItemsState>(
         builder: (context, state) {
-          final currentStatus = state.maybeWhen(
-            loaded: (_, __, ___, ____, status) => status,
-            orElse: () => 1,
-          );
+          final currentStatus = state.status == LoadingStatus.success
+              ? state.currentStatus
+              : 1;
 
           return Column(
             children: [
@@ -87,67 +87,74 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
 
               // Items List
               Expanded(
-                child: state.when(
-                  initial: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loaded: (items, _, hasMore, isLoadingMore, __) {
-                    if (items.isEmpty) {
-                      return const Center(child: Text('Нет товаров'));
-                    }
-
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<ResellItemsBloc>().add(
-                          const ResellItemsEvent.refreshItems(),
-                        );
-                        await Future.delayed(const Duration(seconds: 1));
-                      },
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: items.length + (isLoadingMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index >= items.length) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-
-                          final item = items[index];
-                          return ResellItemCard(
-                            item: item,
-                            onTap: () {
-                              context.push('/resell-detail/${item.id}');
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  error: (message) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Ошибка: $message'),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<ResellItemsBloc>().add(
-                              const ResellItemsEvent.loadResellItems(),
-                            );
-                          },
-                          child: const Text('Повторить'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                child: _buildBody(context, state),
               ),
             ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, ResellItemsState state) {
+    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.status == LoadingStatus.error) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Ошибка: ${state.errorMessage ?? 'Unknown error'}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                context.read<ResellItemsBloc>().add(
+                  const ResellItemsEvent.loadResellItems(),
+                );
+              },
+              child: const Text('Повторить'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Success state
+    final items = state.items;
+    final isLoadingMore = state.isLoadingMore;
+
+    if (items.isEmpty) {
+      return const Center(child: Text('Нет товаров'));
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<ResellItemsBloc>().add(
+          const ResellItemsEvent.refreshItems(),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+      },
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: items.length + (isLoadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= items.length) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          final item = items[index];
+          return ResellItemCard(
+            item: item,
+            onTap: () {
+              context.push('/resell-detail/${item.id}');
+            },
           );
         },
       ),

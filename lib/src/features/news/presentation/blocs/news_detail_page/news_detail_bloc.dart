@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
@@ -24,7 +25,7 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
        _getNewsStatsUsecase = getNewsStatsUsecase,
        _toggleNewsLikeUsecase = toggleNewsLikeUsecase,
        _downloadFileUsecase = downloadFileUsecase,
-       super(const NewsDetailState.initial()) {
+       super(const NewsDetailState()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleLike>(_onToggleLike);
     on<RefreshDetail>(_onRefreshDetail);
@@ -34,7 +35,7 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     LoadDetail event,
     Emitter<NewsDetailState> emit,
   ) async {
-    emit(const NewsDetailState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadDetail(emit);
   }
 
@@ -50,20 +51,12 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     Emitter<NewsDetailState> emit,
   ) async {
     // Optimistic update
-    state.maybeWhen(
-      loaded: (newsDetail, likeCount, liked, commentCount, coverImage) {
-        emit(
-          NewsDetailState.loaded(
-            newsDetail: newsDetail,
-            likeCount: liked ? likeCount - 1 : likeCount + 1,
-            liked: !liked,
-            commentCount: commentCount,
-            coverImage: coverImage,
-          ),
-        );
-      },
-      orElse: () {},
-    );
+    if (state.status == LoadingStatus.success) {
+      emit(state.copyWith(
+        likeCount: state.liked ? state.likeCount - 1 : state.likeCount + 1,
+        liked: !state.liked,
+      ));
+    }
 
     // Make API call
     final result = await _toggleNewsLikeUsecase(newsId);
@@ -71,20 +64,12 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     result.fold(
       (error) {
         // Revert on error
-        state.maybeWhen(
-          loaded: (newsDetail, likeCount, liked, commentCount, coverImage) {
-            emit(
-              NewsDetailState.loaded(
-                newsDetail: newsDetail,
-                likeCount: liked ? likeCount - 1 : likeCount + 1,
-                liked: !liked,
-                commentCount: commentCount,
-                coverImage: coverImage,
-              ),
-            );
-          },
-          orElse: () {},
-        );
+        if (state.status == LoadingStatus.success) {
+          emit(state.copyWith(
+            likeCount: state.liked ? state.likeCount - 1 : state.likeCount + 1,
+            liked: !state.liked,
+          ));
+        }
       },
       (_) {
         // Success - state already updated optimistically
@@ -100,20 +85,22 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
     final statsError = statsResult.fold((e) => e.message, (_) => null);
 
     if (detailError != null || statsError != null) {
-      emit(NewsDetailState.error(detailError ?? statsError!));
+      emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: detailError ?? statsError!,
+      ));
       return;
     }
 
     await detailResult.fold((_) async => null, (newsDetail) async {
       await statsResult.fold((_) async => null, (stats) async {
-        emit(
-          NewsDetailState.loaded(
-            newsDetail: newsDetail,
-            likeCount: stats.likeCount,
-            liked: stats.like,
-            commentCount: stats.commentCount,
-          ),
-        );
+        emit(state.copyWith(
+          status: LoadingStatus.success,
+          newsDetail: newsDetail,
+          likeCount: stats.likeCount,
+          liked: stats.like,
+          commentCount: stats.commentCount,
+        ));
         await _loadCoverImage(newsDetail, emit);
       });
     });
@@ -138,20 +125,9 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
         // Silently fail for image download
       },
       (imageBytes) {
-        state.maybeWhen(
-          loaded: (newsDetail, likeCount, liked, commentCount, _) {
-            emit(
-              NewsDetailState.loaded(
-                newsDetail: newsDetail,
-                likeCount: likeCount,
-                liked: liked,
-                commentCount: commentCount,
-                coverImage: imageBytes,
-              ),
-            );
-          },
-          orElse: () {},
-        );
+        if (state.status == LoadingStatus.success) {
+          emit(state.copyWith(coverImage: imageBytes));
+        }
       },
     );
   }

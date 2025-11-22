@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/entities/application_form.dart';
 import '../../../../core/entities/application_form_group.dart';
 import '../../../../core/widgets/search_bar_widget.dart';
@@ -25,138 +26,13 @@ class ApplicationCreationPage extends StatelessWidget {
       ),
       body: BlocBuilder<ApplicationCreationBloc, ApplicationCreationState>(
         builder: (context, state) {
-          return state.when(
-            initial: () => const Center(child: CircularProgressIndicator()),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            loaded:
-                (
-                  allForms,
-                  groups,
-                  filteredForms,
-                  selectedGroupId,
-                  searchQuery,
-                ) {
-                  return Column(
-                    children: [
-                      const SizedBox(height: 8),
+          if (state.status == LoadingStatus.loading ||
+              state.status == LoadingStatus.initial) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                      // Filter tabs - optimized with BlocSelector
-                      BlocSelector<
-                        ApplicationCreationBloc,
-                        ApplicationCreationState,
-                        _FilterTabsState
-                      >(
-                        selector: (state) {
-                          return state.maybeWhen(
-                            loaded:
-                                (allForms, groups, _, selectedGroupId, __) =>
-                                    _FilterTabsState(
-                                      groups: groups,
-                                      allForms: allForms,
-                                      selectedGroupId: selectedGroupId,
-                                    ),
-                            orElse: () => const _FilterTabsState(
-                              groups: [],
-                              allForms: [],
-                              selectedGroupId: null,
-                            ),
-                          );
-                        },
-                        builder: (context, filterTabsState) {
-                          if (filterTabsState.groups.isEmpty) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return Column(
-                            children: [
-                              ApplicationFormFilterTabs(
-                                groups: filterTabsState.groups,
-                                allForms: filterTabsState.allForms,
-                                selectedGroupId:
-                                    filterTabsState.selectedGroupId,
-                                onGroupChanged: (groupId) {
-                                  context.read<ApplicationCreationBloc>().add(
-                                    ApplicationCreationEvent.filterByGroup(
-                                      groupId,
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 8),
-                            ],
-                          );
-                        },
-                      ),
-
-                      // Search bar - optimized with BlocSelector
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                        child:
-                            BlocSelector<
-                              ApplicationCreationBloc,
-                              ApplicationCreationState,
-                              _SearchBarState
-                            >(
-                              selector: (state) {
-                                return state.maybeWhen(
-                                  loaded: (_, __, ___, ____, _____) =>
-                                      const _SearchBarState(),
-                                  orElse: () => const _SearchBarState(),
-                                );
-                              },
-                              builder: (context, searchBarState) {
-                                return SearchBarWidget(
-                                  hintText: 'Наименование заявки',
-                                  onSearchChanged: (query) {
-                                    context.read<ApplicationCreationBloc>().add(
-                                      ApplicationCreationEvent.searchForms(
-                                        query,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                      ),
-
-                      // Forms list
-                      if (filteredForms.isEmpty)
-                        const Expanded(
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(32),
-                              child: Text(
-                                'Заявок не найдено',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFF757575),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      else
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: filteredForms.length,
-                            itemBuilder: (context, index) {
-                              final form = filteredForms[index];
-                              return ApplicationFormItem(
-                                applicationForm: form,
-                                onTap: () {
-                                  context.push(
-                                    '/application-form/${form.code}',
-                                    extra: form,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                    ],
-                  );
-                },
-            error: (message) => Center(
+          if (state.status == LoadingStatus.error) {
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -178,7 +54,7 @@ class ApplicationCreationPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Text(
-                      message,
+                      state.errorMessage ?? 'Unknown error',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 14,
@@ -205,7 +81,113 @@ class ApplicationCreationPage extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
+            );
+          }
+
+          return Column(
+            children: [
+              const SizedBox(height: 8),
+
+              // Filter tabs - optimized with BlocSelector
+              BlocSelector<ApplicationCreationBloc, ApplicationCreationState,
+                  _FilterTabsState>(
+                selector: (state) {
+                  if (state.status == LoadingStatus.success) {
+                    return _FilterTabsState(
+                      groups: state.groups,
+                      allForms: state.allForms,
+                      selectedGroupId: state.selectedGroupId,
+                    );
+                  }
+                  return const _FilterTabsState(
+                    groups: [],
+                    allForms: [],
+                    selectedGroupId: null,
+                  );
+                },
+                builder: (context, filterTabsState) {
+                  if (filterTabsState.groups.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Column(
+                    children: [
+                      ApplicationFormFilterTabs(
+                        groups: filterTabsState.groups,
+                        allForms: filterTabsState.allForms,
+                        selectedGroupId: filterTabsState.selectedGroupId,
+                        onGroupChanged: (groupId) {
+                          context.read<ApplicationCreationBloc>().add(
+                                ApplicationCreationEvent.filterByGroup(
+                                  groupId,
+                                ),
+                              );
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  );
+                },
+              ),
+
+              // Search bar - optimized with BlocSelector
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: BlocSelector<ApplicationCreationBloc,
+                    ApplicationCreationState, _SearchBarState>(
+                  selector: (state) {
+                    return const _SearchBarState();
+                  },
+                  builder: (context, searchBarState) {
+                    return SearchBarWidget(
+                      hintText: 'Наименование заявки',
+                      onSearchChanged: (query) {
+                        context.read<ApplicationCreationBloc>().add(
+                              ApplicationCreationEvent.searchForms(
+                                query,
+                              ),
+                            );
+                      },
+                    );
+                  },
+                ),
+              ),
+
+              // Forms list
+              if (state.filteredForms.isEmpty)
+                const Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Text(
+                        'Заявок не найдено',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF757575),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.filteredForms.length,
+                    itemBuilder: (context, index) {
+                      final form = state.filteredForms[index];
+                      return ApplicationFormItem(
+                        applicationForm: form,
+                        onTap: () {
+                          context.push(
+                            '/application-form/${form.code}',
+                            extra: form,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+            ],
           );
         },
       ),

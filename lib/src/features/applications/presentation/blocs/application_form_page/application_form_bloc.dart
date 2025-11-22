@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/entities/application_form.dart';
 import '../../../domain/domain.dart';
 
@@ -16,7 +17,7 @@ class ApplicationFormBloc
     required this.applicationForm,
     required this.createApplicationUsecase,
     required this.getKpAbsenceCategoriesUsecase,
-  }) : super(const ApplicationFormState.initial()) {
+  }) : super(const ApplicationFormState()) {
     on<LoadFormData>(_onLoadFormData);
     on<SubmitForm>(_onSubmitForm);
     on<ResetForm>(_onResetForm);
@@ -26,22 +27,36 @@ class ApplicationFormBloc
     LoadFormData event,
     Emitter<ApplicationFormState> emit,
   ) async {
-    emit(const ApplicationFormState.loadingData());
+    emit(state.copyWith(status: LoadingStatus.loading));
 
     switch (event.formCode) {
       case 'absence':
         final result = await getKpAbsenceCategoriesUsecase();
         result.fold(
-          (exception) => emit(ApplicationFormState.error(exception.toString())),
-          (categories) =>
-              emit(ApplicationFormState.dataLoaded('absence', categories)),
+          (exception) => emit(state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: exception.toString(),
+          )),
+          (categories) => emit(state.copyWith(
+            status: LoadingStatus.success,
+            formCode: 'absence',
+            data: categories,
+          )),
         );
       case 'alpinaAccess':
         // No data loading needed for AlpinaAccess form
-        emit(const ApplicationFormState.dataLoaded('alpinaAccess', null));
+        emit(state.copyWith(
+          status: LoadingStatus.success,
+          formCode: 'alpinaAccess',
+          data: null,
+        ));
       default:
         // For forms that don't need data loading
-        emit(ApplicationFormState.dataLoaded(event.formCode, null));
+        emit(state.copyWith(
+          status: LoadingStatus.success,
+          formCode: event.formCode,
+          data: null,
+        ));
     }
   }
 
@@ -49,17 +64,24 @@ class ApplicationFormBloc
     SubmitForm event,
     Emitter<ApplicationFormState> emit,
   ) async {
-    emit(const ApplicationFormState.submitting());
+    emit(state.copyWith(isSubmitting: true));
 
     final result = await createApplicationUsecase(event.params);
 
     result.fold(
-      (exception) => emit(ApplicationFormState.error(exception.toString())),
-      (application) => emit(const ApplicationFormState.success()),
+      (exception) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: exception.toString(),
+        isSubmitting: false,
+      )),
+      (application) => emit(state.copyWith(
+        status: LoadingStatus.success,
+        isSubmitting: false,
+      )),
     );
   }
 
   void _onResetForm(ResetForm event, Emitter<ApplicationFormState> emit) {
-    emit(const ApplicationFormState.initial());
+    emit(const ApplicationFormState());
   }
 }

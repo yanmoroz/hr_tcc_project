@@ -2,8 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/value_objects/system_type.dart';
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
+import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'discounts_list_event.dart';
@@ -18,10 +19,10 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     required GetDiscountsUsecase getDiscountsUsecase,
     required DownloadFileUsecase downloadFileUsecase,
     required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
-  }) : _getDiscountsUsecase = getDiscountsUsecase,
-       _downloadFileUsecase = downloadFileUsecase,
-       _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
-       super(const DiscountsListState.initial()) {
+  })  : _getDiscountsUsecase = getDiscountsUsecase,
+        _downloadFileUsecase = downloadFileUsecase,
+        _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
+        super(const DiscountsListState()) {
     on<LoadDiscounts>(_onLoadDiscounts);
     on<RefreshDiscounts>(_onRefreshDiscounts);
     on<LoadMoreDiscounts>(_onLoadMoreDiscounts);
@@ -32,7 +33,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     LoadDiscounts event,
     Emitter<DiscountsListState> emit,
   ) async {
-    emit(const DiscountsListState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadDiscounts(
       emit,
       page: 0,
@@ -60,71 +61,22 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     LoadMoreDiscounts event,
     Emitter<DiscountsListState> emit,
   ) async {
-    // Extract state values first
-    List<Discount>? discounts;
-    int? currentPage;
-    bool? hasMorePages;
-    bool? isLoadingMore;
-    Map<int, Uint8List>? coverImages;
-    int? category;
-    int? source;
-    String? categoryName;
+    // Guard clauses - simple and clear
+    if (state.isLoadingMore || !state.hasMorePages) return;
 
-    state.maybeWhen(
-      loaded:
-          (
-            loadedDiscounts,
-            loadedCurrentPage,
-            loadedHasMorePages,
-            loadedIsLoadingMore,
-            loadedCoverImages,
-            loadedCategory,
-            loadedSource,
-            loadedCategoryName,
-          ) {
-            discounts = loadedDiscounts;
-            currentPage = loadedCurrentPage;
-            hasMorePages = loadedHasMorePages;
-            isLoadingMore = loadedIsLoadingMore;
-            coverImages = loadedCoverImages;
-            category = loadedCategory;
-            source = loadedSource;
-            categoryName = loadedCategoryName;
-          },
-      orElse: () {},
+    // Show loading indicator
+    emit(state.copyWith(isLoadingMore: true));
+
+    // Load next page
+    await _loadMoreDiscounts(
+      emit,
+      currentDiscounts: state.discounts,
+      currentCoverImages: state.coverImages,
+      nextPage: state.currentPage + 1,
+      category: state.category,
+      source: state.source,
+      categoryName: state.categoryName,
     );
-
-    // Only load more if we're in loaded state and not already loading more
-    if (discounts != null &&
-        currentPage != null &&
-        hasMorePages != null &&
-        !(isLoadingMore ?? false) &&
-        hasMorePages!) {
-      // Emit state with isLoadingMore = true
-      emit(
-        DiscountsListState.loaded(
-          discounts: discounts!,
-          currentPage: currentPage!,
-          hasMorePages: hasMorePages!,
-          isLoadingMore: true,
-          coverImages: coverImages ?? {},
-          category: category,
-          source: source,
-          categoryName: categoryName,
-        ),
-      );
-
-      // Load next page
-      await _loadMoreDiscounts(
-        emit,
-        currentDiscounts: discounts!,
-        currentCoverImages: coverImages ?? {},
-        nextPage: currentPage! + 1,
-        category: category,
-        source: source,
-        categoryName: categoryName,
-      );
-    }
   }
 
   Future<void> _loadDiscounts(
@@ -141,14 +93,19 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     );
 
     await result.fold(
-      (error) async => emit(DiscountsListState.error(error.message)),
+      (error) async => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: error.message,
+        ),
+      ),
       (discounts) async {
         emit(
-          DiscountsListState.loaded(
+          state.copyWith(
+            status: LoadingStatus.success,
             discounts: discounts,
             currentPage: page,
-            hasMorePages:
-                discounts.isNotEmpty, // Assume more pages if we got results
+            hasMorePages: discounts.isNotEmpty,
             isLoadingMore: false,
             category: category,
             source: source,
@@ -177,32 +134,24 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
 
     await result.fold(
       (error) async {
-        // On error, revert to previous state without isLoadingMore
+        // On error, revert isLoadingMore flag
         emit(
-          DiscountsListState.loaded(
-            discounts: currentDiscounts,
-            currentPage: nextPage - 1,
-            hasMorePages: true,
+          state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: error.message,
             isLoadingMore: false,
-            coverImages: currentCoverImages,
-            category: category,
-            source: source,
-            categoryName: categoryName,
           ),
         );
       },
       (newDiscounts) async {
         final allDiscounts = [...currentDiscounts, ...newDiscounts];
         emit(
-          DiscountsListState.loaded(
+          state.copyWith(
+            status: LoadingStatus.success,
             discounts: allDiscounts,
             currentPage: nextPage,
-            hasMorePages: newDiscounts.isNotEmpty, // No more pages if empty
+            hasMorePages: newDiscounts.isNotEmpty,
             isLoadingMore: false,
-            coverImages: currentCoverImages,
-            category: category,
-            source: source,
-            categoryName: categoryName,
           ),
         );
         // Load cover images for new discounts only
@@ -242,110 +191,33 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     await Future.wait(futures);
 
     // Emit updated state with cover images, merging with existing ones
-    state.maybeWhen(
-      loaded:
-          (
-            discounts,
-            currentPage,
-            hasMorePages,
-            isLoadingMore,
-            existingCoverImages,
-            category,
-            source,
-            categoryName,
-          ) {
-            final mergedCoverImages = {...existingCoverImages, ...coverImages};
-            emit(
-              DiscountsListState.loaded(
-                discounts: discounts,
-                currentPage: currentPage,
-                hasMorePages: hasMorePages,
-                isLoadingMore: isLoadingMore,
-                coverImages: mergedCoverImages,
-                category: category,
-                source: source,
-                categoryName: categoryName,
-              ),
-            );
-          },
-      orElse: () {},
-    );
+    final mergedCoverImages = {...state.coverImages, ...coverImages};
+    emit(state.copyWith(coverImages: mergedCoverImages));
   }
 
   Future<void> _onToggleDiscountLike(
     ToggleDiscountLike event,
     Emitter<DiscountsListState> emit,
   ) async {
-    // Extract current state values
-    List<Discount>? discounts;
-    int? currentPage;
-    bool? hasMorePages;
-    bool? isLoadingMore;
-    Map<int, Uint8List>? coverImages;
-    int? category;
-    int? source;
-    String? categoryName;
-
-    state.maybeWhen(
-      loaded:
-          (
-            loadedDiscounts,
-            loadedCurrentPage,
-            loadedHasMorePages,
-            loadedIsLoadingMore,
-            loadedCoverImages,
-            loadedCategory,
-            loadedSource,
-            loadedCategoryName,
-          ) {
-            discounts = loadedDiscounts;
-            currentPage = loadedCurrentPage;
-            hasMorePages = loadedHasMorePages;
-            isLoadingMore = loadedIsLoadingMore;
-            coverImages = loadedCoverImages;
-            category = loadedCategory;
-            source = loadedSource;
-            categoryName = loadedCategoryName;
-          },
-      orElse: () {},
-    );
-
-    // Only proceed if we're in loaded state
-    if (discounts == null || currentPage == null || hasMorePages == null)
-      return;
-
     // Find the discount to update
-    final discountIndex = discounts!.indexWhere(
+    final discountIndex = state.discounts.indexWhere(
       (d) => d.id == event.discountId,
     );
     if (discountIndex == -1) return;
 
-    final discount = discounts![discountIndex];
+    final discount = state.discounts[discountIndex];
 
     // Optimistic update
-    final updatedDiscounts = List<Discount>.from(discounts!);
+    final updatedDiscounts = List<Discount>.from(state.discounts);
     updatedDiscounts[discountIndex] = discount.copyWith(
       like: !discount.like,
-      likeCount: discount.like
-          ? discount.likeCount - 1
-          : discount.likeCount + 1,
+      likeCount: discount.like ? discount.likeCount - 1 : discount.likeCount + 1,
     );
 
-    emit(
-      DiscountsListState.loaded(
-        discounts: updatedDiscounts,
-        currentPage: currentPage!,
-        hasMorePages: hasMorePages!,
-        isLoadingMore: isLoadingMore ?? false,
-        coverImages: coverImages ?? {},
-        category: category,
-        source: source,
-        categoryName: categoryName,
-      ),
-    );
+    emit(state.copyWith(discounts: updatedDiscounts));
 
     // Store original discounts for potential revert
-    final originalDiscounts = discounts!;
+    final originalDiscounts = state.discounts;
 
     // Make API call
     final result = await _toggleDiscountLikeUsecase(event.discountId);
@@ -353,18 +225,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     result.fold(
       (error) {
         // Revert on error
-        emit(
-          DiscountsListState.loaded(
-            discounts: originalDiscounts,
-            currentPage: currentPage!,
-            hasMorePages: hasMorePages!,
-            isLoadingMore: isLoadingMore ?? false,
-            coverImages: coverImages ?? {},
-            category: category,
-            source: source,
-            categoryName: categoryName,
-          ),
-        );
+        emit(state.copyWith(discounts: originalDiscounts));
       },
       (_) {
         // Success - state already updated optimistically

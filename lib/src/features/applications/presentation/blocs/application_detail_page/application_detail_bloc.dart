@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 import 'application_detail_event.dart';
 import 'application_detail_state.dart';
@@ -14,7 +15,7 @@ class ApplicationDetailBloc
     required this.applicationId,
     required this.getApplicationDetailUsecase,
     required this.cancelApplicationUsecase,
-  }) : super(const ApplicationDetailState.initial()) {
+  }) : super(const ApplicationDetailState()) {
     on<LoadDetail>(_onLoadDetail);
     on<CancelApplication>(_onCancelApplication);
   }
@@ -23,13 +24,19 @@ class ApplicationDetailBloc
     LoadDetail event,
     Emitter<ApplicationDetailState> emit,
   ) async {
-    emit(const ApplicationDetailState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
 
     final result = await getApplicationDetailUsecase(applicationId);
 
     result.fold(
-      (exception) => emit(ApplicationDetailState.error(exception.toString())),
-      (detail) => emit(ApplicationDetailState.loaded(detail)),
+      (exception) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: exception.toString(),
+      )),
+      (detail) => emit(state.copyWith(
+        status: LoadingStatus.success,
+        detail: detail,
+      )),
     );
   }
 
@@ -37,13 +44,20 @@ class ApplicationDetailBloc
     CancelApplication event,
     Emitter<ApplicationDetailState> emit,
   ) async {
-    emit(const ApplicationDetailState.canceling());
+    emit(state.copyWith(isCanceling: true));
 
     final result = await cancelApplicationUsecase(applicationId);
 
     result.fold(
-      (exception) => emit(ApplicationDetailState.error(exception.toString())),
-      (_) => emit(const ApplicationDetailState.canceled()),
+      (exception) => emit(state.copyWith(
+        status: LoadingStatus.error,
+        errorMessage: exception.toString(),
+        isCanceling: false,
+      )),
+      (_) => emit(state.copyWith(
+        status: LoadingStatus.success,
+        isCanceling: false,
+      )),
     );
   }
 }

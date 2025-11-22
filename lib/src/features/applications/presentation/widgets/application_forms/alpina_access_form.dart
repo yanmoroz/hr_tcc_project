@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 import '../../blocs/application_form_page/bloc.dart';
 import '../form_fields/date_picker_field.dart';
@@ -64,22 +65,62 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
   Widget build(BuildContext context) {
     return BlocBuilder<ApplicationFormBloc, ApplicationFormState>(
       builder: (context, state) {
-        return state.when(
-          initial: () {
-            // Trigger loading for consistency (will immediately return success)
-            context.read<ApplicationFormBloc>().add(
-              const ApplicationFormEvent.loadFormData('alpinaAccess'),
-            );
-            return const Center(child: CircularProgressIndicator());
-          },
-          loadingData: () => const Center(child: CircularProgressIndicator()),
-          dataLoaded: (formCode, _) {
-            // AlpinaAccess doesn't need specific data, just render the form
-            if (formCode != 'alpinaAccess') {
-              return const Center(child: Text('Неверные данные формы'));
-            }
+        // Initial state - trigger loading
+        if (state.status == LoadingStatus.initial) {
+          context.read<ApplicationFormBloc>().add(
+            const ApplicationFormEvent.loadFormData('alpinaAccess'),
+          );
+          return const Center(child: CircularProgressIndicator());
+        }
 
-            return Form(
+        // Loading state
+        if (state.status == LoadingStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Submitting state
+        if (state.isSubmitting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Success state (after submission)
+        if (state.status == LoadingStatus.success && !state.isSubmitting && state.formCode == null) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.check_circle, size: 64, color: Colors.green),
+                SizedBox(height: 16),
+                Text('Заявка успешно создана'),
+              ],
+            ),
+          );
+        }
+
+        // Error state
+        if (state.status == LoadingStatus.error) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(
+                  'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
+                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Data loaded state - AlpinaAccess doesn't need specific data
+        if (state.formCode != 'alpinaAccess') {
+          return const Center(child: Text('Неверные данные формы'));
+        }
+
+        return Form(
               key: _formKey,
               child: ListView(
                 padding: const EdgeInsets.all(16),
@@ -192,33 +233,6 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
                 ],
               ),
             );
-          },
-          submitting: () => const Center(child: CircularProgressIndicator()),
-          success: () => const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle, size: 64, color: Colors.green),
-                SizedBox(height: 16),
-                Text('Заявка успешно создана'),
-              ],
-            ),
-          ),
-          error: (message) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(
-                  'Ошибка: $message',
-                  style: const TextStyle(fontSize: 16, color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
       },
     );
   }

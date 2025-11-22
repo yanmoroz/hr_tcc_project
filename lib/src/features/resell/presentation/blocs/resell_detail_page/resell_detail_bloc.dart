@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/logging/app_logger.dart';
 import '../../../domain/domain.dart';
 
@@ -17,7 +18,7 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
     required BookResellItemUsecase bookResellItemUsecase,
   })  : _getResellDetailUsecase = getResellDetailUsecase,
         _bookResellItemUsecase = bookResellItemUsecase,
-        super(const ResellDetailState.initial()) {
+        super(const ResellDetailState()) {
     on<LoadResellDetail>(_onLoadResellDetail);
     on<BookResellItem>(_onBookResellItem);
   }
@@ -26,7 +27,7 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
     LoadResellDetail event,
     Emitter<ResellDetailState> emit,
   ) async {
-    emit(const ResellDetailState.loading());
+    emit(state.copyWith(status: LoadingStatus.loading));
 
     final result = await _getResellDetailUsecase(itemId);
 
@@ -34,10 +35,16 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
       result.fold(
         (error) {
           AppLogger.e('Failed to load resell detail: ${error.toString()}');
-          emit(ResellDetailState.error(error.toString()));
+          emit(state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: error.toString(),
+          ));
         },
         (detail) {
-          emit(ResellDetailState.loaded(detail));
+          emit(state.copyWith(
+            status: LoadingStatus.success,
+            detail: detail,
+          ));
         },
       );
     }
@@ -48,10 +55,9 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
     Emitter<ResellDetailState> emit,
   ) async {
     // Get current detail from state
-    final currentDetail = state.mapOrNull(loaded: (state) => state.detail);
-    if (currentDetail == null) return;
+    if (state.detail == null) return;
 
-    emit(const ResellDetailState.bookingInProgress());
+    emit(state.copyWith(isBooking: true));
 
     final result = await _bookResellItemUsecase(itemId);
 
@@ -59,13 +65,18 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
       result.fold(
         (error) {
           AppLogger.e('Failed to book resell item: ${error.toString()}');
-          // Return to loaded state with the detail
-          emit(ResellDetailState.loaded(currentDetail));
-          emit(ResellDetailState.error(error.toString()));
+          emit(state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: error.toString(),
+            isBooking: false,
+          ));
         },
         (_) {
           AppLogger.d('Booking successful');
-          emit(ResellDetailState.bookingSuccess());
+          emit(state.copyWith(
+            status: LoadingStatus.success,
+            isBooking: false,
+          ));
         },
       );
     }

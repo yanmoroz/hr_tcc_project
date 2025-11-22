@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/base_types/loading_status.dart';
 import '../../domain/domain.dart';
 import '../blocs/comments_page/bloc.dart';
 import '../widgets/comment_item.dart';
@@ -29,10 +30,7 @@ class _CommentsPageState extends State<CommentsPage> {
       appBar: AppBar(
         title: BlocBuilder<CommentsBloc, CommentsState>(
           builder: (context, state) {
-            final commentCount = state.maybeWhen(
-              loaded: (comments, _) => comments.length,
-              orElse: () => 0,
-            );
+            final commentCount = state.comments.length;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -54,68 +52,18 @@ class _CommentsPageState extends State<CommentsPage> {
           Expanded(
             child: BlocBuilder<CommentsBloc, CommentsState>(
               builder: (context, state) {
-                return state.when(
-                  initial: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  loaded: (comments, isAddingComment) {
-                    if (comments.isEmpty) {
-                      return const Center(child: Text('Комментариев пока нет'));
-                    }
+                if (state.status == LoadingStatus.initial ||
+                    state.status == LoadingStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                    // Sort comments by createdData (ascending - oldest first)
-                    final sortedComments = List<Comment>.from(comments)
-                      ..sort((a, b) => a.createdData.compareTo(b.createdData));
-
-                    // Group comments by day
-                    final groupedItems = _groupCommentsByDay(sortedComments);
-
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<CommentsBloc>().add(
-                          const CommentsEvent.refreshComments(),
-                        );
-                      },
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: groupedItems.length,
-                        itemBuilder: (context, index) {
-                          final item = groupedItems[index];
-
-                          // Check if this is a date separator
-                          if (item is DateTime) {
-                            return DateSeparator(date: item);
-                          }
-
-                          // Otherwise it's a Comment
-                          final comment = item as Comment;
-                          return CommentItem(
-                            comment: comment,
-                            onLike: () {
-                              context.read<CommentsBloc>().add(
-                                CommentsEvent.toggleCommentLike(comment.id),
-                              );
-                            },
-                            onDelete: comment.editable
-                                ? () {
-                                    _showDeleteDialog(context, comment.id);
-                                  }
-                                : null,
-                            onReply: () {
-                              // TODO: Implement reply functionality
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  error: (message) => Center(
+                if (state.status == LoadingStatus.error) {
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Ошибка: $message',
+                          'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
@@ -123,13 +71,63 @@ class _CommentsPageState extends State<CommentsPage> {
                         ElevatedButton(
                           onPressed: () {
                             context.read<CommentsBloc>().add(
-                              const CommentsEvent.loadComments(),
-                            );
+                                  const CommentsEvent.loadComments(),
+                                );
                           },
                           child: const Text('Повторить'),
                         ),
                       ],
                     ),
+                  );
+                }
+
+                if (state.comments.isEmpty) {
+                  return const Center(child: Text('Комментариев пока нет'));
+                }
+
+                // Sort comments by createdData (ascending - oldest first)
+                final sortedComments = List<Comment>.from(state.comments)
+                  ..sort((a, b) => a.createdData.compareTo(b.createdData));
+
+                // Group comments by day
+                final groupedItems = _groupCommentsByDay(sortedComments);
+
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<CommentsBloc>().add(
+                          const CommentsEvent.refreshComments(),
+                        );
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: groupedItems.length,
+                    itemBuilder: (context, index) {
+                      final item = groupedItems[index];
+
+                      // Check if this is a date separator
+                      if (item is DateTime) {
+                        return DateSeparator(date: item);
+                      }
+
+                      // Otherwise it's a Comment
+                      final comment = item as Comment;
+                      return CommentItem(
+                        comment: comment,
+                        onLike: () {
+                          context.read<CommentsBloc>().add(
+                                CommentsEvent.toggleCommentLike(comment.id),
+                              );
+                        },
+                        onDelete: comment.editable
+                            ? () {
+                                _showDeleteDialog(context, comment.id);
+                              }
+                            : null,
+                        onReply: () {
+                          // TODO: Implement reply functionality
+                        },
+                      );
+                    },
                   ),
                 );
               },
@@ -139,10 +137,7 @@ class _CommentsPageState extends State<CommentsPage> {
           // Add comment input
           BlocBuilder<CommentsBloc, CommentsState>(
             builder: (context, state) {
-              final isAddingComment = state.maybeWhen(
-                loaded: (_, isAdding) => isAdding,
-                orElse: () => false,
-              );
+              final isAddingComment = state.isAddingComment;
 
               return Container(
                 padding: const EdgeInsets.all(16),

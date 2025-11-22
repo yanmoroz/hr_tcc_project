@@ -1,16 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 
 part 'comments_state.freezed.dart';
 
 @freezed
-class CommentsState with _$CommentsState {
-  const factory CommentsState.initial() = CommentsInitial;
-  const factory CommentsState.loading() = CommentsLoading;
-  const factory CommentsState.loaded({
-    required List<Comment> comments,
+sealed class CommentsState with _$CommentsState {
+  const factory CommentsState({
+    @Default(LoadingStatus.initial) LoadingStatus status,
+    @Default([]) List<Comment> comments,
     @Default(false) bool isAddingComment,
-  }) = CommentsLoaded;
-  const factory CommentsState.error(String message) = CommentsError;
+    String? errorMessage,
+  }) = _CommentsState;
 }
