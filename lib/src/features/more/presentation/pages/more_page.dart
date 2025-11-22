@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/widgets/widgets.dart';
+import '../../../users/presentation/widgets/user_profile_header.dart';
 import '../widgets/more_menu_card.dart';
 
 class MorePage extends StatelessWidget {
@@ -8,12 +8,13 @@ class MorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageWithProfileHeader(
-      title: 'Ещё',
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+    return Column(
+      children: [
+        const UserProfileHeader(),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
             // Report violations menu item
             MoreMenuCard(
               title: 'Сообщить о нарушениях',
@@ -56,6 +57,7 @@ class MorePage extends StatelessWidget {
           ],
         ),
       ),
+      ],
     );
   }
 }

@@ -18,6 +18,7 @@ class DiscountsListEvent with _$DiscountsListEvent {
 
   const factory DiscountsListEvent.loadMoreDiscounts() = LoadMoreDiscounts;
 
-  const factory DiscountsListEvent.toggleLike({required int discountId}) =
-      ToggleLike;
+  const factory DiscountsListEvent.toggleDiscountLike({
+    required int discountId,
+  }) = ToggleDiscountLike;
 }

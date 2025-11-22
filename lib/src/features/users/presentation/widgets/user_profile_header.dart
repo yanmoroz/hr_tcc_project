@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/domain.dart';
-import '../blocs/user_profile_header/bloc.dart';
+import '../blocs/current_user/bloc.dart';
 
 class UserProfileHeader extends StatelessWidget {
   const UserProfileHeader({this.child, super.key});
@@ -33,7 +33,7 @@ class UserProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserProfileHeaderBloc, UserProfileHeaderState>(
+    return BlocBuilder<CurrentUserBloc, CurrentUserState>(
       builder: (context, state) {
         return Container(
           decoration: BoxDecoration(
@@ -188,8 +188,8 @@ class UserProfileHeader extends StatelessWidget {
           icon: const Icon(Icons.refresh, size: 24),
           color: const Color(0xFF0A3899),
           onPressed: () {
-            context.read<UserProfileHeaderBloc>().add(
-              const UserProfileHeaderEvent.refreshUserProfile(),
+            context.read<CurrentUserBloc>().add(
+              const CurrentUserEvent.refreshCurrentUser(),
             );
           },
         ),

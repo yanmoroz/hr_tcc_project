@@ -25,7 +25,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     on<LoadDiscounts>(_onLoadDiscounts);
     on<RefreshDiscounts>(_onRefreshDiscounts);
     on<LoadMoreDiscounts>(_onLoadMoreDiscounts);
-    on<ToggleLike>(_onToggleLike);
+    on<ToggleDiscountLike>(_onToggleDiscountLike);
   }
 
   Future<void> _onLoadDiscounts(
@@ -272,8 +272,8 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     );
   }
 
-  Future<void> _onToggleLike(
-    ToggleLike event,
+  Future<void> _onToggleDiscountLike(
+    ToggleDiscountLike event,
     Emitter<DiscountsListState> emit,
   ) async {
     // Extract current state values

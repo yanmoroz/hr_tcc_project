@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/bloc_factory.dart';
 import '../../../../core/value_objects/status_group_type.dart';
-import '../../../../core/widgets/page_with_profile_header.dart';
 import '../../../../core/widgets/search_bar_widget.dart';
+import '../../../users/presentation/widgets/user_profile_header.dart';
 import '../../domain/domain.dart';
 import '../blocs/applications_list_page/bloc.dart';
 import '../widgets/application_card.dart';
@@ -50,11 +50,10 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
       create: (context) =>
           BlocFactory.createApplicationsListBloc()
             ..add(const ApplicationsListEvent.loadApplications()),
-      child: PageWithProfileHeader(
-        title: 'Мои заявки',
-        body: Column(
-          children: [
-            // Status filter tabs - only rebuilds when statistics or selected filter changes
+      child: Column(
+        children: [
+          const UserProfileHeader(),
+          // Status filter tabs - only rebuilds when statistics or selected filter changes
             BlocSelector<
               ApplicationsListBloc,
               ApplicationsListState,
@@ -276,7 +275,6 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
               },
             ),
           ],
-        ),
       ),
     );
   }

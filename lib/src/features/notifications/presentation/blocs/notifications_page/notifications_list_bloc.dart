@@ -23,7 +23,7 @@ class NotificationsListBloc
     on<NotificationsListEvent>((event, emit) async {
       await event.when(
         loadNotifications: () => _onLoadNotifications(emit),
-        markAsRead: (id) => _onMarkAsRead(id, emit),
+        markNotificationAsRead: (id) => _onMarkNotificationAsRead(id, emit),
         markAllAsRead: () => _onMarkAllAsRead(emit),
       );
     });
@@ -59,7 +59,7 @@ class NotificationsListBloc
     );
   }
 
-  Future<void> _onMarkAsRead(
+  Future<void> _onMarkNotificationAsRead(
     int id,
     Emitter<NotificationsListState> emit,
   ) async {

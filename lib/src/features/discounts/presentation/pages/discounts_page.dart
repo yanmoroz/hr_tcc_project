@@ -106,7 +106,7 @@ class _DiscountsPageState extends State<DiscountsPage> {
                           },
                           onLikeTap: () {
                             context.read<DiscountsListBloc>().add(
-                              DiscountsListEvent.toggleLike(
+                              DiscountsListEvent.toggleDiscountLike(
                                 discountId: discount.id,
                               ),
                             );

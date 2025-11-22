@@ -5,36 +5,16 @@ import 'package:go_router/go_router.dart';
 import '../../core/entities/application_form.dart';
 import '../../features/applications/applications.dart';
 import '../../features/comments/comments.dart';
-import '../../features/discounts/presentation/blocs/discount_categories_page/discount_categories_event.dart';
-import '../../features/discounts/presentation/blocs/discount_page/discount_detail_event.dart';
-import '../../features/discounts/presentation/blocs/discounts_page/discounts_list_event.dart';
-import '../../features/discounts/presentation/pages/discount_categories_page.dart';
-import '../../features/discounts/presentation/pages/discount_detail_page.dart';
-import '../../features/discounts/presentation/pages/discounts_page.dart';
-import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/more/presentation/pages/more_page.dart';
-import '../../features/news/presentation/blocs/news_detail_page/news_detail_event.dart';
-import '../../features/news/presentation/blocs/news_page/news_list_event.dart';
-import '../../features/news/presentation/pages/news_detail_page.dart';
-import '../../features/news/presentation/pages/news_page.dart';
-import '../../features/notifications/presentation/blocs/notification_detail_page/notification_detail_event.dart';
-import '../../features/notifications/presentation/blocs/notifications_page/notifications_list_event.dart';
-import '../../features/notifications/presentation/pages/notification_detail_page.dart';
-import '../../features/notifications/presentation/pages/notifications_page.dart';
-import '../../features/polls/presentation/blocs/poll_page/poll_detail_event.dart';
-import '../../features/polls/presentation/blocs/polls_page/polls_list_event.dart';
-import '../../features/polls/presentation/pages/poll_page.dart';
-import '../../features/polls/presentation/pages/polls_page.dart';
-import '../../features/resell/presentation/blocs/resell_detail_page/bloc.dart';
-import '../../features/resell/presentation/blocs/resell_items_page/bloc.dart';
-import '../../features/resell/presentation/pages/resell_detail_page.dart';
-import '../../features/resell/presentation/pages/resell_items_page.dart';
-import '../../features/users/presentation/blocs/address_book_page/address_book_event.dart';
-import '../../features/users/presentation/blocs/user_profile_header/user_profile_header_event.dart';
-import '../../features/users/presentation/pages/address_book_page.dart';
-import '../../features/users/presentation/pages/users_page.dart';
+import '../../features/discounts/discounts.dart';
+import '../../features/home/home.dart';
+import '../../features/more/more.dart';
+import '../../features/news/news.dart';
+import '../../features/notifications/notifications.dart';
+import '../../features/polls/polls.dart';
+import '../../features/resell/resell.dart';
+import '../../features/users/users.dart';
 import '../di/bloc_factory.dart';
-import 'scaffold_with_nav_bar.dart';
+import 'main_shell.dart';
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -49,190 +29,13 @@ class AppRouter {
         builder: (context, state, child) {
           return BlocProvider(
             create: (context) =>
-                BlocFactory.createUserProfileHeaderBloc()
-                  ..add(const UserProfileHeaderEvent.loadUserProfile()),
-            child: ScaffoldWithNavBar(child: child),
+                BlocFactory.createCurrentUserBloc()
+                  ..add(const CurrentUserEvent.loadCurrentUser()),
+            child: MainShell(child: child),
           );
         },
         routes: [
           // Bottom navigation tab routes
-          GoRoute(
-            path: '/home',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: HomePage()),
-          ),
-          GoRoute(
-            path: '/applications',
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: BlocProvider(
-                create: (context) =>
-                    BlocFactory.createApplicationsListBloc()
-                      ..add(const ApplicationsListEvent.loadApplications()),
-                child: const MyApplicationsPage(),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/contacts',
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: BlocProvider(
-                create: (context) =>
-                    BlocFactory.createAddressBookBloc()
-                      ..add(const AddressBookEvent.loadAddressBook()),
-                child: const AddressBookPage(),
-              ),
-            ),
-          ),
-          GoRoute(
-            path: '/more',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: MorePage()),
-          ),
-          // Navigable routes (with persistent bottom nav)
-          GoRoute(
-            path: '/notifications',
-            builder: (context, state) {
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createNotificationsListBloc()
-                      ..add(const NotificationsListEvent.loadNotifications()),
-                child: const NotificationsPage(),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/polls',
-            builder: (context, state) {
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createPollsListBloc()
-                      ..add(const PollsListEvent.loadPolls()),
-                child: const PollsPage(),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/poll/:id',
-            builder: (context, state) {
-              final pollId = int.parse(state.pathParameters['id']!);
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createPollDetailBloc(pollId)
-                      ..add(const PollDetailEvent.loadPollDetail()),
-                child: PollPage(pollId: pollId),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/users',
-            builder: (context, state) => const UsersPage(),
-          ),
-          GoRoute(
-            path: '/discount-categories',
-            builder: (context, state) {
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createDiscountCategoriesBloc()
-                      ..add(const DiscountCategoriesEvent.loadCategories()),
-                child: const DiscountCategoriesPage(),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/discounts',
-            builder: (context, state) {
-              final category = state.getExtra<String>('category');
-              final source = state.getExtra<String>('source');
-              final categoryName = state.getExtra<String>('categoryName');
-              final categoryCode = category != null
-                  ? int.tryParse(category)
-                  : null;
-              final sourceCode = source != null ? int.tryParse(source) : null;
-              return BlocProvider(
-                create: (context) => BlocFactory.createDiscountsListBloc()
-                  ..add(
-                    DiscountsListEvent.loadDiscounts(
-                      category: categoryCode,
-                      source: sourceCode,
-                      categoryName: categoryName,
-                    ),
-                  ),
-                child: const DiscountsPage(),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/discount/:id',
-            builder: (context, state) {
-              final discountId = int.parse(state.pathParameters['id']!);
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createDiscountDetailBloc(discountId)
-                      ..add(const DiscountDetailEvent.loadDetail()),
-                child: DiscountDetailPage(discountId: discountId),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/news',
-            builder: (context, state) {
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createNewsListBloc()
-                      ..add(const NewsListEvent.loadNews()),
-                child: const NewsPage(),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/news-detail/:id',
-            builder: (context, state) {
-              final newsId = int.parse(state.pathParameters['id']!);
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createNewsDetailBloc(newsId)
-                      ..add(const NewsDetailEvent.loadDetail()),
-                child: NewsDetailPage(newsId: newsId),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/comments/:entityType/:entityId',
-            builder: (context, state) {
-              final entityId = int.parse(state.pathParameters['entityId']!);
-              final entityType = CommentableEntityType.fromString(
-                state.pathParameters['entityType']!,
-              );
-              return BlocProvider(
-                create: (context) => BlocFactory.createCommentsBloc(
-                  entityId: entityId,
-                  entityType: entityType,
-                )..add(const CommentsEvent.loadComments()),
-                child: CommentsPage(entityId: entityId, entityType: entityType),
-              );
-            },
-          ),
-          GoRoute(
-            path: '/resell',
-            builder: (context, state) => BlocProvider(
-              create: (context) =>
-                  BlocFactory.createResellItemsBloc()
-                    ..add(const ResellItemsEvent.loadResellItems()),
-              child: const ResellItemsPage(),
-            ),
-          ),
-          GoRoute(
-            path: '/resell-detail/:id',
-            builder: (context, state) {
-              final itemId = state.pathParameters['id']!;
-              return BlocProvider(
-                create: (context) =>
-                    BlocFactory.createResellDetailBloc()
-                      ..add(ResellDetailEvent.loadResellDetail(itemId)),
-                child: ResellDetailPage(itemId: itemId),
-              );
-            },
-          ),
           GoRoute(
             path: '/application-creation',
             builder: (context, state) {
@@ -264,6 +67,123 @@ class AppRouter {
             },
           ),
           GoRoute(
+            path: '/applications',
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: BlocProvider(
+                create: (context) =>
+                    BlocFactory.createApplicationsListBloc()
+                      ..add(const ApplicationsListEvent.loadApplications()),
+                child: const MyApplicationsPage(),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/comments/:entityType/:entityId',
+            builder: (context, state) {
+              final entityId = int.parse(state.pathParameters['entityId']!);
+              final entityType = CommentableEntityType.fromString(
+                state.pathParameters['entityType']!,
+              );
+              return BlocProvider(
+                create: (context) => BlocFactory.createCommentsBloc(
+                  entityId: entityId,
+                  entityType: entityType,
+                )..add(const CommentsEvent.loadComments()),
+                child: CommentsPage(entityId: entityId, entityType: entityType),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/contacts',
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: BlocProvider(
+                create: (context) =>
+                    BlocFactory.createAddressBookBloc()
+                      ..add(const AddressBookEvent.loadAddressBook()),
+                child: const AddressBookPage(),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/discount-categories',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createDiscountCategoriesBloc()
+                      ..add(const DiscountCategoriesEvent.loadCategories()),
+                child: const DiscountCategoriesPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/discount/:id',
+            builder: (context, state) {
+              final discountId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createDiscountDetailBloc(discountId)
+                      ..add(const DiscountDetailEvent.loadDetail()),
+                child: DiscountDetailPage(discountId: discountId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/discounts',
+            builder: (context, state) {
+              final category = state.getExtra<String>('category');
+              final source = state.getExtra<String>('source');
+              final categoryName = state.getExtra<String>('categoryName');
+              final categoryCode = category != null
+                  ? int.tryParse(category)
+                  : null;
+              final sourceCode = source != null ? int.tryParse(source) : null;
+              return BlocProvider(
+                create: (context) => BlocFactory.createDiscountsListBloc()
+                  ..add(
+                    DiscountsListEvent.loadDiscounts(
+                      category: categoryCode,
+                      source: sourceCode,
+                      categoryName: categoryName,
+                    ),
+                  ),
+                child: const DiscountsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/home',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HomePage()),
+          ),
+          GoRoute(
+            path: '/more',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: MorePage()),
+          ),
+          GoRoute(
+            path: '/news',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNewsListBloc()
+                      ..add(const NewsListEvent.loadNews()),
+                child: const NewsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/news-detail/:id',
+            builder: (context, state) {
+              final newsId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNewsDetailBloc(newsId)
+                      ..add(const NewsDetailEvent.loadDetail()),
+                child: NewsDetailPage(newsId: newsId),
+              );
+            },
+          ),
+          GoRoute(
             path: '/notification/:id',
             builder: (context, state) {
               final notificationId = int.parse(state.pathParameters['id']!);
@@ -275,13 +195,67 @@ class AppRouter {
               );
             },
           ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNotificationsListBloc()
+                      ..add(const NotificationsListEvent.loadNotifications()),
+                child: const NotificationsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/poll/:id',
+            builder: (context, state) {
+              final pollId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createPollDetailBloc(pollId)
+                      ..add(const PollDetailEvent.loadPollDetail()),
+                child: PollPage(pollId: pollId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/polls',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createPollsListBloc()
+                      ..add(const PollsListEvent.loadPolls()),
+                child: const PollsPage(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/resell',
+            builder: (context, state) => BlocProvider(
+              create: (context) =>
+                  BlocFactory.createResellItemsBloc()
+                    ..add(const ResellItemsEvent.loadResellItems()),
+              child: const ResellItemsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/resell-detail/:id',
+            builder: (context, state) {
+              final itemId = state.pathParameters['id']!;
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createResellDetailBloc()
+                      ..add(ResellDetailEvent.loadResellDetail(itemId)),
+                child: ResellDetailPage(itemId: itemId),
+              );
+            },
+          ),
         ],
       ),
     ],
   );
 }
 
-// TODO: Move?
 extension GoRouterStateExtension on GoRouterState {
   T? getExtra<T>(String key) {
     final extra = this.extra as Map<String, dynamic>?;
