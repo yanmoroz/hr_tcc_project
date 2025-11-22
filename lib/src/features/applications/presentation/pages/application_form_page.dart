@@ -44,18 +44,24 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
                   message: 'Заявка успешно создана',
                   isSuccess: true,
                   onClose: () {
-                    Navigator.of(dialogContext).pop(); // Close dialog
-                    context.pop(); // Navigate back to applications list
+                    Navigator.of(dialogContext).pop();
+                    context.go('/applications');
                   },
                 ),
               );
             },
             error: (message) {
               // Show error message
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Ошибка: $message'),
-                  backgroundColor: Colors.red,
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                barrierColor: Colors.transparent,
+                builder: (dialogContext) => SubmitResultWidget(
+                  message: 'Ошибка: $message',
+                  isSuccess: false,
+                  onClose: () {
+                    Navigator.of(dialogContext).pop();
+                  },
                 ),
               );
             },

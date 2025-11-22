@@ -156,8 +156,14 @@ class AppRouter {
           ),
           GoRoute(
             path: '/home',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: HomePage()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNewsListBloc()
+                      ..add(const NewsListEvent.loadNews()),
+                child: const HomePage(),
+              ),
+            ),
           ),
           GoRoute(
             path: '/more',

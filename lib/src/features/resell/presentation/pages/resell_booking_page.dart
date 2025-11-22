@@ -45,16 +45,22 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                 isSuccess: true,
                 onClose: () {
                   Navigator.of(dialogContext).pop(); // Close dialog
-                  context.pop(); // Navigate back to applications list
+                  context.go('/resell'); // Navigate back to applications list
                 },
               ),
             );
           },
           error: (message) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Ошибка: $message'),
-                backgroundColor: Colors.red,
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              barrierColor: Colors.transparent,
+              builder: (dialogContext) => SubmitResultWidget(
+                message: 'Ошибка: $message',
+                isSuccess: false,
+                onClose: () {
+                  Navigator.of(dialogContext).pop();
+                },
               ),
             );
           },
