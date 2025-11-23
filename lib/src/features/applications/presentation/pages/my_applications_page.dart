@@ -227,7 +227,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                       application: application,
                       onTap: () {
                         // Navigate to application detail page
-                        context.push('/application/${application.id}');
+                        context.push('/applications/${application.id}');
                       },
                     );
                   },
@@ -240,7 +240,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
         // Create application button - always visible
         CreateApplicationButton(
           onPressed: () {
-            context.push('/application-creation');
+            context.push('/applications/creation');
           },
         ),
       ],

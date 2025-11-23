@@ -20,7 +20,7 @@ class ResellDetailPage extends StatelessWidget {
       listener: (context, state) {
         // Navigate to booking page when booking is initiated
         if (state.isBooking) {
-          context.push('/resell-booking/$itemId').then((_) {
+          context.push('/home/resell/booking/$itemId').then((_) {
             // Reload detail when booking page is closed
             context.read<ResellDetailBloc>().add(
               const ResellDetailEvent.loadResellDetail(),

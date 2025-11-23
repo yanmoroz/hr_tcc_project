@@ -3,17 +3,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class MainShell extends StatelessWidget {
-  const MainShell({required this.child, super.key});
+  const MainShell({required this.navigationShell, super.key});
 
-  final Widget child;
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
-    final currentIndex = _calculateSelectedIndex(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(child: child),
+      body: SafeArea(child: navigationShell),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
           splashColor: Colors.transparent,
@@ -43,8 +41,8 @@ class MainShell extends StatelessWidget {
               padding: const EdgeInsets.only(top: 12),
               child: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
-                currentIndex: currentIndex,
-                onTap: (index) => _onItemTapped(index, context),
+                currentIndex: navigationShell.currentIndex,
+                onTap: _onItemTapped,
                 selectedItemColor: const Color(0xFF0A3899),
                 unselectedItemColor: Colors.grey[600],
                 backgroundColor: Colors.transparent,
@@ -56,7 +54,7 @@ class MainShell extends StatelessWidget {
                     icon: _buildIcon(
                       'assets/icons/home-icon.svg',
                       0,
-                      currentIndex,
+                      navigationShell.currentIndex,
                     ),
                     label: 'Главная',
                   ),
@@ -64,7 +62,7 @@ class MainShell extends StatelessWidget {
                     icon: _buildIcon(
                       'assets/icons/applications-icon.svg',
                       1,
-                      currentIndex,
+                      navigationShell.currentIndex,
                     ),
                     label: 'Мои заявки',
                   ),
@@ -72,7 +70,7 @@ class MainShell extends StatelessWidget {
                     icon: _buildIcon(
                       'assets/icons/contacts-icon.svg',
                       2,
-                      currentIndex,
+                      navigationShell.currentIndex,
                     ),
                     label: 'Контакты',
                   ),
@@ -80,7 +78,7 @@ class MainShell extends StatelessWidget {
                     icon: _buildIcon(
                       'assets/icons/more-icon.svg',
                       3,
-                      currentIndex,
+                      navigationShell.currentIndex,
                     ),
                     label: 'Ещё',
                   ),
@@ -116,38 +114,10 @@ class MainShell extends StatelessWidget {
     );
   }
 
-  static int _calculateSelectedIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/home')) {
-      return 0;
-    }
-    if (location.startsWith('/applications') ||
-        location.startsWith('/application-')) {
-      return 1;
-    }
-    if (location.startsWith('/contacts')) {
-      return 2;
-    }
-    if (location.startsWith('/more')) {
-      return 3;
-    }
-    return 0;
-  }
-
-  void _onItemTapped(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go('/home');
-        break;
-      case 1:
-        context.go('/applications');
-        break;
-      case 2:
-        context.go('/contacts');
-        break;
-      case 3:
-        context.go('/more');
-        break;
-    }
+  void _onItemTapped(int index) {
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
   }
 }

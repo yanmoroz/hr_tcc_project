@@ -153,7 +153,7 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
           return ResellItemCard(
             item: item,
             onTap: () {
-              context.push('/resell-detail/${item.id}');
+              context.push('/home/resell/detail/${item.id}');
             },
           );
         },

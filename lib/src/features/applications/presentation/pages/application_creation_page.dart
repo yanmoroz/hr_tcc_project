@@ -179,7 +179,7 @@ class ApplicationCreationPage extends StatelessWidget {
                         applicationForm: form,
                         onTap: () {
                           context.push(
-                            '/application-form/${form.code}',
+                            '/applications/form/${form.code}',
                             extra: form,
                           );
                         },

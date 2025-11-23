@@ -103,7 +103,7 @@ class NotificationsPage extends StatelessWidget {
               notification: notification,
               onTap: () {
                 // Navigate to detail page
-                context.push('/notification/${notification.id}');
+                context.push('/home/notifications/${notification.id}');
               },
             );
           },

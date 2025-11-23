@@ -48,7 +48,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
               isSuccess: true,
               onClose: () {
                 Navigator.of(dialogContext).pop(); // Close dialog
-                context.go('/resell'); // Navigate back to applications list
+                context.go('/home/resell'); // Navigate back to resell list
               },
             ),
           );

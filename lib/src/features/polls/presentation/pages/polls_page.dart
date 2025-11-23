@@ -76,7 +76,7 @@ class PollsPage extends StatelessWidget {
           return PollItem(
             viewModel: viewModel,
             onTap: () {
-              context.push('/poll/${poll.id}');
+              context.push('/home/polls/${poll.id}');
             },
           );
         },

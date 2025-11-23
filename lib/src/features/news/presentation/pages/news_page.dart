@@ -129,7 +129,7 @@ class _NewsPageState extends State<NewsPage> {
             newsItem: newsItem,
             coverImage: coverImages[newsItem.id],
             onTap: () {
-              context.push('/news-detail/${newsItem.id}');
+              context.push('/home/news/${newsItem.id}');
             },
           );
         },

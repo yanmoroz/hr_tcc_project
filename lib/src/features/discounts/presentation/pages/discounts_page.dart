@@ -135,7 +135,7 @@ class _DiscountsPageState extends State<DiscountsPage> {
           return DiscountCard(
             discount: discount,
             onTap: () {
-              context.push('/discount/${discount.id}');
+              context.push('/home/discounts/${discount.id}');
             },
             onLikeTap: () {
               context.read<DiscountsListBloc>().add(
@@ -149,7 +149,7 @@ class _DiscountsPageState extends State<DiscountsPage> {
               final bloc = context.read<DiscountsListBloc>();
               final currentState = bloc.state;
 
-              context.push('/comments/discount/${discount.id}').then((_) {
+              context.push('/home/comments/discount/${discount.id}').then((_) {
                 // Refresh discounts list when returning from comments
                 bloc.add(
                   DiscountsListEvent.refreshDiscounts(

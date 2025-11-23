@@ -27,7 +27,7 @@ class HomeNewsSection extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () => context.push('/news'),
+                onPressed: () => context.push('/home/news'),
                 child: Text(
                   'Перейти в раздел',
                   style: TextStyle(
@@ -76,7 +76,7 @@ class HomeNewsSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             TextButton(
-              onPressed: () => context.push('/news'),
+              onPressed: () => context.push('/home/news'),
               child: const Text('Перейти к новостям'),
             ),
           ],
@@ -103,7 +103,7 @@ class HomeNewsSection extends StatelessWidget {
               (newsItem) => CompactNewsCard(
                 newsItem: newsItem,
                 coverImage: coverImages[newsItem.id],
-                onTap: () => context.push('/news-detail/${newsItem.id}'),
+                onTap: () => context.push('/home/news/${newsItem.id}'),
               ),
             )
             .toList(),
