@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../domain/domain.dart';
 
 class DiscountCard extends StatelessWidget {
@@ -118,7 +119,7 @@ class DiscountCard extends StatelessWidget {
                               children: [
                                 discount.like
                                     ? SvgPicture.asset(
-                                        'assets/icons/like-white-icon.svg',
+                                        Assets.icons.likeWhiteIcon,
                                         width: 24,
                                         height: 24,
                                         colorFilter: const ColorFilter.mode(
@@ -127,7 +128,7 @@ class DiscountCard extends StatelessWidget {
                                         ),
                                       )
                                     : SvgPicture.asset(
-                                        'assets/icons/like-icon.svg',
+                                        Assets.icons.likeIcon,
                                         width: 24,
                                         height: 24,
                                         colorFilter: const ColorFilter.mode(
@@ -155,7 +156,7 @@ class DiscountCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 SvgPicture.asset(
-                                  'assets/icons/comments-icon.svg',
+                                  Assets.icons.commentsIcon,
                                   width: 24,
                                   height: 24,
                                   colorFilter: const ColorFilter.mode(

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
 import '../../domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
@@ -51,10 +52,7 @@ class UserProfileHeader extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
-                height: 56,
-                child: _buildHeader(context, state),
-              ),
+              SizedBox(height: 56, child: _buildHeader(context, state)),
               if (child != null) ...[
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16, top: 16),
@@ -69,7 +67,8 @@ class UserProfileHeader extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, CurrentUserState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return _buildLoadingPlaceholder();
     }
 
@@ -178,7 +177,7 @@ class UserProfileHeader extends StatelessWidget {
         ),
         // Notification bell
         IconButton(
-          icon: SvgPicture.asset('assets/icons/bell-icon.svg'),
+          icon: SvgPicture.asset(Assets.icons.bellIcon),
           color: const Color(0xFF0A3899),
           onPressed: () => context.push('/home/notifications'),
           padding: const EdgeInsets.all(0),

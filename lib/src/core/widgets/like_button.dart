@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../gen/assets.gen.dart';
+
 /// A reusable like button widget that displays a like icon with counter.
 ///
 /// This widget can work in two modes:
@@ -27,13 +29,13 @@ class LikeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final icon = isLiked
         ? SvgPicture.asset(
-            'assets/icons/like-white-icon.svg',
+            Assets.icons.likeWhiteIcon,
             width: 24,
             height: 24,
             colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           )
         : SvgPicture.asset(
-            'assets/icons/like-icon.svg',
+            Assets.icons.likeIcon,
             width: 24,
             height: 24,
             colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),

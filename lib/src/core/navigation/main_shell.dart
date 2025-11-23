@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../gen/assets.gen.dart';
+
 class MainShell extends StatelessWidget {
   const MainShell({required this.navigationShell, super.key});
 
@@ -52,7 +54,7 @@ class MainShell extends StatelessWidget {
                 items: [
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      'assets/icons/home-icon.svg',
+                      Assets.icons.homeIcon,
                       0,
                       navigationShell.currentIndex,
                     ),
@@ -60,7 +62,7 @@ class MainShell extends StatelessWidget {
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      'assets/icons/applications-icon.svg',
+                      Assets.icons.applicationsIcon,
                       1,
                       navigationShell.currentIndex,
                     ),
@@ -68,7 +70,7 @@ class MainShell extends StatelessWidget {
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      'assets/icons/contacts-icon.svg',
+                      Assets.icons.contactsIcon,
                       2,
                       navigationShell.currentIndex,
                     ),
@@ -76,7 +78,7 @@ class MainShell extends StatelessWidget {
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      'assets/icons/more-icon.svg',
+                      Assets.icons.moreIcon,
                       3,
                       navigationShell.currentIndex,
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../core/entities/application_form.dart';
 
 class ApplicationFormItem extends StatelessWidget {
@@ -23,10 +24,7 @@ class ApplicationFormItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: const BoxDecoration(
             border: Border(
-              bottom: BorderSide(
-                color: Color(0xFFE0E0E0),
-                width: 1,
-              ),
+              bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1),
             ),
           ),
           child: Row(
@@ -39,9 +37,7 @@ class ApplicationFormItem extends StatelessWidget {
                   color: const Color(0xFFF5F5F5),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Center(
-                  child: _getFormIcon(),
-                ),
+                child: Center(child: _getFormIcon()),
               ),
               const SizedBox(width: 12),
 
@@ -79,10 +75,7 @@ class ApplicationFormItem extends StatelessWidget {
       iconPath,
       width: 24,
       height: 24,
-      colorFilter: const ColorFilter.mode(
-        Color(0xFF757575),
-        BlendMode.srcIn,
-      ),
+      colorFilter: const ColorFilter.mode(Color(0xFF757575), BlendMode.srcIn),
     );
   }
 
@@ -92,19 +85,19 @@ class ApplicationFormItem extends StatelessWidget {
     switch (code.toLowerCase()) {
       case 'propusk':
       case 'пропуск':
-        return 'assets/icons/comments-icon.svg'; // Replace with appropriate icon
+        return Assets.icons.commentsIcon; // Replace with appropriate icon
       case 'parking':
       case 'парковка':
-        return 'assets/icons/comments-icon.svg'; // Replace with car icon
+        return Assets.icons.commentsIcon; // Replace with car icon
       case 'absence':
       case 'отсутствие':
-        return 'assets/icons/comments-icon.svg'; // Replace with calendar icon
+        return Assets.icons.commentsIcon; // Replace with calendar icon
       case 'violation':
       case 'нарушение':
-        return 'assets/icons/comments-icon.svg'; // Replace with alert icon
+        return Assets.icons.commentsIcon; // Replace with alert icon
       default:
         // Default icon for all forms
-        return 'assets/icons/comments-icon.svg';
+        return Assets.icons.commentsIcon;
     }
   }
 }

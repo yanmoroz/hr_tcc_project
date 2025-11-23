@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../users/presentation/widgets/user_profile_header.dart';
 import '../widgets/home_icon_button.dart';
 import '../widgets/home_news_section.dart';
@@ -33,27 +34,27 @@ class HomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       HomeIconButton(
-                        iconPath: 'assets/icons/telegram-icon.svg',
+                        iconPath: Assets.icons.telegramIcon,
                         label: 'Телеграм-\nканал S8',
                         onTap: () => _launchUrl('http://telegram.org'),
                       ),
                       HomeIconButton(
-                        iconPath: 'assets/icons/discounts-icon.svg',
+                        iconPath: Assets.icons.discountsIcon,
                         label: 'Льготы\nи возмож...',
                         onTap: () => context.push('/home/discount-categories'),
                       ),
                       HomeIconButton(
-                        iconPath: 'assets/icons/polls-icon.svg',
+                        iconPath: Assets.icons.pollsIcon,
                         label: 'Опросы',
                         onTap: () => context.push('/home/polls'),
                       ),
                       HomeIconButton(
-                        iconPath: 'assets/icons/resell-icon.svg',
+                        iconPath: Assets.icons.resellIcon,
                         label: 'Ресейл',
                         onTap: () => context.push('/home/resell'),
                       ),
                       HomeIconButton(
-                        iconPath: 'assets/icons/s8-icon.svg',
+                        iconPath: Assets.icons.s8Icon,
                         label: 'ИТ-портал',
                         onTap: () => _launchUrl('https://s8.capital'),
                       ),

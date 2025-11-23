@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../gen/assets.gen.dart';
+
 /// A reusable comments button widget that displays a comment icon with counter.
 ///
 /// This widget can work in two modes:
@@ -17,7 +19,7 @@ class CommentsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = SvgPicture.asset(
-      'assets/icons/comments-icon.svg',
+      Assets.icons.commentsIcon,
       width: 24,
       height: 24,
       colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),

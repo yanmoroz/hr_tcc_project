@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../../domain/domain.dart';
 
@@ -31,10 +32,7 @@ class ApplicationCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: const Color(0xFFE0E0E0),
-                width: 1,
-              ),
+              border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
             ),
             child: Row(
               children: [
@@ -46,9 +44,7 @@ class ApplicationCard extends StatelessWidget {
                     color: const Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Center(
-                    child: _getApplicationIcon(),
-                  ),
+                  child: Center(child: _getApplicationIcon()),
                 ),
                 const SizedBox(width: 12),
 
@@ -97,13 +93,10 @@ class ApplicationCard extends StatelessWidget {
   Widget _getApplicationIcon() {
     // Default icon - you can customize based on applicationForm if needed
     return SvgPicture.asset(
-      'assets/icons/comments-icon.svg',
+      Assets.icons.commentsIcon,
       width: 24,
       height: 24,
-      colorFilter: const ColorFilter.mode(
-        Color(0xFF757575),
-        BlendMode.srcIn,
-      ),
+      colorFilter: const ColorFilter.mode(Color(0xFF757575), BlendMode.srcIn),
     );
   }
 
@@ -113,10 +106,7 @@ class ApplicationCard extends StatelessWidget {
     final backgroundColor = statusColor.withValues(alpha: 0.1);
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
