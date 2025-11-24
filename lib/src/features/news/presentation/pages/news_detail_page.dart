@@ -16,16 +16,14 @@ class NewsDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NewsDetailBloc, NewsDetailState>(
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(title: const Text('News Detail')),
-          body: _buildBody(context, state),
-        );
+        return Scaffold(appBar: AppBar(), body: _buildBody(context, state));
       },
     );
   }
 
   Widget _buildBody(BuildContext context, NewsDetailState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -66,9 +64,7 @@ class NewsDetailPage extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () async {
-        context.read<NewsDetailBloc>().add(
-          const NewsDetailEvent.refresh(),
-        );
+        context.read<NewsDetailBloc>().add(const NewsDetailEvent.refresh());
       },
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -87,10 +83,7 @@ class NewsDetailPage extends StatelessWidget {
                     return Container(
                       height: 200,
                       color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 64,
-                      ),
+                      child: const Icon(Icons.image_not_supported, size: 64),
                     );
                   },
                 ),
@@ -100,8 +93,9 @@ class NewsDetailPage extends StatelessWidget {
             // Title
             Text(
               newsDetail.title,
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
 
@@ -122,8 +116,9 @@ class NewsDetailPage extends StatelessWidget {
             if (newsDetail.content.isNotEmpty) ...[
               Text(
                 'Content',
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Html(data: newsDetail.content),

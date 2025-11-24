@@ -31,12 +31,14 @@ class ResellDetailPage extends StatelessWidget {
         // Handle error
         if (state.status == LoadingStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Ошибка: ${state.errorMessage ?? 'Unknown error'}')),
+            SnackBar(
+              content: Text('Ошибка: ${state.errorMessage ?? 'Unknown error'}'),
+            ),
           );
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Детали товара')),
+        appBar: AppBar(),
         body: BlocBuilder<ResellDetailBloc, ResellDetailState>(
           builder: (context, state) {
             return _buildBody(context, state);
@@ -47,7 +49,8 @@ class ResellDetailPage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, ResellDetailState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 

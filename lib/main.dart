@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'gen/assets.gen.dart';
+import 'gen/fonts.gen.dart';
 import 'src/core/di/service_locator.dart';
 import 'src/core/navigation/app_router.dart';
 
@@ -27,15 +28,17 @@ class MainApp extends StatelessWidget {
       title: 'HR TCC Project',
       routerConfig: AppRouter.router,
       theme: Theme.of(context).copyWith(
+        scaffoldBackgroundColor: const Color(0xFFF2F2F6),
         appBarTheme: AppBarTheme.of(context).copyWith(
           titleTextStyle: const TextStyle(
-            fontFamily: 'SF Pro Display',
+            fontFamily: FontFamily.sFProDisplay,
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
           iconTheme: IconThemeData(color: Color(0xFF767679)),
           centerTitle: true,
+          backgroundColor: Colors.white,
         ),
         actionIconTheme: ActionIconThemeData(
           backButtonIconBuilder: (context) {

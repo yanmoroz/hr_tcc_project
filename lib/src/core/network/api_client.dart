@@ -78,10 +78,10 @@ abstract class BaseApiClient implements ApiClient {
         compact: true,
         filter: (options, args) {
           // Skip logging for file upload/download endpoints
-          // final path = options.path.toLowerCase();
-          // return !path.contains('/files/upload') &&
-          //     !path.contains('/files/download');
-          return false;
+          final path = options.path.toLowerCase();
+          return !path.contains('/files/upload') &&
+              !path.contains('/files/download');
+          // return false;
         },
       ),
     );

@@ -31,34 +31,22 @@ class ApplicationDetailPage extends StatelessWidget {
               !state.isCanceling &&
               state.detail == null) {
             // Show success modal and navigate back
-            showDialog(
+            SubmitResultWidget.show(
               context: context,
-              barrierDismissible: false,
-              barrierColor: Colors.transparent,
-              builder: (dialogContext) => SubmitResultWidget(
-                message: 'Заявка отменена',
-                isSuccess: true,
-                onClose: () {
-                  Navigator.of(dialogContext).pop(); // Close dialog
-                  context.pop(); // Navigate back to applications list
-                },
-              ),
+              message: 'Заявка отменена',
+              isSuccess: true,
+              onClose: () {
+                context.pop(); // Navigate back to applications list
+              },
             );
           }
 
           // Handle error
           if (state.status == LoadingStatus.error) {
-            showDialog(
+            SubmitResultWidget.show(
               context: context,
-              barrierDismissible: false,
-              barrierColor: Colors.transparent,
-              builder: (dialogContext) => SubmitResultWidget(
-                message: state.errorMessage ?? 'Unknown error',
-                isSuccess: false,
-                onClose: () {
-                  Navigator.of(dialogContext).pop(); // Close dialog
-                },
-              ),
+              message: state.errorMessage ?? 'Unknown error',
+              isSuccess: false,
             );
           }
         },
@@ -67,8 +55,8 @@ class ApplicationDetailPage extends StatelessWidget {
             // Initial state - trigger loading
             if (state.status == LoadingStatus.initial) {
               context.read<ApplicationDetailBloc>().add(
-                    const ApplicationDetailEvent.loadDetail(),
-                  );
+                const ApplicationDetailEvent.loadDetail(),
+              );
               return const Center(child: CircularProgressIndicator());
             }
 

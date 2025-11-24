@@ -80,14 +80,16 @@ class _PollPageState extends State<PollPage> {
   }
 
   String _getAppBarTitle(PollDetailState state) {
-    if (state.status == LoadingStatus.success && state.pollDetail != null) {
-      return state.pollDetail!.title;
-    }
-    return 'Poll';
+    // if (state.status == LoadingStatus.success && state.pollDetail != null) {
+    //   return state.pollDetail!.title;
+    // }
+    // return 'Poll';
+    return 'Шаг X/Y';
   }
 
   Widget _buildBody(BuildContext context, PollDetailState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 

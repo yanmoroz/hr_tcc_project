@@ -41,34 +41,22 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
         listener: (context, state) {
           // Handle successful submission
           if (state.status == LoadingStatus.success) {
-            showDialog(
+            SubmitResultWidget.show(
               context: context,
-              barrierDismissible: false,
-              barrierColor: Colors.transparent,
-              builder: (dialogContext) => SubmitResultWidget(
-                message: 'Заявка успешно создана',
-                isSuccess: true,
-                onClose: () {
-                  Navigator.of(dialogContext).pop();
-                  context.go('/applications');
-                },
-              ),
+              message: 'Заявка успешно создана',
+              isSuccess: true,
+              onClose: () {
+                context.go('/applications');
+              },
             );
           }
 
           // Handle error during submission
           if (state.status == LoadingStatus.error) {
-            showDialog(
+            SubmitResultWidget.show(
               context: context,
-              barrierDismissible: false,
-              barrierColor: Colors.transparent,
-              builder: (dialogContext) => SubmitResultWidget(
-                message: 'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
-                isSuccess: false,
-                onClose: () {
-                  Navigator.of(dialogContext).pop();
-                },
-              ),
+              message: 'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
+              isSuccess: false,
             );
           }
         },

@@ -28,17 +28,15 @@ class DiscountDetailPage extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
           ),
-          child: Scaffold(
-            appBar: AppBar(),
-            body: _buildBody(context, state),
-          ),
+          child: Scaffold(body: _buildBody(context, state)),
         );
       },
     );
   }
 
   Widget _buildBody(BuildContext context, DiscountDetailState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -100,10 +98,7 @@ class DiscountDetailPage extends StatelessWidget {
                     return Container(
                       height: 200,
                       color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 64,
-                      ),
+                      child: const Icon(Icons.image_not_supported, size: 64),
                     );
                   },
                 ),
@@ -154,29 +149,13 @@ class DiscountDetailPage extends StatelessWidget {
                 discount.email != null ||
                 discount.site != null) ...[
               if (discount.contact != null)
-                _buildInfoRow(
-                  context,
-                  Icons.person,
-                  discount.contact!,
-                ),
+                _buildInfoRow(context, Icons.person, discount.contact!),
               if (discount.phone != null)
-                _buildInfoRow(
-                  context,
-                  Icons.phone,
-                  discount.phone!,
-                ),
+                _buildInfoRow(context, Icons.phone, discount.phone!),
               if (discount.email != null)
-                _buildInfoRow(
-                  context,
-                  Icons.email,
-                  discount.email!,
-                ),
+                _buildInfoRow(context, Icons.email, discount.email!),
               if (discount.site != null)
-                _buildInfoRow(
-                  context,
-                  Icons.language,
-                  discount.site!,
-                ),
+                _buildInfoRow(context, Icons.language, discount.site!),
               const SizedBox(height: 16),
             ],
 
@@ -188,17 +167,15 @@ class DiscountDetailPage extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.local_offer,
-                        color: Colors.green,
-                      ),
+                      const Icon(Icons.local_offer, color: Colors.green),
                       const SizedBox(width: 8),
                       Text(
                         'Promo Code: ${discount.promocode}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[900],
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green[900],
+                            ),
                       ),
                     ],
                   ),
@@ -235,9 +212,7 @@ class DiscountDetailPage extends StatelessWidget {
                 CommentsButton(
                   commentCount: commentCount,
                   onPressed: () {
-                    context.push(
-                      '/comments/discount/${discount.id}',
-                    );
+                    context.push('/comments/discount/${discount.id}');
                   },
                 ),
               ],

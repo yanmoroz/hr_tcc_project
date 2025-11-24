@@ -15,7 +15,7 @@ class PollsPage extends StatelessWidget {
     return BlocBuilder<PollsListBloc, PollsListState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Polls')),
+          appBar: AppBar(title: const Text('Опросы')),
           body: _buildBody(context, state),
         );
       },
@@ -23,7 +23,8 @@ class PollsPage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, PollsListState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -61,9 +62,7 @@ class PollsPage extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () async {
-        context.read<PollsListBloc>().add(
-          const PollsListEvent.refreshPolls(),
-        );
+        context.read<PollsListBloc>().add(const PollsListEvent.refreshPolls());
       },
       child: ListView.builder(
         itemCount: polls.length,

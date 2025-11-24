@@ -14,7 +14,7 @@ class NotificationsPage extends StatelessWidget {
     return BlocBuilder<NotificationsListBloc, NotificationsListState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Уведомления')),
+          appBar: AppBar(title: Text('Уведомления')),
           body: _buildBody(context, state),
         );
       },
@@ -119,9 +119,9 @@ class NotificationsPage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: const Color(0xFF5E6AD2),
+                    backgroundColor: const Color(0xFF0A3899),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(

@@ -4,56 +4,16 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/extensions/date_time_extension.dart';
 import '../blocs/notification_detail_page/bloc.dart';
 
 class NotificationDetailPage extends StatelessWidget {
   const NotificationDetailPage({super.key});
 
-  String _getRelativeTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays} ${_getDaysWord(difference.inDays)} назад';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} ${_getHoursWord(difference.inHours)} назад';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} ${_getMinutesWord(difference.inMinutes)} назад';
-    } else {
-      return 'только что';
-    }
-  }
-
-  String _getDaysWord(int days) {
-    if (days % 10 == 1 && days % 100 != 11) return 'день';
-    if ([2, 3, 4].contains(days % 10) && ![12, 13, 14].contains(days % 100)) {
-      return 'дня';
-    }
-    return 'дней';
-  }
-
-  String _getHoursWord(int hours) {
-    if (hours % 10 == 1 && hours % 100 != 11) return 'час';
-    if ([2, 3, 4].contains(hours % 10) && ![12, 13, 14].contains(hours % 100)) {
-      return 'часа';
-    }
-    return 'часов';
-  }
-
-  String _getMinutesWord(int minutes) {
-    if (minutes % 10 == 1 && minutes % 100 != 11) return 'минуту';
-    if ([2, 3, 4].contains(minutes % 10) &&
-        ![12, 13, 14].contains(minutes % 100)) {
-      return 'минуты';
-    }
-    return 'минут';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Уведомления'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -68,7 +28,8 @@ class NotificationDetailPage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, NotificationDetailState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -77,11 +38,7 @@ class NotificationDetailPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Color(0xFF757575),
-            ),
+            const Icon(Icons.error_outline, size: 64, color: Color(0xFF757575)),
             const SizedBox(height: 16),
             const Text(
               'Ошибка загрузки',
@@ -97,10 +54,7 @@ class NotificationDetailPage extends StatelessWidget {
               child: Text(
                 state.errorMessage ?? 'Unknown error',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF757575),
-                ),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF757575)),
               ),
             ),
             const SizedBox(height: 24),
@@ -145,11 +99,8 @@ class NotificationDetailPage extends StatelessWidget {
         children: [
           // Timestamp
           Text(
-            _getRelativeTime(notification.created),
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF757575),
-            ),
+            notification.created.toRelativeTime(),
+            style: const TextStyle(fontSize: 14, color: Color(0xFF757575)),
           ),
           const SizedBox(height: 16),
 

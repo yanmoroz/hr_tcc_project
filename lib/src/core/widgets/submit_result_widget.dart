@@ -84,4 +84,25 @@ class SubmitResultWidget extends StatelessWidget {
       ],
     );
   }
+
+  static Future<void> show({
+    required BuildContext context,
+    required String message,
+    required bool isSuccess,
+    VoidCallback? onClose,
+  }) async {
+    await showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      useSafeArea: false,
+      builder: (dialogContext) => SubmitResultWidget(
+        message: message,
+        isSuccess: isSuccess,
+        onClose: () {
+          Navigator.of(dialogContext).pop();
+          onClose?.call();
+        },
+      ),
+    );
+  }
 }

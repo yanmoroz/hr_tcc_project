@@ -46,7 +46,7 @@ class _NewsPageState extends State<NewsPage> {
     return BlocBuilder<NewsListBloc, NewsListState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('News')),
+          appBar: AppBar(title: const Text('Новости')),
           body: _buildBody(context, state),
         );
       },
@@ -54,7 +54,8 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   Widget _buildBody(BuildContext context, NewsListState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -104,10 +105,7 @@ class _NewsPageState extends State<NewsPage> {
     return RefreshIndicator(
       onRefresh: () async {
         context.read<NewsListBloc>().add(
-          NewsListEvent.refreshNews(
-            category: category,
-            search: search,
-          ),
+          NewsListEvent.refreshNews(category: category, search: search),
         );
       },
       child: ListView.builder(

@@ -34,44 +34,31 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ResellBookingBloc, ResellBookingState>(
-      listenWhen: (previous, current) =>
-          previous.status != current.status,
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         // Handle successful booking
         if (state.status == LoadingStatus.success && !state.isConfirming) {
-          showDialog(
+          SubmitResultWidget.show(
             context: context,
-            barrierDismissible: false,
-            barrierColor: Colors.transparent,
-            builder: (dialogContext) => SubmitResultWidget(
-              message: 'Товар забронирован',
-              isSuccess: true,
-              onClose: () {
-                Navigator.of(dialogContext).pop(); // Close dialog
-                context.go('/home/resell'); // Navigate back to resell list
-              },
-            ),
+            message: 'Товар забронирован',
+            isSuccess: true,
+            onClose: () {
+              context.go('/home/resell'); // Navigate back to resell list
+            },
           );
         }
 
         // Handle error
         if (state.status == LoadingStatus.error) {
-          showDialog(
+          SubmitResultWidget.show(
             context: context,
-            barrierDismissible: false,
-            barrierColor: Colors.transparent,
-            builder: (dialogContext) => SubmitResultWidget(
-              message: 'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
-              isSuccess: false,
-              onClose: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
+            message: 'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
+            isSuccess: false,
           );
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Подтверждение бронирования')),
+        appBar: AppBar(title: const Text('Бронирование')),
         body: BlocBuilder<ResellBookingBloc, ResellBookingState>(
           builder: (context, state) {
             final isLoading = state.isConfirming;
