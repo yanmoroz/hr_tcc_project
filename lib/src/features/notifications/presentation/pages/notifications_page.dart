@@ -35,11 +35,7 @@ class NotificationsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Color(0xFF757575),
-            ),
+            const Icon(Icons.error_outline, size: 64, color: Color(0xFF757575)),
             const SizedBox(height: 16),
             const Text(
               'Ошибка загрузки',
@@ -55,10 +51,7 @@ class NotificationsPage extends StatelessWidget {
               child: Text(
                 state.errorMessage ?? 'Unknown error',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF757575),
-                ),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF757575)),
               ),
             ),
             const SizedBox(height: 24),
@@ -103,7 +96,7 @@ class NotificationsPage extends StatelessWidget {
               notification: notification,
               onTap: () {
                 // Navigate to detail page
-                context.push('/home/notifications/${notification.id}');
+                context.push('/notifications/${notification.id}');
               },
             );
           },

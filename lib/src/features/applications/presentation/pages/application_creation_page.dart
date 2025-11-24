@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/entities/application_form.dart';
 import '../../../../core/entities/application_form_group.dart';
@@ -19,10 +21,15 @@ class ApplicationCreationPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Создание заявки'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: SvgPicture.asset(Assets.icons.crossIcon),
+            onPressed: () {
+              context.go('/applications');
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<ApplicationCreationBloc, ApplicationCreationState>(
         builder: (context, state) {
@@ -89,8 +96,11 @@ class ApplicationCreationPage extends StatelessWidget {
               const SizedBox(height: 8),
 
               // Filter tabs - optimized with BlocSelector
-              BlocSelector<ApplicationCreationBloc, ApplicationCreationState,
-                  _FilterTabsState>(
+              BlocSelector<
+                ApplicationCreationBloc,
+                ApplicationCreationState,
+                _FilterTabsState
+              >(
                 selector: (state) {
                   if (state.status == LoadingStatus.success) {
                     return _FilterTabsState(
@@ -118,10 +128,8 @@ class ApplicationCreationPage extends StatelessWidget {
                         selectedGroupId: filterTabsState.selectedGroupId,
                         onGroupChanged: (groupId) {
                           context.read<ApplicationCreationBloc>().add(
-                                ApplicationCreationEvent.filterByGroup(
-                                  groupId,
-                                ),
-                              );
+                            ApplicationCreationEvent.filterByGroup(groupId),
+                          );
                         },
                       ),
                       const SizedBox(height: 8),
@@ -133,24 +141,26 @@ class ApplicationCreationPage extends StatelessWidget {
               // Search bar - optimized with BlocSelector
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: BlocSelector<ApplicationCreationBloc,
-                    ApplicationCreationState, _SearchBarState>(
-                  selector: (state) {
-                    return const _SearchBarState();
-                  },
-                  builder: (context, searchBarState) {
-                    return SearchBarWidget(
-                      hintText: 'Наименование заявки',
-                      onSearchChanged: (query) {
-                        context.read<ApplicationCreationBloc>().add(
-                              ApplicationCreationEvent.searchForms(
-                                query,
-                              ),
-                            );
+                child:
+                    BlocSelector<
+                      ApplicationCreationBloc,
+                      ApplicationCreationState,
+                      _SearchBarState
+                    >(
+                      selector: (state) {
+                        return const _SearchBarState();
                       },
-                    );
-                  },
-                ),
+                      builder: (context, searchBarState) {
+                        return SearchBarWidget(
+                          hintText: 'Наименование заявки',
+                          onSearchChanged: (query) {
+                            context.read<ApplicationCreationBloc>().add(
+                              ApplicationCreationEvent.searchForms(query),
+                            );
+                          },
+                        );
+                      },
+                    ),
               ),
 
               // Forms list

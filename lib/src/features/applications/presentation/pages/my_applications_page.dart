@@ -50,8 +50,11 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
       children: [
         const UserProfileHeader(),
         // Status filter tabs - only rebuilds when statistics or selected filter changes
-        BlocSelector<ApplicationsListBloc, ApplicationsListState,
-            _FilterTabsState>(
+        BlocSelector<
+          ApplicationsListBloc,
+          ApplicationsListState,
+          _FilterTabsState
+        >(
           selector: (state) {
             if (state.status == LoadingStatus.success) {
               return _FilterTabsState(
@@ -89,25 +92,29 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
         // Search bar - never rebuilds on state changes
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: BlocSelector<ApplicationsListBloc, ApplicationsListState,
-              _SearchBarState>(
-            selector: (state) {
-              return _SearchBarState(statusGroup: state.statusGroup);
-            },
-            builder: (context, searchBarState) {
-              return SearchBarWidget(
-                hintText: 'Поиск по заявкам',
-                onSearchChanged: (query) {
-                  context.read<ApplicationsListBloc>().add(
+          child:
+              BlocSelector<
+                ApplicationsListBloc,
+                ApplicationsListState,
+                _SearchBarState
+              >(
+                selector: (state) {
+                  return _SearchBarState(statusGroup: state.statusGroup);
+                },
+                builder: (context, searchBarState) {
+                  return SearchBarWidget(
+                    hintText: 'Поиск по заявкам',
+                    onSearchChanged: (query) {
+                      context.read<ApplicationsListBloc>().add(
                         ApplicationsListEvent.loadApplications(
                           search: query.isEmpty ? null : query,
                           statusGroup: searchBarState.statusGroup,
                         ),
                       );
+                    },
+                  );
                 },
-              );
-            },
-          ),
+              ),
         ),
 
         // Main content area
@@ -154,8 +161,8 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                       ElevatedButton(
                         onPressed: () {
                           context.read<ApplicationsListBloc>().add(
-                                const ApplicationsListEvent.loadApplications(),
-                              );
+                            const ApplicationsListEvent.loadApplications(),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2196F3),
@@ -173,7 +180,8 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
               }
 
               // Check if we have no applications and no filters applied
-              final hasNoApplications = state.applications.isEmpty &&
+              final hasNoApplications =
+                  state.applications.isEmpty &&
                   state.statusGroup == null &&
                   (state.search == null || state.search!.isEmpty);
 
@@ -188,10 +196,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                     padding: EdgeInsets.all(32),
                     child: Text(
                       'Заявок не найдено',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF757575),
-                      ),
+                      style: TextStyle(fontSize: 16, color: Color(0xFF757575)),
                     ),
                   ),
                 );
@@ -201,17 +206,17 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
               return RefreshIndicator(
                 onRefresh: () async {
                   context.read<ApplicationsListBloc>().add(
-                        ApplicationsListEvent.refreshApplications(
-                          statusGroup: state.statusGroup,
-                          search: state.search,
-                        ),
-                      );
+                    ApplicationsListEvent.refreshApplications(
+                      statusGroup: state.statusGroup,
+                      search: state.search,
+                    ),
+                  );
                 },
                 child: ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: state.applications.length +
-                      (state.isLoadingMore ? 1 : 0),
+                  itemCount:
+                      state.applications.length + (state.isLoadingMore ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index >= state.applications.length) {
                       return const Center(
@@ -240,7 +245,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
         // Create application button - always visible
         CreateApplicationButton(
           onPressed: () {
-            context.push('/applications/creation');
+            context.go('/applications/creation');
           },
         ),
       ],

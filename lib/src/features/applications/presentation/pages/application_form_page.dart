@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
@@ -25,9 +27,15 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
       appBar: AppBar(
         title: const Text('Создание заявки'),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: SvgPicture.asset(Assets.icons.backIcon),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: SvgPicture.asset(Assets.icons.crossIcon),
+            onPressed: () => context.go('/applications'),
+          ),
+        ],
       ),
       body: BlocListener<ApplicationFormBloc, ApplicationFormState>(
         listenWhen: (previous, current) {

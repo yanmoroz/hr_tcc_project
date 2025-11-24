@@ -72,7 +72,6 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
     // Try to load from cache first
     final cachedData = await _loadFromCache(cacheKey);
     if (cachedData != null) {
-      AppLogger.d('File loaded from cache: $cacheKey');
       return Right(cachedData);
     }
 
@@ -151,16 +150,12 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
 
       // Check if cache is expired
       if (age > _cacheTtl) {
-        AppLogger.d('Cache expired for $cacheKey (age: ${age.inHours}h)');
         await _deleteCacheFiles(cacheKey);
         return null;
       }
 
       // Cache is valid, return data
       final data = await cacheFile.readAsBytes();
-      AppLogger.d(
-        'Cache hit for $cacheKey (age: ${age.inMinutes}m, size: ${data.length} bytes)',
-      );
       return data;
     } catch (e, stackTrace) {
       AppLogger.e('Error loading from cache', e, stackTrace);
@@ -190,8 +185,6 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
         'size': data.length,
       };
       await metadataFile.writeAsString(jsonEncode(metadata));
-
-      AppLogger.d('File saved to cache: $cacheKey (${data.length} bytes)');
     } catch (e, stackTrace) {
       AppLogger.e('Error saving to cache', e, stackTrace);
     }

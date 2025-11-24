@@ -179,7 +179,7 @@ class UserProfileHeader extends StatelessWidget {
         IconButton(
           icon: SvgPicture.asset(Assets.icons.bellIcon),
           color: const Color(0xFF0A3899),
-          onPressed: () => context.push('/home/notifications'),
+          onPressed: () => context.push('/notifications'),
           padding: const EdgeInsets.all(0),
           constraints: const BoxConstraints(),
         ),

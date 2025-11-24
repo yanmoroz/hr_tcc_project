@@ -26,6 +26,7 @@ class AppRouter {
   static final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
+    debugLogDiagnostics: true,
     routes: [
       // Shared BLoC provider wrapper for all tabs
       StatefulShellRoute.indexedStack(
@@ -58,8 +59,9 @@ class AppRouter {
                     builder: (context, state) {
                       return BlocProvider(
                         create: (context) =>
-                            BlocFactory.createDiscountCategoriesBloc()
-                              ..add(const DiscountCategoriesEvent.loadCategories()),
+                            BlocFactory.createDiscountCategoriesBloc()..add(
+                              const DiscountCategoriesEvent.loadCategories(),
+                            ),
                         child: const DiscountCategoriesPage(),
                       );
                     },
@@ -69,20 +71,24 @@ class AppRouter {
                     builder: (context, state) {
                       final category = state.getExtra<String>('category');
                       final source = state.getExtra<String>('source');
-                      final categoryName = state.getExtra<String>('categoryName');
+                      final categoryName = state.getExtra<String>(
+                        'categoryName',
+                      );
                       final categoryCode = category != null
                           ? int.tryParse(category)
                           : null;
-                      final sourceCode = source != null ? int.tryParse(source) : null;
+                      final sourceCode = source != null
+                          ? int.tryParse(source)
+                          : null;
                       return BlocProvider(
-                        create: (context) => BlocFactory.createDiscountsListBloc()
-                          ..add(
-                            DiscountsListEvent.loadDiscounts(
-                              category: categoryCode,
-                              source: sourceCode,
-                              categoryName: categoryName,
+                        create: (context) =>
+                            BlocFactory.createDiscountsListBloc()..add(
+                              DiscountsListEvent.loadDiscounts(
+                                category: categoryCode,
+                                source: sourceCode,
+                                categoryName: categoryName,
+                              ),
                             ),
-                          ),
                         child: const DiscountsPage(),
                       );
                     },
@@ -90,7 +96,9 @@ class AppRouter {
                       GoRoute(
                         path: ':id',
                         builder: (context, state) {
-                          final discountId = int.parse(state.pathParameters['id']!);
+                          final discountId = int.parse(
+                            state.pathParameters['id']!,
+                          );
                           return BlocProvider(
                             create: (context) =>
                                 BlocFactory.createDiscountDetailBloc(discountId)
@@ -141,8 +149,9 @@ class AppRouter {
                           final itemId = state.pathParameters['id']!;
                           return BlocProvider(
                             create: (context) =>
-                                BlocFactory.createResellDetailBloc(itemId)
-                                  ..add(const ResellDetailEvent.loadResellDetail()),
+                                BlocFactory.createResellDetailBloc(itemId)..add(
+                                  const ResellDetailEvent.loadResellDetail(),
+                                ),
                             child: ResellDetailPage(itemId: itemId),
                           );
                         },
@@ -186,34 +195,11 @@ class AppRouter {
                     ],
                   ),
                   GoRoute(
-                    path: 'notifications',
-                    builder: (context, state) {
-                      return BlocProvider(
-                        create: (context) =>
-                            BlocFactory.createNotificationsListBloc()
-                              ..add(const NotificationsListEvent.loadNotifications()),
-                        child: const NotificationsPage(),
-                      );
-                    },
-                    routes: [
-                      GoRoute(
-                        path: ':id',
-                        builder: (context, state) {
-                          final notificationId = int.parse(state.pathParameters['id']!);
-                          return BlocProvider(
-                            create: (context) =>
-                                BlocFactory.createNotificationDetailBloc()
-                                  ..add(NotificationDetailEvent.loadDetail(notificationId)),
-                            child: const NotificationDetailPage(),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  GoRoute(
                     path: 'comments/:entityType/:entityId',
                     builder: (context, state) {
-                      final entityId = int.parse(state.pathParameters['entityId']!);
+                      final entityId = int.parse(
+                        state.pathParameters['entityId']!,
+                      );
                       final entityType = CommentableEntityType.fromString(
                         state.pathParameters['entityType']!,
                       );
@@ -247,23 +233,33 @@ class AppRouter {
                 routes: [
                   GoRoute(
                     path: 'creation',
-                    builder: (context, state) {
-                      return BlocProvider(
-                        create: (context) => BlocFactory.createApplicationCreationBloc()
-                          ..add(const ApplicationCreationEvent.loadApplicationForms()),
+                    pageBuilder: (context, state) => MaterialPage(
+                      fullscreenDialog: true,
+                      child: BlocProvider(
+                        create: (context) =>
+                            BlocFactory.createApplicationCreationBloc()..add(
+                              const ApplicationCreationEvent.loadApplicationForms(),
+                            ),
                         child: const ApplicationCreationPage(),
-                      );
-                    },
+                      ),
+                    ),
                   ),
                   GoRoute(
                     path: 'form/:formCode',
-                    builder: (context, state) {
+                    pageBuilder: (context, state) {
                       final applicationForm = state.extra as ApplicationForm;
-                      return BlocProvider(
-                        create: (context) => BlocFactory.createApplicationFormBloc(
-                          applicationForm,
-                        )..add(ApplicationFormEvent.loadFormData(applicationForm.code)),
-                        child: ApplicationFormPage(),
+                      return MaterialPage(
+                        child: BlocProvider(
+                          create: (context) =>
+                              BlocFactory.createApplicationFormBloc(
+                                applicationForm,
+                              )..add(
+                                ApplicationFormEvent.loadFormData(
+                                  applicationForm.code,
+                                ),
+                              ),
+                          child: ApplicationFormPage(),
+                        ),
                       );
                     },
                   ),
@@ -273,8 +269,9 @@ class AppRouter {
                       final applicationId = state.pathParameters['id']!;
                       return BlocProvider(
                         create: (context) =>
-                            BlocFactory.createApplicationDetailBloc(applicationId)
-                              ..add(ApplicationDetailEvent.loadDetail()),
+                            BlocFactory.createApplicationDetailBloc(
+                              applicationId,
+                            )..add(ApplicationDetailEvent.loadDetail()),
                         child: const ApplicationDetailPage(),
                       );
                     },
@@ -310,6 +307,32 @@ class AppRouter {
                     const NoTransitionPage(child: MorePage()),
               ),
             ],
+          ),
+        ],
+      ),
+      // Root-level routes (outside tab navigation - no tab bar)
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) {
+          return BlocProvider(
+            create: (context) =>
+                BlocFactory.createNotificationsListBloc()
+                  ..add(const NotificationsListEvent.loadNotifications()),
+            child: const NotificationsPage(),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (context, state) {
+              final notificationId = int.parse(state.pathParameters['id']!);
+              return BlocProvider(
+                create: (context) =>
+                    BlocFactory.createNotificationDetailBloc()
+                      ..add(NotificationDetailEvent.loadDetail(notificationId)),
+                child: const NotificationDetailPage(),
+              );
+            },
           ),
         ],
       ),
