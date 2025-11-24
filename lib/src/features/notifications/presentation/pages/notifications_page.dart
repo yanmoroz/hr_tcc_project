@@ -88,7 +88,7 @@ class NotificationsPage extends StatelessWidget {
       children: [
         // Notifications list
         ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
           itemCount: notifications.length,
           itemBuilder: (context, index) {
             final notification = notifications[index];

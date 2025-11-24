@@ -28,6 +28,9 @@ class MainApp extends StatelessWidget {
       title: 'HR TCC Project',
       routerConfig: AppRouter.router,
       theme: Theme.of(context).copyWith(
+        textTheme: Theme.of(
+          context,
+        ).textTheme.apply(fontFamily: FontFamily.sFProDisplay),
         scaffoldBackgroundColor: const Color(0xFFF2F2F6),
         appBarTheme: AppBarTheme.of(context).copyWith(
           titleTextStyle: const TextStyle(
