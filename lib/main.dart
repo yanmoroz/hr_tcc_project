@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_svg/svg.dart';
 
+import 'gen/assets.gen.dart';
 import 'src/core/di/service_locator.dart';
 import 'src/core/navigation/app_router.dart';
 
@@ -24,6 +26,30 @@ class MainApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'HR TCC Project',
       routerConfig: AppRouter.router,
+      theme: Theme.of(context).copyWith(
+        appBarTheme: AppBarTheme.of(context).copyWith(
+          titleTextStyle: const TextStyle(
+            fontFamily: 'SF Pro Display',
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+          iconTheme: IconThemeData(color: Color(0xFF767679)),
+          centerTitle: true,
+        ),
+        actionIconTheme: ActionIconThemeData(
+          backButtonIconBuilder: (context) {
+            return SvgPicture.asset(Assets.icons.backIcon);
+          },
+        ),
+        // Ensure Android-style page transitions (slide up from bottom)
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
+        ),
+      ),
     );
   }
 }

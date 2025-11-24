@@ -20,7 +20,6 @@ class ApplicationCreationPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Создание заявки'),
-        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(

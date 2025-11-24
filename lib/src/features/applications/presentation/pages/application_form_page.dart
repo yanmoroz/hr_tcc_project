@@ -26,10 +26,6 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Создание заявки'),
-        leading: IconButton(
-          icon: SvgPicture.asset(Assets.icons.backIcon),
-          onPressed: () => context.pop(),
-        ),
         actions: [
           IconButton(
             icon: SvgPicture.asset(Assets.icons.crossIcon),

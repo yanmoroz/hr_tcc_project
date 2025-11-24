@@ -52,29 +52,27 @@ class _AddressBookPageState extends State<AddressBookPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          // User profile header with search bar
-          UserProfileHeader(
-            child: SearchBarWidget(
-              onSearchChanged: _onSearchChanged,
-              hintText: 'Поиск',
+    return Column(
+      children: [
+        // User profile header with search bar
+        UserProfileHeader(
+          child: SearchBarWidget(
+            onSearchChanged: _onSearchChanged,
+            hintText: 'Поиск',
+          ),
+        ),
+        // List
+        Expanded(
+          child: Container(
+            color: const Color(0xFFF2F2F6),
+            child: BlocBuilder<AddressBookBloc, AddressBookState>(
+              builder: (context, state) {
+                return _buildBody(context, state);
+              },
             ),
           ),
-          // List
-          Expanded(
-            child: Container(
-              color: const Color(0xFFF2F2F6),
-              child: BlocBuilder<AddressBookBloc, AddressBookState>(
-                builder: (context, state) {
-                  return _buildBody(context, state);
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -119,10 +117,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
       return const Center(
         child: Text(
           'Таких сотрудников нет',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
     }
@@ -133,12 +128,9 @@ class _AddressBookPageState extends State<AddressBookPage> {
           const AddressBookEvent.refreshAddressBook(),
         );
         // Wait for the refresh to complete
-        await context
-            .read<AddressBookBloc>()
-            .stream
-            .firstWhere(
-              (state) => state.status != LoadingStatus.loading,
-            );
+        await context.read<AddressBookBloc>().stream.firstWhere(
+          (state) => state.status != LoadingStatus.loading,
+        );
       },
       child: ListView.builder(
         controller: _scrollController,
@@ -147,9 +139,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
           if (index >= users.length) {
             return const Padding(
               padding: EdgeInsets.all(16),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: Center(child: CircularProgressIndicator()),
             );
           }
 
