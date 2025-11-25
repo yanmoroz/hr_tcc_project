@@ -1,32 +1,41 @@
-import 'package:rxdart/rxdart.dart';
+import 'package:collection/collection.dart';
 
 import '../../../../core/base_types/result.dart';
 import '../../../../core/base_types/base_repository.dart';
 import '../../domain/domain.dart';
-import '../datasources/notification_remote_data_source.dart';
+import '../datasources/local/notification_local_data_source.dart';
+import '../datasources/remote/notification_remote_data_source.dart';
 import '../models/responses/notification_model.dart';
 
 class NotificationRepositoryImpl
     with BaseRepository
     implements NotificationRepository {
   final NotificationRemoteDataSource _remoteDataSource;
-  final _notificationsController = BehaviorSubject<List<Notification>>();
-  List<Notification> _cache = [];
+  final NotificationLocalDataSource _localDataSource;
 
-  NotificationRepositoryImpl(this._remoteDataSource);
+  NotificationRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
   @override
   Stream<List<Notification>> watchNotifications() =>
-      _notificationsController.stream;
+      _localDataSource.watchNotifications();
 
   @override
   Future<Result<List<Notification>>> getNotifications() async {
     final result = await _remoteDataSource.getNotifications();
-    result.fold((error) => [], (notifications) {
-      _cache = notifications.map((model) => model.toDomain()).toList();
-      _notificationsController.add(_cache);
+    result.fold((error) => {}, (notifications) {
+      final entities = notifications.map((model) => model.toDomain()).toList();
+      _localDataSource.cacheNotifications(entities);
     });
     return mapResultList(result, (model) => model.toDomain());
+  }
+
+  @override
+  Notification? getNotification(int id) {
+    final cachedNotification = _localDataSource
+        .getCachedNotifications()
+        ?.firstWhereOrNull((notification) => notification.id == id);
+
+    return cachedNotification;
   }
 
   @override
@@ -46,9 +55,6 @@ class NotificationRepositoryImpl
 
   @override
   void updateNotification(Notification notification) {
-    _cache = _cache
-        .map((n) => n.id == notification.id ? notification : n)
-        .toList();
-    _notificationsController.add(_cache);
+    _localDataSource.updateNotification(notification);
   }
 }

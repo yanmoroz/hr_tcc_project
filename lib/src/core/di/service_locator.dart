@@ -78,10 +78,13 @@ void _initializeNotificationDependencies() {
   sl.registerLazySingleton<NotificationRemoteDataSource>(
     () => NotificationRemoteDataSourceImpl(sl()),
   );
+  sl.registerLazySingleton<NotificationLocalDataSource>(
+    () => NotificationLocalDataSourceImpl(),
+  );
 
   // Repositories
   sl.registerLazySingleton<NotificationRepository>(
-    () => NotificationRepositoryImpl(sl()),
+    () => NotificationRepositoryImpl(sl(), sl()),
   );
 
   // Use cases
@@ -100,6 +103,12 @@ void _initializeNotificationDependencies() {
   sl.registerFactory<UpdateNotificationUsecase>(
     () => UpdateNotificationUsecase(sl()),
   );
+  sl.registerFactory<GetNotificationUsecase>(
+    () => GetNotificationUsecase(sl()),
+  );
+  sl.registerFactory<WatchNotificationsUseCase>(
+    () => WatchNotificationsUseCase(sl()),
+  );
 }
 
 void _initializePollDependencies() {
@@ -117,9 +126,6 @@ void _initializePollDependencies() {
   sl.registerFactory<GetPollDetailUsecase>(() => GetPollDetailUsecase(sl()));
   sl.registerFactory<SubmitPollAnswersUsecase>(
     () => SubmitPollAnswersUsecase(sl()),
-  );
-  sl.registerFactory<WatchNotificationsUseCase>(
-    () => WatchNotificationsUseCase(sl()),
   );
 }
 

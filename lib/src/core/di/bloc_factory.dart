@@ -114,10 +114,11 @@ class BlocFactory {
 
   /// Creates a [NotificationDetailBloc] instance.
   static NotificationDetailBloc createNotificationDetailBloc(
-    Notification notification,
+    int notificationId,
   ) {
     return NotificationDetailBloc(
-      notification: notification,
+      notificationId: notificationId,
+      getNotificationUsecase: sl(),
       markNotificationAsReadUsecase: sl(),
       updateNotificationUsecase: sl(),
     );

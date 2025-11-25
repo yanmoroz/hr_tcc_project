@@ -325,10 +325,10 @@ class AppRouter {
           GoRoute(
             path: ':id',
             builder: (context, state) {
-              final notification = state.extra as Notification;
+              final notificationId = int.parse(state.pathParameters['id']!);
               return BlocProvider(
                 create: (context) =>
-                    BlocFactory.createNotificationDetailBloc(notification),
+                    BlocFactory.createNotificationDetailBloc(notificationId),
                 child: const NotificationDetailPage(),
               );
             },

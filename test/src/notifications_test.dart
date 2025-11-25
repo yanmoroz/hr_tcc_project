@@ -12,7 +12,8 @@ void main() {
   group('Notifications', () {
     late AuthTokenProvider authTokenProvider;
     late ApiClient apiClient;
-    late NotificationRemoteDataSource dataSource;
+    late NotificationRemoteDataSource remoteDataSource;
+    late NotificationLocalDataSource localDataSource;
     late NotificationRepository repository;
     late GetNotificationsUsecase getNotificationsUsecase;
     late MarkNotificationAsReadUsecase markNotificationAsReadUsecase;
@@ -24,8 +25,9 @@ void main() {
     setUp(() {
       authTokenProvider = LocalAuthTokenProvider();
       apiClient = InsecureApiClient(authTokenProvider);
-      dataSource = NotificationRemoteDataSourceImpl(apiClient);
-      repository = NotificationRepositoryImpl(dataSource);
+      remoteDataSource = NotificationRemoteDataSourceImpl(apiClient);
+      localDataSource = NotificationLocalDataSourceImpl();
+      repository = NotificationRepositoryImpl(remoteDataSource, localDataSource);
       getNotificationsUsecase = GetNotificationsUsecase(repository);
       markNotificationAsReadUsecase = MarkNotificationAsReadUsecase(repository);
     });

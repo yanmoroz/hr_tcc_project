@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 
 import '../../../../../gen/fonts.gen.dart';
 import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/widgets/html_styles.dart';
 import '../../domain/domain.dart';
 
 class NotificationItem extends StatelessWidget {
@@ -14,25 +15,6 @@ class NotificationItem extends StatelessWidget {
     required this.notification,
     required this.onTap,
   });
-
-  // Common HTML element styles to prevent font family from being overridden by deeper nodes
-  static final Map<String, Style> _commonHtmlElementStyles = {
-    "p": Style(
-      fontFamily: FontFamily.sFProDisplay,
-      margin: Margins.zero,
-      padding: HtmlPaddings.zero,
-    ),
-    "div": Style(
-      fontFamily: FontFamily.sFProDisplay,
-      margin: Margins.zero,
-      padding: HtmlPaddings.zero,
-    ),
-    "span": Style(fontFamily: FontFamily.sFProDisplay),
-    "strong": Style(fontFamily: FontFamily.sFProDisplay),
-    "b": Style(fontFamily: FontFamily.sFProDisplay),
-    "em": Style(fontFamily: FontFamily.sFProDisplay),
-    "i": Style(fontFamily: FontFamily.sFProDisplay),
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +84,7 @@ class NotificationItem extends StatelessWidget {
                                   fontFamily: FontFamily.sFProDisplay,
                                   color: const Color(0xFF212121),
                                 ),
-                                ..._commonHtmlElementStyles,
+                                ...commonHtmlElementStyles,
                               },
                             ),
 
@@ -121,7 +103,7 @@ class NotificationItem extends StatelessWidget {
                                       fontFamily: FontFamily.sFProDisplay,
                                       color: const Color(0xFF757575),
                                     ),
-                                    ..._commonHtmlElementStyles,
+                                    ...commonHtmlElementStyles,
                                   },
                                 ),
                               ),
