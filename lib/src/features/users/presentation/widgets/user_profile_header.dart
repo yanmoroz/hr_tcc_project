@@ -12,7 +12,8 @@ import '../../domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 
 class UserProfileHeader extends StatelessWidget {
-  const UserProfileHeader({this.child, super.key});
+  final bool enableCorners;
+  const UserProfileHeader({this.child, super.key, this.enableCorners = true});
 
   final Widget? child;
 
@@ -23,19 +24,22 @@ class UserProfileHeader extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(16),
-            ),
-            border: Border(
-              bottom: BorderSide(color: Colors.grey[300]!, width: 1),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(enableCorners ? 16 : 0),
+              bottomRight: Radius.circular(enableCorners ? 16 : 0),
             ),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 56, child: _buildHeader(context, state)),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: SizedBox(
+                  height: 48,
+                  child: _buildHeader(context, state),
+                ),
+              ),
               if (child != null) ...[
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16, top: 16),
@@ -162,14 +166,19 @@ class UserProfileHeader extends StatelessWidget {
         // Notification bell with badge
         BlocBuilder<UnreadNotificationsCubit, int>(
           builder: (context, unreadCount) {
-            return IconButton(
-              icon: unreadCount > 0
-                  ? SvgPicture.asset(Assets.icons.bellWithGreenCircleIcon)
-                  : SvgPicture.asset(Assets.icons.bellIcon),
-              color: const Color(0xFF0A3899),
-              onPressed: () => context.push('/notifications'),
-              padding: const EdgeInsets.all(0),
-              constraints: const BoxConstraints(),
+            return SizedBox(
+              width: 44,
+              height: 44,
+              child: InkWell(
+                onTap: () => context.push('/notifications'),
+                borderRadius: BorderRadius.circular(22),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: unreadCount > 0
+                      ? SvgPicture.asset(Assets.icons.bellWithGreenCircleIcon)
+                      : SvgPicture.asset(Assets.icons.bellIcon),
+                ),
+              ),
             );
           },
         ),

@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../gen/assets.gen.dart';
 
 class SearchBarWidget extends StatefulWidget {
   const SearchBarWidget({
@@ -56,18 +59,46 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
       child: TextField(
         controller: _controller,
         onChanged: _onSearchChanged,
+        autocorrect: false,
+        enableSuggestions: false,
         decoration: InputDecoration(
           hintText: widget.hintText,
-          hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
-          prefixIcon: Icon(Icons.search, color: Colors.grey[600], size: 24),
+          hintStyle: TextStyle(
+            color: const Color(0xFFBABABE),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+          ),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: SvgPicture.asset(
+              Assets.icons.searchIcon,
+              width: 20,
+              height: 20,
+            ),
+          ),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 20,
+            minHeight: 20,
+          ),
           suffixIcon: _controller.text.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Icons.clear, color: Colors.grey[600]),
-                  onPressed: _clearSearch,
+              ? GestureDetector(
+                  onTap: _clearSearch,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 12, right: 8),
+                    child: SvgPicture.asset(
+                      Assets.icons.crossIcon,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
                 )
               : null,
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: 20,
+            minHeight: 20,
+          ),
           filled: true,
-          fillColor: const Color(0xFFF5F4F8),
+          fillColor: const Color(0xFFF2F2F6),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide.none,

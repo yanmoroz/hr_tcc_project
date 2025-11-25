@@ -24,6 +24,63 @@ class AddressBookUserItem extends StatelessWidget {
     }
   }
 
+  Widget _buildInfoPill(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F6),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+
+  String _formatPhoneNumber(String phone) {
+    // Extract only digits from the phone number
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+
+    if (digits.length >= 11) {
+      // Format as +X XXX XXX-XX-XX
+      return '+${digits[0]} ${digits.substring(1, 4)} ${digits.substring(4, 7)}-${digits.substring(7, 9)}-${digits.substring(9, 11)}';
+    }
+
+    return phone; // Return original if format doesn't match
+  }
+
+  Widget _buildPhoneNumber(String phone, String label) {
+    final formattedPhone = _formatPhoneNumber(phone);
+
+    return GestureDetector(
+      onTap: () => _launchPhone(phone),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: formattedPhone,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Color(0xFF2050B7),
+                decoration: TextDecoration.underline,
+                decorationColor: Color(0xFF767679),
+              ),
+            ),
+            TextSpan(
+              text: ' $label',
+              style: const TextStyle(fontSize: 14, color: Color(0xFF767679)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,14 +96,14 @@ class AddressBookUserItem extends StatelessWidget {
           children: [
             // Avatar
             CircleAvatar(
-              radius: 28,
+              radius: 20,
               backgroundColor: getAvatarColor(user.id),
               child: Text(
                 getInitials(user.firstName, user.lastName),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -60,74 +117,30 @@ class AddressBookUserItem extends StatelessWidget {
                   Text(
                     user.title,
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 8),
                   // Position pill
                   if (user.position != null && user.position!.isNotEmpty) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        user.position!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+                    _buildInfoPill(user.position!),
                     const SizedBox(height: 6),
                   ],
                   // Department pill
                   if (user.department.name != null &&
                       user.department.name!.isNotEmpty) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        user.department.name!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+                    _buildInfoPill(user.department.name!),
                     const SizedBox(height: 8),
                   ],
                   // Contact info
                   // Mobile phone
-                  GestureDetector(
-                    onTap: () => _launchPhone(user.mobile),
-                    child: Text(
-                      '${user.mobile} (моб.)',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                    ),
-                  ),
+                  _buildPhoneNumber(user.mobile, '(моб.)'),
                   // Work phone
                   if (user.workPhone != null) ...[
                     const SizedBox(height: 4),
-                    GestureDetector(
-                      onTap: () => _launchPhone(user.workPhone!),
-                      child: Text(
-                        '${user.workPhone} (раб.)',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                      ),
-                    ),
+                    _buildPhoneNumber(user.workPhone!, '(раб.)'),
                   ],
                   // Email
                   const SizedBox(height: 4),
@@ -135,7 +148,12 @@ class AddressBookUserItem extends StatelessWidget {
                     onTap: () => _launchEmail(user.mail),
                     child: Text(
                       user.mail,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2050B7),
+                        decoration: TextDecoration.underline,
+                        decorationColor: Color(0xFF767679),
+                      ),
                     ),
                   ),
                 ],

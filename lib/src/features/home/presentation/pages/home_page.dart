@@ -19,57 +19,61 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const UserProfileHeader(),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Icon buttons row
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      HomeIconButton(
-                        iconPath: Assets.icons.telegramIcon,
-                        label: 'Телеграм-\nканал S8',
-                        onTap: () => _launchUrl('http://telegram.org'),
-                      ),
-                      HomeIconButton(
-                        iconPath: Assets.icons.discountsIcon,
-                        label: 'Льготы\nи возмож...',
-                        onTap: () => context.push('/home/discount-categories'),
-                      ),
-                      HomeIconButton(
-                        iconPath: Assets.icons.pollsIcon,
-                        label: 'Опросы',
-                        onTap: () => context.push('/home/polls'),
-                      ),
-                      HomeIconButton(
-                        iconPath: Assets.icons.resellIcon,
-                        label: 'Ресейл',
-                        onTap: () => context.push('/home/resell'),
-                      ),
-                      HomeIconButton(
-                        iconPath: Assets.icons.s8Icon,
-                        label: 'ИТ-портал',
-                        onTap: () => _launchUrl('https://s8.capital'),
-                      ),
-                    ],
+    return Scaffold(
+      backgroundColor: const Color(0xFFF2F2F6),
+      body: Column(
+        children: [
+          const UserProfileHeader(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Icon buttons row
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        HomeIconButton(
+                          iconPath: Assets.icons.telegramIcon,
+                          label: 'Телеграм-\nканал S8',
+                          onTap: () => _launchUrl('http://telegram.org'),
+                        ),
+                        HomeIconButton(
+                          iconPath: Assets.icons.discountsIcon,
+                          label: 'Льготы\nи возмож...',
+                          onTap: () =>
+                              context.push('/home/discount-categories'),
+                        ),
+                        HomeIconButton(
+                          iconPath: Assets.icons.pollsIcon,
+                          label: 'Опросы',
+                          onTap: () => context.push('/home/polls'),
+                        ),
+                        HomeIconButton(
+                          iconPath: Assets.icons.resellIcon,
+                          label: 'Ресейл',
+                          onTap: () => context.push('/home/resell'),
+                        ),
+                        HomeIconButton(
+                          iconPath: Assets.icons.s8Icon,
+                          label: 'ИТ-портал',
+                          onTap: () => _launchUrl('https://s8.capital'),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                // News section
-                const SizedBox(height: 8),
-                const HomeNewsSection(),
-              ],
+                  // News section
+                  const SizedBox(height: 8),
+                  const HomeNewsSection(),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -64,6 +64,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/s8-icon.svg
   String get s8Icon => 'assets/icons/s8-icon.svg';
 
+  /// File path: assets/icons/search-icon.svg
+  String get searchIcon => 'assets/icons/search-icon.svg';
+
   /// File path: assets/icons/telegram-icon.svg
   String get telegramIcon => 'assets/icons/telegram-icon.svg';
 
@@ -86,6 +89,7 @@ class $AssetsIconsGen {
     pollsIcon,
     resellIcon,
     s8Icon,
+    searchIcon,
     telegramIcon,
   ];
 }

@@ -55,7 +55,10 @@ class _AddressBookPageState extends State<AddressBookPage> {
     return Column(
       children: [
         // User profile header with search bar
-        UserProfileHeader(
+        UserProfileHeader(enableCorners: false),
+        Container(
+          height: 56,
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
           child: SearchBarWidget(
             onSearchChanged: _onSearchChanged,
             hintText: 'Поиск',
@@ -117,7 +120,11 @@ class _AddressBookPageState extends State<AddressBookPage> {
       return const Center(
         child: Text(
           'Таких сотрудников нет',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
         ),
       );
     }
