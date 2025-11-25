@@ -133,6 +133,11 @@ class BlocFactory {
     );
   }
 
+  /// Returns the singleton [UnreadNotificationsCubit] instance.
+  static UnreadNotificationsCubit getUnreadNotificationsCubit() {
+    return sl<UnreadNotificationsCubit>();
+  }
+
   /// Creates a [PollDetailBloc] instance with the given [pollId].
   static PollDetailBloc createPollDetailBloc(int pollId) {
     return PollDetailBloc(

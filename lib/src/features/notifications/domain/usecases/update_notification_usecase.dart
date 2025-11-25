@@ -5,7 +5,7 @@ class UpdateNotificationUsecase {
 
   UpdateNotificationUsecase(this.notificationRepository);
 
-  void call(Notification notification) async {
+  void call(Notification notification) {
     return notificationRepository.updateNotification(notification);
   }
 }

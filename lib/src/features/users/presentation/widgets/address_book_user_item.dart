@@ -1,33 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/utils/color_utils.dart';
+import '../../../../core/utils/string_utils.dart';
 import '../../domain/entities/address_book_user.dart';
 
 class AddressBookUserItem extends StatelessWidget {
   const AddressBookUserItem({required this.user, super.key});
 
   final AddressBookUser user;
-
-  String _getInitials() {
-    final first = user.firstName.isNotEmpty ? user.firstName[0] : '';
-    final last = user.lastName.isNotEmpty ? user.lastName[0] : '';
-    return '$first$last'.toUpperCase();
-  }
-
-  Color _getAvatarColor() {
-    // Generate a consistent color based on user ID
-    final hash = user.id.hashCode;
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.pink,
-      Colors.indigo,
-    ];
-    return colors[hash.abs() % colors.length];
-  }
 
   Future<void> _launchPhone(String phone) async {
     final uri = Uri(scheme: 'tel', path: phone);
@@ -59,9 +40,9 @@ class AddressBookUserItem extends StatelessWidget {
             // Avatar
             CircleAvatar(
               radius: 28,
-              backgroundColor: _getAvatarColor(),
+              backgroundColor: getAvatarColor(user.id),
               child: Text(
-                _getInitials(),
+                getInitials(user.firstName, user.lastName),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,

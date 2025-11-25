@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/utils/string_utils.dart';
 import '../../domain/domain.dart';
 
 class CommentItem extends StatelessWidget {
@@ -29,7 +30,7 @@ class CommentItem extends StatelessWidget {
             radius: 20,
             backgroundColor: const Color(0xFF0A3899),
             child: Text(
-              _getInitials(comment.author.title),
+              getInitialsFromFullName(comment.author.title),
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -138,15 +139,6 @@ class CommentItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getInitials(String name) {
-    final parts = name.trim().split(' ');
-    if (parts.isEmpty) return '';
-    if (parts.length == 1) {
-      return parts[0].substring(0, 1).toUpperCase();
-    }
-    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 
   String _formatTime(DateTime date) {

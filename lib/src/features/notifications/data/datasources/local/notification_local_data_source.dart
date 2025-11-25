@@ -7,7 +7,7 @@ abstract class NotificationLocalDataSource {
   Stream<List<Notification>> watchNotifications();
 
   /// Returns currently cached notifications, or null if cache is empty.
-  List<Notification>? getCachedNotifications();
+  List<Notification> getCachedNotifications();
 
   /// Caches a list of notifications and broadcasts the update to watchers.
   void cacheNotifications(List<Notification> notifications);

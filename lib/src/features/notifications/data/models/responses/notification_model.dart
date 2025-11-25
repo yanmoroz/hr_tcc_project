@@ -35,7 +35,7 @@ extension NotificationModelX on NotificationModel {
     link: link,
     created: created,
     notificationText: notificationText,
-    isRead: state == 1,
+    isRead: false,
     author: author?.toDomain(),
   );
 }

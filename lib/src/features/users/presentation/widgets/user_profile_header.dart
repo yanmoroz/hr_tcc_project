@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/utils/color_utils.dart';
+import '../../../../core/utils/string_utils.dart';
+import '../../../notifications/notifications.dart';
 import '../../domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 
@@ -12,26 +15,6 @@ class UserProfileHeader extends StatelessWidget {
   const UserProfileHeader({this.child, super.key});
 
   final Widget? child;
-
-  String _getInitials(AddressBookUser user) {
-    final first = user.firstName.isNotEmpty ? user.firstName[0] : '';
-    final last = user.lastName.isNotEmpty ? user.lastName[0] : '';
-    return '$first$last'.toUpperCase();
-  }
-
-  Color _getAvatarColor(String userId) {
-    final hash = userId.hashCode;
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.pink,
-      Colors.indigo,
-    ];
-    return colors[hash.abs() % colors.length];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +106,6 @@ class UserProfileHeader extends StatelessWidget {
             ],
           ),
         ),
-        Icon(Icons.notifications_outlined, size: 24, color: Colors.grey[400]),
       ],
     );
   }
@@ -136,9 +118,9 @@ class UserProfileHeader extends StatelessWidget {
         // Avatar with initials
         CircleAvatar(
           radius: 20,
-          backgroundColor: _getAvatarColor(user.id),
+          backgroundColor: getAvatarColor(user.id),
           child: Text(
-            _getInitials(user),
+            getInitials(user.firstName, user.lastName),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -146,7 +128,7 @@ class UserProfileHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         // User info
         Expanded(
           child: Column(
@@ -156,32 +138,40 @@ class UserProfileHeader extends StatelessWidget {
               Text(
                 user.title,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              if (user.position != null && user.position!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    user.position!,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+              // if (user.position != null && user.position!.isNotEmpty)
+              Text(
+                // user.position!,
+                'Руководитель проектного офиса (Hardcoded)',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF767679),
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         ),
-        // Notification bell
-        IconButton(
-          icon: SvgPicture.asset(Assets.icons.bellIcon),
-          color: const Color(0xFF0A3899),
-          onPressed: () => context.push('/notifications'),
-          padding: const EdgeInsets.all(0),
-          constraints: const BoxConstraints(),
+        // Notification bell with badge
+        BlocBuilder<UnreadNotificationsCubit, int>(
+          builder: (context, unreadCount) {
+            return IconButton(
+              icon: unreadCount > 0
+                  ? SvgPicture.asset(Assets.icons.bellWithGreenCircleIcon)
+                  : SvgPicture.asset(Assets.icons.bellIcon),
+              color: const Color(0xFF0A3899),
+              onPressed: () => context.push('/notifications'),
+              padding: const EdgeInsets.all(0),
+              constraints: const BoxConstraints(),
+            );
+          },
         ),
       ],
     );

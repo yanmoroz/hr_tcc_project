@@ -23,7 +23,10 @@ class NotificationRepositoryImpl
   Future<Result<List<Notification>>> getNotifications() async {
     final result = await _remoteDataSource.getNotifications();
     return result.fold((error) => Result.left(error), (notifications) {
-      final entities = notifications.map((model) => model.toDomain()).toList();
+      final entities = notifications
+          .take(3)
+          .map((model) => model.toDomain())
+          .toList();
       _localDataSource.cacheNotifications(entities);
       return Result.right(entities);
     });
@@ -33,7 +36,7 @@ class NotificationRepositoryImpl
   Notification? getNotification(int id) {
     final cachedNotification = _localDataSource
         .getCachedNotifications()
-        ?.firstWhereOrNull((notification) => notification.id == id);
+        .firstWhereOrNull((notification) => notification.id == id);
 
     return cachedNotification;
   }

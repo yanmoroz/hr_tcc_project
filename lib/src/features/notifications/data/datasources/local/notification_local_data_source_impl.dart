@@ -16,8 +16,7 @@ class NotificationLocalDataSourceImpl implements NotificationLocalDataSource {
       _notificationsController.stream;
 
   @override
-  List<Notification>? getCachedNotifications() =>
-      _cache.isEmpty ? null : _cache;
+  List<Notification> getCachedNotifications() => _cache;
 
   @override
   void cacheNotifications(List<Notification> notifications) {

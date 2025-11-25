@@ -109,6 +109,11 @@ void _initializeNotificationDependencies() {
   sl.registerFactory<WatchNotificationsUseCase>(
     () => WatchNotificationsUseCase(sl()),
   );
+
+  // Cubits
+  sl.registerLazySingleton<UnreadNotificationsCubit>(
+    () => UnreadNotificationsCubit(sl(), sl()),
+  );
 }
 
 void _initializePollDependencies() {

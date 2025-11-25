@@ -21,6 +21,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/bell-icon.svg
   String get bellIcon => 'assets/icons/bell-icon.svg';
 
+  /// File path: assets/icons/bell-with-green-circle-icon.svg
+  String get bellWithGreenCircleIcon =>
+      'assets/icons/bell-with-green-circle-icon.svg';
+
   /// File path: assets/icons/comments-icon.svg
   String get commentsIcon => 'assets/icons/comments-icon.svg';
 
@@ -68,6 +72,7 @@ class $AssetsIconsGen {
     applicationsIcon,
     backIcon,
     bellIcon,
+    bellWithGreenCircleIcon,
     commentsIcon,
     contactsIcon,
     crossIcon,

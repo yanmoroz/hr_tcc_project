@@ -31,10 +31,17 @@ class AppRouter {
       // Shared BLoC provider wrapper for all tabs
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          return BlocProvider(
-            create: (context) =>
-                BlocFactory.createCurrentUserBloc()
-                  ..add(const CurrentUserEvent.loadCurrentUser()),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) =>
+                    BlocFactory.createCurrentUserBloc()
+                      ..add(const CurrentUserEvent.loadCurrentUser()),
+              ),
+              BlocProvider.value(
+                value: BlocFactory.getUnreadNotificationsCubit(),
+              ),
+            ],
             child: MainShell(navigationShell: navigationShell),
           );
         },
