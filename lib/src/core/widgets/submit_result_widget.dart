@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../gen/assets.gen.dart';
 
 class SubmitResultWidget extends StatelessWidget {
   final VoidCallback onClose;
@@ -26,11 +29,10 @@ class SubmitResultWidget extends StatelessWidget {
         // Content
         Center(
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 32),
-            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(18),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -40,33 +42,36 @@ class SubmitResultWidget extends StatelessWidget {
                   alignment: Alignment.topRight,
                   child: GestureDetector(
                     onTap: onClose,
-                    child: const Icon(
-                      Icons.close,
-                      size: 24,
-                      color: Colors.black54,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: SvgPicture.asset(
+                        Assets.icons.crossIcon,
+                        width: 24,
+                        height: 24,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.black54,
+                          BlendMode.srcIn,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10.0),
                 // Success/Error icon
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color: isSuccess ? const Color(0xFF4CAF50) : Colors.red,
-                      width: 3,
-                    ),
-                  ),
-                  child: Icon(
-                    isSuccess ? Icons.check : Icons.close,
-                    size: 48,
-                    color: isSuccess ? const Color(0xFF4CAF50) : Colors.red,
+                SvgPicture.asset(
+                  isSuccess
+                      ? Assets.icons.operationSuccessIcon
+                      : Assets.icons.operationFailureIcon,
+                  width: 76,
+                  height: 76,
+                  colorFilter: ColorFilter.mode(
+                    isSuccess
+                        ? const Color(0xFF44BF78)
+                        : const Color(0xFFF6514C),
+                    BlendMode.srcIn,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 30),
                 // Message
                 Text(
                   message,
@@ -74,9 +79,12 @@ class SubmitResultWidget extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
+                    decoration: TextDecoration.none,
                   ),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                 ),
+
+                SizedBox(height: 40.0),
               ],
             ),
           ),

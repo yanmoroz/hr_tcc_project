@@ -45,6 +45,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/more-icon.svg
   String get moreIcon => 'assets/icons/more-icon.svg';
 
+  /// File path: assets/icons/operation-failure-icon.svg
+  String get operationFailureIcon => 'assets/icons/operation-failure-icon.svg';
+
+  /// File path: assets/icons/operation-success-icon.svg
+  String get operationSuccessIcon => 'assets/icons/operation-success-icon.svg';
+
   /// File path: assets/icons/polls-icon.svg
   String get pollsIcon => 'assets/icons/polls-icon.svg';
 
@@ -70,6 +76,8 @@ class $AssetsIconsGen {
     likeIcon,
     likeWhiteIcon,
     moreIcon,
+    operationFailureIcon,
+    operationSuccessIcon,
     pollsIcon,
     resellIcon,
     s8Icon,

@@ -11,5 +11,6 @@ sealed class NotificationsListState with _$NotificationsListState {
     @Default(LoadingStatus.initial) LoadingStatus status,
     @Default([]) List<Notification> notifications,
     String? errorMessage,
+    String? actionError,
   }) = _NotificationsListState;
 }

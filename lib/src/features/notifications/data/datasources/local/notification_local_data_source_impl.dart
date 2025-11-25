@@ -34,6 +34,20 @@ class NotificationLocalDataSourceImpl implements NotificationLocalDataSource {
   }
 
   @override
+  void markAsRead(int id) {
+    _cache = _cache
+        .map((n) => n.id == id ? n.copyWith(isRead: true) : n)
+        .toList();
+    _notificationsController.add(_cache);
+  }
+
+  @override
+  void markAllAsRead() {
+    _cache = _cache.map((n) => n.copyWith(isRead: true)).toList();
+    _notificationsController.add(_cache);
+  }
+
+  @override
   void clear() {
     _cache = [];
     _notificationsController.add(_cache);

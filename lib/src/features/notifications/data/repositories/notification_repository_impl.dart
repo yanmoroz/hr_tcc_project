@@ -22,11 +22,11 @@ class NotificationRepositoryImpl
   @override
   Future<Result<List<Notification>>> getNotifications() async {
     final result = await _remoteDataSource.getNotifications();
-    result.fold((error) => {}, (notifications) {
+    return result.fold((error) => Result.left(error), (notifications) {
       final entities = notifications.map((model) => model.toDomain()).toList();
       _localDataSource.cacheNotifications(entities);
+      return Result.right(entities);
     });
-    return mapResultList(result, (model) => model.toDomain());
   }
 
   @override
@@ -45,12 +45,16 @@ class NotificationRepositoryImpl
 
   @override
   Future<Result<void>> markNotificationAsRead(int id) async {
-    return await _remoteDataSource.markAsRead(id: id);
+    final result = await _remoteDataSource.markAsRead(id: id);
+    result.fold((_) {}, (_) => _localDataSource.markAsRead(id));
+    return result;
   }
 
   @override
   Future<Result<void>> markAllNotificationsAsRead() async {
-    return await _remoteDataSource.markAsRead();
+    final result = await _remoteDataSource.markAsRead();
+    result.fold((_) {}, (_) => _localDataSource.markAllAsRead());
+    return result;
   }
 
   @override

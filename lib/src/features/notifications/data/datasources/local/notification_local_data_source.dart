@@ -15,6 +15,12 @@ abstract class NotificationLocalDataSource {
   /// Updates a single notification in the cache and broadcasts the change.
   void updateNotification(Notification notification);
 
+  /// Marks a single notification as read.
+  void markAsRead(int id);
+
+  /// Marks all notifications as read.
+  void markAllAsRead();
+
   /// Clears all cached notifications.
   void clear();
 

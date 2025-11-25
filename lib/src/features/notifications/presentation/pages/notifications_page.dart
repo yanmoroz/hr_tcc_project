@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../blocs/notifications_list/bloc.dart';
 import '../widgets/notification_item.dart';
 
@@ -11,13 +12,23 @@ class NotificationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NotificationsListBloc, NotificationsListState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(title: Text('Уведомления')),
-          body: _buildBody(context, state),
+    return BlocListener<NotificationsListBloc, NotificationsListState>(
+      listenWhen: (previous, current) =>
+          previous.actionError != current.actionError &&
+          current.actionError != null,
+      listener: (context, state) {
+        SubmitResultWidget.show(
+          context: context,
+          message: state.actionError!,
+          isSuccess: false,
         );
       },
+      child: Scaffold(
+        appBar: AppBar(title: Text('Уведомления')),
+        body: BlocBuilder<NotificationsListBloc, NotificationsListState>(
+          builder: _buildBody,
+        ),
+      ),
     );
   }
 

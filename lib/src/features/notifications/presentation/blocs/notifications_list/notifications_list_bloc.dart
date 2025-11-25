@@ -35,17 +35,17 @@ class NotificationsListBloc
     });
   }
 
+  @override
+  Future<void> close() async {
+    _notificationsSubscription?.cancel();
+    super.close();
+  }
+
   Future<void> _onNotificationsDidUpdate(
     NotificationsDidUpdate event,
     Emitter<NotificationsListState> emit,
   ) async {
     emit(state.copyWith(notifications: event.notifications));
-  }
-
-  @override
-  Future<void> close() async {
-    _notificationsSubscription?.cancel();
-    super.close();
   }
 
   Future<void> _onLoadNotifications(
@@ -81,32 +81,16 @@ class NotificationsListBloc
     if (state.status != LoadingStatus.success) return;
 
     // If no unread notifications, no need to update
-    if (state.notifications
-        .where((notification) => !notification.isRead)
-        .isEmpty)
-      return;
+    if (state.notifications.every((n) => n.isRead)) return;
+
+    // Clear previous action error before starting new action
+    emit(state.copyWith(actionError: null));
 
     final result = await markAllNotificationsAsReadUsecase();
 
     result.fold(
-      (error) => emit(
-        state.copyWith(
-          status: LoadingStatus.error,
-          errorMessage: error.message,
-        ),
-      ),
-      (_) {
-        // Update local state: mark all notifications as read
-        final updatedNotifications = state.notifications.map((notification) {
-          if (!notification.isRead) {
-            return notification.copyWith(isRead: true);
-          }
-          return notification;
-        }).toList();
-
-        // Update unread count: set to 0
-        emit(state.copyWith(notifications: updatedNotifications));
-      },
+      (error) => emit(state.copyWith(actionError: error.message)),
+      (_) {},
     );
   }
 }
