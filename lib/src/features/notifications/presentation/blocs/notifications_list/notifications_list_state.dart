@@ -3,13 +3,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 
-part 'notification_detail_state.freezed.dart';
+part 'notifications_list_state.freezed.dart';
 
 @freezed
-sealed class NotificationDetailState with _$NotificationDetailState {
-  const factory NotificationDetailState({
+sealed class NotificationsListState with _$NotificationsListState {
+  const factory NotificationsListState({
     @Default(LoadingStatus.initial) LoadingStatus status,
-    Notification? notification,
+    @Default([]) List<Notification> notifications,
     String? errorMessage,
-  }) = _NotificationDetailState;
+  }) = _NotificationsListState;
 }

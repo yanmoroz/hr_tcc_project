@@ -113,10 +113,13 @@ class BlocFactory {
   }
 
   /// Creates a [NotificationDetailBloc] instance.
-  static NotificationDetailBloc createNotificationDetailBloc() {
+  static NotificationDetailBloc createNotificationDetailBloc(
+    Notification notification,
+  ) {
     return NotificationDetailBloc(
-      getNotificationsUsecase: sl(),
+      notification: notification,
       markNotificationAsReadUsecase: sl(),
+      updateNotificationUsecase: sl(),
     );
   }
 
@@ -124,9 +127,8 @@ class BlocFactory {
   static NotificationsListBloc createNotificationsListBloc() {
     return NotificationsListBloc(
       getNotificationsUsecase: sl(),
-      markNotificationAsReadUsecase: sl(),
       markAllNotificationsAsReadUsecase: sl(),
-      getUnreadNotificationsCountUsecase: sl(),
+      watchNotificationsUseCase: sl(),
     );
   }
 

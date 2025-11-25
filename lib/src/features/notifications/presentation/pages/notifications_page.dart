@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
-import '../blocs/notifications_page/bloc.dart';
+import '../blocs/notifications_list/bloc.dart';
 import '../widgets/notification_item.dart';
 
 class NotificationsPage extends StatelessWidget {
@@ -78,7 +78,9 @@ class NotificationsPage extends StatelessWidget {
 
     // Success state
     final notifications = state.notifications;
-    final unreadCount = state.unreadCount;
+    final unreadCount = notifications
+        .where((notification) => !notification.isRead)
+        .length;
 
     if (notifications.isEmpty) {
       return const Center(child: Text('Нет уведомлений'));
@@ -96,7 +98,10 @@ class NotificationsPage extends StatelessWidget {
               notification: notification,
               onTap: () {
                 // Navigate to detail page
-                context.push('/notifications/${notification.id}');
+                context.push(
+                  '/notifications/${notification.id}',
+                  extra: notification,
+                );
               },
             );
           },

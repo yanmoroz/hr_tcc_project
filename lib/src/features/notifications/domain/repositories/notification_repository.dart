@@ -6,4 +6,6 @@ abstract class NotificationRepository {
   Future<Result<int>> getUnreadNotificationsCount();
   Future<Result<void>> markNotificationAsRead(int id);
   Future<Result<void>> markAllNotificationsAsRead();
+  void updateNotification(Notification notification);
+  Stream<List<Notification>> watchNotifications();
 }

@@ -97,6 +97,9 @@ void _initializeNotificationDependencies() {
   sl.registerFactory<GetUnreadNotificationsCountUsecase>(
     () => GetUnreadNotificationsCountUsecase(sl()),
   );
+  sl.registerFactory<UpdateNotificationUsecase>(
+    () => UpdateNotificationUsecase(sl()),
+  );
 }
 
 void _initializePollDependencies() {
@@ -114,6 +117,9 @@ void _initializePollDependencies() {
   sl.registerFactory<GetPollDetailUsecase>(() => GetPollDetailUsecase(sl()));
   sl.registerFactory<SubmitPollAnswersUsecase>(
     () => SubmitPollAnswersUsecase(sl()),
+  );
+  sl.registerFactory<WatchNotificationsUseCase>(
+    () => WatchNotificationsUseCase(sl()),
   );
 }
 

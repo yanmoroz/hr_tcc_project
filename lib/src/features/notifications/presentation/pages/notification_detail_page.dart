@@ -4,9 +4,8 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../gen/fonts.gen.dart';
-import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/extensions/date_time_extension.dart';
-import '../blocs/notification_detail_page/bloc.dart';
+import '../blocs/notification_detail/bloc.dart';
 
 class NotificationDetailPage extends StatelessWidget {
   const NotificationDetailPage({super.key});
@@ -49,69 +48,14 @@ class NotificationDetailPage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, NotificationDetailState state) {
-    if (state.status == LoadingStatus.loading ||
-        state.status == LoadingStatus.initial) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (state.status == LoadingStatus.error) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Color(0xFF757575)),
-            const SizedBox(height: 16),
-            const Text(
-              'Ошибка загрузки',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF212121),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                state.errorMessage ?? 'Unknown error',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: Color(0xFF757575)),
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                context.read<NotificationDetailBloc>().add(
-                  const NotificationDetailEvent.refreshDetail(),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2196F3),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text('Повторить'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Success state
     final notification = state.notification;
-
-    if (notification == null) {
-      return const Center(child: Text('No data available'));
-    }
 
     return RefreshIndicator(
       onRefresh: () async {
-        context.read<NotificationDetailBloc>().add(
-          const NotificationDetailEvent.refreshDetail(),
-        );
+        // TODO: REFACTORING
+        // context.read<NotificationDetailBloc>().add(
+        //   const NotificationDetailEvent.refreshDetail(),
+        // );
         // Wait a moment for the refresh
         await Future.delayed(const Duration(milliseconds: 500));
       },
