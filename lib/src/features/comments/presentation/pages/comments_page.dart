@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
-import '../../domain/domain.dart';
+import '../../../../core/utils/pluralization.dart';
 import '../blocs/comments_page/bloc.dart';
 import '../widgets/comment_item.dart';
 import '../widgets/date_separator.dart';
@@ -85,13 +87,6 @@ class _CommentsPageState extends State<CommentsPage> {
                   return const Center(child: Text('Комментариев пока нет'));
                 }
 
-                // Sort comments by createdData (ascending - oldest first)
-                final sortedComments = List<Comment>.from(state.comments)
-                  ..sort((a, b) => a.createdData.compareTo(b.createdData));
-
-                // Group comments by day
-                final groupedItems = _groupCommentsByDay(sortedComments);
-
                 return RefreshIndicator(
                   onRefresh: () async {
                     context.read<CommentsBloc>().add(
@@ -99,33 +94,37 @@ class _CommentsPageState extends State<CommentsPage> {
                     );
                   },
                   child: ListView.builder(
+                    reverse: true,
                     padding: const EdgeInsets.all(16),
-                    itemCount: groupedItems.length,
+                    itemCount: state.groupedComments.length,
                     itemBuilder: (context, index) {
-                      final item = groupedItems[index];
+                      final group = state.groupedComments[index];
 
-                      // Check if this is a date separator
-                      if (item is DateTime) {
-                        return DateSeparator(date: item);
-                      }
-
-                      // Otherwise it's a Comment
-                      final comment = item as Comment;
-                      return CommentItem(
-                        comment: comment,
-                        onLike: () {
-                          context.read<CommentsBloc>().add(
-                            CommentsEvent.toggleCommentLike(comment.id),
-                          );
-                        },
-                        onDelete: comment.editable
-                            ? () {
-                                _showDeleteDialog(context, comment.id);
-                              }
-                            : null,
-                        onReply: () {
-                          // TODO: Implement reply functionality
-                        },
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date separator at the end (appears at top due to reverse)
+                          DateSeparator(date: group.date),
+                          // Comments for this day
+                          ...group.comments.map(
+                            (comment) => CommentItem(
+                              comment: comment,
+                              onLike: () {
+                                context.read<CommentsBloc>().add(
+                                  CommentsEvent.toggleCommentLike(comment.id),
+                                );
+                              },
+                              onDelete: comment.editable
+                                  ? () {
+                                      _showDeleteDialog(context, comment.id);
+                                    }
+                                  : null,
+                              onReply: () {
+                                // TODO: Implement reply functionality
+                              },
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -134,60 +133,11 @@ class _CommentsPageState extends State<CommentsPage> {
             ),
           ),
 
-          // Add comment input
-          BlocBuilder<CommentsBloc, CommentsState>(
-            builder: (context, state) {
-              final isAddingComment = state.isAddingComment;
-
-              return Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _commentController,
-                        decoration: const InputDecoration(
-                          hintText: 'Ваш комментарий',
-                          border: OutlineInputBorder(),
-                        ),
-                        maxLines: null,
-                        enabled: !isAddingComment,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      icon: isAddingComment
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.send),
-                      onPressed: isAddingComment
-                          ? null
-                          : () {
-                              if (_commentController.text.trim().isNotEmpty) {
-                                context.read<CommentsBloc>().add(
-                                  CommentsEvent.addComment(
-                                    content: _commentController.text.trim(),
-                                  ),
-                                );
-                                _commentController.clear();
-                              }
-                            },
-                    ),
-                  ],
-                ),
+          _CommentInputBar(
+            controller: _commentController,
+            onSend: (content) {
+              context.read<CommentsBloc>().add(
+                CommentsEvent.addComment(content: content),
               );
             },
           ),
@@ -221,44 +171,190 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
-  List<Object> _groupCommentsByDay(List<Comment> comments) {
-    final List<Object> groupedItems = [];
-    DateTime? lastDate;
-
-    for (final comment in comments) {
-      final commentDate = DateTime(
-        comment.createdData.year,
-        comment.createdData.month,
-        comment.createdData.day,
-      );
-
-      // Add date separator if this is a new day
-      if (lastDate == null || !_isSameDay(lastDate, commentDate)) {
-        groupedItems.add(commentDate);
-        lastDate = commentDate;
-      }
-
-      // Add the comment
-      groupedItems.add(comment);
-    }
-
-    return groupedItems;
-  }
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
   String _getCommentCountText(int count) {
-    if (count % 10 == 1 && count % 100 != 11) {
-      return '$count комментарий';
-    } else if ([2, 3, 4].contains(count % 10) &&
-        ![12, 13, 14].contains(count % 100)) {
-      return '$count комментария';
-    } else {
-      return '$count комментариев';
-    }
+    return pluralizeRu(
+      count,
+      '$count комментарий',
+      '$count комментария',
+      '$count комментариев',
+    );
+  }
+}
+
+class _CommentInputBar extends StatefulWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onSend;
+
+  const _CommentInputBar({required this.controller, required this.onSend});
+
+  @override
+  State<_CommentInputBar> createState() => _CommentInputBarState();
+}
+
+class _CommentInputBarState extends State<_CommentInputBar> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CommentsBloc, CommentsState>(
+      buildWhen: (previous, current) =>
+          previous.isAddingComment != current.isAddingComment,
+      builder: (context, state) {
+        final isAddingComment = state.isAddingComment;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 12,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const SizedBox(width: 12),
+              // Attachment button
+              IconButton(
+                icon: SvgPicture.asset(
+                  Assets.icons.attachmentIcon,
+                  width: 28,
+                  height: 28,
+                ),
+                onPressed: isAddingComment
+                    ? null
+                    : () {
+                        // TODO: Implement attachment functionality
+                      },
+                style: IconButton.styleFrom(
+                  fixedSize: const Size(28, 28),
+                  minimumSize: const Size(28, 28),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Text field
+              Expanded(
+                child: TextField(
+                  controller: widget.controller,
+                  focusNode: _focusNode,
+                  style: const TextStyle(fontSize: 16),
+                  decoration: InputDecoration(
+                    hintText: 'Ваш комментарий',
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF767679),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    isDense: true,
+                    filled: true,
+                    fillColor: Colors.white,
+                    constraints: const BoxConstraints(minHeight: 32),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFBABABE),
+                        width: 1,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFBABABE),
+                        width: 1,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFBABABE),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  minLines: 1,
+                  maxLines: 5,
+                  enabled: !isAddingComment,
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Send button - only visible when focused
+              if (_isFocused || isAddingComment) ...[
+                IconButton(
+                  style: IconButton.styleFrom(
+                    backgroundColor: const Color(0xFF0A3899),
+                    fixedSize: const Size(32, 32),
+                    minimumSize: const Size(32, 32),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  icon: isAddingComment
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: const Color(0xFF0A3899),
+                          ),
+                        )
+                      : SvgPicture.asset(
+                          Assets.icons.arrowUp,
+                          width: 24,
+                          height: 24,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                          fit: BoxFit.none,
+                        ),
+                  onPressed: isAddingComment
+                      ? null
+                      : () {
+                          final content = widget.controller.text.trim();
+                          if (content.isNotEmpty) {
+                            widget.onSend(content);
+                            widget.controller.clear();
+                          }
+                        },
+                ),
+              ],
+              const SizedBox(width: 12),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -14,7 +14,8 @@ String getInitials(String firstName, String lastName) {
 /// and second words. If only one word exists, returns single initial.
 /// Returns uppercase initials (e.g., "John Doe" -> "JD").
 String getInitialsFromFullName(String fullName) {
-  final parts = fullName.trim().split(' ');
+  final fullNameTrimmed = fullName.replaceAll(RegExp(r'\s+'), ' ').trim();
+  final parts = fullNameTrimmed.trim().split(' ');
   if (parts.isEmpty || parts.first.isEmpty) return '';
   if (parts.length == 1) {
     return parts[0][0].toUpperCase();

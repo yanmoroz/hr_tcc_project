@@ -10,6 +10,9 @@ class CommentItem extends StatelessWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onReply;
 
+  // TODO: Replace with actual current user ID from auth
+  static const int _currentUserId = 20370;
+
   const CommentItem({
     super.key,
     required this.comment,
@@ -18,27 +21,20 @@ class CommentItem extends StatelessWidget {
     this.onReply,
   });
 
+  bool get _isCurrentUser => comment.author.id == _currentUserId;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: _isCurrentUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
-          // Avatar with initials - positioned to the left and bottom-aligned
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: const Color(0xFF0A3899),
-            child: Text(
-              getInitialsFromFullName(comment.author.title),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
+          // Avatar on left for other users
+          if (!_isCurrentUser) ...[_buildAvatar(), const SizedBox(width: 12)],
           // Comment content container
           Flexible(
             child: ConstrainedBox(
@@ -79,7 +75,7 @@ class CommentItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // Like and reply buttons
+                    // Like and action buttons
                     Row(
                       children: [
                         // Like button
@@ -111,24 +107,28 @@ class CommentItem extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (onReply != null) ...[
-                          const Spacer(),
+                        const Spacer(),
+                        // Delete button for current user, Reply for others
+                        if (_isCurrentUser && onDelete != null)
+                          InkWell(
+                            onTap: onDelete,
+                            borderRadius: BorderRadius.circular(20),
+                            child: Text(
+                              'Удалить',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey[600]),
+                            ),
+                          )
+                        else if (!_isCurrentUser && onReply != null)
                           InkWell(
                             onTap: onReply,
                             borderRadius: BorderRadius.circular(20),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 0,
-                                vertical: 0,
-                              ),
-                              child: Text(
-                                'Ответить',
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: Colors.grey[600]),
-                              ),
+                            child: Text(
+                              'Ответить',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                           ),
-                        ],
                       ],
                     ),
                   ],
@@ -136,7 +136,24 @@ class CommentItem extends StatelessWidget {
               ),
             ),
           ),
+          // Avatar on right for current user
+          if (_isCurrentUser) ...[const SizedBox(width: 12), _buildAvatar()],
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar() {
+    return CircleAvatar(
+      radius: 16,
+      backgroundColor: const Color(0xFF0A3899),
+      child: Text(
+        getInitialsFromFullName(comment.author.title),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
       ),
     );
   }

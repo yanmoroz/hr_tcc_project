@@ -15,6 +15,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/applications-icon.svg
   String get applicationsIcon => 'assets/icons/applications-icon.svg';
 
+  /// File path: assets/icons/arrow-up.svg
+  String get arrowUp => 'assets/icons/arrow-up.svg';
+
+  /// File path: assets/icons/attachment-icon.svg
+  String get attachmentIcon => 'assets/icons/attachment-icon.svg';
+
   /// File path: assets/icons/back-icon.svg
   String get backIcon => 'assets/icons/back-icon.svg';
 
@@ -76,6 +82,8 @@ class $AssetsIconsGen {
   /// List of all assets
   List<String> get values => [
     applicationsIcon,
+    arrowUp,
+    attachmentIcon,
     backIcon,
     bellIcon,
     bellWithGreenCircleIcon,

@@ -1,9 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/base_types/result.dart';
+import '../../../../../core/extensions/date_time_extension.dart';
 import '../../../domain/domain.dart';
-
 import 'comments_event.dart';
 import 'comments_state.dart';
 
@@ -123,7 +122,12 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         return comment;
       }).toList();
 
-      emit(state.copyWith(comments: updatedComments));
+      emit(
+        state.copyWith(
+          comments: updatedComments,
+          groupedComments: _groupCommentsByDay(updatedComments),
+        ),
+      );
     }
 
     // Make API call
@@ -151,7 +155,12 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
             return comment;
           }).toList();
 
-          emit(state.copyWith(comments: revertedComments));
+          emit(
+            state.copyWith(
+              comments: revertedComments,
+              groupedComments: _groupCommentsByDay(revertedComments),
+            ),
+          );
         }
       },
       (_) {
@@ -170,16 +179,59 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       (error) => emit(
         state.copyWith(
           status: LoadingStatus.error,
-          errorMessage: error.message,
+          errorMessage: error.toString(),
         ),
       ),
       (comments) => emit(
         state.copyWith(
           status: LoadingStatus.success,
           comments: comments,
+          groupedComments: _groupCommentsByDay(comments),
           isAddingComment: false,
         ),
       ),
     );
+  }
+
+  /// Groups comments by day, sorted descending (newest first) for reversed ListView.
+  List<CommentDayGroup> _groupCommentsByDay(List<Comment> comments) {
+    if (comments.isEmpty) return [];
+
+    // Sort descending (newest first) for reversed ListView
+    final sortedComments = List<Comment>.from(comments)
+      ..sort((a, b) => b.createdData.compareTo(a.createdData));
+
+    final List<CommentDayGroup> groups = [];
+    DateTime? currentDate;
+    List<Comment> currentGroup = [];
+
+    for (final comment in sortedComments) {
+      final commentDate = DateTime(
+        comment.createdData.year,
+        comment.createdData.month,
+        comment.createdData.day,
+      );
+
+      if (currentDate == null || !currentDate.isSameDay(commentDate)) {
+        // Save previous group if exists
+        if (currentGroup.isNotEmpty && currentDate != null) {
+          groups.add(
+            CommentDayGroup(date: currentDate, comments: currentGroup),
+          );
+        }
+        // Start new group
+        currentDate = commentDate;
+        currentGroup = [comment];
+      } else {
+        currentGroup.insert(0, comment);
+      }
+    }
+
+    // Add last group
+    if (currentGroup.isNotEmpty && currentDate != null) {
+      groups.add(CommentDayGroup(date: currentDate, comments: currentGroup));
+    }
+
+    return groups;
   }
 }

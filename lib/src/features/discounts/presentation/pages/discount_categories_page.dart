@@ -41,8 +41,8 @@ class DiscountCategoriesPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 context.read<DiscountCategoriesBloc>().add(
-                      const DiscountCategoriesEvent.loadCategories(),
-                    );
+                  const DiscountCategoriesEvent.loadCategories(),
+                );
               },
               child: const Text('Retry'),
             ),
@@ -58,8 +58,8 @@ class DiscountCategoriesPage extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async {
         context.read<DiscountCategoriesBloc>().add(
-              const DiscountCategoriesEvent.refreshCategories(),
-            );
+          const DiscountCategoriesEvent.refreshCategories(),
+        );
       },
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -70,7 +70,7 @@ class DiscountCategoriesPage extends StatelessWidget {
             title: category.name,
             onTap: () {
               context.push(
-                '/discounts',
+                '/home/discounts',
                 extra: {
                   'category': category.code.toString(),
                   'source': category.discountSourceCode.toString(),
