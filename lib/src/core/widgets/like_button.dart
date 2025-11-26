@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../gen/assets.gen.dart';
 
+import '../../../src/core/extensions/int_extension.dart';
+
 /// A reusable like button widget that displays a like icon with counter.
 ///
 /// This widget can work in two modes:
@@ -17,12 +19,18 @@ class LikeButton extends StatelessWidget {
   const LikeButton({
     required this.isLiked,
     required this.likeCount,
+    this.textColor = Colors.black,
+    this.likedColor = Colors.black,
+    this.notLikedColor = Colors.black,
     this.onPressed,
     super.key,
   });
 
   final bool isLiked;
   final int likeCount;
+  final Color textColor;
+  final Color likedColor;
+  final Color notLikedColor;
   final VoidCallback? onPressed;
 
   @override
@@ -32,23 +40,29 @@ class LikeButton extends StatelessWidget {
             Assets.icons.likeWhiteIcon,
             width: 24,
             height: 24,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(likedColor, BlendMode.srcIn),
+            fit: BoxFit.none,
           )
         : SvgPicture.asset(
             Assets.icons.likeIcon,
             width: 24,
             height: 24,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(notLikedColor, BlendMode.srcIn),
+            fit: BoxFit.none,
           );
 
     final label = Text(
-      '$likeCount',
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      likeCount.toFormattedString(),
+      style: TextStyle(
+        color: textColor,
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
     );
 
     final row = Row(
       mainAxisSize: MainAxisSize.min,
-      children: [icon, const SizedBox(width: 4), label],
+      children: [icon, const SizedBox(width: 12), label],
     );
 
     // Interactive mode: GestureDetector

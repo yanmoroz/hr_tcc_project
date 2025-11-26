@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../gen/assets.gen.dart';
 
+import '../../../src/core/extensions/int_extension.dart';
+
 /// A reusable comments button widget that displays a comment icon with counter.
 ///
 /// This widget can work in two modes:
@@ -11,10 +13,18 @@ import '../../../gen/assets.gen.dart';
 ///
 /// The comment icon uses comments-icon.svg and is displayed in white color.
 class CommentsButton extends StatelessWidget {
-  const CommentsButton({required this.commentCount, this.onPressed, super.key});
-
   final int commentCount;
+  final Color textColor;
+  final Color iconColor;
   final VoidCallback? onPressed;
+
+  const CommentsButton({
+    required this.commentCount,
+    this.textColor = Colors.black,
+    this.iconColor = Colors.black,
+    this.onPressed,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,17 +32,22 @@ class CommentsButton extends StatelessWidget {
       Assets.icons.commentsIcon,
       width: 24,
       height: 24,
-      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+      colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+      fit: BoxFit.none,
     );
 
     final label = Text(
-      '$commentCount',
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      commentCount.toFormattedString(),
+      style: TextStyle(
+        color: textColor,
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
     );
 
     final row = Row(
       mainAxisSize: MainAxisSize.min,
-      children: [icon, const SizedBox(width: 4), label],
+      children: [icon, const SizedBox(width: 12), label],
     );
 
     // Interactive mode: GestureDetector

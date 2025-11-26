@@ -21,115 +21,115 @@ class CompactNewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image (if available)
-              if (coverImage != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.memory(
-                    coverImage!,
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 180,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.image_not_supported, size: 48),
-                      );
-                    },
+    return Container(
+      child: Card(
+        color: Colors.white,
+        margin: const EdgeInsets.only(bottom: 12),
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image (if available)
+                if (coverImage != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(
+                      coverImage!,
+                      height: 180,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 180,
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 48,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                if (coverImage != null) const SizedBox(height: 12),
+
+                // Timestamp
+                Text(
+                  _formatDateTime(newsItem.createdData),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Color(0xFF767679),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
-              if (coverImage != null) const SizedBox(height: 12),
+                const SizedBox(height: 8),
 
-              // Timestamp with green indicator
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF4CAF50),
-                      shape: BoxShape.circle,
-                    ),
+                // Title
+                Text(
+                  newsItem.title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    _formatDateTime(newsItem.createdData),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+
+                // Summary
+                Text(
+                  newsItem.summary,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF767679),
+                  ),
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 12),
+
+                // Bottom row: likes, comments, and category badge
+                Row(
+                  children: [
+                    // Likes
+                    LikeButton(
+                      isLiked: newsItem.like,
+                      likeCount: newsItem.likeCount,
+                      textColor: Colors.black,
+                      likedColor: const Color(0xFFEE0000),
+                      notLikedColor: Colors.black,
+                    ),
+                    const SizedBox(width: 16),
+
+                    // Comments
+                    CommentsButton(commentCount: newsItem.commentCount),
+
+                    const Spacer(),
+
+                    // Category badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDAE0EF),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        newsItem.categoryName,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
                         ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // Title
-              Text(
-                newsItem.title,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-
-              // Summary
-              Text(
-                newsItem.summary,
-                style: Theme.of(context).textTheme.bodyMedium,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 12),
-
-              // Bottom row: likes, comments, and category badge
-              Row(
-                children: [
-                  // Likes
-                  LikeButton(
-                    isLiked: newsItem.like,
-                    likeCount: newsItem.likeCount,
-                  ),
-                  const SizedBox(width: 16),
-
-                  // Comments
-                  CommentsButton(
-                    commentCount: newsItem.commentCount,
-                  ),
-
-                  const Spacer(),
-
-                  // Category badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F4F8),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      newsItem.categoryName,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

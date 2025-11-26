@@ -22,8 +22,8 @@ class HomeIconButton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 56,
-            height: 56,
+            width: 62,
+            height: 60,
             decoration: BoxDecoration(
               color: const Color(0xFF0D47A1),
               borderRadius: BorderRadius.circular(12),

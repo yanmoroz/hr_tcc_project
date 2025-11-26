@@ -40,6 +40,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/home-icon.svg
   String get homeIcon => 'assets/icons/home-icon.svg';
 
+  /// File path: assets/icons/ispring-icon.svg
+  String get ispringIcon => 'assets/icons/ispring-icon.svg';
+
   /// File path: assets/icons/like-icon.svg
   String get likeIcon => 'assets/icons/like-icon.svg';
 
@@ -81,6 +84,7 @@ class $AssetsIconsGen {
     crossIcon,
     discountsIcon,
     homeIcon,
+    ispringIcon,
     likeIcon,
     likeWhiteIcon,
     moreIcon,

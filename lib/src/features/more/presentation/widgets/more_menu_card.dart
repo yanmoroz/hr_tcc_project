@@ -33,6 +33,7 @@ class MoreMenuCard extends StatelessWidget {
               border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Content
                 Expanded(
@@ -56,7 +57,8 @@ class MoreMenuCard extends StatelessWidget {
                           subtitle!,
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF757575),
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF767679),
                           ),
                         ),
                       ],
@@ -68,21 +70,14 @@ class MoreMenuCard extends StatelessWidget {
 
                 // Icon (if provided) or chevron
                 if (icon != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: icon,
-                    ),
+                  Container(child: icon)
+                else
+                  // Chevron icon (only shown when no icon provided)
+                  const Icon(
+                    Icons.chevron_right,
+                    color: Color(0xFF757575),
+                    size: 24,
                   ),
-
-                // Chevron icon
-                const Icon(
-                  Icons.chevron_right,
-                  color: Color(0xFF757575),
-                  size: 24,
-                ),
               ],
             ),
           ),

@@ -30,47 +30,57 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Icon buttons row
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        HomeIconButton(
-                          iconPath: Assets.icons.telegramIcon,
-                          label: 'Телеграм-\nканал S8',
-                          onTap: () => _launchUrl('http://telegram.org'),
-                        ),
-                        HomeIconButton(
-                          iconPath: Assets.icons.discountsIcon,
-                          label: 'Льготы\nи возмож...',
-                          onTap: () =>
-                              context.push('/home/discount-categories'),
-                        ),
-                        HomeIconButton(
-                          iconPath: Assets.icons.pollsIcon,
-                          label: 'Опросы',
-                          onTap: () => context.push('/home/polls'),
-                        ),
-                        HomeIconButton(
-                          iconPath: Assets.icons.resellIcon,
-                          label: 'Ресейл',
-                          onTap: () => context.push('/home/resell'),
-                        ),
-                        HomeIconButton(
-                          iconPath: Assets.icons.s8Icon,
-                          label: 'ИТ-портал',
-                          onTap: () => _launchUrl('https://s8.capital'),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _HomeIconButtonsRow(onLaunchUrl: _launchUrl),
 
                   // News section
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 24),
                   const HomeNewsSection(),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeIconButtonsRow extends StatelessWidget {
+  final Future<void> Function(String) onLaunchUrl;
+
+  const _HomeIconButtonsRow({required this.onLaunchUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          HomeIconButton(
+            iconPath: Assets.icons.telegramIcon,
+            label: 'Телеграм-\nканал S8',
+            onTap: () => onLaunchUrl('http://telegram.org'),
+          ),
+          HomeIconButton(
+            iconPath: Assets.icons.discountsIcon,
+            label: 'Льготы\nи возмож...',
+            onTap: () => context.push('/home/discount-categories'),
+          ),
+          HomeIconButton(
+            iconPath: Assets.icons.pollsIcon,
+            label: 'Опросы',
+            onTap: () => context.push('/home/polls'),
+          ),
+          HomeIconButton(
+            iconPath: Assets.icons.resellIcon,
+            label: 'Ресейл',
+            onTap: () => context.push('/home/resell'),
+          ),
+          HomeIconButton(
+            iconPath: Assets.icons.s8Icon,
+            label: 'ИТ-портал',
+            onTap: () => onLaunchUrl('https://s8.capital'),
           ),
         ],
       ),

@@ -18,28 +18,35 @@ class HomeNewsSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Новости',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
+              const Spacer(),
               TextButton(
                 onPressed: () => context.push('/home/news'),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: Text(
                   'Перейти в раздел',
                   style: TextStyle(
                     color: const Color(0xFF0A3899),
                     fontSize: 14,
+                    fontWeight: FontWeight.w300,
                   ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
 
         // News list
         BlocBuilder<NewsListBloc, NewsListState>(
@@ -92,8 +99,7 @@ class HomeNewsSection extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    // Show only latest 3 news items
-    final latestNews = newsItems.take(3).toList();
+    final latestNews = newsItems.toList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

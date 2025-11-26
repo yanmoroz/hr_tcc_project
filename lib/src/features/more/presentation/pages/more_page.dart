@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../users/presentation/widgets/user_profile_header.dart';
 import '../widgets/more_menu_card.dart';
 
@@ -35,25 +38,14 @@ class MorePage extends StatelessWidget {
                 MoreMenuCard(
                   title: 'ISpring',
                   subtitle: 'Дистанционное обучение организаций',
-                  icon: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.school_outlined,
-                      color: Color(0xFF5E6AD2),
-                      size: 32,
-                    ),
+                  icon: SvgPicture.asset(
+                    Assets.icons.ispringIcon,
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.none,
                   ),
                   onTap: () {
-                    // TODO: Implement ISpring integration (external link)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Переход на платформу ISpring'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    _launchUrl('https://ispring.ru');
                   },
                 ),
               ],
@@ -62,5 +54,12 @@ class MorePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    final uri = Uri.parse(urlString);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }
