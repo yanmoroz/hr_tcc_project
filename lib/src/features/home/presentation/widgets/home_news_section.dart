@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../news/presentation/blocs/news_page/bloc.dart';
-import '../../../news/presentation/widgets/compact_news_card.dart';
+import '../../../news/presentation/widgets/news_item.dart';
 
 class HomeNewsSection extends StatelessWidget {
   const HomeNewsSection({super.key});
@@ -106,10 +106,12 @@ class HomeNewsSection extends StatelessWidget {
       child: Column(
         children: latestNews
             .map(
-              (newsItem) => CompactNewsCard(
+              (newsItem) => NewsItemWidget(
                 newsItem: newsItem,
                 coverImage: coverImages[newsItem.id],
                 onTap: () => context.push('/home/news/${newsItem.id}'),
+                onCommentsTap: () =>
+                    context.push('/home/comments/news/${newsItem.id}'),
               ),
             )
             .toList(),

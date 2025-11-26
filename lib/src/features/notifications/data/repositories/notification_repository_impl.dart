@@ -16,10 +16,6 @@ class NotificationRepositoryImpl
   NotificationRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
   @override
-  Stream<List<Notification>> watchNotifications() =>
-      _localDataSource.watchNotifications();
-
-  @override
   Future<Result<List<Notification>>> getNotifications() async {
     final result = await _remoteDataSource.getNotifications();
     return result.fold((error) => Result.left(error), (notifications) {
@@ -27,15 +23,6 @@ class NotificationRepositoryImpl
       _localDataSource.cacheNotifications(entities);
       return Result.right(entities);
     });
-  }
-
-  @override
-  Notification? getNotification(int id) {
-    final cachedNotification = _localDataSource
-        .getCachedNotifications()
-        .firstWhereOrNull((notification) => notification.id == id);
-
-    return cachedNotification;
   }
 
   @override
@@ -58,7 +45,20 @@ class NotificationRepositoryImpl
   }
 
   @override
+  Notification? getNotification(int id) {
+    final cachedNotification = _localDataSource
+        .getCachedNotifications()
+        .firstWhereOrNull((notification) => notification.id == id);
+
+    return cachedNotification;
+  }
+
+  @override
   void updateNotification(Notification notification) {
     _localDataSource.updateNotification(notification);
   }
+
+  @override
+  Stream<List<Notification>> watchNotifications() =>
+      _localDataSource.watchNotifications();
 }

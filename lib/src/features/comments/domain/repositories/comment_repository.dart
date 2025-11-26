@@ -7,7 +7,6 @@ abstract class CommentRepository {
     required int entityId,
     required CommentableEntityType entityType,
   });
-
   Future<Result<Comment>> addComment({
     required int entityId,
     required CommentableEntityType entityType,
@@ -15,13 +14,11 @@ abstract class CommentRepository {
     int? parent,
     List<int>? attachments,
   });
-
   Future<Result<List<int>>> deleteComment({
     required int entityId,
     required CommentableEntityType entityType,
     required int commentId,
   });
-
   Future<Result<bool>> toggleCommentLike({
     required int entityId,
     required CommentableEntityType entityType,

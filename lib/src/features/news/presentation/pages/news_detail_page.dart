@@ -158,7 +158,7 @@ class NewsDetailPage extends StatelessWidget {
                     commentCount: commentCount,
                     onPressed: () {
                       context.push(
-                        '/comments/news/${newsDetail.id}',
+                        '/home/comments/news/${newsDetail.id}',
                         extra: {
                           'entityId': newsDetail.id,
                           'entityType': 'news',

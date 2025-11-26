@@ -129,6 +129,8 @@ class _NewsPageState extends State<NewsPage> {
             onTap: () {
               context.push('/home/news/${newsItem.id}');
             },
+            onCommentsTap: () =>
+                context.push('/home/comments/news/${newsItem.id}'),
           );
         },
       ),

@@ -71,8 +71,8 @@ class _CommentsPageState extends State<CommentsPage> {
                         ElevatedButton(
                           onPressed: () {
                             context.read<CommentsBloc>().add(
-                                  const CommentsEvent.loadComments(),
-                                );
+                              const CommentsEvent.loadComments(),
+                            );
                           },
                           child: const Text('Повторить'),
                         ),
@@ -95,8 +95,8 @@ class _CommentsPageState extends State<CommentsPage> {
                 return RefreshIndicator(
                   onRefresh: () async {
                     context.read<CommentsBloc>().add(
-                          const CommentsEvent.refreshComments(),
-                        );
+                      const CommentsEvent.refreshComments(),
+                    );
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
@@ -115,8 +115,8 @@ class _CommentsPageState extends State<CommentsPage> {
                         comment: comment,
                         onLike: () {
                           context.read<CommentsBloc>().add(
-                                CommentsEvent.toggleCommentLike(comment.id),
-                              );
+                            CommentsEvent.toggleCommentLike(comment.id),
+                          );
                         },
                         onDelete: comment.editable
                             ? () {

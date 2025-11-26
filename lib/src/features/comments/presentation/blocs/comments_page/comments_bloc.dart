@@ -167,15 +167,19 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     );
 
     result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.message,
-      )),
-      (comments) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        comments: comments,
-        isAddingComment: false,
-      )),
+      (error) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: error.message,
+        ),
+      ),
+      (comments) => emit(
+        state.copyWith(
+          status: LoadingStatus.success,
+          comments: comments,
+          isAddingComment: false,
+        ),
+      ),
     );
   }
 }
