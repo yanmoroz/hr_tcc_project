@@ -110,8 +110,10 @@ class HomeNewsSection extends StatelessWidget {
                 newsItem: newsItem,
                 coverImage: coverImages[newsItem.id],
                 onTap: () => context.push('/home/news/${newsItem.id}'),
-                onCommentsTap: () =>
-                    context.push('/home/comments/news/${newsItem.id}'),
+                onCommentsTap: () => context.push(
+                  '/home/comments/news/${newsItem.id}',
+                  extra: {'entityName': newsItem.title},
+                ),
               ),
             )
             .toList(),

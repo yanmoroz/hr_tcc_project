@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../domain/domain.dart';
+
 part 'comments_event.freezed.dart';
 
 @freezed
@@ -11,5 +13,8 @@ class CommentsEvent with _$CommentsEvent {
     int? parentId,
   }) = AddComment;
   const factory CommentsEvent.deleteComment(int commentId) = DeleteComment;
-  const factory CommentsEvent.toggleCommentLike(int commentId) = ToggleCommentLike;
+  const factory CommentsEvent.toggleCommentLike(int commentId) =
+      ToggleCommentLike;
+  const factory CommentsEvent.startReply(Comment comment) = StartReply;
+  const factory CommentsEvent.cancelReply() = CancelReply;
 }

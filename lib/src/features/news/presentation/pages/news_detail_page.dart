@@ -159,10 +159,7 @@ class NewsDetailPage extends StatelessWidget {
                     onPressed: () {
                       context.push(
                         '/home/comments/news/${newsDetail.id}',
-                        extra: {
-                          'entityId': newsDetail.id,
-                          'entityType': 'news',
-                        },
+                        extra: {'entityName': newsDetail.title},
                       );
                     },
                   ),

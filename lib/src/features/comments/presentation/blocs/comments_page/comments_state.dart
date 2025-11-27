@@ -20,6 +20,7 @@ sealed class CommentsState with _$CommentsState {
     @Default([]) List<Comment> comments,
     @Default([]) List<CommentDayGroup> groupedComments,
     @Default(false) bool isAddingComment,
+    Comment? replyingToComment,
     String? errorMessage,
   }) = _CommentsState;
 }

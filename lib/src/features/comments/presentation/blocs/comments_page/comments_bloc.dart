@@ -9,6 +9,7 @@ import 'comments_state.dart';
 class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   final int entityId;
   final CommentableEntityType entityType;
+  final String entityName;
   final GetCommentsUsecase _getCommentsUsecase;
   final AddCommentUsecase _addCommentUsecase;
   final DeleteCommentUsecase _deleteCommentUsecase;
@@ -17,6 +18,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   CommentsBloc({
     required this.entityId,
     required this.entityType,
+    required this.entityName,
     required GetCommentsUsecase getCommentsUsecase,
     required AddCommentUsecase addCommentUsecase,
     required DeleteCommentUsecase deleteCommentUsecase,
@@ -31,6 +33,8 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     on<AddComment>(_onAddComment);
     on<DeleteComment>(_onDeleteComment);
     on<ToggleCommentLike>(_onToggleCommentLike);
+    on<StartReply>(_onStartReply);
+    on<CancelReply>(_onCancelReply);
   }
 
   Future<void> _onLoadComments(
@@ -78,7 +82,17 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     // Reload comments after successful add (outside fold to allow await)
     if (result.isRight()) {
       await _loadComments(emit);
+      // Clear reply state after successful comment
+      emit(state.copyWith(replyingToComment: null));
     }
+  }
+
+  void _onStartReply(StartReply event, Emitter<CommentsState> emit) {
+    emit(state.copyWith(replyingToComment: event.comment));
+  }
+
+  void _onCancelReply(CancelReply event, Emitter<CommentsState> emit) {
+    emit(state.copyWith(replyingToComment: null));
   }
 
   Future<void> _onDeleteComment(

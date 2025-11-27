@@ -210,10 +210,13 @@ class AppRouter {
                       final entityType = CommentableEntityType.fromString(
                         state.pathParameters['entityType']!,
                       );
+                      final entityName =
+                          state.getExtra<String>('entityName') ?? '';
                       return BlocProvider(
                         create: (context) => BlocFactory.createCommentsBloc(
                           entityId: entityId,
                           entityType: entityType,
+                          entityName: entityName,
                         )..add(const CommentsEvent.loadComments()),
                         child: const CommentsPage(),
                       );

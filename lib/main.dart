@@ -42,6 +42,8 @@ class MainApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Color(0xFF767679)),
           centerTitle: true,
           backgroundColor: Colors.white,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
         ),
         actionIconTheme: ActionIconThemeData(
           backButtonIconBuilder: (context) {

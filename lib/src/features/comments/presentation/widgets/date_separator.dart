@@ -3,26 +3,25 @@ import 'package:flutter/material.dart';
 class DateSeparator extends StatelessWidget {
   final DateTime date;
 
-  const DateSeparator({
-    super.key,
-    required this.date,
-  });
+  const DateSeparator({super.key, required this.date});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        margin: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(12),
+          color: const Color(0x663D5766),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           _formatDate(date),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[700],
-              ),
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

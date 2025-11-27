@@ -60,7 +60,8 @@ class _DiscountsPageState extends State<DiscountsPage> {
   }
 
   Widget _buildBody(BuildContext context, DiscountsListState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -139,9 +140,7 @@ class _DiscountsPageState extends State<DiscountsPage> {
             },
             onLikeTap: () {
               context.read<DiscountsListBloc>().add(
-                DiscountsListEvent.toggleDiscountLike(
-                  discountId: discount.id,
-                ),
+                DiscountsListEvent.toggleDiscountLike(discountId: discount.id),
               );
             },
             onCommentTap: () {
@@ -149,16 +148,21 @@ class _DiscountsPageState extends State<DiscountsPage> {
               final bloc = context.read<DiscountsListBloc>();
               final currentState = bloc.state;
 
-              context.push('/home/comments/discount/${discount.id}').then((_) {
-                // Refresh discounts list when returning from comments
-                bloc.add(
-                  DiscountsListEvent.refreshDiscounts(
-                    category: currentState.category,
-                    source: currentState.source,
-                    categoryName: currentState.categoryName,
-                  ),
-                );
-              });
+              context
+                  .push(
+                    '/home/comments/discount/${discount.id}',
+                    extra: {'entityName': discount.title},
+                  )
+                  .then((_) {
+                    // Refresh discounts list when returning from comments
+                    bloc.add(
+                      DiscountsListEvent.refreshDiscounts(
+                        category: currentState.category,
+                        source: currentState.source,
+                        categoryName: currentState.categoryName,
+                      ),
+                    );
+                  });
             },
           );
         },

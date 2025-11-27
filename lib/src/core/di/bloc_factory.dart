@@ -52,10 +52,12 @@ class BlocFactory {
   static CommentsBloc createCommentsBloc({
     required int entityId,
     required CommentableEntityType entityType,
+    required String entityName,
   }) {
     return CommentsBloc(
       entityId: entityId,
       entityType: entityType,
+      entityName: entityName,
       getCommentsUsecase: sl(),
       addCommentUsecase: sl(),
       deleteCommentUsecase: sl(),

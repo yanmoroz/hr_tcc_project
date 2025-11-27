@@ -2,300 +2,269 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
+## Project Overview
 
-### Building and Running
-- `flutter run` - Run the app in debug mode
-- `flutter run --release` - Run the app in release mode
-- `flutter build apk` - Build Android APK
-- `flutter build ios` - Build iOS app
+Flutter mobile application for HR/employee services following Clean Architecture with BLoC state management. The app includes news feeds, discount offers, polls, applications management, and user profiles.
 
-### Code Generation
-- `flutter pub run build_runner build` - Generate freezed and json_serializable code
-- `flutter pub run build_runner build --delete-conflicting-outputs` - Force regenerate all generated files
-- `flutter pub run build_runner watch` - Watch mode for continuous code generation
+## Essential Commands
 
-### Testing and Analysis
-- `flutter test` - Run all tests
-- `flutter test test/src/news_test.dart` - Run a specific test file
-- `flutter analyze` - Run static analysis
+### Development
+```bash
+# Run code generation (after modifying freezed/json_serializable classes)
+flutter pub run build_runner build --delete-conflicting-outputs
 
-### Dependencies
-- `flutter pub get` - Install dependencies
-- `flutter pub upgrade` - Upgrade dependencies
+# Watch mode for continuous code generation during development
+flutter pub run build_runner watch --delete-conflicting-outputs
 
-## Architecture Overview
+# Run linter
+flutter analyze
 
-### Clean Architecture with Feature-First Organization
-The codebase follows Clean Architecture principles organized by features. Each feature is self-contained in `lib/src/features/` with three layers:
+# Run tests
+flutter test
 
-```
-features/
-├── [feature_name]/
-│   ├── data/           # Data sources, models, repository implementations
-│   ├── domain/         # Entities, repositories (interfaces), use cases
-│   ├── presentation/   # BLoCs, pages, widgets
-│   └── [feature_name].dart  # Barrel export file
+# Run specific test file
+flutter test test/src/news_test.dart
 ```
 
-**Key features**: applications, comments, discounts, home, more, news, notifications, polls, resell, users
+### Building
+```bash
+# Get dependencies
+flutter pub get
 
-### Core Layer (`lib/src/core/`)
-Shared infrastructure across all features:
-- **auth/** - Authentication token management
-- **base_types/** - Core types including:
-  - `Result<T>` type (alias for `Either<Exception, T>` from fpdart)
-  - `LoadingStatus` enum (initial, loading, success, error)
-- **cache/** - Caching utilities
-- **di/** - Dependency injection (GetIt service locator, BLoC factory)
-- **dictionaries/** - Master data dictionaries with caching
-- **entities/** - Core domain entities shared across features
-- **exceptions/** - Network and mapping exception types
-- **navigation/** - GoRouter configuration with shell routes
-- **network/** - API client with Dio (supports secure/insecure modes)
-- **value_objects/** - Domain value objects
-- **widgets/** - Shared widgets
+# Run app
+flutter run
 
-### Dependency Injection Pattern
-- Uses GetIt (`sl` instance in `service_locator.dart`)
-- Register dependencies in feature-specific initialization functions (e.g., `_initializeDiscountDependencies()`)
-- **BLoC creation**: Never instantiate BLoCs directly. Always use `BlocFactory` methods
-  - BLoCs are created per route in `app_router.dart` using `BlocFactory`
-  - Factory pattern ensures consistent dependency injection
+# Build for Android
+flutter build apk
 
-### Navigation Architecture
-- **GoRouter** for declarative routing
-- **ShellRoute** wraps main navigation with `MainShell` (bottom navigation)
-- Routes instantiate their own BLoCs using `BlocFactory`
-- **Constructor-based BLoC initialization**: BLoCs receive their dependencies (like entity IDs) via constructor
-  - Example: `DiscountDetailBloc(discountId: id, getDetailUsecase: sl())`
-- **NoTransitionPage** for tab navigation to prevent animations
+# Build for iOS
+flutter build ios
+```
 
-### State Management
-- **flutter_bloc** for state management
-- **Freezed** for immutable state classes and events
-- BLoC structure per page/feature:
-  ```
-  presentation/blocs/[page_name]/
-  ├── [name]_bloc.dart        # Business logic
-  ├── [name]_event.dart       # Events (freezed)
-  ├── [name]_state.dart       # States (freezed)
-  └── bloc.dart               # Barrel export
-  ```
+## Architecture
 
-#### State Pattern: Status Enum + Data (Not Sealed Unions)
+### Clean Architecture + BLoC Pattern
 
-This codebase uses a **single state class with status field** pattern instead of sealed union states.
+All features follow a strict 3-layer architecture:
 
-**✅ CORRECT PATTERN - Status Enum + Data:**
+```
+lib/src/features/{feature_name}/
+├── data/           # Models, data sources, repository implementations
+├── domain/         # Entities, repository interfaces, use cases
+└── presentation/   # BLoCs, pages, widgets
+```
+
+**Data Flow**: UI Event → BLoC → UseCase → Repository → DataSource → ApiClient → API
+
+**Key Principles**:
+- Domain layer has NO dependencies on Flutter or external packages (pure Dart)
+- Data models use `freezed` + `json_serializable`, entities use `freezed` only
+- Repository implementations map models to entities via `toDomain()` extensions
+- All async operations return `Result<T>` (Either from fpdart), never throw exceptions
+
+### State Management: BLoC
+
+- All features use BLoC/Cubit from `flutter_bloc`
+- Events and states are immutable data classes using `freezed`
+- BLoCs are created via `BlocFactory` (not registered in DI)
+- Shared state uses singleton Cubits registered in GetIt
+- All states include `LoadingStatus` enum (initial, loading, success, error)
+
+**Creating BLoCs**:
 ```dart
-import '../../../../../core/base_types/loading_status.dart';
+// In BlocFactory (lib/src/core/di/bloc_factory.dart)
+static NewsListBloc createNewsListBloc() => NewsListBloc(
+  getNewsListUsecase: sl<GetNewsListUsecase>(),
+);
 
-@freezed
-sealed class DiscountsListState with _$DiscountsListState {
-  const factory DiscountsListState({
-    @Default(LoadingStatus.initial) LoadingStatus status,
-    @Default([]) List<Discount> discounts,
-    @Default(0) int currentPage,
-    @Default(true) bool hasMorePages,
-    String? errorMessage,
-  }) = _DiscountsListState;
-}
-```
-
-**❌ WRONG PATTERN - Sealed Union States (DO NOT USE):**
-```dart
-@freezed
-class DiscountsListState with _$DiscountsListState {
-  const factory DiscountsListState.initial() = DiscountsListInitial;
-  const factory DiscountsListState.loading() = DiscountsListLoading;
-  const factory DiscountsListState.loaded({...}) = DiscountsListLoaded;
-  const factory DiscountsListState.error(String message) = DiscountsListError;
-}
-```
-
-**Why Status Enum + Data Pattern:**
-1. **No Data Loss**: Filters, pagination, and search persist through loading states
-2. **75% Less Boilerplate**: Direct property access instead of `state.maybeWhen(loaded: (data) => ..., orElse: () => {})`
-3. **Simpler State Transitions**: `emit(state.copyWith(status: LoadingStatus.loading))` instead of complex state matching
-4. **Action Flags**: Use boolean flags for actions in progress (e.g., `isSubmitting`, `isCanceling`)
-
-**State Fields Pattern:**
-- `status`: Always use `LoadingStatus` enum (initial, loading, success, error)
-- `errorMessage`: Optional String, populated when `status == LoadingStatus.error`
-- **Data fields**: Lists, entities, etc. with `@Default()` values (preserve across status changes)
-- **Action flags**: Boolean fields for actions in progress (e.g., `isSubmitting`, `isLoadingMore`)
-
-**BLoC Implementation Pattern:**
-```dart
-class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
-  DiscountsListBloc(...) : super(const DiscountsListState()) {
-    on<LoadDiscounts>(_onLoadDiscounts);
-  }
-
-  Future<void> _onLoadDiscounts(
-    LoadDiscounts event,
-    Emitter<DiscountsListState> emit,
-  ) async {
-    emit(state.copyWith(status: LoadingStatus.loading));
-
-    final result = await _getDiscountsUsecase(category: state.category);
-
-    result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.message,
-      )),
-      (discounts) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        discounts: discounts,
-      )),
-    );
-  }
-}
-```
-
-**UI Pattern - Direct Property Access:**
-```dart
-BlocBuilder<DiscountsListBloc, DiscountsListState>(
-  builder: (context, state) {
-    if (state.status == LoadingStatus.loading) {
-      return const CircularProgressIndicator();
-    }
-
-    if (state.status == LoadingStatus.error) {
-      return ErrorWidget(message: state.errorMessage ?? 'Unknown error');
-    }
-
-    // Access data directly - no .maybeWhen() needed
-    return ListView.builder(
-      itemCount: state.discounts.length,
-      itemBuilder: (context, index) => DiscountCard(state.discounts[index]),
-    );
-  },
+// In route definition (lib/src/core/navigation/app_router.dart)
+BlocProvider(
+  create: (context) => BlocFactory.createNewsListBloc(),
+  child: NewsPage(),
 )
 ```
 
-**Action Flags Pattern:**
-When you need to track specific actions in progress (e.g., form submission, cancellation), use boolean flags:
+### Dependency Injection: GetIt
 
+**Location**: [lib/src/core/di/service_locator.dart](lib/src/core/di/service_locator.dart)
+
+- Use `sl.registerLazySingleton` for long-lived services (repositories, API clients)
+- Use `sl.registerFactory` for short-lived instances (use cases)
+- BLoCs are NOT registered in DI - use `BlocFactory` instead
+- All dependencies initialized in `initializeDependencies()` called from `main.dart`
+
+### Navigation: GoRouter
+
+**Location**: [lib/src/core/navigation/app_router.dart](lib/src/core/navigation/app_router.dart)
+
+- Uses `StatefulShellRoute.indexedStack` for bottom navigation with 4 tabs
+- Each tab maintains independent navigation stack
+- BLoCs provided at route level via `BlocProvider`
+- Shared BLoCs (CurrentUserBloc, UnreadNotificationsCubit) provided at shell level
+
+### Network Layer
+
+**Location**: [lib/src/core/network/](lib/src/core/network/)
+
+- All API calls wrapped in `ApiCallExecutor` which returns `Result<T>` (Either)
+- `ApiClient` is a Dio-based HTTP client with bearer token auth
+- Bearer token loaded from `.env` file via `AuthTokenProvider`
+- API endpoints defined in `ApiConstants`
+- Error types: `NetworkException` (HTTP/network errors), `MappingException` (JSON parsing errors)
+
+**Making API Calls**:
 ```dart
-@freezed
-sealed class ApplicationFormState with _$ApplicationFormState {
-  const factory ApplicationFormState({
-    @Default(LoadingStatus.initial) LoadingStatus status,
-    ApplicationForm? applicationForm,
-    @Default(false) bool isSubmitting,  // ✅ Action flag
-    String? errorMessage,
-  }) = _ApplicationFormState;
-}
-```
-
-In BLoC:
-```dart
-Future<void> _onSubmitForm(
-  SubmitForm event,
-  Emitter<ApplicationFormState> emit,
-) async {
-  emit(state.copyWith(isSubmitting: true));
-
-  final result = await _createApplicationUsecase(event.params);
-
-  result.fold(
-    (error) => emit(state.copyWith(
-      status: LoadingStatus.error,
-      isSubmitting: false,
-      errorMessage: error.message,
-    )),
-    (_) => emit(state.copyWith(
-      status: LoadingStatus.success,
-      isSubmitting: false,
-    )),
+// In data source
+Future<Result<NewsItemModel>> fetchNews(int id) {
+  return executeApiCall(
+    apiCall: () => _apiClient.get<Map<String, dynamic>>(
+      ApiConstants.newsDetailEndpoint(id),
+    ),
+    parser: (json) => NewsItemModel.fromJson(json),
   );
 }
 ```
 
-In UI (listen only to action completion):
-```dart
-BlocListener<ApplicationFormBloc, ApplicationFormState>(
-  listenWhen: (previous, current) {
-    // Only listen when transitioning FROM submitting TO not submitting
-    return previous.isSubmitting && !current.isSubmitting;
-  },
-  listener: (context, state) {
-    if (state.status == LoadingStatus.success) {
-      showDialog(...); // Show success dialog
-    } else if (state.status == LoadingStatus.error) {
-      showDialog(...); // Show error dialog
-    }
-  },
-  child: ...,
-)
+### Code Generation
+
+**Files requiring code generation**:
+- BLoC events/states (`.freezed.dart`)
+- Data models (`.freezed.dart` + `.g.dart`)
+- Domain entities (`.freezed.dart` only)
+- Assets (`lib/gen/assets.gen.dart`, `lib/gen/fonts.gen.dart`)
+
+**After modifying any freezed or json_serializable classes**:
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-**Common Action Flags:**
-- `isSubmitting` - Form submission in progress
-- `isCanceling` - Cancellation action in progress
-- `isLoadingMore` - Pagination loading in progress
-- `isBooking` - Booking/reservation in progress
-- `isRefreshing` - Pull-to-refresh in progress
+**VSCode Settings**: Generated files (`*.freezed.dart`, `*.g.dart`) are hidden in file explorer and search.
 
-### Data Layer Patterns
-- **Remote data sources**: Define API contracts (abstract class)
-- **Repository implementations**: Call data sources, handle Result types
-- **Models**: Use freezed + json_serializable for data models
-- **Entities**: Freezed immutable domain objects
-- Code generation required after model changes
+### Dictionaries (Reference Data)
 
-### Result Type and Error Handling
-- All repository/data source methods return `Result<T>` (Either from fpdart)
-- `Result<T>` is `Either<Exception, T>` where left is error, right is success
-- Standard exceptions: `NetworkException`, `MappingException`
-- Use `.fold()` to handle success/error in BLoCs
+**Location**: [lib/src/core/dictionaries/](lib/src/core/dictionaries/)
 
-### API Configuration
-- Base URL and auth configured in `api_client.dart`
-- Environment variables loaded from `.env` file (not in repo)
-- Uses Bearer token authentication from `AuthTokenProvider`
-- **InsecureApiClient** used by default (bypasses certificate validation)
+Dictionaries provide cached reference data from backend (offices, application forms, statuses, etc.).
 
-### Testing
-- E2E-style integration tests in `test/src/`
-- Test structure: Feature-based test files (e.g., `news_test.dart`, `polls_test.dart`)
+- 11 dictionary types available via `DictionariesRepository`
+- In-memory caching with 1-hour expiration
+- Load all dictionaries: `await dictionariesRepository.fetchAndCacheAllDictionaries()`
+- Access specific dictionary: `await dictionariesRepository.getOffices()`
 
-## Common Patterns
+## Adding New Features
 
-### Adding a New Feature
-1. Create feature folder: `lib/src/features/[feature_name]/`
-2. Create layers: `data/`, `domain/`, `presentation/`
-3. Define domain entities and repository interface
-4. Implement data layer (data sources, models, repository)
-5. Create use cases in domain layer
-6. Build presentation layer (BLoCs, pages, widgets)
-7. Register dependencies in `service_locator.dart`
-8. Add BLoC factory methods to `bloc_factory.dart`
-9. Add routes to `app_router.dart`
-10. Run code generation if using freezed/json_serializable
+1. **Create feature structure**:
+   ```
+   lib/src/features/new_feature/
+   ├── data/
+   │   ├── datasources/
+   │   ├── models/
+   │   └── repositories/
+   ├── domain/
+   │   ├── entities/
+   │   ├── repositories/
+   │   └── usecases/
+   └── presentation/
+       ├── blocs/
+       ├── pages/
+       └── widgets/
+   ```
 
-### Adding a New Page to Existing Feature
-1. Create BLoC folder: `presentation/blocs/[page_name]/`
-2. Define event, state (using freezed), and bloc files
-3. Create page widget in `presentation/pages/`
-4. Add factory method in `bloc_factory.dart`
-5. Add route in `app_router.dart` using `BlocProvider` with factory
+2. **Define domain layer** (entities, repository interface, use cases)
 
-### Working with Detail Pages
-- **Pattern**: Detail pages receive their entity ID via constructor parameter to the BLoC
-- BLoC constructors take the ID and dependencies (use cases) directly
-- Route passes ID from path parameters: `state.pathParameters['id']`
-- Load data in BLoC initialization event dispatched in route builder
+3. **Implement data layer** (models with freezed + json_serializable, data source, repository)
 
-### Code Generation Workflow
-1. Modify or create models/entities with freezed/json annotations
-2. Run `flutter pub run build_runner build --delete-conflicting-outputs`
-3. Commit both source files and generated `.freezed.dart`/`.g.dart` files
+4. **Create presentation layer** (BLoC with events/states, pages, widgets)
 
-### Shared Functionality
-- File operations (upload/download) in `lib/src/shared/files/`
-- Comments functionality reusable across commentable entities (news, discounts, polls)
-- Dictionaries cache prevents redundant API calls for master data
+5. **Register in DI** ([lib/src/core/di/service_locator.dart](lib/src/core/di/service_locator.dart)):
+   ```dart
+   // Data sources
+   sl.registerLazySingleton<NewFeatureRemoteDataSource>(
+     () => NewFeatureRemoteDataSourceImpl(sl()),
+   );
+
+   // Repositories
+   sl.registerLazySingleton<NewFeatureRepository>(
+     () => NewFeatureRepositoryImpl(sl()),
+   );
+
+   // Use cases
+   sl.registerFactory(() => GetNewFeatureUsecase(sl()));
+   ```
+
+6. **Add BLoC factory** ([lib/src/core/di/bloc_factory.dart](lib/src/core/di/bloc_factory.dart)):
+   ```dart
+   static NewFeatureBloc createNewFeatureBloc() => NewFeatureBloc(
+     getNewFeatureUsecase: sl<GetNewFeatureUsecase>(),
+   );
+   ```
+
+7. **Add routes** ([lib/src/core/navigation/app_router.dart](lib/src/core/navigation/app_router.dart))
+
+8. **Run code generation**:
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+## Authentication
+
+- Currently uses static bearer token from `.env` file
+- No login screen implemented yet
+- Token automatically injected into all API requests
+- Token provider: [lib/src/core/auth/auth_token_provider.dart](lib/src/core/auth/auth_token_provider.dart)
+
+**.env file** (not in git):
+```env
+ACCESS_TOKEN=your_token_here
+API_BASE_URL=https://api.example.com
+```
+
+## Important Conventions
+
+### Freezed Classes
+- **Data models**: Use `@freezed` with `fromJson`/`toJson` factories
+- **Domain entities**: Use `@freezed` without JSON serialization
+- **BLoC events/states**: Use `@freezed` without JSON serialization
+- Always include `part` directives for generated files
+
+### Error Handling
+- Never use `try-catch` with API calls - use `ApiCallExecutor` which returns `Result<T>`
+- Pattern match on `Result<T>` using `.fold()` or `.match()`
+- All exceptions are caught and converted to `NetworkException` or `MappingException`
+
+### File Organization
+- Each layer (data/domain/presentation) has a barrel file (`data.dart`, `domain.dart`, `presentation.dart`)
+- Feature-level barrel file exports all layers
+- Import from barrel files, not individual files
+
+### Naming Conventions
+- BLoCs: `{FeatureName}Bloc` (e.g., `NewsListBloc`)
+- Events: `{FeatureName}Event` (e.g., `NewsListEvent`)
+- States: `{FeatureName}State` (e.g., `NewsListState`)
+- Use cases: `{Action}Usecase` (e.g., `GetNewsListUsecase`)
+- Repositories: `{FeatureName}Repository` (interface), `{FeatureName}RepositoryImpl` (implementation)
+
+## Testing
+
+Test files mirror the `lib/src` structure in `test/src`.
+
+Run all tests:
+```bash
+flutter test
+```
+
+Run specific test:
+```bash
+flutter test test/src/news_test.dart
+```
+
+## Key Files Reference
+
+- **App entry**: [lib/main.dart](lib/main.dart)
+- **DI setup**: [lib/src/core/di/service_locator.dart](lib/src/core/di/service_locator.dart)
+- **BLoC factories**: [lib/src/core/di/bloc_factory.dart](lib/src/core/di/bloc_factory.dart)
+- **Routes**: [lib/src/core/navigation/app_router.dart](lib/src/core/navigation/app_router.dart)
+- **API client**: [lib/src/core/network/api_client.dart](lib/src/core/network/api_client.dart)
+- **API constants**: [lib/src/core/network/api_constants.dart](lib/src/core/network/api_constants.dart)
+- **Error handling**: [lib/src/core/network/api_call_executor.dart](lib/src/core/network/api_call_executor.dart)
+- **Base types**: [lib/src/core/base_types/](lib/src/core/base_types/)

@@ -22,6 +22,10 @@ class LikeButton extends StatelessWidget {
     this.textColor = Colors.black,
     this.likedColor = Colors.black,
     this.notLikedColor = Colors.black,
+    this.spacing = 12,
+    this.iconSize = 24,
+    this.fontSize = 12,
+    this.fontWeight = FontWeight.w600,
     this.onPressed,
     super.key,
   });
@@ -31,6 +35,10 @@ class LikeButton extends StatelessWidget {
   final Color textColor;
   final Color likedColor;
   final Color notLikedColor;
+  final double spacing;
+  final double iconSize;
+  final double fontSize;
+  final FontWeight fontWeight;
   final VoidCallback? onPressed;
 
   @override
@@ -38,36 +46,42 @@ class LikeButton extends StatelessWidget {
     final icon = isLiked
         ? SvgPicture.asset(
             Assets.icons.likeWhiteIcon,
-            width: 24,
-            height: 24,
+            width: iconSize,
+            height: iconSize,
             colorFilter: ColorFilter.mode(likedColor, BlendMode.srcIn),
-            fit: BoxFit.none,
           )
         : SvgPicture.asset(
             Assets.icons.likeIcon,
-            width: 24,
-            height: 24,
+            width: iconSize,
+            height: iconSize,
             colorFilter: ColorFilter.mode(notLikedColor, BlendMode.srcIn),
-            fit: BoxFit.none,
           );
 
     final label = Text(
       likeCount.toFormattedString(),
       style: TextStyle(
         color: textColor,
-        fontSize: 12,
+        fontSize: fontSize,
         fontWeight: FontWeight.w600,
       ),
     );
 
     final row = Row(
       mainAxisSize: MainAxisSize.min,
-      children: [icon, const SizedBox(width: 12), label],
+      children: [
+        icon,
+        SizedBox(width: spacing),
+        label,
+      ],
     );
 
     // Interactive mode: GestureDetector
     if (onPressed != null) {
-      return GestureDetector(onTap: onPressed, child: row);
+      return GestureDetector(
+        onTap: onPressed,
+        behavior: HitTestBehavior.opaque,
+        child: row,
+      );
     }
 
     // Display mode: Read-only Row

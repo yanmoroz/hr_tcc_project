@@ -52,7 +52,11 @@ class CommentsButton extends StatelessWidget {
 
     // Interactive mode: GestureDetector
     if (onPressed != null) {
-      return GestureDetector(onTap: onPressed, child: row);
+      return GestureDetector(
+        onTap: onPressed,
+        behavior: HitTestBehavior.opaque,
+        child: row,
+      );
     }
 
     // Display mode: Read-only Row
