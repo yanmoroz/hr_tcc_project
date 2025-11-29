@@ -3,16 +3,25 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../gen/assets.gen.dart';
+import '../theme/theme.dart';
 
 class MainShell extends StatelessWidget {
-  const MainShell({required this.navigationShell, super.key});
-
   final StatefulNavigationShell navigationShell;
+
+  static const double _barContainerCornerRadius = 16;
+  static const double _barContainerTopPadding = 12;
+  static const double _barItemSize = 32;
+  static const double _barItemCornerRadius = 8;
+  static const double _iconToLabelSpacing = 2;
+  static const double _shadowBlurRadius = 12;
+  static const Offset _shadowOffset = Offset(0, -4);
+
+  const MainShell({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: SafeArea(child: navigationShell),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
@@ -20,67 +29,60 @@ class MainShell extends StatelessWidget {
           highlightColor: Colors.transparent,
         ),
         child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1A000000),
-                blurRadius: 8,
-                offset: Offset(0, -2),
+          color: AppColors.grey100,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(_barContainerCornerRadius),
+                topRight: Radius.circular(_barContainerCornerRadius),
               ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow100,
+                  blurRadius: _shadowBlurRadius,
+                  offset: _shadowOffset,
+                ),
+              ],
             ),
             child: Padding(
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: _barContainerTopPadding),
               child: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
                 currentIndex: navigationShell.currentIndex,
                 onTap: _onItemTapped,
-                selectedItemColor: const Color(0xFF0A3899),
-                unselectedItemColor: Colors.grey[600],
-                backgroundColor: Colors.transparent,
                 elevation: 0,
-                selectedFontSize: 10,
-                unselectedFontSize: 10,
+                backgroundColor: Colors.transparent,
+                selectedItemColor: AppColors.blue700,
+                unselectedItemColor: AppColors.grey700,
+                selectedLabelStyle: AppTypography.captionMedium2,
+                unselectedLabelStyle: AppTypography.captionMedium2,
                 items: [
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      Assets.icons.homeIcon,
-                      0,
-                      navigationShell.currentIndex,
+                      assetPath: Assets.icons.homeIcon,
+                      isSelected: navigationShell.currentIndex == 0,
                     ),
                     label: 'Главная',
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      Assets.icons.applicationsIcon,
-                      1,
-                      navigationShell.currentIndex,
+                      assetPath: Assets.icons.applicationsIcon,
+                      isSelected: navigationShell.currentIndex == 1,
                     ),
                     label: 'Мои заявки',
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      Assets.icons.contactsIcon,
-                      2,
-                      navigationShell.currentIndex,
+                      assetPath: Assets.icons.contactsIcon,
+                      isSelected: navigationShell.currentIndex == 2,
                     ),
                     label: 'Контакты',
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
-                      Assets.icons.moreIcon,
-                      3,
-                      navigationShell.currentIndex,
+                      assetPath: Assets.icons.moreIcon,
+                      isSelected: navigationShell.currentIndex == 3,
                     ),
                     label: 'Ещё',
                   ),
@@ -93,24 +95,20 @@ class MainShell extends StatelessWidget {
     );
   }
 
-  Widget _buildIcon(String assetPath, int index, int currentIndex) {
-    final isSelected = index == currentIndex;
+  Widget _buildIcon({required String assetPath, required bool isSelected}) {
     return Container(
-      width: 32,
-      height: 32,
+      margin: const EdgeInsets.only(bottom: _iconToLabelSpacing),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF0A3899) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
+        color: isSelected ? AppColors.blue700 : Colors.transparent,
+        borderRadius: BorderRadius.circular(_barItemCornerRadius),
       ),
-      child: Center(
-        child: SvgPicture.asset(
-          assetPath,
-          width: 24,
-          height: 24,
-          colorFilter: ColorFilter.mode(
-            isSelected ? Colors.white : Colors.grey[600]!,
-            BlendMode.srcIn,
-          ),
+      child: SvgPicture.asset(
+        assetPath,
+        width: _barItemSize,
+        height: _barItemSize,
+        colorFilter: ColorFilter.mode(
+          isSelected ? AppColors.white : AppColors.grey700,
+          BlendMode.srcIn,
         ),
       ),
     );

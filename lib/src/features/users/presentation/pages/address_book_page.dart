@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/search_bar_widget.dart';
 import '../blocs/address_book_page/bloc.dart';
 import '../widgets/address_book_user_item.dart';
@@ -67,7 +68,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
         // List
         Expanded(
           child: Container(
-            color: const Color(0xFFF2F2F6),
+            color: AppColors.grey100,
             child: BlocBuilder<AddressBookBloc, AddressBookState>(
               builder: (context, state) {
                 return _buildBody(context, state);
@@ -95,7 +96,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
           children: [
             Text(
               'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
-              style: const TextStyle(color: Colors.red),
+              style: AppTypography.textRegular1.red500,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -117,14 +118,10 @@ class _AddressBookPageState extends State<AddressBookPage> {
     final isLoadingMore = state.isLoadingMore;
 
     if (users.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Таких сотрудников нет',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
-          ),
+          style: AppTypography.textRegular1.black,
         ),
       );
     }

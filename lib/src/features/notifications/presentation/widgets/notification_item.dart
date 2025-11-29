@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_html/flutter_html.dart';
 
-import '../../../../../gen/fonts.gen.dart';
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../core/widgets/html_styles.dart';
 import '../../domain/domain.dart';
@@ -65,7 +64,6 @@ class NotificationItem extends StatelessWidget {
                                     fontSize: 14,
                                     color: Color(0xFF767679),
                                     fontWeight: FontWeight.w400,
-                                    fontFamily: FontFamily.sFProDisplay,
                                   ),
                                 ),
                               ],
@@ -81,7 +79,6 @@ class NotificationItem extends StatelessWidget {
                                   padding: HtmlPaddings.zero,
                                   fontSize: FontSize(16),
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: FontFamily.sFProDisplay,
                                   color: const Color(0xFF212121),
                                 ),
                                 ...commonHtmlElementStyles,
@@ -100,7 +97,6 @@ class NotificationItem extends StatelessWidget {
                                       margin: Margins.zero,
                                       padding: HtmlPaddings.zero,
                                       fontSize: FontSize(14),
-                                      fontFamily: FontFamily.sFProDisplay,
                                       color: const Color(0xFF757575),
                                     ),
                                     ...commonHtmlElementStyles,

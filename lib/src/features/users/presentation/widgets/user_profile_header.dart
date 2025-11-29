@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/color_utils.dart';
 import '../../../../core/utils/string_utils.dart';
 import '../../../notifications/notifications.dart';
@@ -23,7 +24,7 @@ class UserProfileHeader extends StatelessWidget {
       builder: (context, state) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(enableCorners ? 16 : 0),
               bottomRight: Radius.circular(enableCorners ? 16 : 0),
@@ -81,7 +82,7 @@ class UserProfileHeader extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: AppColors.grey200,
             shape: BoxShape.circle,
           ),
         ),
@@ -94,7 +95,7 @@ class UserProfileHeader extends StatelessWidget {
                 width: 150,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: AppColors.grey200,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -103,7 +104,7 @@ class UserProfileHeader extends StatelessWidget {
                 width: 100,
                 height: 14,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: AppColors.grey200,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -126,7 +127,7 @@ class UserProfileHeader extends StatelessWidget {
           child: Text(
             getInitials(user.firstName, user.lastName),
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.white,
               fontWeight: FontWeight.bold,
               fontSize: 14,
             ),
