@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/color_utils.dart';
 import '../../../../core/utils/string_utils.dart';
 import '../../domain/entities/address_book_user.dart';
@@ -28,17 +29,10 @@ class AddressBookUserItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F2F6),
+        color: AppColors.grey100,
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: Colors.black,
-        ),
-      ),
+      child: Text(text, style: AppTypography.captionMedium2.black),
     );
   }
 
@@ -64,17 +58,12 @@ class AddressBookUserItem extends StatelessWidget {
           children: [
             TextSpan(
               text: formattedPhone,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xFF2050B7),
+              style: AppTypography.textLink2.blue500.copyWith(
                 decoration: TextDecoration.underline,
-                decorationColor: Color(0xFF767679),
+                decorationColor: AppColors.grey500,
               ),
             ),
-            TextSpan(
-              text: ' $label',
-              style: const TextStyle(fontSize: 14, color: Color(0xFF767679)),
-            ),
+            TextSpan(text: ' $label', style: AppTypography.textLink2.grey700),
           ],
         ),
       ),
@@ -86,7 +75,7 @@ class AddressBookUserItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
@@ -100,11 +89,7 @@ class AddressBookUserItem extends StatelessWidget {
               backgroundColor: getAvatarColor(user.id),
               child: Text(
                 getInitials(user.firstName, user.lastName),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTypography.textSemibold1.white,
               ),
             ),
             const SizedBox(width: 12),
@@ -114,14 +99,7 @@ class AddressBookUserItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Full name
-                  Text(
-                    user.title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
+                  Text(user.title, style: AppTypography.textSemibold1.black),
                   const SizedBox(height: 8),
                   // Position pill
                   if (user.position != null && user.position!.isNotEmpty) ...[
@@ -148,11 +126,9 @@ class AddressBookUserItem extends StatelessWidget {
                     onTap: () => _launchEmail(user.mail),
                     child: Text(
                       user.mail,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF2050B7),
+                      style: AppTypography.textLink2.blue500.copyWith(
                         decoration: TextDecoration.underline,
-                        decorationColor: Color(0xFF767679),
+                        decorationColor: AppColors.grey500,
                       ),
                     ),
                   ),

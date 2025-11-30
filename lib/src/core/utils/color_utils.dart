@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../theme/theme.dart';
+
 /// Predefined avatar colors for consistent user identification.
 const List<Color> _avatarColors = [
-  Colors.blue,
-  Colors.green,
-  Colors.orange,
-  Colors.purple,
-  Colors.teal,
-  Colors.pink,
-  Colors.indigo,
+  AppColors.blue500,
+  AppColors.blue300,
+  AppColors.green500,
+  AppColors.orange500,
+  AppColors.red500,
+  AppColors.red300,
+  AppColors.yellow500,
 ];
 
 /// Returns a consistent color based on the provided identifier.

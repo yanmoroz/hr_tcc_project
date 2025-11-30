@@ -156,7 +156,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       // Cancel button
                       IconButton(
                         icon: SvgPicture.asset(
-                          Assets.icons.crossIcon,
+                          Assets.icons.closeIcon,
                           width: 24,
                           height: 24,
                           colorFilter: const ColorFilter.mode(

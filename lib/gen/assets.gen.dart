@@ -31,14 +31,14 @@ class $AssetsIconsGen {
   String get bellWithGreenCircleIcon =>
       'assets/icons/bell-with-green-circle-icon.svg';
 
+  /// File path: assets/icons/close-Icon.svg
+  String get closeIcon => 'assets/icons/close-Icon.svg';
+
   /// File path: assets/icons/comments-icon.svg
   String get commentsIcon => 'assets/icons/comments-icon.svg';
 
   /// File path: assets/icons/contacts-icon.svg
   String get contactsIcon => 'assets/icons/contacts-icon.svg';
-
-  /// File path: assets/icons/cross-icon.svg
-  String get crossIcon => 'assets/icons/cross-icon.svg';
 
   /// File path: assets/icons/discounts-icon.svg
   String get discountsIcon => 'assets/icons/discounts-icon.svg';
@@ -90,9 +90,9 @@ class $AssetsIconsGen {
     backIcon,
     bellIcon,
     bellWithGreenCircleIcon,
+    closeIcon,
     commentsIcon,
     contactsIcon,
-    crossIcon,
     discountsIcon,
     homeIcon,
     ispringIcon,

@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../gen/assets.gen.dart';
 
 import '../../../src/core/extensions/int_extension.dart';
+import '../theme/theme.dart';
 
 /// A reusable comments button widget that displays a comment icon with counter.
 ///
@@ -20,8 +21,8 @@ class CommentsButton extends StatelessWidget {
 
   const CommentsButton({
     required this.commentCount,
-    this.textColor = Colors.black,
-    this.iconColor = Colors.black,
+    this.textColor = AppColors.black,
+    this.iconColor = AppColors.black,
     this.onPressed,
     super.key,
   });

@@ -5,9 +5,9 @@ import '../theme/app_colors.dart';
 extension TextColorX on TextStyle {
   TextStyle get white => copyWith(color: AppColors.white);
   TextStyle get black => copyWith(color: AppColors.black);
-  TextStyle get grey200 => copyWith(color: AppColors.grey200);
-  TextStyle get grey500 => copyWith(color: AppColors.grey500);
   TextStyle get grey700 => copyWith(color: AppColors.grey700);
+  TextStyle get grey500 => copyWith(color: AppColors.grey500);
+  TextStyle get grey200 => copyWith(color: AppColors.grey200);
   TextStyle get grey100 => copyWith(color: AppColors.grey100);
   TextStyle get grey50 => copyWith(color: AppColors.grey50);
   TextStyle get blue700 => copyWith(color: AppColors.blue700);

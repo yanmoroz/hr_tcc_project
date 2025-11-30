@@ -55,8 +55,8 @@ class MainShell extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 selectedItemColor: AppColors.blue700,
                 unselectedItemColor: AppColors.grey700,
-                selectedLabelStyle: AppTypography.captionMedium2,
-                unselectedLabelStyle: AppTypography.captionMedium2,
+                selectedLabelStyle: AppTypography.captionMedium3,
+                unselectedLabelStyle: AppTypography.captionMedium3,
                 items: [
                   BottomNavigationBarItem(
                     icon: _buildIcon(

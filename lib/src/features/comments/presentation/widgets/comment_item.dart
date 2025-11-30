@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/utils/color_utils.dart';
 import '../../../../core/utils/string_utils.dart';
 import '../../../../core/widgets/like_button.dart';
 import '../../domain/domain.dart';
@@ -172,7 +173,7 @@ class CommentItem extends StatelessWidget {
   Widget _buildAvatar() {
     return CircleAvatar(
       radius: 16,
-      backgroundColor: const Color(0xFF0A3899),
+      backgroundColor: getAvatarColor(comment.author.title),
       child: Text(
         getInitialsFromFullName(comment.author.title),
         style: const TextStyle(

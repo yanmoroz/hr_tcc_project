@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/color_utils.dart';
 import '../../../../core/utils/string_utils.dart';
 import '../../../notifications/notifications.dart';
@@ -26,21 +26,15 @@ class UserProfileHeader extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(enableCorners ? 16 : 0),
-              bottomRight: Radius.circular(enableCorners ? 16 : 0),
+              bottomLeft: Radius.circular(enableCorners ? 12 : 0),
+              bottomRight: Radius.circular(enableCorners ? 12 : 0),
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: SizedBox(
-                  height: 48,
-                  child: _buildHeader(context, state),
-                ),
-              ),
+              _buildHeader(context, state),
               if (child != null) ...[
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16, top: 16),
@@ -126,11 +120,7 @@ class UserProfileHeader extends StatelessWidget {
           backgroundColor: getAvatarColor(user.id),
           child: Text(
             getInitials(user.firstName, user.lastName),
-            style: const TextStyle(
-              color: AppColors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
+            style: AppTypography.textSemibold1.white,
           ),
         ),
         const SizedBox(width: 8),
@@ -142,10 +132,7 @@ class UserProfileHeader extends StatelessWidget {
             children: [
               Text(
                 user.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTypography.titleBold4.black,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -153,11 +140,7 @@ class UserProfileHeader extends StatelessWidget {
               Text(
                 // user.position!,
                 'Руководитель проектного офиса (Hardcoded)',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF767679),
-                ),
+                style: AppTypography.captionMedium2.grey700,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -190,17 +173,17 @@ class UserProfileHeader extends StatelessWidget {
   Widget _buildErrorHeader(BuildContext context, String message) {
     return Row(
       children: [
-        Icon(Icons.error_outline, color: Colors.red[300]),
+        Icon(Icons.error_outline, color: AppColors.red500),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             'Ошибка загрузки профиля',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: AppTypography.textRegular1.grey700,
           ),
         ),
         IconButton(
           icon: const Icon(Icons.refresh, size: 24),
-          color: const Color(0xFF0A3899),
+          color: AppColors.blue500,
           onPressed: () {
             context.read<CurrentUserBloc>().add(
               const CurrentUserEvent.refreshCurrentUser(),

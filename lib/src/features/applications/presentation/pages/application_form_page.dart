@@ -28,7 +28,7 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
         title: const Text('Создание заявки'),
         actions: [
           IconButton(
-            icon: SvgPicture.asset(Assets.icons.crossIcon),
+            icon: SvgPicture.asset(Assets.icons.closeIcon),
             onPressed: () => context.go('/applications'),
           ),
         ],

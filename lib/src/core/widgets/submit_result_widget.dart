@@ -45,7 +45,7 @@ class SubmitResultWidget extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: SvgPicture.asset(
-                        Assets.icons.crossIcon,
+                        Assets.icons.closeIcon,
                         width: 24,
                         height: 24,
                         colorFilter: const ColorFilter.mode(

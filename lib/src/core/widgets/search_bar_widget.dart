@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../gen/assets.gen.dart';
+import '../theme/theme.dart';
 
 class SearchBarWidget extends StatefulWidget {
   const SearchBarWidget({
-    required this.onSearchChanged,
+    super.key,
     this.hintText = 'Поиск',
     this.debounceMilliseconds = 300,
-    super.key,
+    required this.onSearchChanged,
   });
 
   final ValueChanged<String> onSearchChanged;
@@ -54,65 +55,52 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      child: TextField(
-        controller: _controller,
-        onChanged: _onSearchChanged,
-        autocorrect: false,
-        enableSuggestions: false,
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          hintStyle: TextStyle(
-            color: const Color(0xFFBABABE),
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-          ),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8),
-            child: SvgPicture.asset(
-              Assets.icons.searchIcon,
-              width: 20,
-              height: 20,
-            ),
-          ),
-          prefixIconConstraints: const BoxConstraints(
-            minWidth: 20,
-            minHeight: 20,
-          ),
-          suffixIcon: _controller.text.isNotEmpty
-              ? GestureDetector(
-                  onTap: _clearSearch,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 8),
-                    child: SvgPicture.asset(
-                      Assets.icons.crossIcon,
-                      width: 20,
-                      height: 20,
-                    ),
-                  ),
-                )
-              : null,
-          suffixIconConstraints: const BoxConstraints(
-            minWidth: 20,
-            minHeight: 20,
-          ),
-          filled: true,
-          fillColor: const Color(0xFFF2F2F6),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+    return TextField(
+      controller: _controller,
+      onChanged: _onSearchChanged,
+      autocorrect: false,
+      enableSuggestions: false,
+      decoration: InputDecoration(
+        labelStyle: AppTypography.textRegular1.black,
+        hintText: widget.hintText,
+        hintStyle: AppTypography.textRegular1.grey500,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: SvgPicture.asset(Assets.icons.searchIcon),
         ),
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 20,
+          minHeight: 20,
+        ),
+        suffixIcon: _controller.text.isNotEmpty
+            ? GestureDetector(
+                onTap: _clearSearch,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 8),
+                  child: SvgPicture.asset(Assets.icons.closeIcon),
+                ),
+              )
+            : null,
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: 24,
+          minHeight: 24,
+        ),
+        filled: true,
+        fillColor: AppColors.grey100,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        isDense: true,
+        contentPadding: const EdgeInsets.all(8),
       ),
     );
   }

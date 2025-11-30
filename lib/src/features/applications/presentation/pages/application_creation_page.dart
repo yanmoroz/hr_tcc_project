@@ -23,7 +23,7 @@ class ApplicationCreationPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: SvgPicture.asset(Assets.icons.crossIcon),
+            icon: SvgPicture.asset(Assets.icons.closeIcon),
             onPressed: () {
               context.go('/applications');
             },
