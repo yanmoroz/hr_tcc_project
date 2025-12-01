@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../gen/assets.gen.dart';
+import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/widgets/widgets.dart';
+import '../../../news/presentation/blocs/news_page/bloc.dart';
 import '../../../users/presentation/widgets/user_profile_header.dart';
 import '../widgets/home_icon_button.dart';
 import '../widgets/home_news_section.dart';
@@ -24,19 +28,33 @@ class HomePage extends StatelessWidget {
       body: Column(
         children: [
           const UserProfileHeader(),
+          _HomeIconButtonsRow(onLaunchUrl: _launchUrl),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Icon buttons row
-                  _HomeIconButtonsRow(onLaunchUrl: _launchUrl),
+            child: BlocBuilder<NewsListBloc, NewsListState>(
+              builder: (context, state) {
+                if (state.status == LoadingStatus.loading ||
+                    state.status == LoadingStatus.initial) {
+                  return const Center(child: AppProgressIndicator());
+                }
 
-                  // News section
-                  const SizedBox(height: 24),
-                  const HomeNewsSection(),
-                ],
-              ),
+                if (state.status == LoadingStatus.error) {
+                  return NetworkErrorMessageWidget(
+                    onRetry: () => context
+                        .read<NewsListBloc>()
+                        .add(const NewsListEvent.loadNews()),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      const HomeNewsSection(),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],

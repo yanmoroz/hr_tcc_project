@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../gen/assets.gen.dart';
+import '../../../../core/theme/theme.dart';
 import '../../domain/domain.dart';
 
 class DiscountCard extends StatelessWidget {
@@ -24,7 +25,7 @@ class DiscountCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../gen/assets.gen.dart';
+import '../theme/theme.dart';
 
 class SubmitResultWidget extends StatelessWidget {
   final VoidCallback onClose;
@@ -24,14 +25,14 @@ class SubmitResultWidget extends StatelessWidget {
         // Blur effect
         BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(color: Colors.black.withValues(alpha: 0.3)),
+          child: Container(color: AppColors.shadow200),
         ),
         // Content
         Center(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Column(
@@ -49,7 +50,7 @@ class SubmitResultWidget extends StatelessWidget {
                         width: 24,
                         height: 24,
                         colorFilter: const ColorFilter.mode(
-                          Colors.black54,
+                          AppColors.grey700,
                           BlendMode.srcIn,
                         ),
                       ),
@@ -65,9 +66,7 @@ class SubmitResultWidget extends StatelessWidget {
                   width: 76,
                   height: 76,
                   colorFilter: ColorFilter.mode(
-                    isSuccess
-                        ? const Color(0xFF44BF78)
-                        : const Color(0xFFF6514C),
+                    isSuccess ? AppColors.green500 : AppColors.red500,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -78,7 +77,7 @@ class SubmitResultWidget extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: AppColors.black,
                     decoration: TextDecoration.none,
                   ),
                   textAlign: TextAlign.left,
@@ -101,7 +100,7 @@ class SubmitResultWidget extends StatelessWidget {
   }) async {
     await showDialog(
       context: context,
-      barrierColor: Colors.transparent,
+      barrierColor: AppColors.transparent,
       useSafeArea: false,
       builder: (dialogContext) => SubmitResultWidget(
         message: message,

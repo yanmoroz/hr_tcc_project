@@ -12,6 +12,7 @@ import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
 import '../dictionaries/dictionaries.dart';
 import '../network/api_client.dart';
+import '../retry/retry_notifier.dart';
 
 final sl = GetIt.instance;
 
@@ -32,6 +33,7 @@ Future<void> initializeDependencies() async {
 void _initializeCoreDependencies() {
   sl.registerLazySingleton<AuthTokenProvider>(() => LocalAuthTokenProvider());
   sl.registerLazySingleton<ApiClient>(() => InsecureApiClient(sl()));
+  sl.registerLazySingleton<RetryNotifier>(() => RetryNotifier());
 }
 
 void _initializeFileDependencies() {

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import 'gen/assets.gen.dart';
 import 'src/core/di/service_locator.dart';
 import 'src/core/navigation/app_router.dart';
+import 'src/core/retry/retry_notifier.dart';
+import 'src/core/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +26,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return ChangeNotifierProvider<RetryNotifier>.value(
+      value: sl<RetryNotifier>(),
+      child: MaterialApp.router(
       title: 'HR TCC Project',
       routerConfig: AppRouter.router,
       theme: Theme.of(context).copyWith(
@@ -38,7 +43,7 @@ class MainApp extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Colors.white,
           scrolledUnderElevation: 0,
-          surfaceTintColor: Colors.transparent,
+          surfaceTintColor: AppColors.transparent,
         ),
         actionIconTheme: ActionIconThemeData(
           backButtonIconBuilder: (context) {
@@ -52,6 +57,7 @@ class MainApp extends StatelessWidget {
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           },
         ),
+      ),
       ),
     );
   }

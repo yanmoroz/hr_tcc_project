@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/html_styles.dart';
 import '../../domain/domain.dart';
 import '../blocs/notification_detail/bloc.dart';
@@ -15,7 +16,7 @@ class NotificationDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -49,9 +50,9 @@ class NotificationDetailPage extends StatelessWidget {
         // Timestamp
         Text(
           notification.created.toRelativeTime(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF767679),
+            color: AppColors.grey700,
             fontWeight: FontWeight.w400,
           ),
         ),

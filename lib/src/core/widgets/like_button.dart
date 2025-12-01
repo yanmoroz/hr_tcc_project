@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../gen/assets.gen.dart';
 
 import '../../../src/core/extensions/int_extension.dart';
+import '../theme/theme.dart';
 
 /// A reusable like button widget that displays a like icon with counter.
 ///
@@ -19,9 +20,9 @@ class LikeButton extends StatelessWidget {
   const LikeButton({
     required this.isLiked,
     required this.likeCount,
-    this.textColor = Colors.black,
-    this.likedColor = Colors.black,
-    this.notLikedColor = Colors.black,
+    this.textColor = AppColors.black,
+    this.likedColor = AppColors.black,
+    this.notLikedColor = AppColors.black,
     this.spacing = 12,
     this.iconSize = 24,
     this.fontSize = 12,

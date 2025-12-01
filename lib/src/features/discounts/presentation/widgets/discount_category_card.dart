@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/theme.dart';
+
 class DiscountCategoryCard extends StatelessWidget {
   const DiscountCategoryCard({
     required this.title,
@@ -15,7 +17,7 @@ class DiscountCategoryCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),

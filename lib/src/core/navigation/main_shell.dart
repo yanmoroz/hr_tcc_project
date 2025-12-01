@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../gen/assets.gen.dart';
+import '../../features/users/presentation/blocs/current_user/bloc.dart';
+import '../base_types/loading_status.dart';
+import '../di/service_locator.dart';
+import '../retry/retry_notifier.dart';
 import '../theme/theme.dart';
 
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
+  const MainShell({super.key, required this.navigationShell});
+
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
   static const double _barContainerCornerRadius = 16;
   static const double _barContainerTopPadding = 12;
   static const double _barItemSize = 32;
@@ -16,17 +28,39 @@ class MainShell extends StatelessWidget {
   static const double _shadowBlurRadius = 12;
   static const Offset _shadowOffset = Offset(0, -4);
 
-  const MainShell({super.key, required this.navigationShell});
+  late final RetryNotifier _retryNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _retryNotifier = sl<RetryNotifier>();
+    _retryNotifier.addListener(_onRetry);
+  }
+
+  @override
+  void dispose() {
+    _retryNotifier.removeListener(_onRetry);
+    super.dispose();
+  }
+
+  void _onRetry() {
+    final userState = context.read<CurrentUserBloc>().state;
+    if (userState.status == LoadingStatus.error) {
+      context.read<CurrentUserBloc>().add(
+        const CurrentUserEvent.refreshCurrentUser(),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SafeArea(child: navigationShell),
+      body: SafeArea(child: widget.navigationShell),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
+          splashColor: AppColors.transparent,
+          highlightColor: AppColors.transparent,
         ),
         child: Container(
           color: AppColors.grey100,
@@ -49,10 +83,10 @@ class MainShell extends StatelessWidget {
               padding: const EdgeInsets.only(top: _barContainerTopPadding),
               child: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
-                currentIndex: navigationShell.currentIndex,
+                currentIndex: widget.navigationShell.currentIndex,
                 onTap: _onItemTapped,
                 elevation: 0,
-                backgroundColor: Colors.transparent,
+                backgroundColor: AppColors.transparent,
                 selectedItemColor: AppColors.blue700,
                 unselectedItemColor: AppColors.grey700,
                 selectedLabelStyle: AppTypography.captionMedium3,
@@ -61,28 +95,28 @@ class MainShell extends StatelessWidget {
                   BottomNavigationBarItem(
                     icon: _buildIcon(
                       assetPath: Assets.icons.homeIcon,
-                      isSelected: navigationShell.currentIndex == 0,
+                      isSelected: widget.navigationShell.currentIndex == 0,
                     ),
                     label: 'Главная',
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
                       assetPath: Assets.icons.applicationsIcon,
-                      isSelected: navigationShell.currentIndex == 1,
+                      isSelected: widget.navigationShell.currentIndex == 1,
                     ),
                     label: 'Мои заявки',
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
                       assetPath: Assets.icons.contactsIcon,
-                      isSelected: navigationShell.currentIndex == 2,
+                      isSelected: widget.navigationShell.currentIndex == 2,
                     ),
                     label: 'Контакты',
                   ),
                   BottomNavigationBarItem(
                     icon: _buildIcon(
                       assetPath: Assets.icons.moreIcon,
-                      isSelected: navigationShell.currentIndex == 3,
+                      isSelected: widget.navigationShell.currentIndex == 3,
                     ),
                     label: 'Ещё',
                   ),
@@ -99,7 +133,7 @@ class MainShell extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: _iconToLabelSpacing),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.blue700 : Colors.transparent,
+        color: isSelected ? AppColors.blue700 : AppColors.transparent,
         borderRadius: BorderRadius.circular(_barItemCornerRadius),
       ),
       child: SvgPicture.asset(
@@ -115,9 +149,9 @@ class MainShell extends StatelessWidget {
   }
 
   void _onItemTapped(int index) {
-    navigationShell.goBranch(
+    widget.navigationShell.goBranch(
       index,
-      initialLocation: index == navigationShell.currentIndex,
+      initialLocation: index == widget.navigationShell.currentIndex,
     );
   }
 }

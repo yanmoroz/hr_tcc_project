@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_html/flutter_html.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/html_styles.dart';
 import '../../domain/domain.dart';
 
@@ -23,7 +24,7 @@ class NotificationItem extends StatelessWidget {
         constraints: const BoxConstraints(maxHeight: 170),
         child: ClipRect(
           child: Material(
-            color: Colors.white,
+            color: AppColors.white,
             borderRadius: BorderRadius.circular(12),
             elevation: 0,
             child: InkWell(
@@ -32,7 +33,7 @@ class NotificationItem extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: IntrinsicHeight(
@@ -53,16 +54,16 @@ class NotificationItem extends StatelessWidget {
                                     width: 8,
                                     height: 8,
                                     margin: const EdgeInsets.only(right: 8),
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF44BF78),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.green500,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
                                 Text(
                                   notification.created.toRelativeTime(),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
-                                    color: Color(0xFF767679),
+                                    color: AppColors.grey700,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
@@ -79,7 +80,7 @@ class NotificationItem extends StatelessWidget {
                                   padding: HtmlPaddings.zero,
                                   fontSize: FontSize(16),
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF212121),
+                                  color: AppColors.black,
                                 ),
                                 ...commonHtmlElementStyles,
                               },
@@ -97,7 +98,7 @@ class NotificationItem extends StatelessWidget {
                                       margin: Margins.zero,
                                       padding: HtmlPaddings.zero,
                                       fontSize: FontSize(14),
-                                      color: const Color(0xFF757575),
+                                      color: AppColors.grey700,
                                     ),
                                     ...commonHtmlElementStyles,
                                   },
@@ -114,7 +115,7 @@ class NotificationItem extends StatelessWidget {
                         alignment: Alignment.center,
                         child: Icon(
                           Icons.chevron_right,
-                          color: const Color(0xFF9E9E9E),
+                          color: AppColors.grey700,
                           size: 24,
                         ),
                       ),

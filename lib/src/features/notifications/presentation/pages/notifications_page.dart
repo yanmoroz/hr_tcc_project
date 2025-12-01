@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../blocs/notifications_list/bloc.dart';
 import '../widgets/notification_item.dart';
@@ -74,7 +75,7 @@ class NotificationsPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2196F3),
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 12,
@@ -132,17 +133,17 @@ class NotificationsPage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: const Color(0xFF0A3899),
+                    backgroundColor: AppColors.blue700,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Отметить все как прочитанные',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                   ),
                 ),

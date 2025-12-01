@@ -4,6 +4,7 @@ class AppColors {
   // Base
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF000000);
+  static const transparent = Color(0x00000000);
 
   // Gradient
   static const backgroundGradient = LinearGradient(
@@ -45,5 +46,6 @@ class AppColors {
   static const green300 = Color(0xFFDDF5E7);
 
   // Shadow
+  static const shadow200 = Color(0x263C3E26);
   static const shadow100 = Color(0x0D343D57);
 }

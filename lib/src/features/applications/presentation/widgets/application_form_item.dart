@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../core/entities/application_form.dart';
+import '../../../../core/theme/theme.dart';
 
 class ApplicationFormItem extends StatelessWidget {
   final ApplicationForm applicationForm;
@@ -17,7 +18,7 @@ class ApplicationFormItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: InkWell(
         onTap: onTap,
         child: Container(

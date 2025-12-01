@@ -49,23 +49,23 @@ class UserProfileHeader extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, CurrentUserState state) {
+    Widget content;
+
     if (state.status == LoadingStatus.loading ||
         state.status == LoadingStatus.initial) {
-      return _buildLoadingPlaceholder();
+      content = _buildLoadingPlaceholder();
+    } else if (state.status == LoadingStatus.error) {
+      content = _buildErrorHeader(context, state.errorMessage ?? 'Unknown error');
+    } else {
+      // Success state
+      final user = state.user;
+      content = user != null
+          ? _buildLoadedHeader(context, user)
+          : _buildLoadingPlaceholder();
     }
 
-    if (state.status == LoadingStatus.error) {
-      return _buildErrorHeader(context, state.errorMessage ?? 'Unknown error');
-    }
-
-    // Success state
-    final user = state.user;
-
-    if (user == null) {
-      return _buildLoadingPlaceholder();
-    }
-
-    return _buildLoadedHeader(context, user);
+    // Fixed height to prevent layout shifts between states
+    return SizedBox(height: 44, child: content);
   }
 
   Widget _buildLoadingPlaceholder() {
