@@ -9,7 +9,13 @@ part 'applications_list_state.freezed.dart';
 @freezed
 sealed class ApplicationsListState with _$ApplicationsListState {
   const factory ApplicationsListState({
+    /// Status for initial load
     @Default(LoadingStatus.initial) LoadingStatus status,
+    /// Status for search/filter operations (keeps UI visible during filtering)
+    @Default(LoadingStatus.initial) LoadingStatus filteringStatus,
+    /// All applications from API (used for local status filtering)
+    @Default([]) List<ApplicationInfo> allApplications,
+    /// Filtered applications for display
     @Default([]) List<ApplicationInfo> applications,
     @Default([]) List<ApplicationStatistics> statistics,
     @Default(0) int currentPage,

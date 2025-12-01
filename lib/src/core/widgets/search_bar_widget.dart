@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../gen/assets.gen.dart';
 import '../theme/theme.dart';
+import 'app_progress_indicator.dart';
 
 class SearchBarWidget extends StatefulWidget {
   const SearchBarWidget({
@@ -12,11 +13,13 @@ class SearchBarWidget extends StatefulWidget {
     this.hintText = 'Поиск',
     this.debounceMilliseconds = 300,
     required this.onSearchChanged,
+    this.isLoading = false,
   });
 
   final ValueChanged<String> onSearchChanged;
   final String hintText;
   final int debounceMilliseconds;
+  final bool isLoading;
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
@@ -72,15 +75,20 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           minWidth: 20,
           minHeight: 20,
         ),
-        suffixIcon: _controller.text.isNotEmpty
-            ? GestureDetector(
-                onTap: _clearSearch,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 8),
-                  child: SvgPicture.asset(Assets.icons.closeIcon),
-                ),
+        suffixIcon: widget.isLoading
+            ? const Padding(
+                padding: EdgeInsets.only(left: 12, right: 8),
+                child: AppProgressIndicator(radius: 8, strokeWidth: 2),
               )
-            : null,
+            : _controller.text.isNotEmpty
+                ? GestureDetector(
+                    onTap: _clearSearch,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12, right: 8),
+                      child: SvgPicture.asset(Assets.icons.closeIcon),
+                    ),
+                  )
+                : null,
         suffixIconConstraints: const BoxConstraints(
           minWidth: 24,
           minHeight: 24,

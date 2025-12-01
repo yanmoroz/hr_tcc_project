@@ -31,9 +31,9 @@ class ApplicationRepositoryImpl
       final applications = responseModel.applicationInfos
           .map((model) => model.toDomain())
           .toList();
-      final statistics = responseModel.statistics
-          .map((model) => model.toDomain())
-          .toList();
+      final statistics =
+          responseModel.statistics?.map((model) => model.toDomain()).toList() ??
+          [];
       return GetApplicationsResult(
         applications: applications,
         total: responseModel.total,

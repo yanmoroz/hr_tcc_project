@@ -12,7 +12,7 @@ abstract class ApplicationListResponseModel
   const factory ApplicationListResponseModel({
     required List<ApplicationInfoModel> applicationInfos,
     required int total,
-    required List<ApplicationStatisticsModel> statistics,
+    required List<ApplicationStatisticsModel>? statistics,
   }) = _ApplicationListResponseModel;
 
   factory ApplicationListResponseModel.fromJson(Map<String, dynamic> json) =>

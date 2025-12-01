@@ -20,18 +20,20 @@ class ApplicationsListBloc
     on<RefreshApplications>(_onRefreshApplications);
     on<LoadMoreApplications>(_onLoadMoreApplications);
     on<ChangeStatusFilter>(_onChangeStatusFilter);
+    on<ChangeSearchQuery>(_onChangeSearchQuery);
   }
 
   Future<void> _onLoadApplications(
     LoadApplications event,
     Emitter<ApplicationsListState> emit,
   ) async {
+    // Initial load - uses full loading state
     emit(state.copyWith(status: LoadingStatus.loading));
     await _loadApplications(
       emit,
       page: 0,
-      statusGroup: event.statusGroup,
-      search: event.search,
+      statusGroup: null,
+      search: null,
     );
   }
 
@@ -39,12 +41,12 @@ class ApplicationsListBloc
     RefreshApplications event,
     Emitter<ApplicationsListState> emit,
   ) async {
-    // Reload from page 0
+    // Reload from page 0 using current filters from state
     await _loadApplications(
       emit,
       page: 0,
-      statusGroup: event.statusGroup,
-      search: event.search,
+      statusGroup: state.statusGroup,
+      search: state.search,
     );
   }
 
@@ -65,28 +67,48 @@ class ApplicationsListBloc
     // Load next page
     await _loadMoreApplications(
       emit,
-      currentApplications: state.applications,
-      currentStatistics: state.statistics,
       nextPage: state.currentPage + 1,
-      statusGroup: state.statusGroup,
-      search: state.search,
     );
   }
 
-  Future<void> _onChangeStatusFilter(
+  void _onChangeStatusFilter(
     ChangeStatusFilter event,
     Emitter<ApplicationsListState> emit,
-  ) async {
-    // Extract current search term
-    final currentSearch = state.search;
+  ) {
+    // Filter locally - no API call needed
+    final filteredApplications = _filterByStatusGroup(
+      state.allApplications,
+      event.statusGroup,
+    );
+    emit(state.copyWith(
+      applications: filteredApplications,
+      statusGroup: event.statusGroup,
+    ));
+  }
 
-    // Reload applications with new filter
-    emit(state.copyWith(status: LoadingStatus.loading));
+  List<ApplicationInfo> _filterByStatusGroup(
+    List<ApplicationInfo> applications,
+    StatusGroupType? statusGroup,
+  ) {
+    if (statusGroup == null) {
+      return applications;
+    }
+    return applications
+        .where((app) => app.systemStatus.statusGroup == statusGroup)
+        .toList();
+  }
+
+  Future<void> _onChangeSearchQuery(
+    ChangeSearchQuery event,
+    Emitter<ApplicationsListState> emit,
+  ) async {
+    // Use filteringStatus for search changes (keeps content visible)
+    emit(state.copyWith(filteringStatus: LoadingStatus.loading));
     await _loadApplications(
       emit,
       page: 0,
-      statusGroup: event.statusGroup,
-      search: currentSearch,
+      statusGroup: state.statusGroup,
+      search: event.query,
     );
   }
 
@@ -103,15 +125,34 @@ class ApplicationsListBloc
       search: search,
     );
 
+    final isFiltering = state.filteringStatus == LoadingStatus.loading;
+
     result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.toString(),
-      )),
+      (error) {
+        if (isFiltering) {
+          // Filtering error - keep content visible, show error in filteringStatus
+          emit(state.copyWith(
+            filteringStatus: LoadingStatus.error,
+            errorMessage: error.toString(),
+          ));
+        } else {
+          // Initial load error
+          emit(state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: error.toString(),
+          ));
+        }
+      },
       (result) {
+        final filteredApplications = _filterByStatusGroup(
+          result.applications,
+          statusGroup,
+        );
         emit(state.copyWith(
           status: LoadingStatus.success,
-          applications: result.applications,
+          filteringStatus: LoadingStatus.initial,
+          allApplications: result.applications,
+          applications: filteredApplications,
           statistics: result.statistics,
           currentPage: page,
           hasMorePages:
@@ -127,47 +168,40 @@ class ApplicationsListBloc
 
   Future<void> _loadMoreApplications(
     Emitter<ApplicationsListState> emit, {
-    required List<ApplicationInfo> currentApplications,
-    required List<ApplicationStatistics> currentStatistics,
     required int nextPage,
-    StatusGroupType? statusGroup,
-    String? search,
   }) async {
     final result = await _getApplicationsUsecase(
       page: nextPage,
       pageSize: _pageSize,
-      statusGroup: statusGroup,
-      search: search,
+      statusGroup: null, // Always load all, filter locally
+      search: state.search,
     );
 
     result.fold(
       (error) {
-        // On error, revert to previous state without isLoadingMore
+        // On error, just reset isLoadingMore
         emit(state.copyWith(
-          applications: currentApplications,
-          statistics: currentStatistics,
-          currentPage: nextPage - 1,
-          hasMorePages: true,
           isLoadingMore: false,
-          statusGroup: statusGroup,
-          search: search,
         ));
       },
       (result) {
-        final allApplications = [
-          ...currentApplications,
+        final newAllApplications = [
+          ...state.allApplications,
           ...result.applications,
         ];
+        final filteredApplications = _filterByStatusGroup(
+          newAllApplications,
+          state.statusGroup,
+        );
         emit(state.copyWith(
-          applications: allApplications,
+          allApplications: newAllApplications,
+          applications: filteredApplications,
           statistics: result.statistics,
           currentPage: nextPage,
           hasMorePages:
               result.applications.length >=
               _pageSize, // No more pages if less than full page
           isLoadingMore: false,
-          statusGroup: statusGroup,
-          search: search,
         ));
       },
     );
