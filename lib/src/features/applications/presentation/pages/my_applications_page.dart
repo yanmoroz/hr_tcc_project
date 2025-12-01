@@ -89,19 +89,16 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
         ],
 
         // Search bar
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: SearchBarWidget(
-            hintText: 'Поиск по заявкам',
-            isLoading: state.filteringStatus == LoadingStatus.loading,
-            onSearchChanged: (query) {
-              context.read<ApplicationsListBloc>().add(
-                ApplicationsListEvent.changeSearchQuery(
-                  query.isEmpty ? null : query,
-                ),
-              );
-            },
-          ),
+        AppSearchBar(
+          hintText: 'Поиск по заявкам',
+          isLoading: state.filteringStatus == LoadingStatus.loading,
+          onSearchChanged: (query) {
+            context.read<ApplicationsListBloc>().add(
+              ApplicationsListEvent.changeSearchQuery(
+                query.isEmpty ? null : query,
+              ),
+            );
+          },
         ),
 
         // Main content area or filtering error

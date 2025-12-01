@@ -24,61 +24,14 @@ class AddressBookBloc extends Bloc<AddressBookEvent, AddressBookState> {
     Emitter<AddressBookState> emit,
   ) async {
     emit(state.copyWith(status: LoadingStatus.loading));
-
-    final result = await _getAddressBookUsecase(
-      organizationCode: null,
-      departmentCode: null,
-      search: event.search,
-      page: 0,
-      pageSize: _pageSize,
-    );
-
-    result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.toString(),
-      )),
-      (users) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        users: users,
-        currentPage: 0,
-        hasMorePages: users.length >= _pageSize,
-        isLoadingMore: false,
-        searchQuery: event.search,
-      )),
-    );
+    await _loadAddressBook(emit, page: 0, search: event.search);
   }
 
   Future<void> _onRefreshAddressBook(
     RefreshAddressBook event,
     Emitter<AddressBookState> emit,
   ) async {
-    final searchQuery = state.searchQuery;
-
-    emit(state.copyWith(status: LoadingStatus.loading));
-
-    final result = await _getAddressBookUsecase(
-      organizationCode: null,
-      departmentCode: null,
-      search: searchQuery,
-      page: 0,
-      pageSize: _pageSize,
-    );
-
-    result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.toString(),
-      )),
-      (users) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        users: users,
-        currentPage: 0,
-        hasMorePages: users.length >= _pageSize,
-        isLoadingMore: false,
-        searchQuery: searchQuery,
-      )),
-    );
+    await _loadAddressBook(emit, page: 0, search: state.searchQuery);
   }
 
   Future<void> _onLoadMoreAddressBook(
@@ -117,31 +70,53 @@ class AddressBookBloc extends Bloc<AddressBookEvent, AddressBookState> {
     SearchAddressBook event,
     Emitter<AddressBookState> emit,
   ) async {
-    emit(state.copyWith(status: LoadingStatus.loading));
+    final query = event.query.trim();
+    final search = query.isEmpty ? null : query;
 
-    final searchQuery = event.query.trim().isEmpty ? null : event.query.trim();
+    emit(state.copyWith(filteringStatus: LoadingStatus.loading));
+    await _loadAddressBook(emit, page: 0, search: search);
+  }
 
+  Future<void> _loadAddressBook(
+    Emitter<AddressBookState> emit, {
+    required int page,
+    String? search,
+  }) async {
     final result = await _getAddressBookUsecase(
       organizationCode: null,
       departmentCode: null,
-      search: searchQuery,
-      page: 0,
+      search: search,
+      page: page,
       pageSize: _pageSize,
     );
 
+    final isFiltering = state.filteringStatus == LoadingStatus.loading;
+
     result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.toString(),
-      )),
-      (users) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        users: users,
-        currentPage: 0,
-        hasMorePages: users.length >= _pageSize,
-        isLoadingMore: false,
-        searchQuery: searchQuery,
-      )),
+      (error) {
+        if (isFiltering) {
+          emit(state.copyWith(
+            filteringStatus: LoadingStatus.error,
+            errorMessage: error.toString(),
+          ));
+        } else {
+          emit(state.copyWith(
+            status: LoadingStatus.error,
+            errorMessage: error.toString(),
+          ));
+        }
+      },
+      (users) {
+        emit(state.copyWith(
+          status: LoadingStatus.success,
+          filteringStatus: LoadingStatus.initial,
+          users: users,
+          currentPage: page,
+          hasMorePages: users.length >= _pageSize,
+          isLoadingMore: false,
+          searchQuery: search,
+        ));
+      },
     );
   }
 }

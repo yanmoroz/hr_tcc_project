@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/theme/theme.dart';
-import '../../../../core/widgets/search_bar_widget.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../blocs/address_book_page/bloc.dart';
 import '../widgets/address_book_user_item.dart';
 import '../widgets/user_profile_header.dart';
@@ -45,110 +45,97 @@ class _AddressBookPageState extends State<AddressBookPage> {
     return currentScroll >= (maxScroll * 0.9);
   }
 
-  void _onSearchChanged(String query) {
-    context.read<AddressBookBloc>().add(
-      AddressBookEvent.searchAddressBook(query: query),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // User profile header with search bar
-        UserProfileHeader(enableCorners: false),
-        Container(
-          height: 56,
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-          child: SearchBarWidget(
-            onSearchChanged: _onSearchChanged,
-            hintText: 'Поиск',
-          ),
-        ),
-        // List
+        const UserProfileHeader(enableCorners: false),
         Expanded(
-          child: Container(
-            color: AppColors.grey100,
-            child: BlocBuilder<AddressBookBloc, AddressBookState>(
-              builder: (context, state) {
-                return _buildBody(context, state);
-              },
-            ),
+          child: BlocBuilder<AddressBookBloc, AddressBookState>(
+            builder: (context, state) {
+              if (state.status == LoadingStatus.initial ||
+                  state.status == LoadingStatus.loading) {
+                return const Center(child: AppProgressIndicator());
+              }
+
+              if (state.status == LoadingStatus.error) {
+                return NetworkErrorMessageWidget(
+                  onRetry: () => context
+                      .read<AddressBookBloc>()
+                      .add(const AddressBookEvent.loadAddressBook()),
+                );
+              }
+
+              return _buildSuccessContent(context, state);
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBody(BuildContext context, AddressBookState state) {
-    if (state.status == LoadingStatus.initial) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildSuccessContent(BuildContext context, AddressBookState state) {
+    return Container(
+      color: AppColors.grey100,
+      child: Column(
+        children: [
+          // Search bar
+          AppSearchBar(
+            hintText: 'Поиск',
+            isLoading: state.filteringStatus == LoadingStatus.loading,
+            onSearchChanged: (query) {
+              context.read<AddressBookBloc>().add(
+                AddressBookEvent.searchAddressBook(query: query),
+              );
+            },
+          ),
 
-    if (state.status == LoadingStatus.loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+          // Content area or filtering error
+          Expanded(
+            child: state.filteringStatus == LoadingStatus.error
+                ? NetworkErrorMessageWidget(
+                    onRetry: () => context.read<AddressBookBloc>().add(
+                      AddressBookEvent.searchAddressBook(
+                        query: state.searchQuery ?? '',
+                      ),
+                    ),
+                  )
+                : _buildUsersList(context, state),
+          ),
+        ],
+      ),
+    );
+  }
 
-    if (state.status == LoadingStatus.error) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
-              style: AppTypography.textRegular1.red500,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                context.read<AddressBookBloc>().add(
-                  const AddressBookEvent.loadAddressBook(),
-                );
-              },
-              child: const Text('Повторить'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Success state
-    final users = state.users;
-    final isLoadingMore = state.isLoadingMore;
-
-    if (users.isEmpty) {
+  Widget _buildUsersList(BuildContext context, AddressBookState state) {
+    if (state.users.isEmpty) {
       return Center(
         child: Text(
           'Таких сотрудников нет',
-          style: AppTypography.textRegular1.black,
+          style: AppTypography.textRegular1.copyWith(color: AppColors.grey700),
         ),
       );
     }
 
-    return RefreshIndicator(
+    return AppRefreshIndicator(
       onRefresh: () async {
         context.read<AddressBookBloc>().add(
           const AddressBookEvent.refreshAddressBook(),
         );
-        // Wait for the refresh to complete
-        await context.read<AddressBookBloc>().stream.firstWhere(
-          (state) => state.status != LoadingStatus.loading,
-        );
       },
       child: ListView.builder(
         controller: _scrollController,
-        itemCount: users.length + (isLoadingMore ? 1 : 0),
+        itemCount: state.users.length + (state.isLoadingMore ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index >= users.length) {
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
+          if (index >= state.users.length) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: AppProgressIndicator(),
+              ),
             );
           }
-
-          final user = users[index];
-          return AddressBookUserItem(user: user);
+          return AddressBookUserItem(user: state.users[index]);
         },
       ),
     );
