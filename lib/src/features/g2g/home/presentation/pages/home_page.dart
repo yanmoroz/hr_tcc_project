@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
                     case LoadingStatus.error:
                       return _buildErrorState(context);
                     case LoadingStatus.success:
-                      return _buildLoadedState(state);
+                      return _buildLoadedState(context, state);
                   }
                 },
               ),
@@ -87,16 +87,21 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadedState(NewsListState state) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: 16),
-          MenuSection(),
-          SizedBox(height: 24),
-          NewsSection(newsItems: state.newsItems),
-          SizedBox(height: 16),
-        ],
+  Widget _buildLoadedState(BuildContext context, NewsListState state) {
+    return AppRefreshIndicator(
+      onRefresh: () async {
+        context.read<NewsListBloc>().add(const NewsListEvent.loadNews());
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 16),
+            MenuSection(),
+            SizedBox(height: 24),
+            NewsSection(newsItems: state.newsItems),
+            SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
