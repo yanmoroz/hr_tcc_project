@@ -31,19 +31,13 @@ class CommentsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final icon = SvgPicture.asset(
       Assets.icons.commentsIcon,
-      width: 24,
-      height: 24,
       colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
       fit: BoxFit.none,
     );
 
     final label = Text(
       commentCount.toFormattedString(),
-      style: TextStyle(
-        color: textColor,
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-      ),
+      style: AppTypography.captionMedium2.black,
     );
 
     final row = Row(

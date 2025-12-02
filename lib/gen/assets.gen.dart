@@ -67,6 +67,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/polls-icon.svg
   String get pollsIcon => 'assets/icons/polls-icon.svg';
 
+  /// File path: assets/icons/repeat-icon.svg
+  String get repeatIcon => 'assets/icons/repeat-icon.svg';
+
   /// File path: assets/icons/reply-icon.svg
   String get replyIcon => 'assets/icons/reply-icon.svg';
 
@@ -102,6 +105,7 @@ class $AssetsIconsGen {
     operationFailureIcon,
     operationSuccessIcon,
     pollsIcon,
+    repeatIcon,
     replyIcon,
     resellIcon,
     s8Icon,

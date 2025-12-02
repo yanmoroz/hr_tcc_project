@@ -14,25 +14,13 @@ class CurrentUserBloc extends Bloc<CurrentUserEvent, CurrentUserState> {
   }) : _getCurrentUserInfoUsecase = getCurrentUserInfoUsecase,
        super(const CurrentUserState()) {
     on<LoadCurrentUser>(_onLoadCurrentUser);
-    on<RefreshCurrentUser>(_onRefreshCurrentUser);
   }
 
   Future<void> _onLoadCurrentUser(
     LoadCurrentUser event,
     Emitter<CurrentUserState> emit,
   ) async {
-    // Don't show loading if we already have data
-    if (state.status != LoadingStatus.success) {
-      emit(state.copyWith(status: LoadingStatus.loading));
-    }
-
-    await _loadProfile(emit);
-  }
-
-  Future<void> _onRefreshCurrentUser(
-    RefreshCurrentUser event,
-    Emitter<CurrentUserState> emit,
-  ) async {
+    emit(state.copyWith(status: LoadingStatus.loading));
     await _loadProfile(emit);
   }
 
@@ -40,14 +28,13 @@ class CurrentUserBloc extends Bloc<CurrentUserEvent, CurrentUserState> {
     final result = await _getCurrentUserInfoUsecase();
 
     result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.toString(),
-      )),
-      (user) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        user: user,
-      )),
+      (error) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: error.toString(),
+        ),
+      ),
+      (user) => emit(state.copyWith(status: LoadingStatus.success, user: user)),
     );
   }
 }

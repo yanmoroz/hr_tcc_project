@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
@@ -14,9 +15,8 @@ import '../blocs/current_user/bloc.dart';
 
 class UserProfileHeader extends StatelessWidget {
   final bool enableCorners;
-  const UserProfileHeader({this.child, super.key, this.enableCorners = true});
 
-  final Widget? child;
+  const UserProfileHeader({super.key, this.enableCorners = true});
 
   @override
   Widget build(BuildContext context) {
@@ -31,85 +31,147 @@ class UserProfileHeader extends StatelessWidget {
             ),
           ),
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildHeader(context, state),
-              if (child != null) ...[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16, top: 16),
-                  child: child!,
-                ),
-              ],
-            ],
-          ),
+          child: switch (state.status) {
+            LoadingStatus.initial => _buildLoadingState(),
+            LoadingStatus.loading => _buildLoadingState(),
+            LoadingStatus.error => _buildErrorState(context),
+            LoadingStatus.success =>
+              state.user != null
+                  ? _buildLoadedState(state.user!)
+                  : _buildErrorState(context),
+          },
         );
       },
     );
   }
 
-  Widget _buildHeader(BuildContext context, CurrentUserState state) {
-    Widget content;
-
-    if (state.status == LoadingStatus.loading ||
-        state.status == LoadingStatus.initial) {
-      content = _buildLoadingPlaceholder();
-    } else if (state.status == LoadingStatus.error) {
-      content = _buildErrorHeader(context, state.errorMessage ?? 'Unknown error');
-    } else {
-      // Success state
-      final user = state.user;
-      content = user != null
-          ? _buildLoadedHeader(context, user)
-          : _buildLoadingPlaceholder();
-    }
-
-    // Fixed height to prevent layout shifts between states
-    return SizedBox(height: 44, child: content);
-  }
-
-  Widget _buildLoadingPlaceholder() {
+  Widget _buildLoadingState() {
     return Row(
       children: [
         // Shimmer effect placeholder
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColors.grey200,
-            shape: BoxShape.circle,
+        Shimmer.fromColors(
+          baseColor: AppColors.grey200,
+          highlightColor: AppColors.grey100,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.grey200,
+              shape: BoxShape.circle,
+            ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 150,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: AppColors.grey200,
-                  borderRadius: BorderRadius.circular(4),
+              Shimmer.fromColors(
+                baseColor: AppColors.grey200,
+                highlightColor: AppColors.grey100,
+                child: Container(
+                  width: 200,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
-              Container(
-                width: 100,
-                height: 14,
-                decoration: BoxDecoration(
-                  color: AppColors.grey200,
-                  borderRadius: BorderRadius.circular(4),
+              Shimmer.fromColors(
+                baseColor: AppColors.grey200,
+                highlightColor: AppColors.grey100,
+                child: Container(
+                  width: 150,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
             ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Shimmer.fromColors(
+          baseColor: AppColors.grey500,
+          highlightColor: AppColors.grey100,
+          child: SvgPicture.asset(Assets.icons.bellIcon),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context) {
+    return Row(
+      children: [
+        // Shimmer effect placeholder
+        Shimmer.fromColors(
+          baseColor: AppColors.grey200,
+          highlightColor: AppColors.grey100,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.grey200,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Shimmer.fromColors(
+                baseColor: AppColors.grey200,
+                highlightColor: AppColors.grey100,
+                child: Container(
+                  width: 200,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Shimmer.fromColors(
+                baseColor: AppColors.grey200,
+                highlightColor: AppColors.grey100,
+                child: Container(
+                  width: 150,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        InkWell(
+          onTap: () => context.read<CurrentUserBloc>().add(
+            const CurrentUserEvent.loadCurrentUser(),
+          ),
+          child: SvgPicture.asset(
+            Assets.icons.repeatIcon,
+            colorFilter: const ColorFilter.mode(
+              AppColors.black,
+              BlendMode.srcIn,
+            ),
+            fit: BoxFit.none,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildLoadedHeader(BuildContext context, AddressBookUser user) {
+  Widget _buildLoadedState(AddressBookUser user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -151,8 +213,8 @@ class UserProfileHeader extends StatelessWidget {
         BlocBuilder<UnreadNotificationsCubit, int>(
           builder: (context, unreadCount) {
             return SizedBox(
-              width: 44,
-              height: 44,
+              width: 40,
+              height: 40,
               child: InkWell(
                 onTap: () => context.push('/notifications'),
                 borderRadius: BorderRadius.circular(22),
@@ -163,30 +225,6 @@ class UserProfileHeader extends StatelessWidget {
                       : SvgPicture.asset(Assets.icons.bellIcon),
                 ),
               ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildErrorHeader(BuildContext context, String message) {
-    return Row(
-      children: [
-        Icon(Icons.error_outline, color: AppColors.red500),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            'Ошибка загрузки профиля',
-            style: AppTypography.textRegular1.grey700,
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.refresh, size: 24),
-          color: AppColors.blue500,
-          onPressed: () {
-            context.read<CurrentUserBloc>().add(
-              const CurrentUserEvent.refreshCurrentUser(),
             );
           },
         ),

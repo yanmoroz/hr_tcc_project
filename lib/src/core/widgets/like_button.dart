@@ -60,11 +60,7 @@ class LikeButton extends StatelessWidget {
 
     final label = Text(
       likeCount.toFormattedString(),
-      style: TextStyle(
-        color: textColor,
-        fontSize: fontSize,
-        fontWeight: FontWeight.w600,
-      ),
+      style: AppTypography.captionMedium2.black,
     );
 
     final row = Row(

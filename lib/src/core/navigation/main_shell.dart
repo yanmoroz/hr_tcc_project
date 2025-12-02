@@ -47,7 +47,7 @@ class _MainShellState extends State<MainShell> {
     final userState = context.read<CurrentUserBloc>().state;
     if (userState.status == LoadingStatus.error) {
       context.read<CurrentUserBloc>().add(
-        const CurrentUserEvent.refreshCurrentUser(),
+        const CurrentUserEvent.loadCurrentUser(),
       );
     }
   }

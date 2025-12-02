@@ -24,12 +24,10 @@ class NetworkErrorMessageWidget extends StatelessWidget {
           children: [
             Text(
               'Не удалось получить данные.\nСервер может быть временно недоступен.',
-              style: AppTypography.textRegular1.copyWith(
-                color: AppColors.grey700,
-              ),
+              style: AppTypography.textMedium1,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () => _handleRetry(context),
               style: ElevatedButton.styleFrom(

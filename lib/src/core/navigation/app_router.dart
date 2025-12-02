@@ -6,7 +6,7 @@ import '../../core/entities/application_form.dart';
 import '../../features/applications/applications.dart';
 import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
-import '../../features/home/home.dart';
+import '../../features/g2g/home/home.dart';
 import '../../features/more/more.dart';
 import '../../features/news/news.dart';
 import '../../features/notifications/notifications.dart';
