@@ -5,7 +5,7 @@ import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/core/value_objects/system_type.dart';
-import 'package:hr_tcc_project/src/features/users/users.dart';
+import 'package:hr_tcc_project/src/features/g2g/users/users.dart';
 
 import 'helpers/result_helper.dart';
 

@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../gen/assets.gen.dart';
-import '../../features/users/presentation/blocs/current_user/bloc.dart';
+import '../../features/g2g/users/presentation/blocs/current_user/bloc.dart';
 import '../base_types/loading_status.dart';
 import '../di/service_locator.dart';
 import '../retry/retry_notifier.dart';

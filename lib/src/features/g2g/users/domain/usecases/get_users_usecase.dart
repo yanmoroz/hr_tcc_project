@@ -1,5 +1,5 @@
-import '../../../../core/base_types/result.dart';
-import '../../../../core/value_objects/system_type.dart';
+import '../../../../../core/base_types/result.dart';
+import '../../../../../core/value_objects/system_type.dart';
 import '../entities/user.dart';
 import '../repositories/user_repository.dart';
 

@@ -6,7 +6,7 @@ import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/widgets/widgets.dart';
 import '../../../../news/presentation/blocs/news_page/bloc.dart';
-import '../../../../users/presentation/widgets/user_profile_header.dart';
+import '../../../users/presentation/widgets/user_profile_header.dart';
 import '../widgets/menu_section.dart';
 import '../widgets/news_section.dart';
 

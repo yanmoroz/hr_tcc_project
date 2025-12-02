@@ -1,4 +1,4 @@
-import '../../../../core/base_types/result.dart';
+import '../../../../../core/base_types/result.dart';
 import '../entities/address_book_user.dart';
 import '../repositories/user_repository.dart';
 

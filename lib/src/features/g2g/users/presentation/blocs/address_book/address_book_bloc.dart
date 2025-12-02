@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../../core/base_types/loading_status.dart';
 import '../../../domain/domain.dart';
 
 import 'address_book_event.dart';
@@ -57,12 +57,14 @@ class AddressBookBloc extends Bloc<AddressBookEvent, AddressBookState> {
 
     result.fold(
       (error) => emit(state.copyWith(isLoadingMore: false)),
-      (newUsers) => emit(state.copyWith(
-        users: [...state.users, ...newUsers],
-        currentPage: nextPage,
-        hasMorePages: newUsers.length >= _pageSize,
-        isLoadingMore: false,
-      )),
+      (newUsers) => emit(
+        state.copyWith(
+          users: [...state.users, ...newUsers],
+          currentPage: nextPage,
+          hasMorePages: newUsers.length >= _pageSize,
+          isLoadingMore: false,
+        ),
+      ),
     );
   }
 
@@ -95,27 +97,33 @@ class AddressBookBloc extends Bloc<AddressBookEvent, AddressBookState> {
     result.fold(
       (error) {
         if (isFiltering) {
-          emit(state.copyWith(
-            filteringStatus: LoadingStatus.error,
-            errorMessage: error.toString(),
-          ));
+          emit(
+            state.copyWith(
+              filteringStatus: LoadingStatus.error,
+              errorMessage: error.toString(),
+            ),
+          );
         } else {
-          emit(state.copyWith(
-            status: LoadingStatus.error,
-            errorMessage: error.toString(),
-          ));
+          emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: error.toString(),
+            ),
+          );
         }
       },
       (users) {
-        emit(state.copyWith(
-          status: LoadingStatus.success,
-          filteringStatus: LoadingStatus.initial,
-          users: users,
-          currentPage: page,
-          hasMorePages: users.length >= _pageSize,
-          isLoadingMore: false,
-          searchQuery: search,
-        ));
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            filteringStatus: LoadingStatus.initial,
+            users: users,
+            currentPage: page,
+            hasMorePages: users.length >= _pageSize,
+            isLoadingMore: false,
+            searchQuery: search,
+          ),
+        );
       },
     );
   }

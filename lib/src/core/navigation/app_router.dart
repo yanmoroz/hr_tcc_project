@@ -7,12 +7,12 @@ import '../../features/applications/applications.dart';
 import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
 import '../../features/g2g/home/home.dart';
-import '../../features/more/more.dart';
+import '../../features/g2g/more/more.dart';
 import '../../features/news/news.dart';
 import '../../features/notifications/notifications.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
-import '../../features/users/users.dart';
+import '../../features/g2g/users/users.dart';
 import '../di/bloc_factory.dart';
 import 'main_shell.dart';
 

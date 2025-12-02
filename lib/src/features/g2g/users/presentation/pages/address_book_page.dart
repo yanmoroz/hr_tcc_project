@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../core/base_types/loading_status.dart';
-import '../../../../core/theme/theme.dart';
-import '../../../../core/widgets/widgets.dart';
-import '../blocs/address_book_page/bloc.dart';
+import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/theme/theme.dart';
+import '../../../../../core/widgets/widgets.dart';
+import '../blocs/address_book/bloc.dart';
 import '../widgets/address_book_user_item.dart';
 import '../widgets/user_profile_header.dart';
 

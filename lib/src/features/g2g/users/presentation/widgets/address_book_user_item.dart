@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/theme/theme.dart';
-import '../../../../core/utils/color_utils.dart';
-import '../../../../core/utils/string_utils.dart';
+import '../../../../../core/theme/theme.dart';
+import '../../../../../core/utils/color_utils.dart';
+import '../../../../../core/utils/string_utils.dart';
 import '../../domain/entities/address_book_user.dart';
 
 class AddressBookUserItem extends StatelessWidget {

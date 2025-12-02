@@ -7,7 +7,7 @@ import '../../features/news/news.dart';
 import '../../features/notifications/notifications.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
-import '../../features/users/users.dart';
+import '../../features/g2g/users/users.dart';
 import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
 import '../dictionaries/dictionaries.dart';

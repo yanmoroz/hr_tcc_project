@@ -5,7 +5,7 @@ import '../../features/news/news.dart';
 import '../../features/notifications/notifications.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
-import '../../features/users/users.dart';
+import '../../features/g2g/users/users.dart';
 import '../entities/application_form.dart';
 import 'service_locator.dart';
 

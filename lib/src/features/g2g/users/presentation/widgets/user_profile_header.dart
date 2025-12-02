@@ -4,12 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../../gen/assets.gen.dart';
-import '../../../../core/base_types/loading_status.dart';
-import '../../../../core/theme/theme.dart';
-import '../../../../core/utils/color_utils.dart';
-import '../../../../core/utils/string_utils.dart';
-import '../../../notifications/notifications.dart';
+import '../../../../../../gen/assets.gen.dart';
+import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/theme/theme.dart';
+import '../../../../../core/utils/color_utils.dart';
+import '../../../../../core/utils/string_utils.dart';
+import '../../../../notifications/notifications.dart';
 import '../../domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 

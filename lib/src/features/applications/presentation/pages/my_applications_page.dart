@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../../users/presentation/widgets/user_profile_header.dart';
+import '../../../g2g/users/presentation/widgets/user_profile_header.dart';
 import '../blocs/applications_list_page/bloc.dart';
 import '../widgets/application_card.dart';
 import '../widgets/create_application_button.dart';
