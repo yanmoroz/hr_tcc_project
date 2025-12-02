@@ -11,13 +11,13 @@ part 'address_book_user_model.g.dart';
 abstract class AddressBookUserModel with _$AddressBookUserModel {
   const factory AddressBookUserModel({
     required String id,
-    required String login,
+    required String? login,
     required String title,
     required String firstName,
     String? middleName,
     required String lastName,
-    required String snils,
-    required DateTime birthDate,
+    required String? snils,
+    required DateTime? birthDate,
     required String mobile,
     String? workPhone,
     required String mail,

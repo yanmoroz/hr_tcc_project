@@ -35,7 +35,12 @@ class AppRefreshIndicator extends StatelessWidget {
       onRefresh: onRefresh,
       color: color,
       backgroundColor: backgroundColor,
-      child: child,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
+        ),
+        child: child,
+      ),
     );
   }
 }

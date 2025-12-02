@@ -3,7 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../core/theme/theme.dart';
-import '../../../../core/widgets/html_styles.dart';
+import '../../../../core/utils/html_styles.dart';
 import '../../domain/domain.dart';
 
 class NotificationItem extends StatelessWidget {

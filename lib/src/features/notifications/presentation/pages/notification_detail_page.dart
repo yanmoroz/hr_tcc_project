@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/extensions/date_time_extension.dart';
 import '../../../../core/theme/theme.dart';
-import '../../../../core/widgets/html_styles.dart';
+import '../../../../core/utils/html_styles.dart';
 import '../../domain/domain.dart';
 import '../blocs/notification_detail/bloc.dart';
 

@@ -36,16 +36,12 @@ class MainApp extends StatelessWidget {
         title: 'HR TCC Project',
         routerConfig: AppRouter.router,
         theme: Theme.of(context).copyWith(
-          scaffoldBackgroundColor: const Color(0xFFF2F2F6),
+          scaffoldBackgroundColor: AppColors.grey100,
           appBarTheme: AppBarTheme.of(context).copyWith(
-            titleTextStyle: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Colors.black,
-            ),
-            iconTheme: IconThemeData(color: Color(0xFF767679)),
+            titleTextStyle: AppTypography.titleBold4.black,
+            iconTheme: IconThemeData(color: AppColors.grey700),
             centerTitle: true,
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.white,
             scrolledUnderElevation: 0,
             surfaceTintColor: AppColors.transparent,
           ),

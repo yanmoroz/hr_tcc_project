@@ -57,9 +57,9 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
 
               if (state.status == LoadingStatus.error) {
                 return NetworkErrorMessageWidget(
-                  onRetry: () => context
-                      .read<ApplicationsListBloc>()
-                      .add(const ApplicationsListEvent.loadApplications()),
+                  onRetry: () => context.read<ApplicationsListBloc>().add(
+                    const ApplicationsListEvent.loadApplications(),
+                  ),
                 );
               }
 
@@ -71,7 +71,10 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
     );
   }
 
-  Widget _buildSuccessContent(BuildContext context, ApplicationsListState state) {
+  Widget _buildSuccessContent(
+    BuildContext context,
+    ApplicationsListState state,
+  ) {
     return Column(
       children: [
         // Status filter tabs
@@ -89,7 +92,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
         ],
 
         // Search bar
-        AppSearchBar(
+        SearchBarWidget(
           hintText: 'Поиск по заявкам',
           isLoading: state.filteringStatus == LoadingStatus.loading,
           onSearchChanged: (query) {
@@ -106,8 +109,8 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
           child: state.filteringStatus == LoadingStatus.error
               ? NetworkErrorMessageWidget(
                   onRetry: () => context.read<ApplicationsListBloc>().add(
-                        ApplicationsListEvent.changeSearchQuery(state.search),
-                      ),
+                    ApplicationsListEvent.changeSearchQuery(state.search),
+                  ),
                 )
               : _buildApplicationsList(context, state),
         ),
@@ -120,7 +123,10 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
     );
   }
 
-  Widget _buildApplicationsList(BuildContext context, ApplicationsListState state) {
+  Widget _buildApplicationsList(
+    BuildContext context,
+    ApplicationsListState state,
+  ) {
     // Check if we have no applications and no filters applied
     final hasNoApplications =
         state.applications.isEmpty &&

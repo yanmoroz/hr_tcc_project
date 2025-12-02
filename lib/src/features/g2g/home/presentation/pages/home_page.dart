@@ -25,15 +25,12 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BlocBuilder<NewsListBloc, NewsListState>(
                 builder: (context, state) {
-                  switch (state.status) {
-                    case LoadingStatus.initial:
-                    case LoadingStatus.loading:
-                      return _buildLoadingState();
-                    case LoadingStatus.error:
-                      return _buildErrorState(context);
-                    case LoadingStatus.success:
-                      return _buildLoadedState(context, state);
-                  }
+                  return switch (state.status) {
+                    LoadingStatus.initial => _buildLoadingState(),
+                    LoadingStatus.loading => _buildLoadingState(),
+                    LoadingStatus.error => _buildErrorState(context),
+                    LoadingStatus.success => _buildLoadedState(context, state),
+                  };
                 },
               ),
             ),
@@ -44,13 +41,16 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildLoadingState() {
-    return Column(
-      children: [
-        SizedBox(height: 16),
-        MenuSection(),
-        SizedBox(height: 24),
-        Expanded(
-          child: ListView.separated(
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          SizedBox(height: 16),
+          MenuSection(),
+          SizedBox(height: 24),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) => Shimmer.fromColors(
               baseColor: AppColors.grey200,
               highlightColor: AppColors.grey100,
@@ -66,8 +66,8 @@ class HomePage extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemCount: 10,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -93,6 +93,7 @@ class HomePage extends StatelessWidget {
         context.read<NewsListBloc>().add(const NewsListEvent.loadNews());
       },
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
             SizedBox(height: 16),

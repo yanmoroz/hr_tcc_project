@@ -74,10 +74,7 @@ class SubmitResultWidget extends StatelessWidget {
                 // Message
                 Text(
                   message,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
+                  style: AppTypography.titleSemibold3.black.copyWith(
                     decoration: TextDecoration.none,
                   ),
                   textAlign: TextAlign.left,

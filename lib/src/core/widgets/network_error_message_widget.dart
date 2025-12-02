@@ -43,9 +43,7 @@ class NetworkErrorMessageWidget extends StatelessWidget {
               ),
               child: Text(
                 'Повторить',
-                style: AppTypography.buttonMedium1.copyWith(
-                  color: AppColors.white,
-                ),
+                style: AppTypography.buttonMedium1.white,
               ),
             ),
           ],

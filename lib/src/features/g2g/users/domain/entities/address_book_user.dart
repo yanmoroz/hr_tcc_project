@@ -9,13 +9,13 @@ part 'address_book_user.freezed.dart';
 abstract class AddressBookUser with _$AddressBookUser {
   const factory AddressBookUser({
     required String id,
-    required String login,
+    required String? login,
     required String title,
     required String firstName,
     String? middleName,
     required String lastName,
-    required String snils,
-    required DateTime birthDate,
+    required String? snils,
+    required DateTime? birthDate,
     required String mobile,
     String? workPhone,
     required String mail,

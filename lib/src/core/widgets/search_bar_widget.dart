@@ -8,6 +8,11 @@ import '../theme/theme.dart';
 import 'app_progress_indicator.dart';
 
 class SearchBarWidget extends StatefulWidget {
+  final ValueChanged<String> onSearchChanged;
+  final String hintText;
+  final int debounceMilliseconds;
+  final bool isLoading;
+
   const SearchBarWidget({
     super.key,
     this.hintText = 'Поиск',
@@ -15,11 +20,6 @@ class SearchBarWidget extends StatefulWidget {
     required this.onSearchChanged,
     this.isLoading = false,
   });
-
-  final ValueChanged<String> onSearchChanged;
-  final String hintText;
-  final int debounceMilliseconds;
-  final bool isLoading;
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
@@ -81,14 +81,14 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                 child: AppProgressIndicator(radius: 8, strokeWidth: 2),
               )
             : _controller.text.isNotEmpty
-                ? GestureDetector(
-                    onTap: _clearSearch,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 8),
-                      child: SvgPicture.asset(Assets.icons.closeIcon),
-                    ),
-                  )
-                : null,
+            ? GestureDetector(
+                onTap: _clearSearch,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 8),
+                  child: SvgPicture.asset(Assets.icons.closeIcon),
+                ),
+              )
+            : null,
         suffixIconConstraints: const BoxConstraints(
           minWidth: 24,
           minHeight: 24,
