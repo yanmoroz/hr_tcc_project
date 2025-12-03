@@ -48,24 +48,27 @@ class _AddressBookPageState extends State<AddressBookPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.grey100,
-      body: Column(
-        children: [
-          const UserProfileHeader(enableCorners: false),
-          Expanded(
-            child: BlocBuilder<AddressBookBloc, AddressBookState>(
-              builder: (context, state) {
-                return switch (state.status) {
-                  LoadingStatus.initial => _buildLoadingState(),
-                  LoadingStatus.loading => _buildLoadingState(),
-                  LoadingStatus.error => _buildErrorState(context),
-                  LoadingStatus.success => _buildLoadedState(context, state),
-                };
-              },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.grey100,
+        body: Column(
+          children: [
+            const UserProfileHeader(enableCorners: false),
+            Expanded(
+              child: BlocBuilder<AddressBookBloc, AddressBookState>(
+                builder: (context, state) {
+                  return switch (state.status) {
+                    LoadingStatus.initial => _buildLoadingState(),
+                    LoadingStatus.loading => _buildLoadingState(),
+                    LoadingStatus.error => _buildErrorState(context),
+                    LoadingStatus.success => _buildLoadedState(context, state),
+                  };
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

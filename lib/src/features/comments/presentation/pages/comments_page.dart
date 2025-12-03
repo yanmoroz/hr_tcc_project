@@ -37,104 +37,119 @@ class _CommentsPageState extends State<CommentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.grey100,
-      appBar: AppBar(
-        title: BlocBuilder<CommentsBloc, CommentsState>(
-          builder: (context, state) {
-            final commentCount = state.comments.length;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text('Комментарии'),
-                Text(
-                  _getCommentCountText(commentCount),
-                  style: AppTypography.textRegular2.grey700,
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-      body: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 12,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.grey100,
+        appBar: AppBar(
+          title: BlocBuilder<CommentsBloc, CommentsState>(
+            builder: (context, state) {
+              final commentCount = state.comments.length;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Text(switch (context
-                        .read<CommentsBloc>()
-                        .entityType) {
-                      CommentableEntityType.news =>
-                        'Новости «${context.read<CommentsBloc>().entityName}»',
-                      CommentableEntityType.discount =>
-                        'Льготы и можности «${context.read<CommentsBloc>().entityName}»',
-                    }, style: AppTypography.textRegular2.grey700),
+                  const Text('Комментарии'),
+                  Text(
+                    _getCommentCountText(commentCount),
+                    style: AppTypography.textRegular2.grey700,
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        body: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 12,
+                    offset: const Offset(0, -4),
                   ),
                 ],
               ),
-            ),
-          ),
-          // Comments list
-          Expanded(
-            child: BlocListener<CommentsBloc, CommentsState>(
-              listenWhen: (previous, current) {
-                // Listen when a comment is successfully added
-                return previous.isAddingComment == true &&
-                    current.isAddingComment == false &&
-                    current.status == LoadingStatus.success &&
-                    current.comments.length > previous.comments.length;
-              },
-              listener: (context, state) {
-                _scrollController.jumpTo(0);
-              },
-              child: BlocBuilder<CommentsBloc, CommentsState>(
-                builder: (context, state) {
-                  return switch (state.status) {
-                    LoadingStatus.initial => _buildLoadingState(context, state),
-                    LoadingStatus.loading => _buildLoadingState(context, state),
-                    LoadingStatus.error => _buildErrorState(context, state),
-                    LoadingStatus.success => _buildLoadedState(context, state),
-                  };
-                },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(switch (context
+                          .read<CommentsBloc>()
+                          .entityType) {
+                        CommentableEntityType.news =>
+                          'Новости «${context.read<CommentsBloc>().entityName}»',
+                        CommentableEntityType.discount =>
+                          'Льготы и можности «${context.read<CommentsBloc>().entityName}»',
+                      }, style: AppTypography.textRegular2.grey700),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          BlocBuilder<CommentsBloc, CommentsState>(
-            builder: (context, state) {
-              return switch (state.status) {
-                LoadingStatus.initial => const SizedBox.shrink(),
-                LoadingStatus.loading => const SizedBox.shrink(),
-                LoadingStatus.error => const SizedBox.shrink(),
-                LoadingStatus.success => CommentInputBar(
-                  controller: _commentController,
-                  focusNode: _inputFocusNode,
-                  onSend: (content, parentId) {
-                    context.read<CommentsBloc>().add(
-                      CommentsEvent.addComment(
-                        content: content,
-                        parentId: parentId,
+            // Comments list
+            Expanded(
+              child: BlocListener<CommentsBloc, CommentsState>(
+                listenWhen: (previous, current) {
+                  // Listen when a comment is successfully added
+                  return previous.isAddingComment == true &&
+                      current.isAddingComment == false &&
+                      current.status == LoadingStatus.success &&
+                      current.comments.length > previous.comments.length;
+                },
+                listener: (context, state) {
+                  _scrollController.jumpTo(0);
+                },
+                child: BlocBuilder<CommentsBloc, CommentsState>(
+                  builder: (context, state) {
+                    return switch (state.status) {
+                      LoadingStatus.initial => _buildLoadingState(
+                        context,
+                        state,
                       ),
-                    );
+                      LoadingStatus.loading => _buildLoadingState(
+                        context,
+                        state,
+                      ),
+                      LoadingStatus.error => _buildErrorState(context, state),
+                      LoadingStatus.success => _buildLoadedState(
+                        context,
+                        state,
+                      ),
+                    };
                   },
                 ),
-              };
-            },
-          ),
-        ],
+              ),
+            ),
+
+            BlocBuilder<CommentsBloc, CommentsState>(
+              builder: (context, state) {
+                return switch (state.status) {
+                  LoadingStatus.initial => const SizedBox.shrink(),
+                  LoadingStatus.loading => const SizedBox.shrink(),
+                  LoadingStatus.error => const SizedBox.shrink(),
+                  LoadingStatus.success => CommentInputBar(
+                    controller: _commentController,
+                    focusNode: _inputFocusNode,
+                    onSend: (content, parentId) {
+                      context.read<CommentsBloc>().add(
+                        CommentsEvent.addComment(
+                          content: content,
+                          parentId: parentId,
+                        ),
+                      );
+                    },
+                  ),
+                };
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

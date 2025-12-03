@@ -45,24 +45,27 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.grey100,
-      body: Column(
-        children: [
-          const UserProfileHeader(),
-          Expanded(
-            child: BlocBuilder<ApplicationsListBloc, ApplicationsListState>(
-              builder: (context, state) {
-                return switch (state.status) {
-                  LoadingStatus.initial => _buildLoadingState(context),
-                  LoadingStatus.loading => _buildLoadingState(context),
-                  LoadingStatus.error => _buildErrorState(context),
-                  LoadingStatus.success => _buildLoadedState(context, state),
-                };
-              },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.grey100,
+        body: Column(
+          children: [
+            const UserProfileHeader(),
+            Expanded(
+              child: BlocBuilder<ApplicationsListBloc, ApplicationsListState>(
+                builder: (context, state) {
+                  return switch (state.status) {
+                    LoadingStatus.initial => _buildLoadingState(context),
+                    LoadingStatus.loading => _buildLoadingState(context),
+                    LoadingStatus.error => _buildErrorState(context),
+                    LoadingStatus.success => _buildLoadedState(context, state),
+                  };
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
