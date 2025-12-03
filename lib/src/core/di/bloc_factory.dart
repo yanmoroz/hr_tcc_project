@@ -2,7 +2,7 @@ import '../../features/applications/applications.dart';
 import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
 import '../../features/news/news.dart';
-import '../../features/notifications/notifications.dart';
+import '../../features/g2g/notifications/notifications.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
 import '../../features/g2g/users/users.dart';
@@ -122,7 +122,6 @@ class BlocFactory {
       notificationId: notificationId,
       getNotificationUsecase: sl(),
       markNotificationAsReadUsecase: sl(),
-      updateNotificationUsecase: sl(),
     );
   }
 

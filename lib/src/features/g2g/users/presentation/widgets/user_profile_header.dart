@@ -9,7 +9,7 @@ import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/theme/theme.dart';
 import '../../../../../core/utils/color_utils.dart';
 import '../../../../../core/utils/string_utils.dart';
-import '../../../../notifications/notifications.dart';
+import '../../../notifications/notifications.dart';
 import '../../domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 

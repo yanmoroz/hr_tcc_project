@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../../../gen/assets.gen.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../users/presentation/widgets/user_profile_header.dart';
-import '../widgets/item_card.dart';
+import '../widgets/more_item.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
@@ -26,7 +26,7 @@ class MorePage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 16),
                     // Report violations menu item
-                    ItemCard(
+                    MoreItem(
                       title: 'Сообщить о нарушениях',
                       onTap: () {
                         // TODO: Implement violations reporting feature
@@ -42,7 +42,7 @@ class MorePage extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     // ISpring menu item
-                    ItemCard(
+                    MoreItem(
                       title: 'ISpring',
                       subtitle: 'Дистанционное обучение организаций',
                       icon: SvgPicture.asset(

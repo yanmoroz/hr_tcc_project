@@ -4,7 +4,7 @@ import '../../features/applications/applications.dart';
 import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
 import '../../features/news/news.dart';
-import '../../features/notifications/notifications.dart';
+import '../../features/g2g/notifications/notifications.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
 import '../../features/g2g/users/users.dart';
@@ -101,9 +101,6 @@ void _initializeNotificationDependencies() {
   );
   sl.registerFactory<GetUnreadNotificationsCountUsecase>(
     () => GetUnreadNotificationsCountUsecase(sl()),
-  );
-  sl.registerFactory<UpdateNotificationUsecase>(
-    () => UpdateNotificationUsecase(sl()),
   );
   sl.registerFactory<GetNotificationUsecase>(
     () => GetNotificationUsecase(sl()),
