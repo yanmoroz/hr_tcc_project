@@ -99,7 +99,10 @@ class HomePage extends StatelessWidget {
             SizedBox(height: 16),
             MenuSection(),
             SizedBox(height: 24),
-            NewsSection(newsItems: state.newsItems),
+            NewsSection(
+              newsItems: state.newsItems,
+              coverImages: state.coverImages,
+            ),
             SizedBox(height: 16),
           ],
         ),

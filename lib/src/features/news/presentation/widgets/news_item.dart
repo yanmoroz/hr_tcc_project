@@ -40,19 +40,7 @@ class NewsItemWidget extends StatelessWidget {
               if (coverImage != null)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.memory(
-                    coverImage!,
-                    height: 180,
-                    width: 320,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 180,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.image_not_supported, size: 48),
-                      );
-                    },
-                  ),
+                  child: Image.memory(coverImage!),
                 ),
               if (coverImage != null) const SizedBox(height: 12),
 

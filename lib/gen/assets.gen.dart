@@ -12,6 +12,12 @@
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/absence-icon.svg
+  String get absenceIcon => 'assets/icons/absence-icon.svg';
+
+  /// File path: assets/icons/alpina-digital-icon.svg
+  String get alpinaDigitalIcon => 'assets/icons/alpina-digital-icon.svg';
+
   /// File path: assets/icons/applications-icon.svg
   String get applicationsIcon => 'assets/icons/applications-icon.svg';
 
@@ -31,6 +37,9 @@ class $AssetsIconsGen {
   String get bellWithGreenCircleIcon =>
       'assets/icons/bell-with-green-circle-icon.svg';
 
+  /// File path: assets/icons/car-icon.svg
+  String get carIcon => 'assets/icons/car-icon.svg';
+
   /// File path: assets/icons/close-Icon.svg
   String get closeIcon => 'assets/icons/close-Icon.svg';
 
@@ -40,8 +49,20 @@ class $AssetsIconsGen {
   /// File path: assets/icons/contacts-icon.svg
   String get contactsIcon => 'assets/icons/contacts-icon.svg';
 
+  /// File path: assets/icons/delivery-icon.svg
+  String get deliveryIcon => 'assets/icons/delivery-icon.svg';
+
   /// File path: assets/icons/discounts-icon.svg
   String get discountsIcon => 'assets/icons/discounts-icon.svg';
+
+  /// File path: assets/icons/document1-icon.svg
+  String get document1Icon => 'assets/icons/document1-icon.svg';
+
+  /// File path: assets/icons/document2-icon.svg
+  String get document2Icon => 'assets/icons/document2-icon.svg';
+
+  /// File path: assets/icons/education-icon.svg
+  String get educationIcon => 'assets/icons/education-icon.svg';
 
   /// File path: assets/icons/home-icon.svg
   String get homeIcon => 'assets/icons/home-icon.svg';
@@ -58,14 +79,26 @@ class $AssetsIconsGen {
   /// File path: assets/icons/more-icon.svg
   String get moreIcon => 'assets/icons/more-icon.svg';
 
+  /// File path: assets/icons/ndfl-icon.svg
+  String get ndflIcon => 'assets/icons/ndfl-icon.svg';
+
   /// File path: assets/icons/operation-failure-icon.svg
   String get operationFailureIcon => 'assets/icons/operation-failure-icon.svg';
 
   /// File path: assets/icons/operation-success-icon.svg
   String get operationSuccessIcon => 'assets/icons/operation-success-icon.svg';
 
+  /// File path: assets/icons/pass-icon.svg
+  String get passIcon => 'assets/icons/pass-icon.svg';
+
+  /// File path: assets/icons/plane-icon.svg
+  String get planeIcon => 'assets/icons/plane-icon.svg';
+
   /// File path: assets/icons/polls-icon.svg
   String get pollsIcon => 'assets/icons/polls-icon.svg';
+
+  /// File path: assets/icons/referral-icon.svg
+  String get referralIcon => 'assets/icons/referral-icon.svg';
 
   /// File path: assets/icons/repeat-icon.svg
   String get repeatIcon => 'assets/icons/repeat-icon.svg';
@@ -85,32 +118,47 @@ class $AssetsIconsGen {
   /// File path: assets/icons/telegram-icon.svg
   String get telegramIcon => 'assets/icons/telegram-icon.svg';
 
+  /// File path: assets/icons/warning-icon.svg
+  String get warningIcon => 'assets/icons/warning-icon.svg';
+
   /// List of all assets
   List<String> get values => [
+    absenceIcon,
+    alpinaDigitalIcon,
     applicationsIcon,
     arrowUp,
     attachmentIcon,
     backIcon,
     bellIcon,
     bellWithGreenCircleIcon,
+    carIcon,
     closeIcon,
     commentsIcon,
     contactsIcon,
+    deliveryIcon,
     discountsIcon,
+    document1Icon,
+    document2Icon,
+    educationIcon,
     homeIcon,
     ispringIcon,
     likeIcon,
     likeWhiteIcon,
     moreIcon,
+    ndflIcon,
     operationFailureIcon,
     operationSuccessIcon,
+    passIcon,
+    planeIcon,
     pollsIcon,
+    referralIcon,
     repeatIcon,
     replyIcon,
     resellIcon,
     s8Icon,
     searchIcon,
     telegramIcon,
+    warningIcon,
   ];
 }
 

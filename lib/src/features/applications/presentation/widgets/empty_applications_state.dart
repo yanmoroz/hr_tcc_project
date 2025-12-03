@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/theme.dart';
+
 class EmptyApplicationsState extends StatelessWidget {
   const EmptyApplicationsState({super.key});
 
@@ -7,25 +9,11 @@ class EmptyApplicationsState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-
-            // Empty state message
-            const Text(
-              'Здесь появится список всех\nсозданных заявок',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xFF757575),
-                height: 1.4,
-              ),
-            ),
-
-            const Spacer(),
-          ],
+        padding: const EdgeInsets.all(48),
+        child: Text(
+          'Здесь появится список всех созданных заявок',
+          textAlign: TextAlign.center,
+          style: AppTypography.textRegular1.black,
         ),
       ),
     );

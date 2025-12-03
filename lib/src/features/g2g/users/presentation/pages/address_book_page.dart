@@ -71,51 +71,58 @@ class _AddressBookPageState extends State<AddressBookPage> {
   }
 
   Widget _buildLoadingState() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            color: AppColors.white,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Shimmer.fromColors(
-                baseColor: AppColors.grey200,
-                highlightColor: AppColors.grey100,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.grey100,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(height: 40, width: double.infinity),
+    return Column(
+      children: [
+        Container(
+          color: AppColors.white,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Shimmer.fromColors(
+              baseColor: AppColors.grey200,
+              highlightColor: AppColors.grey100,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.grey100,
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                child: SizedBox(height: 40, width: double.infinity),
               ),
             ),
           ),
-          SizedBox(height: 28),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => Shimmer.fromColors(
-                baseColor: AppColors.grey200,
-                highlightColor: AppColors.grey100,
-                child: Container(
-                  width: double.infinity,
-                  height: 175,
-                  decoration: BoxDecoration(
-                    color: AppColors.grey200,
-                    borderRadius: BorderRadius.circular(12),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 28),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => Shimmer.fromColors(
+                      baseColor: AppColors.grey200,
+                      highlightColor: AppColors.grey100,
+                      child: Container(
+                        width: double.infinity,
+                        height: 175,
+                        decoration: BoxDecoration(
+                          color: AppColors.grey200,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
+                    itemCount: 10,
                   ),
                 ),
-              ),
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemCount: 10,
+                SizedBox(height: 32),
+              ],
             ),
           ),
-          SizedBox(height: 32),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -151,13 +158,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
           // Content area or filtering error
           Expanded(
             child: switch (state.filteringStatus) {
-              LoadingStatus.error => NetworkErrorMessageWidget(
-                onRetry: () => context.read<AddressBookBloc>().add(
-                  AddressBookEvent.searchAddressBook(
-                    query: state.searchQuery ?? '',
-                  ),
-                ),
-              ),
+              LoadingStatus.error => _buildErrorState(context),
               _ => _buildUsersList(context, state),
             },
           ),
@@ -171,7 +172,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
       return Center(
         child: Text(
           'Таких сотрудников нет',
-          style: AppTypography.textRegular1.copyWith(color: AppColors.grey700),
+          style: AppTypography.textRegular1.black,
         ),
       );
     }
@@ -185,6 +186,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
+          controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
@@ -192,7 +194,6 @@ class _AddressBookPageState extends State<AddressBookPage> {
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                controller: _scrollController,
                 itemCount: state.users.length + (state.isLoadingMore ? 1 : 0),
                 separatorBuilder: (context, index) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {

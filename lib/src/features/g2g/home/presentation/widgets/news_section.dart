@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,8 +9,13 @@ import '../../../../news/presentation/widgets/news_item.dart';
 
 class NewsSection extends StatelessWidget {
   final List<NewsItem> newsItems;
+  final Map<int, Uint8List> coverImages;
 
-  const NewsSection({super.key, required this.newsItems});
+  const NewsSection({
+    super.key,
+    required this.newsItems,
+    required this.coverImages,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +51,7 @@ class NewsSection extends StatelessWidget {
             final newsItem = newsItems[index];
             return NewsItemWidget(
               newsItem: newsItem,
+              coverImage: coverImages[newsItem.id],
               onTap: () => context.push('/home/news/${newsItem.id}'),
               onCommentsTap: () => context.push(
                 '/home/comments/news/${newsItem.id}',
