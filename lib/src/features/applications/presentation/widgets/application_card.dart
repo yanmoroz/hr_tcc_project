@@ -32,7 +32,13 @@ class ApplicationCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Icon based on application form
-              Container(child: Center(child: _getApplicationIcon())),
+              Container(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Center(child: _getApplicationIcon()),
+                ),
+              ),
               const SizedBox(width: 12),
               // Content
               Expanded(

@@ -51,4 +51,10 @@ extension DateTimeExtension on DateTime {
   bool isSameDay(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
   }
+
+  /// Checks if this DateTime is yesterday
+  bool isYesterday() {
+    final yesterday = DateTime.now().subtract(Duration(days: 1));
+    return isSameDay(yesterday);
+  }
 }

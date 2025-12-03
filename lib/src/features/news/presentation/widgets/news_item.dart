@@ -86,9 +86,10 @@ class NewsItemWidget extends StatelessWidget {
                   LikeButton(
                     isLiked: newsItem.like,
                     likeCount: newsItem.likeCount,
-                    textColor: Colors.black,
-                    likedColor: const Color(0xFFEE0000),
-                    notLikedColor: Colors.black,
+                    likedTextStyle: AppTypography.textMedium2.black,
+                    notLikedTextStyle: AppTypography.textMedium2.black,
+                    likedIconColor: AppColors.blue500,
+                    notLikedIconColor: AppColors.black,
                     onPressed: () {
                       // TODO:
                     },

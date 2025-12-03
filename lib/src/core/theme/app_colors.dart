@@ -46,6 +46,7 @@ class AppColors {
   static const green300 = Color(0xFFDDF5E7);
 
   // Shadow
+  static const shadow300 = Color(0x66343D57);
   static const shadow200 = Color(0x263C3E26);
   static const shadow100 = Color(0x0D343D57);
 }

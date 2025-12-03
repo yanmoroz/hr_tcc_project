@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
 import '../blocs/discount_page/bloc.dart';
@@ -202,6 +203,14 @@ class DiscountDetailPage extends StatelessWidget {
                 LikeButton(
                   isLiked: liked,
                   likeCount: likeCount,
+                  likedTextStyle: AppTypography.textMedium2.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.7),
+                  ),
+                  notLikedTextStyle: AppTypography.textMedium2.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.7),
+                  ),
+                  likedIconColor: AppColors.white,
+                  notLikedIconColor: AppColors.white.withValues(alpha: 0.7),
                   onPressed: () {
                     context.read<DiscountDetailBloc>().add(
                       const DiscountDetailEvent.toggleLike(),

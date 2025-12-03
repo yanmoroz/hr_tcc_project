@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/theme/theme.dart';
+
 class DateSeparator extends StatelessWidget {
   final DateTime date;
 
@@ -12,22 +15,26 @@ class DateSeparator extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 16),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: const Color(0x663D5766),
+          color: AppColors.shadow300,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           _formatDate(date),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTypography.captionMedium2.white,
         ),
       ),
     );
   }
 
   String _formatDate(DateTime date) {
+    if (date.isSameDay(DateTime.now())) {
+      return 'Сегодня';
+    }
+
+    if (date.isYesterday()) {
+      return 'Вчера';
+    }
+
     final day = date.day;
     final month = _getRussianMonth(date.month);
     return '$day $month';

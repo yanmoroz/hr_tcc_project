@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/color_utils.dart';
 import '../../../../core/utils/string_utils.dart';
 import '../../../../core/widgets/like_button.dart';
@@ -42,11 +43,13 @@ class CommentItem extends StatelessWidget {
           // Comment content container
           Flexible(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 247),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 150,
+              ),
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -55,25 +58,18 @@ class CommentItem extends StatelessWidget {
                     // Author name and timestamp
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Text(
                             comment.author.title,
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            style: AppTypography.textSemibold2.black,
                           ),
                         ),
+                        SizedBox(width: 8),
                         Text(
                           _formatTime(comment.createdData),
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: const Color(0xFFBABABE),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style: AppTypography.captionMedium3.grey500,
                         ),
                       ],
                     ),
@@ -82,10 +78,7 @@ class CommentItem extends StatelessWidget {
                     // Comment content
                     Text(
                       comment.content,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      style: AppTypography.textRegular2.black,
                     ),
                     const SizedBox(height: 12),
 
@@ -102,12 +95,7 @@ class CommentItem extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             child: Text(
                               'Удалить',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: const Color(0xFFBABABE),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                              style: AppTypography.textMedium2.grey500,
                             ),
                           )
                         else if (!_isCurrentUser && onReply != null)
@@ -116,12 +104,7 @@ class CommentItem extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             child: Text(
                               'Ответить',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: const Color(0xFFBABABE),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                              style: AppTypography.textMedium2.grey500,
                             ),
                           ),
                       ],
@@ -144,30 +127,28 @@ class CommentItem extends StatelessWidget {
       return LikeButton(
         isLiked: comment.like ?? false,
         likeCount: comment.likeCount ?? 0,
-        textColor: const Color(0xFFBABABE),
-        likedColor: const Color(0xFFBABABE),
-        notLikedColor: const Color(0xFFBABABE),
+        likedIconColor: AppColors.grey200,
+        notLikedIconColor: AppColors.grey200,
+        likedTextStyle: AppTypography.textMedium2.grey500,
+        notLikedTextStyle: AppTypography.textMedium2.grey500,
         spacing: 4,
         iconSize: 20,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        onPressed: onLike,
-      );
-    } else {
-      // Another user's comment - use different styling
-      return LikeButton(
-        isLiked: comment.like ?? false,
-        likeCount: comment.likeCount ?? 0,
-        textColor: const Color(0xFF0A3899),
-        likedColor: const Color(0xFF2050B7),
-        notLikedColor: const Color(0xFF0A3899),
-        spacing: 4,
-        iconSize: 20,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
         onPressed: onLike,
       );
     }
+
+    // Another user's comment - use different styling
+    return LikeButton(
+      isLiked: comment.like ?? false,
+      likeCount: comment.likeCount ?? 0,
+      likedIconColor: AppColors.blue500,
+      notLikedIconColor: AppColors.grey500,
+      likedTextStyle: AppTypography.textMedium2.blue700,
+      notLikedTextStyle: AppTypography.textMedium2.grey500,
+      spacing: 4,
+      iconSize: 20,
+      onPressed: onLike,
+    );
   }
 
   Widget _buildAvatar() {
@@ -176,11 +157,7 @@ class CommentItem extends StatelessWidget {
       backgroundColor: getAvatarColor(comment.author.title),
       child: Text(
         getInitialsFromFullName(comment.author.title),
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
+        style: AppTypography.textSemibold2.white,
       ),
     );
   }

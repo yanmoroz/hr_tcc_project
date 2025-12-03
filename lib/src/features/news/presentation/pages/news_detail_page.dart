@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
 import '../blocs/news_detail_page/bloc.dart';
@@ -141,12 +142,15 @@ class NewsDetailPage extends StatelessWidget {
 
             // Like and Comment buttons
             Container(
-              color: Colors.blue,
               child: Row(
                 children: [
                   LikeButton(
                     isLiked: liked,
                     likeCount: likeCount,
+                    likedTextStyle: AppTypography.textMedium2.black,
+                    notLikedTextStyle: AppTypography.textMedium2.black,
+                    likedIconColor: AppColors.blue500,
+                    notLikedIconColor: AppColors.black,
                     onPressed: () {
                       context.read<NewsDetailBloc>().add(
                         const NewsDetailEvent.toggleLike(),

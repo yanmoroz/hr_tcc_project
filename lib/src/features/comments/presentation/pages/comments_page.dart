@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/pluralization.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/comments_page/bloc.dart';
 import '../widgets/comment_item.dart';
@@ -35,7 +38,7 @@ class _CommentsPageState extends State<CommentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F6),
+      backgroundColor: AppColors.grey100,
       appBar: AppBar(
         title: BlocBuilder<CommentsBloc, CommentsState>(
           builder: (context, state) {
@@ -46,9 +49,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 const Text('Комментарии'),
                 Text(
                   _getCommentCountText(commentCount),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                  style: AppTypography.textRegular2.grey700,
                 ),
               ],
             );
@@ -59,7 +60,7 @@ class _CommentsPageState extends State<CommentsPage> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
@@ -73,19 +74,14 @@ class _CommentsPageState extends State<CommentsPage> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      switch (context.read<CommentsBloc>().entityType) {
-                        CommentableEntityType.news =>
-                          'Новости «${context.read<CommentsBloc>().entityName}»',
-                        CommentableEntityType.discount =>
-                          'Льготы и можности «${context.read<CommentsBloc>().entityName}»',
-                      },
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF767679),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
+                    child: Text(switch (context
+                        .read<CommentsBloc>()
+                        .entityType) {
+                      CommentableEntityType.news =>
+                        'Новости «${context.read<CommentsBloc>().entityName}»',
+                      CommentableEntityType.discount =>
+                        'Льготы и можности «${context.read<CommentsBloc>().entityName}»',
+                    }, style: AppTypography.textRegular2.grey700),
                   ),
                 ],
               ),
@@ -106,111 +102,144 @@ class _CommentsPageState extends State<CommentsPage> {
               },
               child: BlocBuilder<CommentsBloc, CommentsState>(
                 builder: (context, state) {
-                  if (state.status == LoadingStatus.initial ||
-                      state.status == LoadingStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (state.status == LoadingStatus.error) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Ошибка: ${state.errorMessage ?? 'Unknown error'}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<CommentsBloc>().add(
-                                const CommentsEvent.loadComments(),
-                              );
-                            },
-                            child: const Text('Повторить'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  if (state.comments.isEmpty) {
-                    return const Center(child: Text('Комментариев пока нет'));
-                  }
-
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      context.read<CommentsBloc>().add(
-                        const CommentsEvent.refreshComments(),
-                      );
-                    },
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      reverse: true,
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      itemCount: state.groupedComments.length,
-                      itemBuilder: (context, index) {
-                        final group = state.groupedComments[index];
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Date separator at the end (appears at top due to reverse)
-                            DateSeparator(date: group.date),
-                            // Comments for this day
-                            ...group.comments.asMap().entries.map((entry) {
-                              final commentIndex = entry.key;
-                              final comment = entry.value;
-                              final isLastInGroup =
-                                  commentIndex == group.comments.length - 1;
-                              return CommentItem(
-                                comment: comment,
-                                isLastInGroup: isLastInGroup,
-                                onLike: () {
-                                  context.read<CommentsBloc>().add(
-                                    CommentsEvent.toggleCommentLike(comment.id),
-                                  );
-                                },
-                                onDelete: comment.editable
-                                    ? () {
-                                        _showDeleteDialog(context, comment.id);
-                                      }
-                                    : null,
-                                onReply: () {
-                                  context.read<CommentsBloc>().add(
-                                    CommentsEvent.startReply(comment),
-                                  );
-                                  // Focus the input field after state update
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    _inputFocusNode.requestFocus();
-                                  });
-                                },
-                              );
-                            }),
-                          ],
-                        );
-                      },
-                    ),
-                  );
+                  return switch (state.status) {
+                    LoadingStatus.initial => _buildLoadingState(context, state),
+                    LoadingStatus.loading => _buildLoadingState(context, state),
+                    LoadingStatus.error => _buildErrorState(context, state),
+                    LoadingStatus.success => _buildLoadedState(context, state),
+                  };
                 },
               ),
             ),
           ),
 
-          CommentInputBar(
-            controller: _commentController,
-            focusNode: _inputFocusNode,
-            onSend: (content, parentId) {
-              context.read<CommentsBloc>().add(
-                CommentsEvent.addComment(content: content, parentId: parentId),
-              );
+          BlocBuilder<CommentsBloc, CommentsState>(
+            builder: (context, state) {
+              return switch (state.status) {
+                LoadingStatus.initial => const SizedBox.shrink(),
+                LoadingStatus.loading => const SizedBox.shrink(),
+                LoadingStatus.error => const SizedBox.shrink(),
+                LoadingStatus.success => CommentInputBar(
+                  controller: _commentController,
+                  focusNode: _inputFocusNode,
+                  onSend: (content, parentId) {
+                    context.read<CommentsBloc>().add(
+                      CommentsEvent.addComment(
+                        content: content,
+                        parentId: parentId,
+                      ),
+                    );
+                  },
+                ),
+              };
             },
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context, CommentsState state) {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 28),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => Shimmer.fromColors(
+                      baseColor: AppColors.grey200,
+                      highlightColor: AppColors.grey100,
+                      child: SizedBox(
+                        height: 125,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.grey200,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
+                    itemCount: 10,
+                  ),
+                ),
+                SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, CommentsState state) {
+    return NetworkErrorMessageWidget(
+      onRetry: () =>
+          context.read<CommentsBloc>().add(const CommentsEvent.loadComments()),
+    );
+  }
+
+  Widget _buildLoadedState(BuildContext context, CommentsState state) {
+    if (state.comments.isEmpty) {
+      return Center(
+        child: Text(
+          'Комментариев пока нет',
+          style: AppTypography.textRegular1.black,
+        ),
+      );
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      reverse: true,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      itemCount: state.groupedComments.length,
+      itemBuilder: (context, index) {
+        final group = state.groupedComments[index];
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Date separator at the end (appears at top due to reverse)
+            DateSeparator(date: group.date),
+            // Comments for this day
+            ...group.comments.indexed.map((record) {
+              final (index, comment) = record;
+              final isLastInGroup = index == group.comments.length - 1;
+              return CommentItem(
+                comment: comment,
+                isLastInGroup: isLastInGroup,
+                onLike: () {
+                  context.read<CommentsBloc>().add(
+                    CommentsEvent.toggleCommentLike(comment.id),
+                  );
+                },
+                onDelete: comment.editable
+                    ? () {
+                        _showDeleteDialog(context, comment.id);
+                      }
+                    : null,
+                onReply: () {
+                  context.read<CommentsBloc>().add(
+                    CommentsEvent.startReply(comment),
+                  );
+                  // Focus the input field after state update
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _inputFocusNode.requestFocus();
+                  });
+                },
+              );
+            }),
+          ],
+        );
+      },
     );
   }
 
@@ -226,7 +255,10 @@ class _CommentsPageState extends State<CommentsPage> {
           actions: [
             CupertinoDialogAction(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Отмена'),
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: AppColors.black),
+              ),
             ),
             CupertinoDialogAction(
               isDestructiveAction: true,
@@ -252,7 +284,10 @@ class _CommentsPageState extends State<CommentsPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Отмена'),
+              child: const Text(
+                'Отмена',
+                style: TextStyle(color: AppColors.black),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -261,7 +296,10 @@ class _CommentsPageState extends State<CommentsPage> {
                 );
                 Navigator.pop(dialogContext);
               },
-              child: const Text('Удалить', style: TextStyle(color: Colors.red)),
+              child: const Text(
+                'Удалить',
+                style: TextStyle(color: AppColors.red500),
+              ),
             ),
           ],
         ),

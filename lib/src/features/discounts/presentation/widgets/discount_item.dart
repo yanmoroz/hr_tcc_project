@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
 import '../../domain/domain.dart';
@@ -122,13 +123,22 @@ class DiscountItem extends StatelessWidget {
                   LikeButton(
                     isLiked: discount.like,
                     likeCount: discount.likeCount,
+                    likedTextStyle: AppTypography.textMedium2.copyWith(
+                      color: AppColors.white.withValues(alpha: 0.7),
+                    ),
+                    notLikedTextStyle: AppTypography.textMedium2.copyWith(
+                      color: AppColors.white.withValues(alpha: 0.7),
+                    ),
+                    likedIconColor: AppColors.white,
+                    notLikedIconColor: AppColors.white.withValues(alpha: 0.7),
+                    onPressed: () {
+                      // TODO: Implement like action
+                    },
                   ),
                   const SizedBox(width: 16),
 
                   // Comments
-                  CommentsButton(
-                    commentCount: discount.commentCount,
-                  ),
+                  CommentsButton(commentCount: discount.commentCount),
                 ],
               ),
             ],

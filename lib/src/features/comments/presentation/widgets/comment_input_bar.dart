@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../../gen/assets.gen.dart';
+import '../../../../core/theme/theme.dart';
 import '../blocs/comments_page/bloc.dart';
 
 // Helper typedef for ValueChanged with two parameters
@@ -79,10 +80,10 @@ class _CommentInputBarState extends State<CommentInputBar> {
         return Container(
           padding: EdgeInsets.zero,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: AppColors.shadow200,
                 blurRadius: 12,
                 offset: const Offset(0, -4),
               ),
@@ -103,22 +104,10 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Reply arrow icon
-                      SvgPicture.asset(
-                        Assets.icons.replyIcon,
-                        width: 28,
-                        height: 28,
-                        colorFilter: const ColorFilter.mode(
-                          Color(0xFF0A3899),
-                          BlendMode.srcIn,
-                        ),
-                      ),
+                      SvgPicture.asset(Assets.icons.replyIcon),
                       const SizedBox(width: 8),
                       // Vertical separator line
-                      Container(
-                        width: 2,
-                        height: 40,
-                        color: const Color(0xFF0A3899),
-                      ),
+                      Container(width: 2, height: 40, color: AppColors.blue700),
                       const SizedBox(width: 8),
                       // Reply info
                       Expanded(
@@ -128,24 +117,14 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           children: [
                             Text(
                               'В ответ ${replyingToComment.author.title}',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                              style: AppTypography.textSemibold2.black,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 2),
                             Text(
                               replyingToComment.content,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: const Color(0xFF767679),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                              style: AppTypography.textRegular2.black,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -154,27 +133,19 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       ),
                       const SizedBox(width: 8),
                       // Cancel button
-                      IconButton(
-                        icon: SvgPicture.asset(
-                          Assets.icons.closeIcon,
-                          width: 24,
-                          height: 24,
-                          colorFilter: const ColorFilter.mode(
-                            Color(0xFF0A3899),
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                        onPressed: () {
+                      InkWell(
+                        onTap: () {
                           context.read<CommentsBloc>().add(
                             const CommentsEvent.cancelReply(),
                           );
                           widget.controller.clear();
                         },
-                        style: IconButton.styleFrom(
-                          fixedSize: const Size(24, 24),
-                          minimumSize: const Size(24, 24),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          padding: EdgeInsets.zero,
+                        child: SvgPicture.asset(
+                          Assets.icons.closeIcon,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.blue700,
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ),
                     ],
@@ -188,24 +159,11 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     const SizedBox(width: 12),
-                    // Attachment button - visible in both modes
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        Assets.icons.attachmentIcon,
-                        width: 28,
-                        height: 28,
-                      ),
-                      onPressed: isAddingComment
-                          ? null
-                          : () {
-                              // TODO: Implement attachment functionality
-                            },
-                      style: IconButton.styleFrom(
-                        fixedSize: const Size(28, 28),
-                        minimumSize: const Size(28, 28),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        padding: EdgeInsets.zero,
-                      ),
+                    InkWell(
+                      onTap: () {
+                        // TODO: Implement attachment functionality
+                      },
+                      child: SvgPicture.asset(Assets.icons.attachmentIcon),
                     ),
                     const SizedBox(width: 8),
                     // Text field
@@ -213,86 +171,51 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       child: TextField(
                         controller: widget.controller,
                         focusNode: widget.focusNode,
-                        style: const TextStyle(fontSize: 16),
+                        style: AppTypography.textRegular1.black,
                         decoration: InputDecoration(
                           hintText: isReplyMode
                               ? 'Ваш ответ'
                               : 'Ваш комментарий',
-                          hintStyle: const TextStyle(
-                            color: Color(0xFF767679),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
+                          hintStyle: AppTypography.textRegular1.grey700,
                           isDense: true,
                           filled: true,
-                          fillColor: Colors.white,
-                          constraints: const BoxConstraints(minHeight: 32),
+                          fillColor: AppColors.white,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 12,
-                            vertical: 4,
+                            vertical: 6,
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFBABABE),
+                              color: AppColors.grey500,
                               width: 1,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFBABABE),
+                              color: AppColors.grey500,
                               width: 1,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFBABABE),
+                              color: AppColors.grey500,
                               width: 1,
                             ),
                           ),
                         ),
                         minLines: 1,
-                        maxLines: 5,
+                        maxLines: 8,
                         enabled: !isAddingComment,
                       ),
                     ),
                     const SizedBox(width: 8),
                     // Send button - visible when focused or in reply mode, and has text
-                    if ((_isFocused || isReplyMode || isAddingComment) &&
-                        _hasText)
-                      IconButton(
-                        style: IconButton.styleFrom(
-                          backgroundColor: const Color(0xFF0A3899),
-                          fixedSize: const Size(32, 32),
-                          minimumSize: const Size(32, 32),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        icon: isAddingComment
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Color(0xFF0A3899),
-                                ),
-                              )
-                            : SvgPicture.asset(
-                                Assets.icons.arrowUp,
-                                width: 24,
-                                height: 24,
-                                colorFilter: const ColorFilter.mode(
-                                  Colors.white,
-                                  BlendMode.srcIn,
-                                ),
-                                fit: BoxFit.none,
-                              ),
-                        onPressed: isAddingComment
+                    if (_isFocused && _hasText)
+                      InkWell(
+                        onTap: isAddingComment
                             ? null
                             : () {
                                 final content = widget.controller.text.trim();
@@ -306,6 +229,22 @@ class _CommentInputBarState extends State<CommentInputBar> {
                                   }
                                 }
                               },
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: AppColors.blue700,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.all(4),
+                          child: SvgPicture.asset(
+                            Assets.icons.arrowUp,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
                       ),
                     const SizedBox(width: 12),
                   ],
