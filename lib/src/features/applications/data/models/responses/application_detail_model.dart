@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../../core/dictionaries/data/models/models.dart';
+import '../../../../../core/dictionaries/data/models/alpina_digital_prev_access_model.dart';
+import '../../../../../core/dictionaries/data/models/system_status_model.dart';
 import '../../../domain/domain.dart';
 
 part 'application_detail_model.freezed.dart';
@@ -8,7 +9,13 @@ part 'application_detail_model.g.dart';
 
 @freezed
 sealed class ApplicationDetailModel with _$ApplicationDetailModel {
-  const ApplicationDetailModel._();
+  @JsonSerializable()
+  const factory ApplicationDetailModel.absence({
+    required String id,
+    required String applicationFormCode,
+    required DateTime applicationDate,
+    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
+  }) = AbsenceModel;
 
   @JsonSerializable()
   const factory ApplicationDetailModel.alpinaDigitalAccess({
@@ -22,28 +29,6 @@ sealed class ApplicationDetailModel with _$ApplicationDetailModel {
     required AlpinaDigitalPrevAccessModel alpinaDigitalPrevAccessModel,
     required bool agreementAcceptance,
   }) = AlpinaDigitalAccessModel;
-
-  @JsonSerializable()
-  const factory ApplicationDetailModel.courierDelivery({
-    required String id,
-    required String applicationFormCode,
-    required DateTime applicationDate,
-    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
-    required bool deliveryType,
-    required String deliveryAddress,
-    required DateTime deliveryDate,
-    required String legalEntity,
-    required String office,
-    required String recepientCompanyName,
-    required String recepientNameContact,
-    required String recepientPhoneNumber,
-    required String tripPurpose,
-    required bool urgency,
-    String? recepientEmail,
-    String? comments,
-    String? choiceExplanation,
-    String? contentDescription,
-  }) = CourierDeliveryModel;
 
   @JsonSerializable()
   const factory ApplicationDetailModel.businessTrip({
@@ -71,36 +56,26 @@ sealed class ApplicationDetailModel with _$ApplicationDetailModel {
   }) = BusinessTripModel;
 
   @JsonSerializable()
-  const factory ApplicationDetailModel.referralProgram({
+  const factory ApplicationDetailModel.courierDelivery({
     required String id,
     required String applicationFormCode,
     required DateTime applicationDate,
     @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
-  }) = ReferralProgramModel;
-
-  @JsonSerializable()
-  const factory ApplicationDetailModel.unplannedTraining({
-    required String id,
-    required String applicationFormCode,
-    required DateTime applicationDate,
-    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
-  }) = UnplannedTrainingModel;
-
-  @JsonSerializable()
-  const factory ApplicationDetailModel.violation({
-    required String id,
-    required String applicationFormCode,
-    required DateTime applicationDate,
-    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
-  }) = ViolationModel;
-
-  @JsonSerializable()
-  const factory ApplicationDetailModel.absence({
-    required String id,
-    required String applicationFormCode,
-    required DateTime applicationDate,
-    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
-  }) = AbsenceModel;
+    required bool deliveryType,
+    required String deliveryAddress,
+    required DateTime deliveryDate,
+    required String legalEntity,
+    required String office,
+    required String recepientCompanyName,
+    required String recepientNameContact,
+    required String recepientPhoneNumber,
+    required String tripPurpose,
+    required bool urgency,
+    String? recepientEmail,
+    String? comments,
+    String? choiceExplanation,
+    String? contentDescription,
+  }) = CourierDeliveryModel;
 
   factory ApplicationDetailModel.fromJson(Map<String, dynamic> json) {
     final formCode = json['applicationFormCode'] as String;
@@ -124,6 +99,32 @@ sealed class ApplicationDetailModel with _$ApplicationDetailModel {
         throw Exception('Unknown application form code: $formCode');
     }
   }
+
+  @JsonSerializable()
+  const factory ApplicationDetailModel.referralProgram({
+    required String id,
+    required String applicationFormCode,
+    required DateTime applicationDate,
+    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
+  }) = ReferralProgramModel;
+
+  @JsonSerializable()
+  const factory ApplicationDetailModel.unplannedTraining({
+    required String id,
+    required String applicationFormCode,
+    required DateTime applicationDate,
+    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
+  }) = UnplannedTrainingModel;
+
+  @JsonSerializable()
+  const factory ApplicationDetailModel.violation({
+    required String id,
+    required String applicationFormCode,
+    required DateTime applicationDate,
+    @JsonKey(name: 'systemStatus') required SystemStatusModel systemStatusModel,
+  }) = ViolationModel;
+
+  const ApplicationDetailModel._();
 
   ApplicationDetail toDomain() {
     return map(

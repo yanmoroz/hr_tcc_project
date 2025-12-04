@@ -1,6 +1,6 @@
 import '../../../../core/base_types/base_repository.dart';
 import '../../../../core/base_types/result.dart';
-import '../../../../core/dictionaries/data/models/models.dart';
+import '../../../../core/dictionaries/data/models/system_status_model.dart';
 import '../../../../core/value_objects/status_group_type.dart';
 import '../../domain/domain.dart';
 import '../datasources/application_remote_data_source.dart';
@@ -12,6 +12,71 @@ class ApplicationRepositoryImpl
   final ApplicationRemoteDataSource _remoteDataSource;
 
   ApplicationRepositoryImpl(this._remoteDataSource);
+
+  @override
+  Future<Result<CancelApplicationResult>> cancelApplication(String id) async {
+    final result = await _remoteDataSource.cancelApplication(id);
+    return result.map(
+      (model) => CancelApplicationResult(
+        status: model.parsedStatus,
+        id: model.id,
+        systemStatus: model.systemStatusModel.toDomain(),
+      ),
+    );
+  }
+
+  @override
+  Future<Result<CheckApplicationStatusResult>> checkApplicationStatus({
+    required String applicationFormCode,
+    required String instance,
+  }) async {
+    final result = await _remoteDataSource.checkApplicationStatus(
+      applicationFormCode: applicationFormCode,
+      instance: instance,
+    );
+    return result.map(
+      (model) => CheckApplicationStatusResult(
+        status: model.parsedStatus,
+        instance: model.instance,
+        id: model.id,
+        idApplication: model.idApplication,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<CheckCancelStatusResult>> checkCancelStatus(String id) async {
+    final result = await _remoteDataSource.checkCancelStatus(id);
+    return result.map(
+      (model) => CheckCancelStatusResult(
+        status: model.parsedStatus,
+        id: model.id,
+        systemStatus: model.systemStatusModel.toDomain(),
+      ),
+    );
+  }
+
+  @override
+  Future<Result<CreateApplicationResult>> createApplication(
+    CreateApplicationParams params,
+  ) async {
+    final requestModel = params.toRequestModel();
+    final result = await _remoteDataSource.createApplication(requestModel);
+    return result.map(
+      (model) => CreateApplicationResult(
+        status: model.parsedStatus,
+        instance: model.instance,
+        id: model.id,
+        idApplication: model.idApplication,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<ApplicationDetail>> getApplicationDetail(String id) async {
+    final result = await _remoteDataSource.getApplicationDetail(id);
+    return result.map((model) => model.toDomain());
+  }
 
   @override
   Future<Result<GetApplicationsResult>> getApplications({
@@ -40,71 +105,6 @@ class ApplicationRepositoryImpl
         statistics: statistics,
       );
     });
-  }
-
-  @override
-  Future<Result<ApplicationDetail>> getApplicationDetail(String id) async {
-    final result = await _remoteDataSource.getApplicationDetail(id);
-    return result.map((model) => model.toDomain());
-  }
-
-  @override
-  Future<Result<CreateApplicationResult>> createApplication(
-    CreateApplicationParams params,
-  ) async {
-    final requestModel = params.toRequestModel();
-    final result = await _remoteDataSource.createApplication(requestModel);
-    return result.map(
-      (model) => CreateApplicationResult(
-        status: model.parsedStatus,
-        instance: model.instance,
-        id: model.id,
-        idApplication: model.idApplication,
-      ),
-    );
-  }
-
-  @override
-  Future<Result<CancelApplicationResult>> cancelApplication(String id) async {
-    final result = await _remoteDataSource.cancelApplication(id);
-    return result.map(
-      (model) => CancelApplicationResult(
-        status: model.parsedStatus,
-        id: model.id,
-        systemStatus: model.systemStatusModel.toDomain(),
-      ),
-    );
-  }
-
-  @override
-  Future<Result<CheckCancelStatusResult>> checkCancelStatus(String id) async {
-    final result = await _remoteDataSource.checkCancelStatus(id);
-    return result.map(
-      (model) => CheckCancelStatusResult(
-        status: model.parsedStatus,
-        id: model.id,
-        systemStatus: model.systemStatusModel.toDomain(),
-      ),
-    );
-  }
-
-  @override
-  Future<Result<CheckApplicationStatusResult>> checkApplicationStatus({
-    required String applicationFormCode,
-    required String instance,
-  }) async {
-    final result = await _remoteDataSource.checkApplicationStatus(
-      applicationFormCode: applicationFormCode,
-      instance: instance,
-    );
-    return result.map(
-      (model) => CheckApplicationStatusResult(
-        status: model.parsedStatus,
-        instance: model.instance,
-        id: model.id,
-        idApplication: model.idApplication,
-      ),
-    );
   }
 
   @override

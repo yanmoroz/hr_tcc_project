@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../../core/dictionaries/data/models/models.dart';
+import '../../../../../core/dictionaries/data/models/system_status_model.dart';
 import '../../../domain/domain.dart';
 import 'author_model.dart';
 import 'resell_equipment_type_model.dart';
@@ -10,8 +10,6 @@ part 'resell_detail_model.g.dart';
 
 @freezed
 abstract class ResellDetailModel with _$ResellDetailModel {
-  const ResellDetailModel._();
-
   const factory ResellDetailModel({
     required String id,
     String? generalPhoto,
@@ -33,6 +31,8 @@ abstract class ResellDetailModel with _$ResellDetailModel {
 
   factory ResellDetailModel.fromJson(Map<String, dynamic> json) =>
       _$ResellDetailModelFromJson(json);
+
+  const ResellDetailModel._();
 
   ResellDetail toDomain() => ResellDetail(
     id: id,

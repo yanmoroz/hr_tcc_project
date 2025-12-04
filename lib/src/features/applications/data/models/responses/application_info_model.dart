@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../../core/dictionaries/data/models/models.dart';
+import '../../../../../core/dictionaries/data/models/application_form_model.dart';
+import '../../../../../core/dictionaries/data/models/system_status_model.dart';
 import '../../../domain/domain.dart';
 
 part 'application_info_model.freezed.dart';
@@ -8,8 +9,6 @@ part 'application_info_model.g.dart';
 
 @freezed
 abstract class ApplicationInfoModel with _$ApplicationInfoModel {
-  const ApplicationInfoModel._();
-
   const factory ApplicationInfoModel({
     required String id,
     required String idApplication,
@@ -23,6 +22,8 @@ abstract class ApplicationInfoModel with _$ApplicationInfoModel {
 
   factory ApplicationInfoModel.fromJson(Map<String, dynamic> json) =>
       _$ApplicationInfoModelFromJson(json);
+
+  const ApplicationInfoModel._();
 
   ApplicationInfo toDomain() => ApplicationInfo(
     id: id,

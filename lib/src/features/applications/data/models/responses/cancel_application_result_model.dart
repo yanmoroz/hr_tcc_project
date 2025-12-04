@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../../core/dictionaries/data/models/system_status_model.dart';
 import '../../../../../core/value_objects/application_status.dart';
-import '../../../../../core/dictionaries/data/models/models.dart';
 
 part 'cancel_application_result_model.freezed.dart';
 part 'cancel_application_result_model.g.dart';
@@ -9,8 +9,6 @@ part 'cancel_application_result_model.g.dart';
 @freezed
 abstract class CancelApplicationResultModel
     with _$CancelApplicationResultModel {
-  const CancelApplicationResultModel._();
-
   const factory CancelApplicationResultModel({
     required String status,
     required String id,
@@ -19,6 +17,8 @@ abstract class CancelApplicationResultModel
 
   factory CancelApplicationResultModel.fromJson(Map<String, dynamic> json) =>
       _$CancelApplicationResultModelFromJson(json);
+
+  const CancelApplicationResultModel._();
 
   ApplicationStatus get parsedStatus => _parseApplicationStatus(status);
 
