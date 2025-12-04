@@ -5,7 +5,7 @@ import '../../../domain/domain.dart';
 
 part 'comments_state.freezed.dart';
 
-/// Represents a group of comments for a single day
+
 class CommentDayGroup {
   final DateTime date;
   final List<Comment> comments;

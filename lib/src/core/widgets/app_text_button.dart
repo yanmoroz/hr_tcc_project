@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// A text button that removes all default padding and styling.
-///
-/// This widget wraps [TextButton] and removes:
-/// - Default padding
-/// - Minimum size constraints
-/// - Rounded border/shape
-///
-/// Useful for inline text links that should behave like plain text.
 class AppTextButton extends StatelessWidget {
   final VoidCallback? onPressed;
 

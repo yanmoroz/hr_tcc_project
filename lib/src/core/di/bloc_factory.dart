@@ -9,19 +9,15 @@ import '../../features/resell/resell.dart';
 import '../entities/application_form.dart';
 import 'service_locator.dart';
 
-/// Factory for creating BLoC instances.
 class BlocFactory {
-  /// Creates an [AddressBookBloc] instance.
   static AddressBookBloc createAddressBookBloc() {
     return AddressBookBloc(getAddressBookUsecase: sl());
   }
 
-  /// Creates an [ApplicationCreationBloc] instance.
   static ApplicationCreationBloc createApplicationCreationBloc() {
     return ApplicationCreationBloc(dictionariesRepository: sl());
   }
 
-  /// Creates an [ApplicationDetailBloc] instance.
   static ApplicationDetailBloc createApplicationDetailBloc(
     String applicationId,
   ) {
@@ -32,7 +28,6 @@ class BlocFactory {
     );
   }
 
-  /// Creates an [ApplicationFormBloc] instance.
   static ApplicationFormBloc createApplicationFormBloc(
     ApplicationForm applicationForm,
   ) {
@@ -43,12 +38,10 @@ class BlocFactory {
     );
   }
 
-  /// Creates an [ApplicationsListBloc] instance.
   static ApplicationsListBloc createApplicationsListBloc() {
     return ApplicationsListBloc(getApplicationsUsecase: sl());
   }
 
-  /// Creates a [CommentsBloc] instance for the given [entityId] and [entityType].
   static CommentsBloc createCommentsBloc({
     required int entityId,
     required CommentableEntityType entityType,
@@ -65,12 +58,10 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [CurrentUserBloc] instance.
   static CurrentUserBloc createCurrentUserBloc() {
     return CurrentUserBloc(getCurrentUserInfoUsecase: sl());
   }
 
-  /// Creates a [DiscountCategoriesBloc] instance.
   static DiscountCategoriesBloc createDiscountCategoriesBloc() {
     return DiscountCategoriesBloc(
       getKpDiscountCategoriesUsecase: sl(),
@@ -78,7 +69,6 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [DiscountDetailBloc] instance with the given [discountId].
   static DiscountDetailBloc createDiscountDetailBloc(int discountId) {
     return DiscountDetailBloc(
       discountId: discountId,
@@ -89,7 +79,6 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [DiscountsListBloc] instance.
   static DiscountsListBloc createDiscountsListBloc() {
     return DiscountsListBloc(
       getDiscountsUsecase: sl(),
@@ -98,7 +87,6 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [NewsDetailBloc] instance with the given [newsId].
   static NewsDetailBloc createNewsDetailBloc(int newsId) {
     return NewsDetailBloc(
       newsId: newsId,
@@ -109,12 +97,10 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [NewsListBloc] instance.
   static NewsListBloc createNewsListBloc() {
     return NewsListBloc(getNewsListUsecase: sl(), downloadFileUsecase: sl());
   }
 
-  /// Creates a [NotificationDetailBloc] instance.
   static NotificationDetailBloc createNotificationDetailBloc(
     int notificationId,
   ) {
@@ -125,7 +111,6 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [NotificationsListBloc] instance.
   static NotificationsListBloc createNotificationsListBloc() {
     return NotificationsListBloc(
       getNotificationsUsecase: sl(),
@@ -134,7 +119,6 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [PollDetailBloc] instance with the given [pollId].
   static PollDetailBloc createPollDetailBloc(int pollId) {
     return PollDetailBloc(
       pollId: pollId,
@@ -145,17 +129,14 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [PollsListBloc] instance.
   static PollsListBloc createPollsListBloc() {
     return PollsListBloc(getPollsUsecase: sl(), downloadFileUsecase: sl());
   }
 
-  /// Creates a [ResellBookingBloc] instance.
   static ResellBookingBloc createResellBookingBloc(String itemId) {
     return ResellBookingBloc(itemId, sl());
   }
 
-  /// Creates a [ResellDetailBloc] instance with the given [itemId].
   static ResellDetailBloc createResellDetailBloc(String itemId) {
     return ResellDetailBloc(
       itemId: itemId,
@@ -164,12 +145,10 @@ class BlocFactory {
     );
   }
 
-  /// Creates a [ResellItemsBloc] instance.
   static ResellItemsBloc createResellItemsBloc() {
     return ResellItemsBloc(sl());
   }
 
-  /// Returns the singleton [UnreadNotificationsCubit] instance.
   static UnreadNotificationsCubit getUnreadNotificationsCubit() {
     return sl<UnreadNotificationsCubit>();
   }

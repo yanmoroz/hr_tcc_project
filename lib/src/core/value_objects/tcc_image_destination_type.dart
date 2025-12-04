@@ -1,8 +1,6 @@
 TccImageDestinationType tccImageDestinationTypeFromJson(String value) =>
     TccImageDestinationType.fromString(value);
 
-/// TCC image destination type enumeration for file operations
-/// Represents where the image/file will be stored in the TCC system
 enum TccImageDestinationType {
   applicationForm,
   person;

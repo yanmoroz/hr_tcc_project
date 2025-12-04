@@ -4,7 +4,6 @@ import 'author.dart';
 
 part 'news_item.freezed.dart';
 
-/// News list item entity
 @freezed
 abstract class NewsItem with _$NewsItem {
   const factory NewsItem({

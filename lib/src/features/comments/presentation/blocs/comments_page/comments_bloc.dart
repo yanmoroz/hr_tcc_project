@@ -37,19 +37,69 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     on<CancelReply>(_onCancelReply);
   }
 
-  Future<void> _onLoadComments(
-    LoadComments event,
-    Emitter<CommentsState> emit,
-  ) async {
-    emit(state.copyWith(status: LoadingStatus.loading));
-    await _loadComments(emit);
+  List<CommentDayGroup> _groupCommentsByDay(List<Comment> comments) {
+    if (comments.isEmpty) return [];
+
+    // Sort descending (newest first) for reversed ListView
+    final sortedComments = List<Comment>.from(comments)
+      ..sort((a, b) => b.createdData.compareTo(a.createdData));
+
+    final List<CommentDayGroup> groups = [];
+    DateTime? currentDate;
+    List<Comment> currentGroup = [];
+
+    for (final comment in sortedComments) {
+      final commentDate = DateTime(
+        comment.createdData.year,
+        comment.createdData.month,
+        comment.createdData.day,
+      );
+
+      if (currentDate == null || !currentDate.isSameDay(commentDate)) {
+        // Save previous group if exists
+        if (currentGroup.isNotEmpty && currentDate != null) {
+          groups.add(
+            CommentDayGroup(date: currentDate, comments: currentGroup),
+          );
+        }
+        // Start new group
+        currentDate = commentDate;
+        currentGroup = [comment];
+      } else {
+        currentGroup.insert(0, comment);
+      }
+    }
+
+    // Add last group
+    if (currentGroup.isNotEmpty && currentDate != null) {
+      groups.add(CommentDayGroup(date: currentDate, comments: currentGroup));
+    }
+
+    return groups;
   }
 
-  Future<void> _onRefreshComments(
-    RefreshComments event,
-    Emitter<CommentsState> emit,
-  ) async {
-    await _loadComments(emit);
+  Future<void> _loadComments(Emitter<CommentsState> emit) async {
+    final result = await _getCommentsUsecase(
+      entityId: entityId,
+      entityType: entityType,
+    );
+
+    result.fold(
+      (error) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: error.toString(),
+        ),
+      ),
+      (comments) => emit(
+        state.copyWith(
+          status: LoadingStatus.success,
+          comments: comments,
+          groupedComments: _groupCommentsByDay(comments),
+          isAddingComment: false,
+        ),
+      ),
+    );
   }
 
   Future<void> _onAddComment(
@@ -87,10 +137,6 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     }
   }
 
-  void _onStartReply(StartReply event, Emitter<CommentsState> emit) {
-    emit(state.copyWith(replyingToComment: event.comment));
-  }
-
   void _onCancelReply(CancelReply event, Emitter<CommentsState> emit) {
     emit(state.copyWith(replyingToComment: null));
   }
@@ -114,6 +160,25 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         // Error handling if needed
       }, (_) {});
     }
+  }
+
+  Future<void> _onLoadComments(
+    LoadComments event,
+    Emitter<CommentsState> emit,
+  ) async {
+    emit(state.copyWith(status: LoadingStatus.loading));
+    await _loadComments(emit);
+  }
+
+  Future<void> _onRefreshComments(
+    RefreshComments event,
+    Emitter<CommentsState> emit,
+  ) async {
+    await _loadComments(emit);
+  }
+
+  void _onStartReply(StartReply event, Emitter<CommentsState> emit) {
+    emit(state.copyWith(replyingToComment: event.comment));
   }
 
   Future<void> _onToggleCommentLike(
@@ -181,71 +246,5 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         // Success - state already updated optimistically
       },
     );
-  }
-
-  Future<void> _loadComments(Emitter<CommentsState> emit) async {
-    final result = await _getCommentsUsecase(
-      entityId: entityId,
-      entityType: entityType,
-    );
-
-    result.fold(
-      (error) => emit(
-        state.copyWith(
-          status: LoadingStatus.error,
-          errorMessage: error.toString(),
-        ),
-      ),
-      (comments) => emit(
-        state.copyWith(
-          status: LoadingStatus.success,
-          comments: comments,
-          groupedComments: _groupCommentsByDay(comments),
-          isAddingComment: false,
-        ),
-      ),
-    );
-  }
-
-  /// Groups comments by day, sorted descending (newest first) for reversed ListView.
-  List<CommentDayGroup> _groupCommentsByDay(List<Comment> comments) {
-    if (comments.isEmpty) return [];
-
-    // Sort descending (newest first) for reversed ListView
-    final sortedComments = List<Comment>.from(comments)
-      ..sort((a, b) => b.createdData.compareTo(a.createdData));
-
-    final List<CommentDayGroup> groups = [];
-    DateTime? currentDate;
-    List<Comment> currentGroup = [];
-
-    for (final comment in sortedComments) {
-      final commentDate = DateTime(
-        comment.createdData.year,
-        comment.createdData.month,
-        comment.createdData.day,
-      );
-
-      if (currentDate == null || !currentDate.isSameDay(commentDate)) {
-        // Save previous group if exists
-        if (currentGroup.isNotEmpty && currentDate != null) {
-          groups.add(
-            CommentDayGroup(date: currentDate, comments: currentGroup),
-          );
-        }
-        // Start new group
-        currentDate = commentDate;
-        currentGroup = [comment];
-      } else {
-        currentGroup.insert(0, comment);
-      }
-    }
-
-    // Add last group
-    if (currentGroup.isNotEmpty && currentDate != null) {
-      groups.add(CommentDayGroup(date: currentDate, comments: currentGroup));
-    }
-
-    return groups;
   }
 }

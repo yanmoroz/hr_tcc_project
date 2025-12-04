@@ -1,4 +1,3 @@
-/// Enum representing entity types that can have comments.
 enum CommentableEntityType {
   news,
   discount;

@@ -2,21 +2,16 @@ import 'package:intl/intl.dart';
 
 import '../utils/pluralization.dart';
 
-/// Extension methods for date and time formatting
 extension DateTimeExtension on DateTime {
-  /// Checks if this DateTime is on the same day as [other]
   bool isSameDay(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
   }
 
-  /// Checks if this DateTime is yesterday
   bool isYesterday() {
     final yesterday = DateTime.now().subtract(Duration(days: 1));
     return isSameDay(yesterday);
   }
 
-  /// Returns a formatted date-time string in Russian
-  /// Shows "Сегодня в HH:mm" for today, otherwise "dd.MM.yyyy в HH:mm"
   String toFormattedDateTime() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -31,7 +26,6 @@ extension DateTimeExtension on DateTime {
     }
   }
 
-  /// Returns a relative time string in Russian (e.g., "12 дней назад", "2 часа назад")
   String toRelativeTime() {
     final now = DateTime.now();
     final difference = now.difference(this);

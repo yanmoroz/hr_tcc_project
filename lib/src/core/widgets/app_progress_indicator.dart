@@ -1,29 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A platform-adaptive progress indicator widget.
-///
-/// Displays [CupertinoActivityIndicator] on iOS and
-/// [CircularProgressIndicator] on Android/other platforms.
-///
-/// Supports both determinate and indeterminate modes:
-/// - Indeterminate: Shows spinning animation (default)
-/// - Determinate: Shows progress from 0.0 to 1.0 when [value] is provided
 class AppProgressIndicator extends StatelessWidget {
-  /// The progress value (0.0 to 1.0) for determinate mode.
-  /// If null, shows indeterminate animation.
   final double? value;
 
-  /// The color of the progress indicator.
-  /// If null, uses the platform default.
   final Color? color;
 
-  /// The radius of the indicator (iOS only).
-  /// Defaults to 10.0.
   final double radius;
 
-  /// The stroke width of the indicator (Android only).
-  /// Defaults to 4.0.
   final double strokeWidth;
 
   const AppProgressIndicator({

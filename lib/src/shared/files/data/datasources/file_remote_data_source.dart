@@ -10,7 +10,6 @@ import '../../domain/domain.dart';
 import '../models/uploaded_file_model.dart';
 
 abstract class FileRemoteDataSource {
-  /// Downloads a file from the server
   Future<Result<Uint8List>> downloadFile({
     required SystemType systemType,
     required bool download,
@@ -22,7 +21,6 @@ abstract class FileRemoteDataSource {
     ProgressCallback? onProgress,
   });
 
-  /// Uploads a file to the server
   Future<Result<UploadedFileModel>> uploadFile({
     required File file,
     required SystemType systemType,

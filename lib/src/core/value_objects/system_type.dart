@@ -1,6 +1,5 @@
 SystemType systemTypeFromJson(String value) => SystemType.fromString(value);
 
-/// System type enumeration for file operations
 enum SystemType {
   elma,
   kp,

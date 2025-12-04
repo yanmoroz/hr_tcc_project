@@ -2,7 +2,16 @@ import '../../domain/params/create_application_params.dart';
 import '../models/requests/candidate_info_model.dart';
 import '../models/requests/create_application_request_model.dart';
 
-/// Maps domain CreateApplicationParams to data layer CreateApplicationRequestModel
+extension CandidateInfoMapper on CandidateInfo {
+  CandidateInfoModel toModel() {
+    return CandidateInfoModel(
+      lastName: lastName,
+      firstName: firstName,
+      middleName: middleName,
+    );
+  }
+}
+
 extension CreateApplicationParamsMapper on CreateApplicationParams {
   CreateApplicationRequestModel toRequestModel() {
     return map(
@@ -87,17 +96,6 @@ extension CreateApplicationParamsMapper on CreateApplicationParams {
         country: params.country,
         legalEntity: params.legalEntity,
       ),
-    );
-  }
-}
-
-/// Maps domain CandidateInfo to data layer CandidateInfoModel
-extension CandidateInfoMapper on CandidateInfo {
-  CandidateInfoModel toModel() {
-    return CandidateInfoModel(
-      lastName: lastName,
-      firstName: firstName,
-      middleName: middleName,
     );
   }
 }

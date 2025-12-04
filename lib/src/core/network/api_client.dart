@@ -109,7 +109,6 @@ abstract class BaseApiClient implements ApiClient {
     );
   }
 
-  /// Override this method to configure certificate validation behavior
   void _configureCertificateValidation() {
     // Default: secure (no override needed)
   }

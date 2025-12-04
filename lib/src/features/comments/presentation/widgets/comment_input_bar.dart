@@ -9,13 +9,6 @@ import '../blocs/comments_page/bloc.dart';
 // Helper typedef for ValueChanged with two parameters
 typedef ValueChanged2<T1, T2> = void Function(T1, T2);
 
-/// A reusable comment input bar widget that supports both message and reply modes.
-///
-/// This widget displays:
-/// - Reply mode header (when replying to a comment)
-/// - Text input field
-/// - Attachment button
-/// - Send button
 class CommentInputBar extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -35,36 +28,6 @@ class CommentInputBar extends StatefulWidget {
 class _CommentInputBarState extends State<CommentInputBar> {
   bool _isFocused = false;
   bool _hasText = false;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(_onFocusChange);
-    widget.controller.addListener(_onTextChange);
-    _hasText = widget.controller.text.trim().isNotEmpty;
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(_onFocusChange);
-    widget.controller.removeListener(_onTextChange);
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    setState(() {
-      _isFocused = widget.focusNode.hasFocus;
-    });
-  }
-
-  void _onTextChange() {
-    final hasText = widget.controller.text.trim().isNotEmpty;
-    if (_hasText != hasText) {
-      setState(() {
-        _hasText = hasText;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -255,5 +218,35 @@ class _CommentInputBarState extends State<CommentInputBar> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode.removeListener(_onFocusChange);
+    widget.controller.removeListener(_onTextChange);
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(_onFocusChange);
+    widget.controller.addListener(_onTextChange);
+    _hasText = widget.controller.text.trim().isNotEmpty;
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = widget.focusNode.hasFocus;
+    });
+  }
+
+  void _onTextChange() {
+    final hasText = widget.controller.text.trim().isNotEmpty;
+    if (_hasText != hasText) {
+      setState(() {
+        _hasText = hasText;
+      });
+    }
   }
 }

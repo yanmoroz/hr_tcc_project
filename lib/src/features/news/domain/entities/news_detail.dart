@@ -4,7 +4,6 @@ import 'author.dart';
 
 part 'news_detail.freezed.dart';
 
-/// News detail entity with full content
 @freezed
 abstract class NewsDetail with _$NewsDetail {
   const factory NewsDetail({

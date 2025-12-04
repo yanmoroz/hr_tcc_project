@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Exception thrown when data mapping/parsing fails
 class MappingException extends Equatable implements Exception {
   final String message;
   final dynamic error;
@@ -8,7 +7,6 @@ class MappingException extends Equatable implements Exception {
 
   const MappingException({required this.message, this.error, this.stackTrace});
 
-  /// Creates a MappingException for JSON parsing errors
   factory MappingException.fromParsingError(
     dynamic error,
     StackTrace? stackTrace,

@@ -5,7 +5,6 @@ import '../../domain/domain.dart';
 part 'jira_avatar_urls_model.freezed.dart';
 part 'jira_avatar_urls_model.g.dart';
 
-/// JIRA avatar URLs model
 @freezed
 abstract class JiraAvatarUrlsModel with _$JiraAvatarUrlsModel {
   const factory JiraAvatarUrlsModel({

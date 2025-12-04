@@ -17,15 +17,12 @@ import '../datasources/file_remote_data_source.dart';
 import '../models/uploaded_file_model.dart';
 
 class FileRepositoryImpl with BaseRepository implements FileRepository {
-  /// Cache TTL duration - files older than this will be re-downloaded
   static const Duration _cacheTtl = Duration(hours: 24);
 
   final FileRemoteDataSource _remoteDataSource;
 
   FileRepositoryImpl(this._remoteDataSource);
 
-  /// Clean up expired cache files
-  /// This can be called periodically to free up storage
   Future<void> cleanupExpiredCache() async {
     try {
       final cacheDir = await getTemporaryDirectory();
@@ -172,7 +169,6 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
     return result.map((model) => model.toDomain());
   }
 
-  /// Delete cache files (data and metadata) for a given cache key
   Future<void> _deleteCacheFiles(String cacheKey) async {
     try {
       final cacheDir = await getTemporaryDirectory();
@@ -190,7 +186,6 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
     }
   }
 
-  /// Generate a unique cache key based on system type and file identifiers
   String _generateCacheKey(
     SystemType systemType,
     bool download,
@@ -209,8 +204,6 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
     return hash.toString();
   }
 
-  /// Load file data from cache
-  /// Returns null if file doesn't exist, is expired, or has invalid metadata
   Future<Uint8List?> _loadFromCache(String cacheKey) async {
     try {
       final cacheDir = await getTemporaryDirectory();
@@ -257,7 +250,6 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
     return null;
   }
 
-  /// Save file data to cache with metadata
   Future<void> _saveToCache(String cacheKey, Uint8List data) async {
     try {
       final cacheDir = await getTemporaryDirectory();

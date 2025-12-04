@@ -5,13 +5,6 @@ import '../../../gen/assets.gen.dart';
 import '../../../src/core/extensions/int_extension.dart';
 import '../theme/theme.dart';
 
-/// A reusable comments button widget that displays a comment icon with counter.
-///
-/// This widget can work in two modes:
-/// - Interactive mode: When [onPressed] is provided, renders as a GestureDetector
-/// - Display mode: When [onPressed] is null, renders as a read-only Row
-///
-/// The comment icon uses comments-icon.svg and is displayed in white color.
 class CommentsButton extends StatelessWidget {
   final int commentCount;
   final Color textColor;

@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'gallery_image.freezed.dart';
 
-/// Gallery image entity
 @freezed
 abstract class GalleryImage with _$GalleryImage {
   const factory GalleryImage({

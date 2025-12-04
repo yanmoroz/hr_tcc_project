@@ -1,6 +1,5 @@
 FileGroup? fileGroupFromJson(String? value) => FileGroup.fromString(value);
 
-/// File group enumeration for KP system
 enum FileGroup {
   news,
   discount,

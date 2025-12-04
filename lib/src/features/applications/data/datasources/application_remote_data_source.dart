@@ -8,7 +8,21 @@ import '../models/responses/create_application_result_model.dart';
 import '../models/responses/kp_absence_category_model.dart';
 
 abstract class ApplicationRemoteDataSource {
-  /// Get paginated list of applications with filtering and statistics
+  Future<Result<CancelApplicationResultModel>> cancelApplication(String id);
+
+  Future<Result<CreateApplicationResultModel>> checkApplicationStatus({
+    required String applicationFormCode,
+    required String instance,
+  });
+
+  Future<Result<CancelApplicationResultModel>> checkCancelStatus(String id);
+
+  Future<Result<CreateApplicationResultModel>> createApplication(
+    CreateApplicationRequestModel request,
+  );
+
+  Future<Result<ApplicationDetailModel>> getApplicationDetail(String id);
+
   Future<Result<ApplicationListResponseModel>> getApplications({
     required int page,
     required int pageSize,
@@ -16,26 +30,5 @@ abstract class ApplicationRemoteDataSource {
     String? search,
   });
 
-  /// Get detailed information about a specific application
-  Future<Result<ApplicationDetailModel>> getApplicationDetail(String id);
-
-  /// Create a new application
-  Future<Result<CreateApplicationResultModel>> createApplication(
-    CreateApplicationRequestModel request,
-  );
-
-  /// Cancel an application
-  Future<Result<CancelApplicationResultModel>> cancelApplication(String id);
-
-  /// Check the completion status of application cancellation
-  Future<Result<CancelApplicationResultModel>> checkCancelStatus(String id);
-
-  /// Check the success of application creation by process ID
-  Future<Result<CreateApplicationResultModel>> checkApplicationStatus({
-    required String applicationFormCode,
-    required String instance,
-  });
-
-  /// Get KP absence categories
   Future<Result<List<KpAbsenceCategoryModel>>> getKpAbsenceCategories();
 }

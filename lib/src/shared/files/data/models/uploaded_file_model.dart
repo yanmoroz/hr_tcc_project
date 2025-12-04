@@ -14,7 +14,6 @@ DateTime _dateTimeFromJson(dynamic value) {
   return DateTime.now();
 }
 
-/// Unified upload response model - handles different system types
 @Freezed(unionKey: 'systemType', unionValueCase: FreezedUnionCase.none)
 sealed class UploadedFileModel with _$UploadedFileModel {
   @FreezedUnionValue('ELMA')

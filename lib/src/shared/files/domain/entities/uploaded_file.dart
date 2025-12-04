@@ -5,16 +5,12 @@ import 'jira_author.dart';
 
 part 'uploaded_file.freezed.dart';
 
-/// Unified uploaded file entity that handles all system types
-/// Uses sealed union type for type safety - each system type has its own variant
 @freezed
 sealed class UploadedFile with _$UploadedFile {
-  /// ELMA system uploaded file
   const factory UploadedFile.elma({
     required String idFile, // UUID
   }) = ElmaUploadedFile;
 
-  /// JIRA system uploaded file
   const factory UploadedFile.jira({
     required String id,
     required String filename,
@@ -27,7 +23,6 @@ sealed class UploadedFile with _$UploadedFile {
     JiraAuthor? author,
   }) = JiraUploadedFile;
 
-  /// KP system uploaded file
   const factory UploadedFile.kp({
     required int id,
     required String name,
@@ -44,19 +39,15 @@ sealed class UploadedFile with _$UploadedFile {
     int? priority,
   }) = KpUploadedFile;
 
-  /// _1C system uploaded file (minimal support)
   const factory UploadedFile.oneC() = OneCUploadedFile;
 
-  /// TCC system uploaded file
   const factory UploadedFile.tcc({
     required String id, // UUID
     required int size,
   }) = TccUploadedFile;
 }
 
-/// Extension for backward compatibility and convenience methods
 extension UploadedFileX on UploadedFile {
-  /// Get ELMA-specific fields (for backward compatibility)
   ElmaUploadedFile? get asElma {
     return switch (this) {
       ElmaUploadedFile() => this as ElmaUploadedFile,
@@ -64,7 +55,6 @@ extension UploadedFileX on UploadedFile {
     };
   }
 
-  /// Get JIRA-specific fields (for backward compatibility)
   JiraUploadedFile? get asJira {
     return switch (this) {
       JiraUploadedFile() => this as JiraUploadedFile,
@@ -72,7 +62,6 @@ extension UploadedFileX on UploadedFile {
     };
   }
 
-  /// Get KP-specific fields (for backward compatibility)
   KpUploadedFile? get asKp {
     return switch (this) {
       KpUploadedFile() => this as KpUploadedFile,
@@ -80,7 +69,6 @@ extension UploadedFileX on UploadedFile {
     };
   }
 
-  /// Get TCC-specific fields (for backward compatibility)
   TccUploadedFile? get asTcc {
     return switch (this) {
       TccUploadedFile() => this as TccUploadedFile,
@@ -88,7 +76,6 @@ extension UploadedFileX on UploadedFile {
     };
   }
 
-  /// Get file ID if available
   String? get id {
     return switch (this) {
       ElmaUploadedFile(:final idFile) => idFile,
@@ -99,7 +86,6 @@ extension UploadedFileX on UploadedFile {
     };
   }
 
-  /// Get file size if available
   int? get size {
     return switch (this) {
       KpUploadedFile(:final size) => size,
@@ -109,7 +95,6 @@ extension UploadedFileX on UploadedFile {
     };
   }
 
-  /// Get system type from the uploaded file variant
   SystemType get systemType {
     return switch (this) {
       ElmaUploadedFile() => SystemType.elma,

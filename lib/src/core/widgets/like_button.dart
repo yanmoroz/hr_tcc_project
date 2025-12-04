@@ -4,16 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../gen/assets.gen.dart';
 import '../../../src/core/extensions/int_extension.dart';
 
-/// A reusable like button widget that displays a like icon with counter.
-///
-/// This widget can work in two modes:
-/// - Interactive mode: When [onPressed] is provided, renders as a GestureDetector
-/// - Display mode: When [onPressed] is null, renders as a read-only Row
-///
-/// The like icon changes based on [isLiked]:
-/// - like-white-icon.svg when liked
-/// - like-icon.svg when not liked
-/// Both icons are displayed in white color.
 class LikeButton extends StatelessWidget {
   final bool isLiked;
 

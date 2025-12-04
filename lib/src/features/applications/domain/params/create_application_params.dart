@@ -2,11 +2,24 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'create_application_params.freezed.dart';
 
-/// Domain-layer parameters for creating applications
-/// Sealed class covering all application types without depending on data layer
+@freezed
+abstract class CandidateInfo with _$CandidateInfo {
+  const factory CandidateInfo({
+    required String lastName,
+    required String firstName,
+    String? middleName,
+  }) = _CandidateInfo;
+}
+
 @freezed
 sealed class CreateApplicationParams with _$CreateApplicationParams {
-  /// Alpina Digital Access application
+  const factory CreateApplicationParams.absence({
+    required int category,
+    required String note,
+    String? fromDateTime,
+    String? toDateTime,
+  }) = AbsenceParams;
+
   const factory CreateApplicationParams.alpinaDigitalAccess({
     required String desiredStartDate,
     String? comment,
@@ -14,7 +27,26 @@ sealed class CreateApplicationParams with _$CreateApplicationParams {
     required bool agreementAcceptance,
   }) = AlpinaDigitalAccessParams;
 
-  /// Courier Delivery application
+  const factory CreateApplicationParams.businessTrip({
+    required String startDate,
+    required String endDate,
+    required String departure,
+    required String destination,
+    required String financeDivisionTripCode,
+    String? financeDivisionTripString,
+    required String tripPurposeId,
+    String? tripPurposeString,
+    @Default(true) bool activityType,
+    String? plannedEvents,
+    String? urgency,
+    required String selectionHelpTripCode,
+    String? comment,
+    List<String>? files,
+    required List<String> travelers,
+    required String country,
+    String? legalEntity,
+  }) = BusinessTripParams;
+
   const factory CreateApplicationParams.courierDelivery({
     required bool deliveryType,
     required String tripPurposesCode,
@@ -31,7 +63,14 @@ sealed class CreateApplicationParams with _$CreateApplicationParams {
     String? contentDescription,
   }) = CourierDeliveryParams;
 
-  /// Unplanned Training application
+  const factory CreateApplicationParams.referralProgram({
+    required String idVacancy,
+    required CandidateInfo fullName,
+    String? resumeFile,
+    String? linkToResume,
+    String? comment,
+  }) = ReferralProgramParams;
+
   const factory CreateApplicationParams.unplannedTraining({
     required String supervisorEmployee,
     required String chief,
@@ -52,58 +91,9 @@ sealed class CreateApplicationParams with _$CreateApplicationParams {
     List<String>? groupEmployees,
   }) = UnplannedTrainingParams;
 
-  /// Referral Program application
-  const factory CreateApplicationParams.referralProgram({
-    required String idVacancy,
-    required CandidateInfo fullName,
-    String? resumeFile,
-    String? linkToResume,
-    String? comment,
-  }) = ReferralProgramParams;
-
-  /// Violation application
   const factory CreateApplicationParams.violation({
     required String securityLevelId,
     required String summary,
     required String description,
   }) = ViolationParams;
-
-  /// Absence application
-  const factory CreateApplicationParams.absence({
-    required int category,
-    required String note,
-    String? fromDateTime,
-    String? toDateTime,
-  }) = AbsenceParams;
-
-  /// Business Trip application
-  const factory CreateApplicationParams.businessTrip({
-    required String startDate,
-    required String endDate,
-    required String departure,
-    required String destination,
-    required String financeDivisionTripCode,
-    String? financeDivisionTripString,
-    required String tripPurposeId,
-    String? tripPurposeString,
-    @Default(true) bool activityType,
-    String? plannedEvents,
-    String? urgency,
-    required String selectionHelpTripCode,
-    String? comment,
-    List<String>? files,
-    required List<String> travelers,
-    required String country,
-    String? legalEntity,
-  }) = BusinessTripParams;
-}
-
-/// Candidate information for referral program (domain entity)
-@freezed
-abstract class CandidateInfo with _$CandidateInfo {
-  const factory CandidateInfo({
-    required String lastName,
-    required String firstName,
-    String? middleName,
-  }) = _CandidateInfo;
 }
