@@ -17,9 +17,5 @@ abstract class KpAbsenceCategoryModel with _$KpAbsenceCategoryModel {
   factory KpAbsenceCategoryModel.fromJson(Map<String, dynamic> json) =>
       _$KpAbsenceCategoryModelFromJson(json);
 
-  KpAbsenceCategory toDomain() => KpAbsenceCategory(
-        id: id,
-        name: name,
-      );
+  KpAbsenceCategory toDomain() => KpAbsenceCategory(id: id, name: name);
 }
-

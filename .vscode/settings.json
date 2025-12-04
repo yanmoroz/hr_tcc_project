@@ -9,5 +9,8 @@
     "**/*.g.dart": true
   },
   "java.compile.nullAnalysis.mode": "disabled",
-  "search.useIgnoreFiles": false
+  "search.useIgnoreFiles": false,
+  "editor.codeActionsOnSave": {
+    "source.sortMembers": "explicit",
+  },
 }

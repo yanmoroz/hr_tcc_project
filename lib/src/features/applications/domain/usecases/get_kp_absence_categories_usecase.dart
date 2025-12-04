@@ -11,4 +11,3 @@ class GetKpAbsenceCategoriesUsecase {
     return await _repository.getKpAbsenceCategories();
   }
 }
-

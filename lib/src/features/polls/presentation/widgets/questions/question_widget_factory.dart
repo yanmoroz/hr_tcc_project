@@ -20,11 +20,20 @@ Widget buildQuestionWidget({
 }) {
   switch (question.type) {
     case QuestionType.multiLineText:
-      return MultiLineTextQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
+      return MultiLineTextQuestionWidget(
+        question: question,
+        onAnswerChanged: onAnswerChanged,
+      );
     case QuestionType.choice:
-      return ChoiceQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
+      return ChoiceQuestionWidget(
+        question: question,
+        onAnswerChanged: onAnswerChanged,
+      );
     case QuestionType.tableLookup:
-      assert(onStaffSearch != null, 'onStaffSearch callback is required for tableLookup questions');
+      assert(
+        onStaffSearch != null,
+        'onStaffSearch callback is required for tableLookup questions',
+      );
       return TableLookupQuestionWidget(
         question: question,
         onAnswerChanged: onAnswerChanged,
@@ -34,11 +43,20 @@ Widget buildQuestionWidget({
         staffSearchError: staffSearchError,
       );
     case QuestionType.dropdown:
-      return DropdownQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
+      return DropdownQuestionWidget(
+        question: question,
+        onAnswerChanged: onAnswerChanged,
+      );
     case QuestionType.scale:
-      return ScaleQuestionWidget(question: question, onAnswerChanged: onAnswerChanged);
+      return ScaleQuestionWidget(
+        question: question,
+        onAnswerChanged: onAnswerChanged,
+      );
     case QuestionType.attachment:
-      assert(onFileUpload != null, 'onFileUpload callback is required for attachment questions');
+      assert(
+        onFileUpload != null,
+        'onFileUpload callback is required for attachment questions',
+      );
       return AttachmentQuestionWidget(
         question: question,
         onAnswerChanged: onAnswerChanged,

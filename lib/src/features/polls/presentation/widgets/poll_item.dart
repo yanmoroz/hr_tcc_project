@@ -26,12 +26,21 @@ class PollItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(poll.title, style: viewModel.titleStyle(theme.textTheme, theme.colorScheme)),
+                Text(
+                  poll.title,
+                  style: viewModel.titleStyle(
+                    theme.textTheme,
+                    theme.colorScheme,
+                  ),
+                ),
                 if (viewModel.shouldShowShortDescription) ...[
                   const SizedBox(height: 8.0),
                   Text(
                     poll.shortDescription,
-                    style: viewModel.shortDescriptionStyle(theme.textTheme, theme.colorScheme),
+                    style: viewModel.shortDescriptionStyle(
+                      theme.textTheme,
+                      theme.colorScheme,
+                    ),
                   ),
                 ],
                 const SizedBox(height: 8.0),
@@ -40,11 +49,26 @@ class PollItem extends StatelessWidget {
                     if (viewModel.answersCountText != null)
                       Text(
                         viewModel.answersCountText!,
-                        style: viewModel.answersCountStyle(theme.textTheme, theme.colorScheme),
+                        style: viewModel.answersCountStyle(
+                          theme.textTheme,
+                          theme.colorScheme,
+                        ),
                       ),
                     if (viewModel.answersCountText != null && poll.canAnswer)
-                      Text(' • ', style: viewModel.separatorStyle(theme.textTheme, theme.colorScheme)),
-                    Text(viewModel.statusText, style: viewModel.statusStyle(theme.textTheme, theme.colorScheme)),
+                      Text(
+                        ' • ',
+                        style: viewModel.separatorStyle(
+                          theme.textTheme,
+                          theme.colorScheme,
+                        ),
+                      ),
+                    Text(
+                      viewModel.statusText,
+                      style: viewModel.statusStyle(
+                        theme.textTheme,
+                        theme.colorScheme,
+                      ),
+                    ),
                   ],
                 ),
                 if (viewModel.shouldShowNewBadge) ...[
@@ -52,7 +76,10 @@ class PollItem extends StatelessWidget {
                   Chip(
                     label: const Text('New'),
                     backgroundColor: theme.colorScheme.primaryContainer,
-                    labelStyle: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontSize: 12),
+                    labelStyle: TextStyle(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ],

@@ -16,9 +16,9 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
     required this.itemId,
     required GetResellDetailUsecase getResellDetailUsecase,
     required BookResellItemUsecase bookResellItemUsecase,
-  })  : _getResellDetailUsecase = getResellDetailUsecase,
-        _bookResellItemUsecase = bookResellItemUsecase,
-        super(const ResellDetailState()) {
+  }) : _getResellDetailUsecase = getResellDetailUsecase,
+       _bookResellItemUsecase = bookResellItemUsecase,
+       super(const ResellDetailState()) {
     on<LoadResellDetail>(_onLoadResellDetail);
     on<BookResellItem>(_onBookResellItem);
   }
@@ -35,16 +35,15 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
       result.fold(
         (error) {
           AppLogger.e('Failed to load resell detail: ${error.toString()}');
-          emit(state.copyWith(
-            status: LoadingStatus.error,
-            errorMessage: error.toString(),
-          ));
+          emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: error.toString(),
+            ),
+          );
         },
         (detail) {
-          emit(state.copyWith(
-            status: LoadingStatus.success,
-            detail: detail,
-          ));
+          emit(state.copyWith(status: LoadingStatus.success, detail: detail));
         },
       );
     }
@@ -65,18 +64,17 @@ class ResellDetailBloc extends Bloc<ResellDetailEvent, ResellDetailState> {
       result.fold(
         (error) {
           AppLogger.e('Failed to book resell item: ${error.toString()}');
-          emit(state.copyWith(
-            status: LoadingStatus.error,
-            errorMessage: error.toString(),
-            isBooking: false,
-          ));
+          emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: error.toString(),
+              isBooking: false,
+            ),
+          );
         },
         (_) {
           AppLogger.d('Booking successful');
-          emit(state.copyWith(
-            status: LoadingStatus.success,
-            isBooking: false,
-          ));
+          emit(state.copyWith(status: LoadingStatus.success, isBooking: false));
         },
       );
     }

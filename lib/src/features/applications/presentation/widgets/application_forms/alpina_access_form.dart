@@ -84,7 +84,9 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
         }
 
         // Success state (after submission)
-        if (state.status == LoadingStatus.success && !state.isSubmitting && state.formCode == null) {
+        if (state.status == LoadingStatus.success &&
+            !state.isSubmitting &&
+            state.formCode == null) {
           return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -121,118 +123,118 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
         }
 
         return Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  // Date field
-                  DatePickerField(
-                    label: 'Дата',
-                    selectedDate: _selectedDate,
-                    onDateSelected: (date) {
-                      setState(() {
-                        _selectedDate = date;
-                      });
-                      _updateForm();
-                    },
-                    validator: (value) {
-                      if (_selectedDate == null) {
-                        return 'Выберите дату';
-                      }
-                      return null;
-                    },
-                    firstDate: DateTime.now(),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Radio buttons for previous access
-                  const Text(
-                    'Был ли ранее вам предоставлен доступ?',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: RadioGroup<String>(
-                      groupValue: _prevAccessCode,
-                      onChanged: (value) {
-                        setState(() {
-                          _prevAccessCode = value;
-                        });
-                        _updateForm();
-                      },
-                      child: Column(
-                        children: [
-                          RadioListTile<String>(
-                            title: const Text('Да'),
-                            value: _yesCode,
-                          ),
-                          RadioListTile<String>(
-                            title: const Text('Нет'),
-                            value: _noCode,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Toggle for comment
-                  SwitchListTile(
-                    title: const Text('Добавить комментарий'),
-                    value: _showComment,
-                    onChanged: (value) {
-                      setState(() {
-                        _showComment = value;
-                        if (!value) {
-                          _commentController.clear();
-                        }
-                      });
-                      _updateForm();
-                    },
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Comment field (conditional)
-                  if (_showComment) ...[
-                    CommentField(
-                      label: 'Комментарий',
-                      controller: _commentController,
-                      maxLines: 5,
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-
-                  // Agreement checkbox
-                  CheckboxListTile(
-                    title: const Text(
-                      'Я ознакомлен(а) с информацией о сроке действия ссылки 24 часа и удалении аккаунта при его неиспользовании более 3 месяцев',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    value: _agreementAccepted,
-                    onChanged: (value) {
-                      setState(() {
-                        _agreementAccepted = value ?? false;
-                      });
-                      _updateForm();
-                    },
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Info box
-                  const InfoBox(
-                    text:
-                        'Вам придет письмо со ссылкой для активации доступа к Alpina Digital — перейдите по ней в течении 24 часов, после она станет недействительной. Аккаунт удаляется, если вы не пользуетесь библиотекой более 3 месяцев.',
-                  ),
-                ],
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // Date field
+              DatePickerField(
+                label: 'Дата',
+                selectedDate: _selectedDate,
+                onDateSelected: (date) {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                  _updateForm();
+                },
+                validator: (value) {
+                  if (_selectedDate == null) {
+                    return 'Выберите дату';
+                  }
+                  return null;
+                },
+                firstDate: DateTime.now(),
               ),
-            );
+              const SizedBox(height: 24),
+
+              // Radio buttons for previous access
+              const Text(
+                'Был ли ранее вам предоставлен доступ?',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: RadioGroup<String>(
+                  groupValue: _prevAccessCode,
+                  onChanged: (value) {
+                    setState(() {
+                      _prevAccessCode = value;
+                    });
+                    _updateForm();
+                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: const Text('Да'),
+                        value: _yesCode,
+                      ),
+                      RadioListTile<String>(
+                        title: const Text('Нет'),
+                        value: _noCode,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Toggle for comment
+              SwitchListTile(
+                title: const Text('Добавить комментарий'),
+                value: _showComment,
+                onChanged: (value) {
+                  setState(() {
+                    _showComment = value;
+                    if (!value) {
+                      _commentController.clear();
+                    }
+                  });
+                  _updateForm();
+                },
+                contentPadding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: 8),
+
+              // Comment field (conditional)
+              if (_showComment) ...[
+                CommentField(
+                  label: 'Комментарий',
+                  controller: _commentController,
+                  maxLines: 5,
+                ),
+                const SizedBox(height: 24),
+              ],
+
+              // Agreement checkbox
+              CheckboxListTile(
+                title: const Text(
+                  'Я ознакомлен(а) с информацией о сроке действия ссылки 24 часа и удалении аккаунта при его неиспользовании более 3 месяцев',
+                  style: TextStyle(fontSize: 14),
+                ),
+                value: _agreementAccepted,
+                onChanged: (value) {
+                  setState(() {
+                    _agreementAccepted = value ?? false;
+                  });
+                  _updateForm();
+                },
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: 16),
+
+              // Info box
+              const InfoBox(
+                text:
+                    'Вам придет письмо со ссылкой для активации доступа к Alpina Digital — перейдите по ней в течении 24 часов, после она станет недействительной. Аккаунт удаляется, если вы не пользуетесь библиотекой более 3 месяцев.',
+              ),
+            ],
+          ),
+        );
       },
     );
   }

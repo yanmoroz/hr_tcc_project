@@ -48,10 +48,12 @@ class ApplicationCreationBloc
         searchQuery: state.searchQuery,
       );
 
-      emit(state.copyWith(
-        filteredForms: filteredForms,
-        selectedGroupId: event.groupId,
-      ));
+      emit(
+        state.copyWith(
+          filteredForms: filteredForms,
+          selectedGroupId: event.groupId,
+        ),
+      );
     }
   }
 
@@ -67,10 +69,9 @@ class ApplicationCreationBloc
         searchQuery: searchQuery,
       );
 
-      emit(state.copyWith(
-        filteredForms: filteredForms,
-        searchQuery: searchQuery,
-      ));
+      emit(
+        state.copyWith(filteredForms: filteredForms, searchQuery: searchQuery),
+      );
     }
   }
 
@@ -85,18 +86,22 @@ class ApplicationCreationBloc
     final groupsError = groupsResult.fold((l) => l, (r) => null);
 
     if (formsError != null) {
-      emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: formsError.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: formsError.toString(),
+        ),
+      );
       return;
     }
 
     if (groupsError != null) {
-      emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: groupsError.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: groupsError.toString(),
+        ),
+      );
       return;
     }
 
@@ -122,14 +127,16 @@ class ApplicationCreationBloc
     // Filter out archived forms
     final activeForms = filteredForms.where((form) => !form.archive).toList();
 
-    emit(state.copyWith(
-      status: LoadingStatus.success,
-      allForms: activeForms,
-      groups: groups,
-      filteredForms: activeForms,
-      selectedGroupId: null,
-      searchQuery: null,
-    ));
+    emit(
+      state.copyWith(
+        status: LoadingStatus.success,
+        allForms: activeForms,
+        groups: groups,
+        filteredForms: activeForms,
+        selectedGroupId: null,
+        searchQuery: null,
+      ),
+    );
   }
 
   List<ApplicationForm> _applyFilters({

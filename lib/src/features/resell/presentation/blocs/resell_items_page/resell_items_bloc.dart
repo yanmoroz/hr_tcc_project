@@ -83,18 +83,22 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
           AppLogger.e('Failed to load resell items: ${error.toString()}');
           if (existingItems != null) {
             // If loading more failed, revert to previous state
-            emit(state.copyWith(
-              items: existingItems,
-              currentPage: page - 1,
-              hasMorePages: true,
-              isLoadingMore: false,
-              currentStatus: status,
-            ));
+            emit(
+              state.copyWith(
+                items: existingItems,
+                currentPage: page - 1,
+                hasMorePages: true,
+                isLoadingMore: false,
+                currentStatus: status,
+              ),
+            );
           } else {
-            emit(state.copyWith(
-              status: LoadingStatus.error,
-              errorMessage: error.toString(),
-            ));
+            emit(
+              state.copyWith(
+                status: LoadingStatus.error,
+                errorMessage: error.toString(),
+              ),
+            );
           }
         },
         (items) {
@@ -102,14 +106,16 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
               ? [...existingItems, ...items]
               : items;
 
-          emit(state.copyWith(
-            status: LoadingStatus.success,
-            items: allItems,
-            currentPage: page,
-            hasMorePages: items.length == _pageSize,
-            isLoadingMore: false,
-            currentStatus: status,
-          ));
+          emit(
+            state.copyWith(
+              status: LoadingStatus.success,
+              items: allItems,
+              currentPage: page,
+              hasMorePages: items.length == _pageSize,
+              isLoadingMore: false,
+              currentStatus: status,
+            ),
+          );
         },
       );
     }

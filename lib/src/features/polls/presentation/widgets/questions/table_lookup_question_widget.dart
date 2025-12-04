@@ -22,7 +22,8 @@ class TableLookupQuestionWidget extends StatefulWidget {
   });
 
   @override
-  State<TableLookupQuestionWidget> createState() => _TableLookupQuestionWidgetState();
+  State<TableLookupQuestionWidget> createState() =>
+      _TableLookupQuestionWidgetState();
 }
 
 class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
@@ -76,7 +77,9 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
     });
 
     // For tableLookup, answerId might be the question's ID or we need a default
-    final answerId = widget.question.answers.isNotEmpty ? widget.question.answers.first.id : widget.question.id;
+    final answerId = widget.question.answers.isNotEmpty
+        ? widget.question.answers.first.id
+        : widget.question.id;
     final pollAnswer = PollAnswer.type2(
       type: 2,
       questionId: widget.question.id,
@@ -93,7 +96,12 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
       children: [
         Row(
           children: [
-            Expanded(child: Text(widget.question.title, style: Theme.of(context).textTheme.titleMedium)),
+            Expanded(
+              child: Text(
+                widget.question.title,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             if (widget.question.isRequired == true)
               Chip(
                 label: const Text('Required'),
@@ -103,9 +111,13 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
               ),
           ],
         ),
-        if (widget.question.comment != null && widget.question.comment!.isNotEmpty) ...[
+        if (widget.question.comment != null &&
+            widget.question.comment!.isNotEmpty) ...[
           const SizedBox(height: 4.0),
-          Text(widget.question.comment!, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            widget.question.comment!,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
         const SizedBox(height: 8.0),
         TextField(
@@ -118,7 +130,11 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
             suffixIcon: widget.isSearchingStaff
                 ? const Padding(
                     padding: EdgeInsets.all(12.0),
-                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   )
                 : null,
           ),
@@ -127,7 +143,9 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
           const SizedBox(height: 8.0),
           Text(
             widget.staffSearchError!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         ],
         if (_selectedItem != null) ...[
@@ -148,7 +166,9 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
             ),
           ),
         ],
-        if (widget.staffItems != null && widget.staffItems!.isNotEmpty && _selectedItem == null) ...[
+        if (widget.staffItems != null &&
+            widget.staffItems!.isNotEmpty &&
+            _selectedItem == null) ...[
           const SizedBox(height: 8.0),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 200),
@@ -157,7 +177,10 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
               itemCount: widget.staffItems!.length,
               itemBuilder: (context, index) {
                 final item = widget.staffItems![index];
-                return ListTile(title: Text(item.title), onTap: () => _onItemSelected(item));
+                return ListTile(
+                  title: Text(item.title),
+                  onTap: () => _onItemSelected(item),
+                );
               },
             ),
           ),

@@ -86,9 +86,7 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
               ),
 
               // Items List
-              Expanded(
-                child: _buildBody(context, state),
-              ),
+              Expanded(child: _buildBody(context, state)),
             ],
           );
         },
@@ -97,7 +95,8 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
   }
 
   Widget _buildBody(BuildContext context, ResellItemsState state) {
-    if (state.status == LoadingStatus.loading || state.status == LoadingStatus.initial) {
+    if (state.status == LoadingStatus.loading ||
+        state.status == LoadingStatus.initial) {
       return const Center(child: CircularProgressIndicator());
     }
 

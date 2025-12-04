@@ -37,14 +37,15 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     final result = await getPollDetailUsecase(pollId);
 
     result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.message,
-      )),
-      (pollDetail) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        pollDetail: pollDetail,
-      )),
+      (error) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: error.message,
+        ),
+      ),
+      (pollDetail) => emit(
+        state.copyWith(status: LoadingStatus.success, pollDetail: pollDetail),
+      ),
     );
   }
 
@@ -53,10 +54,12 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     Emitter<PollDetailState> emit,
   ) async {
     if (state.pollDetail == null) {
-      emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: 'Poll detail not loaded yet',
-      ));
+      emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: 'Poll detail not loaded yet',
+        ),
+      );
       return;
     }
 
@@ -68,15 +71,16 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     );
 
     result.fold(
-      (error) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: error.message,
-        isSubmitting: false,
-      )),
-      (_) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        isSubmitting: false,
-      )),
+      (error) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: error.message,
+          isSubmitting: false,
+        ),
+      ),
+      (_) => emit(
+        state.copyWith(status: LoadingStatus.success, isSubmitting: false),
+      ),
     );
   }
 
@@ -94,15 +98,19 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     final result = await getStaffUsecase(target: target, search: search);
 
     result.fold(
-      (error) => emit(state.copyWith(
-        staffSearchError: error.message,
-        isSearchingStaff: false,
-      )),
-      (staffItems) => emit(state.copyWith(
-        staffItems: staffItems,
-        isSearchingStaff: false,
-        staffSearchError: null,
-      )),
+      (error) => emit(
+        state.copyWith(
+          staffSearchError: error.message,
+          isSearchingStaff: false,
+        ),
+      ),
+      (staffItems) => emit(
+        state.copyWith(
+          staffItems: staffItems,
+          isSearchingStaff: false,
+          staffSearchError: null,
+        ),
+      ),
     );
   }
 }

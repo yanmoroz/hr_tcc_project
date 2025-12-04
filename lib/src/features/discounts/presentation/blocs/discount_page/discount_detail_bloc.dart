@@ -22,11 +22,11 @@ class DiscountDetailBloc
     required GetDiscountStatsUsecase getDiscountStatsUsecase,
     required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
     required DownloadFileUsecase downloadFileUsecase,
-  })  : _getDiscountDetailUsecase = getDiscountDetailUsecase,
-        _getDiscountStatsUsecase = getDiscountStatsUsecase,
-        _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
-        _downloadFileUsecase = downloadFileUsecase,
-        super(const DiscountDetailState()) {
+  }) : _getDiscountDetailUsecase = getDiscountDetailUsecase,
+       _getDiscountStatsUsecase = getDiscountStatsUsecase,
+       _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
+       _downloadFileUsecase = downloadFileUsecase,
+       super(const DiscountDetailState()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleLike>(_onToggleLike);
     on<RefreshDetail>(_onRefreshDetail);

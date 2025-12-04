@@ -7,7 +7,11 @@ class ScaleQuestionWidget extends StatefulWidget {
   final Question question;
   final AnswerChangedCallback onAnswerChanged;
 
-  const ScaleQuestionWidget({super.key, required this.question, required this.onAnswerChanged});
+  const ScaleQuestionWidget({
+    super.key,
+    required this.question,
+    required this.onAnswerChanged,
+  });
 
   @override
   State<ScaleQuestionWidget> createState() => _ScaleQuestionWidgetState();
@@ -31,8 +35,15 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
     });
 
     // For scale questions, answerId might be the question's ID or we need a default
-    final answerId = widget.question.answers.isNotEmpty ? widget.question.answers.first.id : widget.question.id;
-    final pollAnswer = PollAnswer.type4(type: 4, questionId: widget.question.id, answerId: answerId, answerData: value);
+    final answerId = widget.question.answers.isNotEmpty
+        ? widget.question.answers.first.id
+        : widget.question.id;
+    final pollAnswer = PollAnswer.type4(
+      type: 4,
+      questionId: widget.question.id,
+      answerId: answerId,
+      answerData: value,
+    );
     widget.onAnswerChanged(widget.question, pollAnswer);
   }
 
@@ -43,7 +54,12 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
       children: [
         Row(
           children: [
-            Expanded(child: Text(widget.question.title, style: Theme.of(context).textTheme.titleMedium)),
+            Expanded(
+              child: Text(
+                widget.question.title,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             if (widget.question.isRequired == true)
               Chip(
                 label: const Text('Required'),
@@ -53,14 +69,19 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
               ),
           ],
         ),
-        if (widget.question.comment != null && widget.question.comment!.isNotEmpty) ...[
+        if (widget.question.comment != null &&
+            widget.question.comment!.isNotEmpty) ...[
           const SizedBox(height: 4.0),
-          Text(widget.question.comment!, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            widget.question.comment!,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
         const SizedBox(height: 16.0),
         Row(
           children: [
-            if (widget.question.startText != null && widget.question.startText!.isNotEmpty)
+            if (widget.question.startText != null &&
+                widget.question.startText!.isNotEmpty)
               Expanded(
                 child: Text(
                   widget.question.startText!,
@@ -68,7 +89,8 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
                   textAlign: TextAlign.left,
                 ),
               ),
-            if (widget.question.middleText != null && widget.question.middleText!.isNotEmpty)
+            if (widget.question.middleText != null &&
+                widget.question.middleText!.isNotEmpty)
               Expanded(
                 child: Text(
                   widget.question.middleText!,
@@ -76,7 +98,8 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
                   textAlign: TextAlign.center,
                 ),
               ),
-            if (widget.question.endText != null && widget.question.endText!.isNotEmpty)
+            if (widget.question.endText != null &&
+                widget.question.endText!.isNotEmpty)
               Expanded(
                 child: Text(
                   widget.question.endText!,
@@ -98,13 +121,21 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(_minValue.toString(), style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              _minValue.toString(),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             if (_selectedValue != null)
               Text(
                 'Selected: $_selectedValue',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            Text(_maxValue.toString(), style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              _maxValue.toString(),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ],
         ),
       ],

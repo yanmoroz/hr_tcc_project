@@ -33,30 +33,38 @@ class ApplicationFormBloc
       case 'absence':
         final result = await getKpAbsenceCategoriesUsecase();
         result.fold(
-          (exception) => emit(state.copyWith(
-            status: LoadingStatus.error,
-            errorMessage: exception.toString(),
-          )),
-          (categories) => emit(state.copyWith(
-            status: LoadingStatus.success,
-            formCode: 'absence',
-            data: categories,
-          )),
+          (exception) => emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: exception.toString(),
+            ),
+          ),
+          (categories) => emit(
+            state.copyWith(
+              status: LoadingStatus.success,
+              formCode: 'absence',
+              data: categories,
+            ),
+          ),
         );
       case 'alpinaAccess':
         // No data loading needed for AlpinaAccess form
-        emit(state.copyWith(
-          status: LoadingStatus.success,
-          formCode: 'alpinaAccess',
-          data: null,
-        ));
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            formCode: 'alpinaAccess',
+            data: null,
+          ),
+        );
       default:
         // For forms that don't need data loading
-        emit(state.copyWith(
-          status: LoadingStatus.success,
-          formCode: event.formCode,
-          data: null,
-        ));
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            formCode: event.formCode,
+            data: null,
+          ),
+        );
     }
   }
 
@@ -69,15 +77,16 @@ class ApplicationFormBloc
     final result = await createApplicationUsecase(event.params);
 
     result.fold(
-      (exception) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: exception.toString(),
-        isSubmitting: false,
-      )),
-      (application) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        isSubmitting: false,
-      )),
+      (exception) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: exception.toString(),
+          isSubmitting: false,
+        ),
+      ),
+      (application) => emit(
+        state.copyWith(status: LoadingStatus.success, isSubmitting: false),
+      ),
     );
   }
 

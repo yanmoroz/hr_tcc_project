@@ -95,7 +95,9 @@ class _AbsenceFormState extends State<AbsenceForm> {
         }
 
         // Success state
-        if (state.status == LoadingStatus.success && !state.isSubmitting && state.formCode == null) {
+        if (state.status == LoadingStatus.success &&
+            !state.isSubmitting &&
+            state.formCode == null) {
           return Form(
             key: _formKey,
             child: const Center(
@@ -141,79 +143,79 @@ class _AbsenceFormState extends State<AbsenceForm> {
         final categories = state.data as List<KpAbsenceCategory>;
 
         return Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  // Category dropdown
-                  DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Тип',
-                      border: OutlineInputBorder(),
-                    ),
-                    initialValue: _category,
-                    items: categories.map((category) {
-                      return DropdownMenuItem(
-                        value: category.id,
-                        child: Text(category.name),
-                      );
-                    }).toList(),
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Выберите тип отсутствия';
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {
-                      setState(() {
-                        _category = value;
-                      });
-                      _updateForm();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Date field
-                  DatePickerField(
-                    label: 'Дата',
-                    selectedDate: _selectedDate,
-                    onDateSelected: (date) {
-                      setState(() {
-                        _selectedDate = date;
-                      });
-                      _updateForm();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Time field
-                  TimePickerField(
-                    label: 'Время',
-                    selectedTime: _selectedTime,
-                    onTimeSelected: (time) {
-                      setState(() {
-                        _selectedTime = time;
-                      });
-                      _updateForm();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Note field
-                  CommentField(
-                    label: 'Причина',
-                    controller: _noteController,
-                    maxLines: 5,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Укажите причину отсутствия';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // Category dropdown
+              DropdownButtonFormField<int>(
+                decoration: const InputDecoration(
+                  labelText: 'Тип',
+                  border: OutlineInputBorder(),
+                ),
+                initialValue: _category,
+                items: categories.map((category) {
+                  return DropdownMenuItem(
+                    value: category.id,
+                    child: Text(category.name),
+                  );
+                }).toList(),
+                validator: (value) {
+                  if (value == null) {
+                    return 'Выберите тип отсутствия';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _category = value;
+                  });
+                  _updateForm();
+                },
               ),
-            );
+              const SizedBox(height: 16),
+
+              // Date field
+              DatePickerField(
+                label: 'Дата',
+                selectedDate: _selectedDate,
+                onDateSelected: (date) {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                  _updateForm();
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Time field
+              TimePickerField(
+                label: 'Время',
+                selectedTime: _selectedTime,
+                onTimeSelected: (time) {
+                  setState(() {
+                    _selectedTime = time;
+                  });
+                  _updateForm();
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Note field
+              CommentField(
+                label: 'Причина',
+                controller: _noteController,
+                maxLines: 5,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Укажите причину отсутствия';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        );
       },
     );
   }

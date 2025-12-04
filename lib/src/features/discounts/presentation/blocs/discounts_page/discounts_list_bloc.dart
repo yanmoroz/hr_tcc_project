@@ -19,10 +19,10 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     required GetDiscountsUsecase getDiscountsUsecase,
     required DownloadFileUsecase downloadFileUsecase,
     required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
-  })  : _getDiscountsUsecase = getDiscountsUsecase,
-        _downloadFileUsecase = downloadFileUsecase,
-        _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
-        super(const DiscountsListState()) {
+  }) : _getDiscountsUsecase = getDiscountsUsecase,
+       _downloadFileUsecase = downloadFileUsecase,
+       _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
+       super(const DiscountsListState()) {
     on<LoadDiscounts>(_onLoadDiscounts);
     on<RefreshDiscounts>(_onRefreshDiscounts);
     on<LoadMoreDiscounts>(_onLoadMoreDiscounts);
@@ -211,7 +211,9 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
     final updatedDiscounts = List<Discount>.from(state.discounts);
     updatedDiscounts[discountIndex] = discount.copyWith(
       like: !discount.like,
-      likeCount: discount.like ? discount.likeCount - 1 : discount.likeCount + 1,
+      likeCount: discount.like
+          ? discount.likeCount - 1
+          : discount.likeCount + 1,
     );
 
     emit(state.copyWith(discounts: updatedDiscounts));

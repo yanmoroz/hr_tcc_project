@@ -1,4 +1,1 @@
-enum ApplicationStatus {
-  ok,
-  processing,
-}
+enum ApplicationStatus { ok, processing }

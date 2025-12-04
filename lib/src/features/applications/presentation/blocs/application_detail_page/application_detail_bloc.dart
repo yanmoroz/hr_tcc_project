@@ -29,14 +29,14 @@ class ApplicationDetailBloc
     final result = await getApplicationDetailUsecase(applicationId);
 
     result.fold(
-      (exception) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: exception.toString(),
-      )),
-      (detail) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        detail: detail,
-      )),
+      (exception) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: exception.toString(),
+        ),
+      ),
+      (detail) =>
+          emit(state.copyWith(status: LoadingStatus.success, detail: detail)),
     );
   }
 
@@ -49,15 +49,16 @@ class ApplicationDetailBloc
     final result = await cancelApplicationUsecase(applicationId);
 
     result.fold(
-      (exception) => emit(state.copyWith(
-        status: LoadingStatus.error,
-        errorMessage: exception.toString(),
-        isCanceling: false,
-      )),
-      (_) => emit(state.copyWith(
-        status: LoadingStatus.success,
-        isCanceling: false,
-      )),
+      (exception) => emit(
+        state.copyWith(
+          status: LoadingStatus.error,
+          errorMessage: exception.toString(),
+          isCanceling: false,
+        ),
+      ),
+      (_) => emit(
+        state.copyWith(status: LoadingStatus.success, isCanceling: false),
+      ),
     );
   }
 }

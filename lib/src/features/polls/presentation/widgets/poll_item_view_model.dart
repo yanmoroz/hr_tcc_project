@@ -54,27 +54,38 @@ class PollItemViewModel {
 
   /// Title style based on theme and cover image
   TextStyle? titleStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.titleLarge?.copyWith(color: getTextColor(colorScheme), fontWeight: FontWeight.bold);
+    return textTheme.titleLarge?.copyWith(
+      color: getTextColor(colorScheme),
+      fontWeight: FontWeight.bold,
+    );
   }
 
   /// Short description style based on theme and cover image
-  TextStyle? shortDescriptionStyle(TextTheme textTheme, ColorScheme colorScheme) {
+  TextStyle? shortDescriptionStyle(
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
     return textTheme.bodyMedium?.copyWith(color: getTextColor(colorScheme));
   }
 
   /// Answers count style based on theme and cover image
   TextStyle? answersCountStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.bodySmall?.copyWith(color: getSecondaryTextColor(colorScheme));
+    return textTheme.bodySmall?.copyWith(
+      color: getSecondaryTextColor(colorScheme),
+    );
   }
 
   /// Separator style based on theme and cover image
   TextStyle? separatorStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.bodySmall?.copyWith(color: getSecondaryTextColor(colorScheme));
+    return textTheme.bodySmall?.copyWith(
+      color: getSecondaryTextColor(colorScheme),
+    );
   }
 
   /// Status style based on theme and cover image
   TextStyle statusStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.bodySmall?.copyWith(color: getStatusColor(colorScheme)) ?? const TextStyle();
+    return textTheme.bodySmall?.copyWith(color: getStatusColor(colorScheme)) ??
+        const TextStyle();
   }
 
   /// Box decoration for the container if cover image exists
@@ -88,7 +99,10 @@ class PollItemViewModel {
       image: DecorationImage(
         image: MemoryImage(coverImage!),
         fit: BoxFit.cover,
-        colorFilter: ColorFilter.mode(Colors.black.withAlpha(40), BlendMode.darken),
+        colorFilter: ColorFilter.mode(
+          Colors.black.withAlpha(40),
+          BlendMode.darken,
+        ),
       ),
     );
   }

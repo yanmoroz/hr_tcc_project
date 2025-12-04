@@ -29,12 +29,7 @@ class ApplicationsListBloc
   ) async {
     // Initial load - uses full loading state
     emit(state.copyWith(status: LoadingStatus.loading));
-    await _loadApplications(
-      emit,
-      page: 0,
-      statusGroup: null,
-      search: null,
-    );
+    await _loadApplications(emit, page: 0, statusGroup: null, search: null);
   }
 
   Future<void> _onRefreshApplications(
@@ -65,10 +60,7 @@ class ApplicationsListBloc
     emit(state.copyWith(isLoadingMore: true));
 
     // Load next page
-    await _loadMoreApplications(
-      emit,
-      nextPage: state.currentPage + 1,
-    );
+    await _loadMoreApplications(emit, nextPage: state.currentPage + 1);
   }
 
   void _onChangeStatusFilter(
@@ -80,10 +72,12 @@ class ApplicationsListBloc
       state.allApplications,
       event.statusGroup,
     );
-    emit(state.copyWith(
-      applications: filteredApplications,
-      statusGroup: event.statusGroup,
-    ));
+    emit(
+      state.copyWith(
+        applications: filteredApplications,
+        statusGroup: event.statusGroup,
+      ),
+    );
   }
 
   List<ApplicationInfo> _filterByStatusGroup(
@@ -131,16 +125,20 @@ class ApplicationsListBloc
       (error) {
         if (isFiltering) {
           // Filtering error - keep content visible, show error in filteringStatus
-          emit(state.copyWith(
-            filteringStatus: LoadingStatus.error,
-            errorMessage: error.toString(),
-          ));
+          emit(
+            state.copyWith(
+              filteringStatus: LoadingStatus.error,
+              errorMessage: error.toString(),
+            ),
+          );
         } else {
           // Initial load error
-          emit(state.copyWith(
-            status: LoadingStatus.error,
-            errorMessage: error.toString(),
-          ));
+          emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: error.toString(),
+            ),
+          );
         }
       },
       (result) {
@@ -148,20 +146,22 @@ class ApplicationsListBloc
           result.applications,
           statusGroup,
         );
-        emit(state.copyWith(
-          status: LoadingStatus.success,
-          filteringStatus: LoadingStatus.initial,
-          allApplications: result.applications,
-          applications: filteredApplications,
-          statistics: result.statistics,
-          currentPage: page,
-          hasMorePages:
-              result.applications.length >=
-              _pageSize, // Assume more pages if we got full page
-          isLoadingMore: false,
-          statusGroup: statusGroup,
-          search: search,
-        ));
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            filteringStatus: LoadingStatus.initial,
+            allApplications: result.applications,
+            applications: filteredApplications,
+            statistics: result.statistics,
+            currentPage: page,
+            hasMorePages:
+                result.applications.length >=
+                _pageSize, // Assume more pages if we got full page
+            isLoadingMore: false,
+            statusGroup: statusGroup,
+            search: search,
+          ),
+        );
       },
     );
   }
@@ -180,9 +180,7 @@ class ApplicationsListBloc
     result.fold(
       (error) {
         // On error, just reset isLoadingMore
-        emit(state.copyWith(
-          isLoadingMore: false,
-        ));
+        emit(state.copyWith(isLoadingMore: false));
       },
       (result) {
         final newAllApplications = [
@@ -193,16 +191,18 @@ class ApplicationsListBloc
           newAllApplications,
           state.statusGroup,
         );
-        emit(state.copyWith(
-          allApplications: newAllApplications,
-          applications: filteredApplications,
-          statistics: result.statistics,
-          currentPage: nextPage,
-          hasMorePages:
-              result.applications.length >=
-              _pageSize, // No more pages if less than full page
-          isLoadingMore: false,
-        ));
+        emit(
+          state.copyWith(
+            allApplications: newAllApplications,
+            applications: filteredApplications,
+            statistics: result.statistics,
+            currentPage: nextPage,
+            hasMorePages:
+                result.applications.length >=
+                _pageSize, // No more pages if less than full page
+            isLoadingMore: false,
+          ),
+        );
       },
     );
   }

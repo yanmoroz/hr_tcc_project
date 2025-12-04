@@ -7,7 +7,11 @@ class ChoiceQuestionWidget extends StatefulWidget {
   final Question question;
   final AnswerChangedCallback onAnswerChanged;
 
-  const ChoiceQuestionWidget({super.key, required this.question, required this.onAnswerChanged});
+  const ChoiceQuestionWidget({
+    super.key,
+    required this.question,
+    required this.onAnswerChanged,
+  });
 
   @override
   State<ChoiceQuestionWidget> createState() => _ChoiceQuestionWidgetState();
@@ -16,7 +20,8 @@ class ChoiceQuestionWidget extends StatefulWidget {
 class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
   final Set<int> _selectedAnswerIds = {};
   final Map<int, TextEditingController> _customTextControllers = {};
-  final TextEditingController _singleCustomTextController = TextEditingController();
+  final TextEditingController _singleCustomTextController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -68,14 +73,18 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
     // For multiple choice, we might need to send multiple answers
     // For now, let's send the first selected answer
     final firstAnswerId = _selectedAnswerIds.first;
-    final answer = widget.question.answers.firstWhere((a) => a.id == firstAnswerId);
+    final answer = widget.question.answers.firstWhere(
+      (a) => a.id == firstAnswerId,
+    );
 
     String? customText;
     if (widget.question.hasCustomAnswer) {
       if (widget.question.hasMultipliAnswer == true) {
         customText = _customTextControllers[firstAnswerId]?.text;
       } else {
-        customText = _singleCustomTextController.text.isNotEmpty ? _singleCustomTextController.text : null;
+        customText = _singleCustomTextController.text.isNotEmpty
+            ? _singleCustomTextController.text
+            : null;
       }
     }
 
@@ -90,7 +99,9 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final answers = widget.question.answers.where((a) => a.isArchive != true).toList();
+    final answers = widget.question.answers
+        .where((a) => a.isArchive != true)
+        .toList();
     final isMultiple = widget.question.hasMultipliAnswer == true;
 
     return Column(
@@ -98,7 +109,12 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
       children: [
         Row(
           children: [
-            Expanded(child: Text(widget.question.title, style: Theme.of(context).textTheme.titleMedium)),
+            Expanded(
+              child: Text(
+                widget.question.title,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             if (widget.question.isRequired == true)
               Chip(
                 label: const Text('Required'),
@@ -108,9 +124,13 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
               ),
           ],
         ),
-        if (widget.question.comment != null && widget.question.comment!.isNotEmpty) ...[
+        if (widget.question.comment != null &&
+            widget.question.comment!.isNotEmpty) ...[
           const SizedBox(height: 4.0),
-          Text(widget.question.comment!, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            widget.question.comment!,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
         const SizedBox(height: 8.0),
         if (isMultiple)
@@ -124,9 +144,14 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
                   onChanged: (value) => _onAnswerToggled(answer),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                if (widget.question.hasCustomAnswer && _selectedAnswerIds.contains(answer.id)) ...[
+                if (widget.question.hasCustomAnswer &&
+                    _selectedAnswerIds.contains(answer.id)) ...[
                   Padding(
-                    padding: const EdgeInsets.only(left: 40.0, right: 16.0, bottom: 8.0),
+                    padding: const EdgeInsets.only(
+                      left: 40.0,
+                      right: 16.0,
+                      bottom: 8.0,
+                    ),
                     child: TextField(
                       controller: _customTextControllers[answer.id],
                       decoration: const InputDecoration(
@@ -135,7 +160,8 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
                         hintText: 'Enter your custom answer...',
                         isDense: true,
                       ),
-                      onChanged: (text) => _onCustomTextChanged(answer.id, text),
+                      onChanged: (text) =>
+                          _onCustomTextChanged(answer.id, text),
                     ),
                   ),
                 ],
@@ -144,7 +170,9 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
           })
         else
           RadioGroup<int>(
-            groupValue: _selectedAnswerIds.isEmpty ? null : _selectedAnswerIds.first,
+            groupValue: _selectedAnswerIds.isEmpty
+                ? null
+                : _selectedAnswerIds.first,
             onChanged: (value) {
               if (value != null) {
                 final answer = answers.firstWhere((a) => a.id == value);
@@ -157,10 +185,18 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      RadioListTile<int>(title: Text(answer.text ?? 'Option ${answer.id}'), value: answer.id),
-                      if (widget.question.hasCustomAnswer && _selectedAnswerIds.contains(answer.id)) ...[
+                      RadioListTile<int>(
+                        title: Text(answer.text ?? 'Option ${answer.id}'),
+                        value: answer.id,
+                      ),
+                      if (widget.question.hasCustomAnswer &&
+                          _selectedAnswerIds.contains(answer.id)) ...[
                         Padding(
-                          padding: const EdgeInsets.only(left: 40.0, right: 16.0, bottom: 8.0),
+                          padding: const EdgeInsets.only(
+                            left: 40.0,
+                            right: 16.0,
+                            bottom: 8.0,
+                          ),
                           child: TextField(
                             controller: _singleCustomTextController,
                             decoration: const InputDecoration(

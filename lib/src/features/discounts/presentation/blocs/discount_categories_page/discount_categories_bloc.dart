@@ -14,9 +14,9 @@ class DiscountCategoriesBloc
   DiscountCategoriesBloc({
     required GetKpDiscountCategoriesUsecase getKpDiscountCategoriesUsecase,
     required GetKpDiscountSourcesUsecase getKpDiscountSourcesUsecase,
-  })  : _getKpDiscountCategoriesUsecase = getKpDiscountCategoriesUsecase,
-        _getKpDiscountSourcesUsecase = getKpDiscountSourcesUsecase,
-        super(const DiscountCategoriesState()) {
+  }) : _getKpDiscountCategoriesUsecase = getKpDiscountCategoriesUsecase,
+       _getKpDiscountSourcesUsecase = getKpDiscountSourcesUsecase,
+       super(const DiscountCategoriesState()) {
     on<LoadCategories>(_onLoadCategories);
     on<RefreshCategories>(_onRefreshCategories);
   }

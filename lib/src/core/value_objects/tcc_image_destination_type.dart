@@ -1,17 +1,11 @@
+TccImageDestinationType tccImageDestinationTypeFromJson(String value) =>
+    TccImageDestinationType.fromString(value);
+
 /// TCC image destination type enumeration for file operations
 /// Represents where the image/file will be stored in the TCC system
 enum TccImageDestinationType {
   applicationForm,
   person;
-
-  String get value {
-    switch (this) {
-      case TccImageDestinationType.applicationForm:
-        return 'DICT_APPLICATION_FORM';
-      case TccImageDestinationType.person:
-        return 'PERSON';
-    }
-  }
 
   String get name {
     switch (this) {
@@ -19,6 +13,15 @@ enum TccImageDestinationType {
         return 'Справочник форм заявок';
       case TccImageDestinationType.person:
         return 'Фото сотрудника';
+    }
+  }
+
+  String get value {
+    switch (this) {
+      case TccImageDestinationType.applicationForm:
+        return 'DICT_APPLICATION_FORM';
+      case TccImageDestinationType.person:
+        return 'PERSON';
     }
   }
 
@@ -33,6 +36,3 @@ enum TccImageDestinationType {
     }
   }
 }
-
-TccImageDestinationType tccImageDestinationTypeFromJson(String value) =>
-    TccImageDestinationType.fromString(value);

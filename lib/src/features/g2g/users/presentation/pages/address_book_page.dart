@@ -19,26 +19,6 @@ class AddressBookPage extends StatefulWidget {
 class _AddressBookPageState extends State<AddressBookPage> {
   final ScrollController _scrollController = ScrollController();
 
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_isBottom) {
-      context.read<AddressBookBloc>().add(
-        const AddressBookEvent.loadMoreAddressBook(),
-      );
-    }
-  }
-
   bool get _isBottom {
     if (!_scrollController.hasClients) return false;
     final maxScroll = _scrollController.position.maxScrollExtent;
@@ -69,6 +49,59 @@ class _AddressBookPageState extends State<AddressBookPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  Widget _buildErrorState(BuildContext context) {
+    return NetworkErrorMessageWidget(
+      onRetry: () => context.read<AddressBookBloc>().add(
+        const AddressBookEvent.loadAddressBook(),
+      ),
+    );
+  }
+
+  Widget _buildLoadedState(BuildContext context, AddressBookState state) {
+    return Container(
+      color: AppColors.grey100,
+      child: Column(
+        children: [
+          // Search bar
+          Container(
+            color: AppColors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: SearchBarWidget(
+                hintText: 'Поиск',
+                isLoading: state.filteringStatus == LoadingStatus.loading,
+                onSearchChanged: (query) {
+                  context.read<AddressBookBloc>().add(
+                    AddressBookEvent.searchAddressBook(query: query),
+                  );
+                },
+              ),
+            ),
+          ),
+          // Content area or filtering error
+          Expanded(
+            child: switch (state.filteringStatus) {
+              LoadingStatus.error => _buildErrorState(context),
+              _ => _buildUsersList(context, state),
+            },
+          ),
+        ],
       ),
     );
   }
@@ -129,47 +162,6 @@ class _AddressBookPageState extends State<AddressBookPage> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context) {
-    return NetworkErrorMessageWidget(
-      onRetry: () => context.read<AddressBookBloc>().add(
-        const AddressBookEvent.loadAddressBook(),
-      ),
-    );
-  }
-
-  Widget _buildLoadedState(BuildContext context, AddressBookState state) {
-    return Container(
-      color: AppColors.grey100,
-      child: Column(
-        children: [
-          // Search bar
-          Container(
-            color: AppColors.white,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: SearchBarWidget(
-                hintText: 'Поиск',
-                isLoading: state.filteringStatus == LoadingStatus.loading,
-                onSearchChanged: (query) {
-                  context.read<AddressBookBloc>().add(
-                    AddressBookEvent.searchAddressBook(query: query),
-                  );
-                },
-              ),
-            ),
-          ),
-          // Content area or filtering error
-          Expanded(
-            child: switch (state.filteringStatus) {
-              LoadingStatus.error => _buildErrorState(context),
-              _ => _buildUsersList(context, state),
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildUsersList(BuildContext context, AddressBookState state) {
     if (state.users.isEmpty) {
       return Center(
@@ -217,5 +209,13 @@ class _AddressBookPageState extends State<AddressBookPage> {
         ),
       ),
     );
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<AddressBookBloc>().add(
+        const AddressBookEvent.loadMoreAddressBook(),
+      );
+    }
   }
 }

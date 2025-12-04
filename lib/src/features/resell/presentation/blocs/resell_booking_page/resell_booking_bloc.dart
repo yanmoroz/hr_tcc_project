@@ -30,18 +30,19 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
       result.fold(
         (error) {
           AppLogger.e('Failed to confirm booking: ${error.toString()}');
-          emit(state.copyWith(
-            status: LoadingStatus.error,
-            errorMessage: error.toString(),
-            isConfirming: false,
-          ));
+          emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: error.toString(),
+              isConfirming: false,
+            ),
+          );
         },
         (booking) {
           AppLogger.d('Booking confirmed successfully');
-          emit(state.copyWith(
-            status: LoadingStatus.success,
-            isConfirming: false,
-          ));
+          emit(
+            state.copyWith(status: LoadingStatus.success, isConfirming: false),
+          );
         },
       );
     }

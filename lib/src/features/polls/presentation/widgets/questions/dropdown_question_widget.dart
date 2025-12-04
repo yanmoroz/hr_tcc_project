@@ -7,7 +7,11 @@ class DropdownQuestionWidget extends StatefulWidget {
   final Question question;
   final AnswerChangedCallback onAnswerChanged;
 
-  const DropdownQuestionWidget({super.key, required this.question, required this.onAnswerChanged});
+  const DropdownQuestionWidget({
+    super.key,
+    required this.question,
+    required this.onAnswerChanged,
+  });
 
   @override
   State<DropdownQuestionWidget> createState() => _DropdownQuestionWidgetState();
@@ -37,7 +41,9 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
       type: 3,
       questionId: widget.question.id,
       answerId: answer.id,
-      text: widget.question.hasCustomAnswer && _customTextController.text.isNotEmpty
+      text:
+          widget.question.hasCustomAnswer &&
+              _customTextController.text.isNotEmpty
           ? _customTextController.text
           : null,
     );
@@ -58,14 +64,21 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final answers = widget.question.answers.where((a) => a.isArchive != true).toList();
+    final answers = widget.question.answers
+        .where((a) => a.isArchive != true)
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Expanded(child: Text(widget.question.title, style: Theme.of(context).textTheme.titleMedium)),
+            Expanded(
+              child: Text(
+                widget.question.title,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             if (widget.question.isRequired == true)
               Chip(
                 label: const Text('Required'),
@@ -75,17 +88,27 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
               ),
           ],
         ),
-        if (widget.question.comment != null && widget.question.comment!.isNotEmpty) ...[
+        if (widget.question.comment != null &&
+            widget.question.comment!.isNotEmpty) ...[
           const SizedBox(height: 4.0),
-          Text(widget.question.comment!, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            widget.question.comment!,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
         const SizedBox(height: 8.0),
         DropdownButtonFormField<Answer>(
           key: ValueKey(_selectedAnswer?.id),
           initialValue: _selectedAnswer,
-          decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Select an answer'),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Select an answer',
+          ),
           items: answers.map((answer) {
-            return DropdownMenuItem<Answer>(value: answer, child: Text(answer.text ?? 'Option ${answer.id}'));
+            return DropdownMenuItem<Answer>(
+              value: answer,
+              child: Text(answer.text ?? 'Option ${answer.id}'),
+            );
           }).toList(),
           onChanged: _onAnswerSelected,
         ),
