@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/base_types/loading_status.dart';
@@ -24,13 +25,12 @@ class CommentsPage extends StatefulWidget {
 
 class _CommentsPageState extends State<CommentsPage> {
   final TextEditingController _commentController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
   final FocusNode _inputFocusNode = FocusNode();
+  final ItemScrollController _itemScrollController = ItemScrollController();
 
   @override
   void dispose() {
     _commentController.dispose();
-    _scrollController.dispose();
     _inputFocusNode.dispose();
     super.dispose();
   }
@@ -103,7 +103,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       current.comments.length > previous.comments.length;
                 },
                 listener: (context, state) {
-                  _scrollController.jumpTo(0);
+                  _itemScrollController.jumpTo(index: 0);
                 },
                 child: BlocBuilder<CommentsBloc, CommentsState>(
                   builder: (context, state) {
@@ -211,8 +211,8 @@ class _CommentsPageState extends State<CommentsPage> {
       );
     }
 
-    return ListView.builder(
-      controller: _scrollController,
+    return ScrollablePositionedList.builder(
+      itemScrollController: _itemScrollController,
       reverse: true,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       itemCount: state.groupedComments.length,
@@ -228,8 +228,23 @@ class _CommentsPageState extends State<CommentsPage> {
             ...group.comments.indexed.map((record) {
               final (index, comment) = record;
               final isLastInGroup = index == group.comments.length - 1;
+              final parentAuthorName = comment.parent != null
+                  ? state.comments
+                        .where((c) => c.id == comment.parent)
+                        .firstOrNull
+                        ?.author
+                        .title
+                  : null;
+              final parentComment = comment.parent != null
+                  ? state.comments
+                        .where((c) => c.id == comment.parent)
+                        .firstOrNull
+                        ?.content
+                  : null;
               return CommentItem(
                 comment: comment,
+                parentAuthorName: parentAuthorName,
+                parentComment: parentComment,
                 isLastInGroup: isLastInGroup,
                 onLike: () {
                   context.read<CommentsBloc>().add(
@@ -249,6 +264,17 @@ class _CommentsPageState extends State<CommentsPage> {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     _inputFocusNode.requestFocus();
                   });
+                },
+                onParentTap: () {
+                  final parentGroupIndex = state.groupedComments.indexWhere(
+                    (group) =>
+                        group.comments.any((c) => c.id == comment.parent),
+                  );
+                  _itemScrollController.scrollTo(
+                    index: parentGroupIndex,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
                 },
               );
             }),

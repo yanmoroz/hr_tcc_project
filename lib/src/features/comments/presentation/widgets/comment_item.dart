@@ -9,9 +9,12 @@ import '../../domain/domain.dart';
 
 class CommentItem extends StatelessWidget {
   final Comment comment;
+  final String? parentAuthorName;
+  final String? parentComment;
   final VoidCallback onLike;
   final VoidCallback? onDelete;
   final VoidCallback? onReply;
+  final VoidCallback? onParentTap;
   final bool isLastInGroup;
 
   // TODO: Replace with actual current user ID from auth
@@ -20,9 +23,12 @@ class CommentItem extends StatelessWidget {
   const CommentItem({
     super.key,
     required this.comment,
+    this.parentAuthorName,
+    this.parentComment,
     required this.onLike,
     this.onDelete,
     this.onReply,
+    this.onParentTap,
     this.isLastInGroup = false,
   });
 
@@ -55,15 +61,67 @@ class CommentItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Reply indicator
+                    if (parentAuthorName != null &&
+                        parentComment != null &&
+                        onParentTap != null) ...[
+                      InkWell(
+                        onTap: onParentTap,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.grey100,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                          child: IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Container(width: 2, color: AppColors.blue700),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      10,
+                                      2,
+                                      10,
+                                      3,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'В ответ $parentAuthorName',
+                                          style:
+                                              AppTypography.textMedium2.blue700,
+                                        ),
+                                        SizedBox(height: 2),
+                                        Text(
+                                          '$parentComment',
+                                          style: AppTypography
+                                              .captionMedium2
+                                              .black,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                    ],
                     // Author name and timestamp
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Text(
                             comment.author.title,
                             style: AppTypography.textSemibold2.black,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         SizedBox(width: 8),
