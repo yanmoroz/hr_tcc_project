@@ -9,16 +9,16 @@ import 'package:flutter/material.dart';
 ///
 /// Useful for inline text links that should behave like plain text.
 class AppTextButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+
+  final Widget child;
+  final ButtonStyle? style;
   const AppTextButton({
     super.key,
     required this.onPressed,
     required this.child,
     this.style,
   });
-
-  final VoidCallback? onPressed;
-  final Widget child;
-  final ButtonStyle? style;
 
   @override
   Widget build(BuildContext context) {

@@ -9,14 +9,6 @@ import 'package:flutter/material.dart';
 ///
 /// The child must be a scrollable widget (ListView, CustomScrollView, etc.)
 class AppRefreshIndicator extends StatelessWidget {
-  const AppRefreshIndicator({
-    required this.onRefresh,
-    required this.child,
-    this.color,
-    this.backgroundColor,
-    super.key,
-  });
-
   /// Called when the user pulls down to refresh.
   final Future<void> Function() onRefresh;
 
@@ -28,6 +20,14 @@ class AppRefreshIndicator extends StatelessWidget {
 
   /// The background color of the refresh indicator (Android only).
   final Color? backgroundColor;
+
+  const AppRefreshIndicator({
+    required this.onRefresh,
+    required this.child,
+    this.color,
+    this.backgroundColor,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

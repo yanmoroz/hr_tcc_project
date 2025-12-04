@@ -7,6 +7,13 @@ import 'jira_author_model.dart';
 part 'uploaded_file_model.freezed.dart';
 part 'uploaded_file_model.g.dart';
 
+DateTime _dateTimeFromJson(dynamic value) {
+  if (value is String) {
+    return DateTime.parse(value);
+  }
+  return DateTime.now();
+}
+
 /// Unified upload response model - handles different system types
 @Freezed(unionKey: 'systemType', unionValueCase: FreezedUnionCase.none)
 sealed class UploadedFileModel with _$UploadedFileModel {
@@ -15,6 +22,9 @@ sealed class UploadedFileModel with _$UploadedFileModel {
     required String idFile,
     required String systemType,
   }) = ElmaUploadedFileModel;
+
+  factory UploadedFileModel.fromJson(Map<String, dynamic> json) =>
+      _$UploadedFileModelFromJson(json);
 
   @FreezedUnionValue('JIRA')
   const factory UploadedFileModel.jira({
@@ -48,31 +58,31 @@ sealed class UploadedFileModel with _$UploadedFileModel {
     int? priority,
   }) = KpUploadedFileModel;
 
-  @FreezedUnionValue('TCC')
-  const factory UploadedFileModel.tcc({
-    required String id,
-    required int size,
-    required String systemType,
-  }) = TccUploadedFileModel;
-
   @FreezedUnionValue('_1C')
   const factory UploadedFileModel.oneC({
     required String systemType,
     Map<String, dynamic>? rawData,
   }) = OneCUploadedFileModel;
 
-  factory UploadedFileModel.fromJson(Map<String, dynamic> json) =>
-      _$UploadedFileModelFromJson(json);
-}
-
-DateTime _dateTimeFromJson(dynamic value) {
-  if (value is String) {
-    return DateTime.parse(value);
-  }
-  return DateTime.now();
+  @FreezedUnionValue('TCC')
+  const factory UploadedFileModel.tcc({
+    required String id,
+    required int size,
+    required String systemType,
+  }) = TccUploadedFileModel;
 }
 
 extension UploadedFileModelX on UploadedFileModel {
+  SystemType get systemType {
+    return switch (this) {
+      ElmaUploadedFileModel() => SystemType.elma,
+      JiraUploadedFileModel() => SystemType.jira,
+      KpUploadedFileModel() => SystemType.kp,
+      TccUploadedFileModel() => SystemType.tcc,
+      OneCUploadedFileModel() => SystemType.oneC,
+    };
+  }
+
   UploadedFile toDomain() {
     return switch (this) {
       ElmaUploadedFileModel(:final idFile) => UploadedFile.elma(idFile: idFile),
@@ -133,16 +143,6 @@ extension UploadedFileModelX on UploadedFileModel {
         size: size,
       ),
       OneCUploadedFileModel() => UploadedFile.oneC(),
-    };
-  }
-
-  SystemType get systemType {
-    return switch (this) {
-      ElmaUploadedFileModel() => SystemType.elma,
-      JiraUploadedFileModel() => SystemType.jira,
-      KpUploadedFileModel() => SystemType.kp,
-      TccUploadedFileModel() => SystemType.tcc,
-      OneCUploadedFileModel() => SystemType.oneC,
     };
   }
 }

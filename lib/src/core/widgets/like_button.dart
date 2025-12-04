@@ -15,6 +15,16 @@ import '../../../src/core/extensions/int_extension.dart';
 /// - like-icon.svg when not liked
 /// Both icons are displayed in white color.
 class LikeButton extends StatelessWidget {
+  final bool isLiked;
+
+  final int likeCount;
+  final double spacing;
+  final double iconSize;
+  final TextStyle likedTextStyle;
+  final TextStyle notLikedTextStyle;
+  final Color likedIconColor;
+  final Color notLikedIconColor;
+  final VoidCallback onPressed;
   const LikeButton({
     required this.isLiked,
     required this.likeCount,
@@ -27,16 +37,6 @@ class LikeButton extends StatelessWidget {
     required this.onPressed,
     super.key,
   });
-
-  final bool isLiked;
-  final int likeCount;
-  final double spacing;
-  final double iconSize;
-  final TextStyle likedTextStyle;
-  final TextStyle notLikedTextStyle;
-  final Color likedIconColor;
-  final Color notLikedIconColor;
-  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {

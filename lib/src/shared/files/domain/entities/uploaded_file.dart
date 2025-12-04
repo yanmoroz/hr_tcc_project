@@ -14,6 +14,19 @@ sealed class UploadedFile with _$UploadedFile {
     required String idFile, // UUID
   }) = ElmaUploadedFile;
 
+  /// JIRA system uploaded file
+  const factory UploadedFile.jira({
+    required String id,
+    required String filename,
+    required String self,
+    required DateTime created,
+    required int size,
+    required String content,
+    String? mimeType,
+    String? thumbnail,
+    JiraAuthor? author,
+  }) = JiraUploadedFile;
+
   /// KP system uploaded file
   const factory UploadedFile.kp({
     required int id,
@@ -31,48 +44,46 @@ sealed class UploadedFile with _$UploadedFile {
     int? priority,
   }) = KpUploadedFile;
 
-  /// JIRA system uploaded file
-  const factory UploadedFile.jira({
-    required String id,
-    required String filename,
-    required String self,
-    required DateTime created,
-    required int size,
-    required String content,
-    String? mimeType,
-    String? thumbnail,
-    JiraAuthor? author,
-  }) = JiraUploadedFile;
+  /// _1C system uploaded file (minimal support)
+  const factory UploadedFile.oneC() = OneCUploadedFile;
 
   /// TCC system uploaded file
   const factory UploadedFile.tcc({
     required String id, // UUID
     required int size,
   }) = TccUploadedFile;
-
-  /// _1C system uploaded file (minimal support)
-  const factory UploadedFile.oneC() = OneCUploadedFile;
 }
 
 /// Extension for backward compatibility and convenience methods
 extension UploadedFileX on UploadedFile {
-  /// Get system type from the uploaded file variant
-  SystemType get systemType {
+  /// Get ELMA-specific fields (for backward compatibility)
+  ElmaUploadedFile? get asElma {
     return switch (this) {
-      ElmaUploadedFile() => SystemType.elma,
-      KpUploadedFile() => SystemType.kp,
-      JiraUploadedFile() => SystemType.jira,
-      TccUploadedFile() => SystemType.tcc,
-      OneCUploadedFile() => SystemType.oneC,
+      ElmaUploadedFile() => this as ElmaUploadedFile,
+      _ => null,
     };
   }
 
-  /// Get file size if available
-  int? get size {
+  /// Get JIRA-specific fields (for backward compatibility)
+  JiraUploadedFile? get asJira {
     return switch (this) {
-      KpUploadedFile(:final size) => size,
-      JiraUploadedFile(:final size) => size,
-      TccUploadedFile(:final size) => size,
+      JiraUploadedFile() => this as JiraUploadedFile,
+      _ => null,
+    };
+  }
+
+  /// Get KP-specific fields (for backward compatibility)
+  KpUploadedFile? get asKp {
+    return switch (this) {
+      KpUploadedFile() => this as KpUploadedFile,
+      _ => null,
+    };
+  }
+
+  /// Get TCC-specific fields (for backward compatibility)
+  TccUploadedFile? get asTcc {
+    return switch (this) {
+      TccUploadedFile() => this as TccUploadedFile,
       _ => null,
     };
   }
@@ -88,35 +99,24 @@ extension UploadedFileX on UploadedFile {
     };
   }
 
-  /// Get KP-specific fields (for backward compatibility)
-  KpUploadedFile? get asKp {
+  /// Get file size if available
+  int? get size {
     return switch (this) {
-      KpUploadedFile() => this as KpUploadedFile,
+      KpUploadedFile(:final size) => size,
+      JiraUploadedFile(:final size) => size,
+      TccUploadedFile(:final size) => size,
       _ => null,
     };
   }
 
-  /// Get JIRA-specific fields (for backward compatibility)
-  JiraUploadedFile? get asJira {
+  /// Get system type from the uploaded file variant
+  SystemType get systemType {
     return switch (this) {
-      JiraUploadedFile() => this as JiraUploadedFile,
-      _ => null,
-    };
-  }
-
-  /// Get ELMA-specific fields (for backward compatibility)
-  ElmaUploadedFile? get asElma {
-    return switch (this) {
-      ElmaUploadedFile() => this as ElmaUploadedFile,
-      _ => null,
-    };
-  }
-
-  /// Get TCC-specific fields (for backward compatibility)
-  TccUploadedFile? get asTcc {
-    return switch (this) {
-      TccUploadedFile() => this as TccUploadedFile,
-      _ => null,
+      ElmaUploadedFile() => SystemType.elma,
+      KpUploadedFile() => SystemType.kp,
+      JiraUploadedFile() => SystemType.jira,
+      TccUploadedFile() => SystemType.tcc,
+      OneCUploadedFile() => SystemType.oneC,
     };
   }
 }

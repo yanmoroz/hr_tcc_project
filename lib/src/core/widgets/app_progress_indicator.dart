@@ -10,14 +10,6 @@ import 'package:flutter/material.dart';
 /// - Indeterminate: Shows spinning animation (default)
 /// - Determinate: Shows progress from 0.0 to 1.0 when [value] is provided
 class AppProgressIndicator extends StatelessWidget {
-  const AppProgressIndicator({
-    this.value,
-    this.color,
-    this.radius = 10.0,
-    this.strokeWidth = 4.0,
-    super.key,
-  });
-
   /// The progress value (0.0 to 1.0) for determinate mode.
   /// If null, shows indeterminate animation.
   final double? value;
@@ -33,6 +25,14 @@ class AppProgressIndicator extends StatelessWidget {
   /// The stroke width of the indicator (Android only).
   /// Defaults to 4.0.
   final double strokeWidth;
+
+  const AppProgressIndicator({
+    this.value,
+    this.color,
+    this.radius = 10.0,
+    this.strokeWidth = 4.0,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+
 import 'result.dart';
 
 /// Base repository mixin that provides common mapping utilities

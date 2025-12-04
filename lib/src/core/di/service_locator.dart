@@ -3,11 +3,11 @@ import 'package:get_it/get_it.dart';
 import '../../features/applications/applications.dart';
 import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
-import '../../features/news/news.dart';
 import '../../features/g2g/notifications/notifications.dart';
+import '../../features/g2g/users/users.dart';
+import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
-import '../../features/g2g/users/users.dart';
 import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
 import '../dictionaries/dictionaries.dart';
@@ -30,10 +30,90 @@ Future<void> initializeDependencies() async {
   _initializeApplicationDependencies();
 }
 
+void _initializeApplicationDependencies() {
+  // Data sources
+  sl.registerLazySingleton<ApplicationRemoteDataSource>(
+    () => ApplicationRemoteDataSourceImpl(sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<ApplicationRepository>(
+    () => ApplicationRepositoryImpl(sl()),
+  );
+
+  // Use cases
+  sl.registerFactory<GetApplicationsUsecase>(
+    () => GetApplicationsUsecase(sl()),
+  );
+  sl.registerFactory<GetApplicationDetailUsecase>(
+    () => GetApplicationDetailUsecase(sl()),
+  );
+  sl.registerFactory<CreateApplicationUsecase>(
+    () => CreateApplicationUsecase(sl()),
+  );
+  sl.registerFactory<CancelApplicationUsecase>(
+    () => CancelApplicationUsecase(sl()),
+  );
+  sl.registerFactory<CheckCancelStatusUsecase>(
+    () => CheckCancelStatusUsecase(sl()),
+  );
+  sl.registerFactory<CheckApplicationStatusUsecase>(
+    () => CheckApplicationStatusUsecase(sl()),
+  );
+  sl.registerFactory<GetKpAbsenceCategoriesUsecase>(
+    () => GetKpAbsenceCategoriesUsecase(sl()),
+  );
+}
+
+void _initializeCommentDependencies() {
+  sl.registerLazySingleton<CommentRemoteDataSource>(
+    () => CommentRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<CommentRepository>(
+    () => CommentRepositoryImpl(sl()),
+  );
+  sl.registerFactory<GetCommentsUsecase>(() => GetCommentsUsecase(sl()));
+  sl.registerFactory<AddCommentUsecase>(() => AddCommentUsecase(sl()));
+  sl.registerFactory<DeleteCommentUsecase>(() => DeleteCommentUsecase(sl()));
+  sl.registerFactory<ToggleCommentLikeUsecase>(
+    () => ToggleCommentLikeUsecase(sl()),
+  );
+}
+
 void _initializeCoreDependencies() {
   sl.registerLazySingleton<AuthTokenProvider>(() => LocalAuthTokenProvider());
   sl.registerLazySingleton<ApiClient>(() => InsecureApiClient(sl()));
   sl.registerLazySingleton<RetryNotifier>(() => RetryNotifier());
+}
+
+void _initializeDiscountDependencies() {
+  // Data sources
+  sl.registerLazySingleton<DiscountRemoteDataSource>(
+    () => DiscountRemoteDataSourceImpl(sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<DiscountRepository>(
+    () => DiscountRepositoryImpl(sl()),
+  );
+
+  // Use cases
+  sl.registerFactory<GetDiscountsUsecase>(() => GetDiscountsUsecase(sl()));
+  sl.registerFactory<GetDiscountDetailUsecase>(
+    () => GetDiscountDetailUsecase(sl()),
+  );
+  sl.registerFactory<GetDiscountStatsUsecase>(
+    () => GetDiscountStatsUsecase(sl()),
+  );
+  sl.registerFactory<ToggleDiscountLikeUsecase>(
+    () => ToggleDiscountLikeUsecase(sl<DiscountRepository>()),
+  );
+  sl.registerFactory<GetKpDiscountCategoriesUsecase>(
+    () => GetKpDiscountCategoriesUsecase(sl()),
+  );
+  sl.registerFactory<GetKpDiscountSourcesUsecase>(
+    () => GetKpDiscountSourcesUsecase(sl()),
+  );
 }
 
 void _initializeFileDependencies() {
@@ -60,18 +140,22 @@ void _initializeMasterDataDependencies() {
   );
 }
 
-void _initializeCommentDependencies() {
-  sl.registerLazySingleton<CommentRemoteDataSource>(
-    () => CommentRemoteDataSourceImpl(sl()),
+void _initializeNewsDependencies() {
+  // Data sources
+  sl.registerLazySingleton<NewsRemoteDataSource>(
+    () => NewsRemoteDataSourceImpl(sl()),
   );
-  sl.registerLazySingleton<CommentRepository>(
-    () => CommentRepositoryImpl(sl()),
-  );
-  sl.registerFactory<GetCommentsUsecase>(() => GetCommentsUsecase(sl()));
-  sl.registerFactory<AddCommentUsecase>(() => AddCommentUsecase(sl()));
-  sl.registerFactory<DeleteCommentUsecase>(() => DeleteCommentUsecase(sl()));
-  sl.registerFactory<ToggleCommentLikeUsecase>(
-    () => ToggleCommentLikeUsecase(sl()),
+
+  // Repositories
+  sl.registerLazySingleton<NewsRepository>(() => NewsRepositoryImpl(sl()));
+
+  // Use cases
+  sl.registerFactory<GetNewsListUsecase>(() => GetNewsListUsecase(sl()));
+  sl.registerFactory<GetNewsDetailUsecase>(() => GetNewsDetailUsecase(sl()));
+  sl.registerFactory<GetNewsStatsUsecase>(() => GetNewsStatsUsecase(sl()));
+  sl.registerFactory<GetNewsGalleryUsecase>(() => GetNewsGalleryUsecase(sl()));
+  sl.registerFactory<ToggleNewsLikeUsecase>(
+    () => ToggleNewsLikeUsecase(sl<NewsRepository>()),
   );
 }
 
@@ -133,72 +217,6 @@ void _initializePollDependencies() {
   );
 }
 
-void _initializeUserDependencies() {
-  // Data sources
-  sl.registerLazySingleton<UserRemoteDataSource>(
-    () => UserRemoteDataSourceImpl(sl()),
-  );
-
-  // Repositories
-  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
-
-  // Use cases
-  sl.registerFactory<GetUsersUsecase>(() => GetUsersUsecase(sl()));
-  sl.registerFactory<GetAddressBookUsecase>(() => GetAddressBookUsecase(sl()));
-  sl.registerFactory<GetCurrentUserInfoUsecase>(
-    () => GetCurrentUserInfoUsecase(sl()),
-  );
-}
-
-void _initializeDiscountDependencies() {
-  // Data sources
-  sl.registerLazySingleton<DiscountRemoteDataSource>(
-    () => DiscountRemoteDataSourceImpl(sl()),
-  );
-
-  // Repositories
-  sl.registerLazySingleton<DiscountRepository>(
-    () => DiscountRepositoryImpl(sl()),
-  );
-
-  // Use cases
-  sl.registerFactory<GetDiscountsUsecase>(() => GetDiscountsUsecase(sl()));
-  sl.registerFactory<GetDiscountDetailUsecase>(
-    () => GetDiscountDetailUsecase(sl()),
-  );
-  sl.registerFactory<GetDiscountStatsUsecase>(
-    () => GetDiscountStatsUsecase(sl()),
-  );
-  sl.registerFactory<ToggleDiscountLikeUsecase>(
-    () => ToggleDiscountLikeUsecase(sl<DiscountRepository>()),
-  );
-  sl.registerFactory<GetKpDiscountCategoriesUsecase>(
-    () => GetKpDiscountCategoriesUsecase(sl()),
-  );
-  sl.registerFactory<GetKpDiscountSourcesUsecase>(
-    () => GetKpDiscountSourcesUsecase(sl()),
-  );
-}
-
-void _initializeNewsDependencies() {
-  // Data sources
-  sl.registerLazySingleton<NewsRemoteDataSource>(
-    () => NewsRemoteDataSourceImpl(sl()),
-  );
-
-  // Repositories
-  sl.registerLazySingleton<NewsRepository>(() => NewsRepositoryImpl(sl()));
-
-  // Use cases
-  sl.registerFactory<GetNewsListUsecase>(() => GetNewsListUsecase(sl()));
-  sl.registerFactory<GetNewsDetailUsecase>(() => GetNewsDetailUsecase(sl()));
-  sl.registerFactory<GetNewsStatsUsecase>(() => GetNewsStatsUsecase(sl()));
-  sl.registerFactory<GetNewsGalleryUsecase>(() => GetNewsGalleryUsecase(sl()));
-  sl.registerFactory<ToggleNewsLikeUsecase>(
-    () => ToggleNewsLikeUsecase(sl<NewsRepository>()),
-  );
-}
-
 void _initializeResellDependencies() {
   // Data sources
   sl.registerLazySingleton<ResellRemoteDataSource>(
@@ -222,37 +240,19 @@ void _initializeResellDependencies() {
   );
 }
 
-void _initializeApplicationDependencies() {
+void _initializeUserDependencies() {
   // Data sources
-  sl.registerLazySingleton<ApplicationRemoteDataSource>(
-    () => ApplicationRemoteDataSourceImpl(sl()),
+  sl.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImpl(sl()),
   );
 
   // Repositories
-  sl.registerLazySingleton<ApplicationRepository>(
-    () => ApplicationRepositoryImpl(sl()),
-  );
+  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
 
   // Use cases
-  sl.registerFactory<GetApplicationsUsecase>(
-    () => GetApplicationsUsecase(sl()),
-  );
-  sl.registerFactory<GetApplicationDetailUsecase>(
-    () => GetApplicationDetailUsecase(sl()),
-  );
-  sl.registerFactory<CreateApplicationUsecase>(
-    () => CreateApplicationUsecase(sl()),
-  );
-  sl.registerFactory<CancelApplicationUsecase>(
-    () => CancelApplicationUsecase(sl()),
-  );
-  sl.registerFactory<CheckCancelStatusUsecase>(
-    () => CheckCancelStatusUsecase(sl()),
-  );
-  sl.registerFactory<CheckApplicationStatusUsecase>(
-    () => CheckApplicationStatusUsecase(sl()),
-  );
-  sl.registerFactory<GetKpAbsenceCategoriesUsecase>(
-    () => GetKpAbsenceCategoriesUsecase(sl()),
+  sl.registerFactory<GetUsersUsecase>(() => GetUsersUsecase(sl()));
+  sl.registerFactory<GetAddressBookUsecase>(() => GetAddressBookUsecase(sl()));
+  sl.registerFactory<GetCurrentUserInfoUsecase>(
+    () => GetCurrentUserInfoUsecase(sl()),
   );
 }

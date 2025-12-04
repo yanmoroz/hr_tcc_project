@@ -1,11 +1,11 @@
 import '../../features/applications/applications.dart';
 import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
-import '../../features/news/news.dart';
 import '../../features/g2g/notifications/notifications.dart';
+import '../../features/g2g/users/users.dart';
+import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
-import '../../features/g2g/users/users.dart';
 import '../entities/application_form.dart';
 import 'service_locator.dart';
 
@@ -134,11 +134,6 @@ class BlocFactory {
     );
   }
 
-  /// Returns the singleton [UnreadNotificationsCubit] instance.
-  static UnreadNotificationsCubit getUnreadNotificationsCubit() {
-    return sl<UnreadNotificationsCubit>();
-  }
-
   /// Creates a [PollDetailBloc] instance with the given [pollId].
   static PollDetailBloc createPollDetailBloc(int pollId) {
     return PollDetailBloc(
@@ -172,5 +167,10 @@ class BlocFactory {
   /// Creates a [ResellItemsBloc] instance.
   static ResellItemsBloc createResellItemsBloc() {
     return ResellItemsBloc(sl());
+  }
+
+  /// Returns the singleton [UnreadNotificationsCubit] instance.
+  static UnreadNotificationsCubit getUnreadNotificationsCubit() {
+    return sl<UnreadNotificationsCubit>();
   }
 }

@@ -30,33 +30,6 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   Timer? _debounce;
 
   @override
-  void initState() {
-    super.initState();
-    _controller.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(Duration(milliseconds: widget.debounceMilliseconds), () {
-      widget.onSearchChanged(query);
-    });
-  }
-
-  void _clearSearch() {
-    _controller.clear();
-    widget.onSearchChanged('');
-  }
-
-  @override
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
@@ -111,5 +84,32 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         contentPadding: const EdgeInsets.all(8),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {});
+    });
+  }
+
+  void _clearSearch() {
+    _controller.clear();
+    widget.onSearchChanged('');
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(Duration(milliseconds: widget.debounceMilliseconds), () {
+      widget.onSearchChanged(query);
+    });
   }
 }

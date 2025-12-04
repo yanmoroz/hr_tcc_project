@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 
+import '../base_types/result.dart';
 import '../exceptions/mapping/mapping_exception.dart';
 import '../exceptions/network/network_exception.dart';
 import '../logging/app_logger.dart';
-import '../base_types/result.dart';
 
 class ApiCallExecutor {
   static Future<Result<T>> executeApiCall<T>({

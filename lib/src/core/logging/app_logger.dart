@@ -30,16 +30,6 @@ class AppLogger {
     instance.d(message, error: error, stackTrace: stackTrace);
   }
 
-  /// Log an info message.
-  static void i(String message, [dynamic error, StackTrace? stackTrace]) {
-    instance.i(message, error: error, stackTrace: stackTrace);
-  }
-
-  /// Log a warning message.
-  static void w(String message, [dynamic error, StackTrace? stackTrace]) {
-    instance.w(message, error: error, stackTrace: stackTrace);
-  }
-
   /// Log an error message.
   static void e(String message, [dynamic error, StackTrace? stackTrace]) {
     instance.e(message, error: error, stackTrace: stackTrace);
@@ -48,5 +38,15 @@ class AppLogger {
   /// Log a fatal error message.
   static void f(String message, [dynamic error, StackTrace? stackTrace]) {
     instance.f(message, error: error, stackTrace: stackTrace);
+  }
+
+  /// Log an info message.
+  static void i(String message, [dynamic error, StackTrace? stackTrace]) {
+    instance.i(message, error: error, stackTrace: stackTrace);
+  }
+
+  /// Log a warning message.
+  static void w(String message, [dynamic error, StackTrace? stackTrace]) {
+    instance.w(message, error: error, stackTrace: stackTrace);
   }
 }

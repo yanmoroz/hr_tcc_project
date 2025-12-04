@@ -5,14 +5,9 @@ import '../retry/retry_notifier.dart';
 import '../theme/theme.dart';
 
 class NetworkErrorMessageWidget extends StatelessWidget {
-  const NetworkErrorMessageWidget({super.key, required this.onRetry});
-
   final VoidCallback onRetry;
 
-  void _handleRetry(BuildContext context) {
-    onRetry();
-    context.read<RetryNotifier>().notifyRetry();
-  }
+  const NetworkErrorMessageWidget({super.key, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -50,5 +45,10 @@ class NetworkErrorMessageWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleRetry(BuildContext context) {
+    onRetry();
+    context.read<RetryNotifier>().notifyRetry();
   }
 }

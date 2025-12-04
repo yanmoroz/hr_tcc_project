@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import '../../../../core/base_types/result.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/base_types/base_repository.dart';
+import '../../../../core/base_types/result.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/value_objects/system_type.dart';
 import '../../../../core/value_objects/tcc_image_destination_type.dart';
@@ -17,34 +17,81 @@ import '../datasources/file_remote_data_source.dart';
 import '../models/uploaded_file_model.dart';
 
 class FileRepositoryImpl with BaseRepository implements FileRepository {
-  final FileRemoteDataSource _remoteDataSource;
-
   /// Cache TTL duration - files older than this will be re-downloaded
   static const Duration _cacheTtl = Duration(hours: 24);
 
+  final FileRemoteDataSource _remoteDataSource;
+
   FileRepositoryImpl(this._remoteDataSource);
 
-  @override
-  Future<Result<UploadedFile>> uploadFile({
-    required File file,
-    required SystemType systemType,
-    FileGroup? group,
-    String? issueIdOrKey,
-    TccImageDestinationType? imageDestination,
-    String? destinationId,
-    ProgressCallback? onProgress,
-  }) async {
-    final result = await _remoteDataSource.uploadFile(
-      file: file,
-      systemType: systemType,
-      group: group,
-      issueIdOrKey: issueIdOrKey,
-      imageDestination: imageDestination,
-      destinationId: destinationId,
-      onProgress: onProgress,
-    );
+  /// Clean up expired cache files
+  /// This can be called periodically to free up storage
+  Future<void> cleanupExpiredCache() async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+      final files = await cacheDir.list().toList();
+      int deletedCount = 0;
+      int bytesFreed = 0;
 
-    return result.map((model) => model.toDomain());
+      for (final entity in files) {
+        if (entity is File && entity.path.contains('file_cache_')) {
+          final fileName = entity.path.split('/').last;
+
+          // Skip metadata files, we'll check them when processing data files
+          if (fileName.endsWith('_meta')) continue;
+
+          // Extract cache key from file name
+          final cacheKey = fileName.replaceFirst('file_cache_', '');
+          final metadataFile = File(
+            '${cacheDir.path}/file_cache_${cacheKey}_meta',
+          );
+
+          bool shouldDelete = false;
+
+          // Delete if metadata is missing
+          if (!await metadataFile.exists()) {
+            shouldDelete = true;
+          } else {
+            try {
+              // Check if cache is expired
+              final metadataJson = await metadataFile.readAsString();
+              final metadata = jsonDecode(metadataJson) as Map<String, dynamic>;
+              final cachedAtMs = metadata['cachedAt'] as int?;
+
+              if (cachedAtMs == null) {
+                shouldDelete = true;
+              } else {
+                final cachedAt = DateTime.fromMillisecondsSinceEpoch(
+                  cachedAtMs,
+                );
+                final age = DateTime.now().difference(cachedAt);
+                if (age > _cacheTtl) {
+                  shouldDelete = true;
+                }
+              }
+            } catch (e) {
+              // Invalid metadata, delete the cache
+              shouldDelete = true;
+            }
+          }
+
+          if (shouldDelete) {
+            final fileSize = await entity.length();
+            await _deleteCacheFiles(cacheKey);
+            deletedCount++;
+            bytesFreed += fileSize;
+          }
+        }
+      }
+
+      if (deletedCount > 0) {
+        AppLogger.d(
+          'Cleaned up $deletedCount expired cache files (freed ${(bytesFreed / 1024).toStringAsFixed(2)} KB)',
+        );
+      }
+    } catch (e, stackTrace) {
+      AppLogger.e('Error cleaning up expired cache', e, stackTrace);
+    }
   }
 
   @override
@@ -100,6 +147,47 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
     );
 
     return result;
+  }
+
+  @override
+  Future<Result<UploadedFile>> uploadFile({
+    required File file,
+    required SystemType systemType,
+    FileGroup? group,
+    String? issueIdOrKey,
+    TccImageDestinationType? imageDestination,
+    String? destinationId,
+    ProgressCallback? onProgress,
+  }) async {
+    final result = await _remoteDataSource.uploadFile(
+      file: file,
+      systemType: systemType,
+      group: group,
+      issueIdOrKey: issueIdOrKey,
+      imageDestination: imageDestination,
+      destinationId: destinationId,
+      onProgress: onProgress,
+    );
+
+    return result.map((model) => model.toDomain());
+  }
+
+  /// Delete cache files (data and metadata) for a given cache key
+  Future<void> _deleteCacheFiles(String cacheKey) async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+      final cacheFile = File('${cacheDir.path}/file_cache_$cacheKey');
+      final metadataFile = File('${cacheDir.path}/file_cache_${cacheKey}_meta');
+
+      if (await cacheFile.exists()) {
+        await cacheFile.delete();
+      }
+      if (await metadataFile.exists()) {
+        await metadataFile.delete();
+      }
+    } catch (e, stackTrace) {
+      AppLogger.e('Error deleting cache files for $cacheKey', e, stackTrace);
+    }
   }
 
   /// Generate a unique cache key based on system type and file identifiers
@@ -187,94 +275,6 @@ class FileRepositoryImpl with BaseRepository implements FileRepository {
       await metadataFile.writeAsString(jsonEncode(metadata));
     } catch (e, stackTrace) {
       AppLogger.e('Error saving to cache', e, stackTrace);
-    }
-  }
-
-  /// Delete cache files (data and metadata) for a given cache key
-  Future<void> _deleteCacheFiles(String cacheKey) async {
-    try {
-      final cacheDir = await getTemporaryDirectory();
-      final cacheFile = File('${cacheDir.path}/file_cache_$cacheKey');
-      final metadataFile = File('${cacheDir.path}/file_cache_${cacheKey}_meta');
-
-      if (await cacheFile.exists()) {
-        await cacheFile.delete();
-      }
-      if (await metadataFile.exists()) {
-        await metadataFile.delete();
-      }
-    } catch (e, stackTrace) {
-      AppLogger.e('Error deleting cache files for $cacheKey', e, stackTrace);
-    }
-  }
-
-  /// Clean up expired cache files
-  /// This can be called periodically to free up storage
-  Future<void> cleanupExpiredCache() async {
-    try {
-      final cacheDir = await getTemporaryDirectory();
-      final files = await cacheDir.list().toList();
-      int deletedCount = 0;
-      int bytesFreed = 0;
-
-      for (final entity in files) {
-        if (entity is File && entity.path.contains('file_cache_')) {
-          final fileName = entity.path.split('/').last;
-
-          // Skip metadata files, we'll check them when processing data files
-          if (fileName.endsWith('_meta')) continue;
-
-          // Extract cache key from file name
-          final cacheKey = fileName.replaceFirst('file_cache_', '');
-          final metadataFile = File(
-            '${cacheDir.path}/file_cache_${cacheKey}_meta',
-          );
-
-          bool shouldDelete = false;
-
-          // Delete if metadata is missing
-          if (!await metadataFile.exists()) {
-            shouldDelete = true;
-          } else {
-            try {
-              // Check if cache is expired
-              final metadataJson = await metadataFile.readAsString();
-              final metadata = jsonDecode(metadataJson) as Map<String, dynamic>;
-              final cachedAtMs = metadata['cachedAt'] as int?;
-
-              if (cachedAtMs == null) {
-                shouldDelete = true;
-              } else {
-                final cachedAt = DateTime.fromMillisecondsSinceEpoch(
-                  cachedAtMs,
-                );
-                final age = DateTime.now().difference(cachedAt);
-                if (age > _cacheTtl) {
-                  shouldDelete = true;
-                }
-              }
-            } catch (e) {
-              // Invalid metadata, delete the cache
-              shouldDelete = true;
-            }
-          }
-
-          if (shouldDelete) {
-            final fileSize = await entity.length();
-            await _deleteCacheFiles(cacheKey);
-            deletedCount++;
-            bytesFreed += fileSize;
-          }
-        }
-      }
-
-      if (deletedCount > 0) {
-        AppLogger.d(
-          'Cleaned up $deletedCount expired cache files (freed ${(bytesFreed / 1024).toStringAsFixed(2)} KB)',
-        );
-      }
-    } catch (e, stackTrace) {
-      AppLogger.e('Error cleaning up expired cache', e, stackTrace);
     }
   }
 }

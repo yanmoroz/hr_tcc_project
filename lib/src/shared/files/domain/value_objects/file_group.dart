@@ -1,3 +1,5 @@
+FileGroup? fileGroupFromJson(String? value) => FileGroup.fromString(value);
+
 /// File group enumeration for KP system
 enum FileGroup {
   news,
@@ -29,5 +31,3 @@ enum FileGroup {
     }
   }
 }
-
-FileGroup? fileGroupFromJson(String? value) => FileGroup.fromString(value);

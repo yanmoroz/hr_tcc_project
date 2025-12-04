@@ -5,11 +5,11 @@ class DictionariesCache {
 
   DictionariesCache({Duration cacheDuration = const Duration(hours: 1)});
 
-  T? get<T>() => _caches[T]?.get() as T?;
-
-  void set<T>(T data) => (_caches[T] ??= CacheManager()).set(data);
-
   void clearAll() {
     _caches.clear();
   }
+
+  T? get<T>() => _caches[T]?.get() as T?;
+
+  void set<T>(T data) => (_caches[T] ??= CacheManager()).set(data);
 }

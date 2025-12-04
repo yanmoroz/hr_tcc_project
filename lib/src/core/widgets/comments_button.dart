@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../gen/assets.gen.dart';
-
 import '../../../src/core/extensions/int_extension.dart';
 import '../theme/theme.dart';
 

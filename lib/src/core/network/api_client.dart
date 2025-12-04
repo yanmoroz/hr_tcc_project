@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -7,6 +8,13 @@ import '../auth/auth_token_provider.dart';
 import 'api_constants.dart';
 
 abstract class ApiClient {
+  Future<Response> delete(String path, {Map<String, dynamic>? queryParameters});
+  Future<Response> downloadFile(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    ProgressCallback? onReceiveProgress,
+    Options? options,
+  });
   Future<Response> get(String path, {Map<String, dynamic>? queryParameters});
   Future<Response> post(
     String path, {
@@ -18,18 +26,11 @@ abstract class ApiClient {
     dynamic data,
     Map<String, dynamic>? queryParameters,
   });
-  Future<Response> delete(String path, {Map<String, dynamic>? queryParameters});
   Future<Response> uploadFile(
     String path, {
     required FormData formData,
     Map<String, dynamic>? queryParameters,
     ProgressCallback? onSendProgress,
-  });
-  Future<Response> downloadFile(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    ProgressCallback? onReceiveProgress,
-    Options? options,
   });
 }
 
@@ -39,6 +40,78 @@ abstract class BaseApiClient implements ApiClient {
 
   BaseApiClient(this._authTokenProvider) {
     _initialize();
+  }
+
+  @override
+  Future<Response> delete(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) {
+    return _dio.delete(path, queryParameters: queryParameters);
+  }
+
+  @override
+  Future<Response> downloadFile(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    ProgressCallback? onReceiveProgress,
+    Options? options,
+  }) {
+    return _dio.get(
+      path,
+      queryParameters: queryParameters,
+      onReceiveProgress: onReceiveProgress,
+      options:
+          options ??
+          Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) => status! < 500,
+          ),
+    );
+  }
+
+  @override
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) {
+    return _dio.get(path, queryParameters: queryParameters);
+  }
+
+  @override
+  Future<Response> post(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
+    return _dio.post(path, data: data, queryParameters: queryParameters);
+  }
+
+  @override
+  Future<Response> put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
+    return _dio.put(path, data: data, queryParameters: queryParameters);
+  }
+
+  @override
+  Future<Response> uploadFile(
+    String path, {
+    required FormData formData,
+    Map<String, dynamic>? queryParameters,
+    ProgressCallback? onSendProgress,
+  }) {
+    return _dio.post(
+      path,
+      data: formData,
+      queryParameters: queryParameters,
+      onSendProgress: onSendProgress,
+    );
+  }
+
+  /// Override this method to configure certificate validation behavior
+  void _configureCertificateValidation() {
+    // Default: secure (no override needed)
   }
 
   void _initialize() {
@@ -89,82 +162,6 @@ abstract class BaseApiClient implements ApiClient {
     // Configure insecure certificate callback if needed
     _configureCertificateValidation();
   }
-
-  /// Override this method to configure certificate validation behavior
-  void _configureCertificateValidation() {
-    // Default: secure (no override needed)
-  }
-
-  @override
-  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) {
-    return _dio.get(path, queryParameters: queryParameters);
-  }
-
-  @override
-  Future<Response> post(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-  }) {
-    return _dio.post(path, data: data, queryParameters: queryParameters);
-  }
-
-  @override
-  Future<Response> put(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-  }) {
-    return _dio.put(path, data: data, queryParameters: queryParameters);
-  }
-
-  @override
-  Future<Response> delete(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-  }) {
-    return _dio.delete(path, queryParameters: queryParameters);
-  }
-
-  @override
-  Future<Response> uploadFile(
-    String path, {
-    required FormData formData,
-    Map<String, dynamic>? queryParameters,
-    ProgressCallback? onSendProgress,
-  }) {
-    return _dio.post(
-      path,
-      data: formData,
-      queryParameters: queryParameters,
-      onSendProgress: onSendProgress,
-    );
-  }
-
-  @override
-  Future<Response> downloadFile(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    ProgressCallback? onReceiveProgress,
-    Options? options,
-  }) {
-    return _dio.get(
-      path,
-      queryParameters: queryParameters,
-      onReceiveProgress: onReceiveProgress,
-      options:
-          options ??
-          Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) => status! < 500,
-          ),
-    );
-  }
-}
-
-class SecureApiClient extends BaseApiClient {
-  SecureApiClient(super._authTokenProvider);
 }
 
 class InsecureApiClient extends BaseApiClient {
@@ -180,4 +177,8 @@ class InsecureApiClient extends BaseApiClient {
       return client;
     };
   }
+}
+
+class SecureApiClient extends BaseApiClient {
+  SecureApiClient(super._authTokenProvider);
 }

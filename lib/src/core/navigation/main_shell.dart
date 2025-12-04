@@ -31,28 +31,6 @@ class _MainShellState extends State<MainShell> {
   late final RetryNotifier _retryNotifier;
 
   @override
-  void initState() {
-    super.initState();
-    _retryNotifier = sl<RetryNotifier>();
-    _retryNotifier.addListener(_onRetry);
-  }
-
-  @override
-  void dispose() {
-    _retryNotifier.removeListener(_onRetry);
-    super.dispose();
-  }
-
-  void _onRetry() {
-    final userState = context.read<CurrentUserBloc>().state;
-    if (userState.status == LoadingStatus.error) {
-      context.read<CurrentUserBloc>().add(
-        const CurrentUserEvent.loadCurrentUser(),
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -129,6 +107,19 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  @override
+  void dispose() {
+    _retryNotifier.removeListener(_onRetry);
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _retryNotifier = sl<RetryNotifier>();
+    _retryNotifier.addListener(_onRetry);
+  }
+
   Widget _buildIcon({required String assetPath, required bool isSelected}) {
     return Container(
       margin: const EdgeInsets.only(bottom: _iconToLabelSpacing),
@@ -153,5 +144,14 @@ class _MainShellState extends State<MainShell> {
       index,
       initialLocation: index == widget.navigationShell.currentIndex,
     );
+  }
+
+  void _onRetry() {
+    final userState = context.read<CurrentUserBloc>().state;
+    if (userState.status == LoadingStatus.error) {
+      context.read<CurrentUserBloc>().add(
+        const CurrentUserEvent.loadCurrentUser(),
+      );
+    }
   }
 }

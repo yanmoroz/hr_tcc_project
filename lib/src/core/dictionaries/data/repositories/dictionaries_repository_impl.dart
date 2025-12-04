@@ -95,6 +95,15 @@ class DictionariesRepositoryImpl
   }
 
   @override
+  Future<Result<List<AlpinaDigitalPrevAccess>>>
+  getAlpinaDigitalPrevAccesses() async {
+    return _getCachedOrFetch(
+      _cache.get,
+      'Failed to fetch alpina digital prev accesses',
+    );
+  }
+
+  @override
   Future<Result<List<ApplicationFormGroup>>> getApplicationFormGroups() async {
     return _getCachedOrFetch(
       _cache.get,
@@ -108,11 +117,8 @@ class DictionariesRepositoryImpl
   }
 
   @override
-  Future<Result<List<SystemStatusGroup>>> getSystemStatusGroups() async {
-    return _getCachedOrFetch(
-      _cache.get,
-      'Failed to fetch system status groups',
-    );
+  Future<Result<List<Office>>> getOffices() async {
+    return _getCachedOrFetch(_cache.get, 'Failed to fetch offices');
   }
 
   @override
@@ -121,13 +127,11 @@ class DictionariesRepositoryImpl
   }
 
   @override
-  Future<Result<List<TripPurpose>>> getTripPurposes() async {
-    return _getCachedOrFetch(_cache.get, 'Failed to fetch trip purposes');
-  }
-
-  @override
-  Future<Result<List<TrainingType>>> getTrainingTypes() async {
-    return _getCachedOrFetch(_cache.get, 'Failed to fetch training types');
+  Future<Result<List<SystemStatusGroup>>> getSystemStatusGroups() async {
+    return _getCachedOrFetch(
+      _cache.get,
+      'Failed to fetch system status groups',
+    );
   }
 
   @override
@@ -141,17 +145,13 @@ class DictionariesRepositoryImpl
   }
 
   @override
-  Future<Result<List<AlpinaDigitalPrevAccess>>>
-  getAlpinaDigitalPrevAccesses() async {
-    return _getCachedOrFetch(
-      _cache.get,
-      'Failed to fetch alpina digital prev accesses',
-    );
+  Future<Result<List<TrainingType>>> getTrainingTypes() async {
+    return _getCachedOrFetch(_cache.get, 'Failed to fetch training types');
   }
 
   @override
-  Future<Result<List<Office>>> getOffices() async {
-    return _getCachedOrFetch(_cache.get, 'Failed to fetch offices');
+  Future<Result<List<TripPurpose>>> getTripPurposes() async {
+    return _getCachedOrFetch(_cache.get, 'Failed to fetch trip purposes');
   }
 
   Future<Result<List<T>>> _getCachedOrFetch<T>(
