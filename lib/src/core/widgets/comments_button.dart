@@ -21,32 +21,28 @@ class CommentsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = SvgPicture.asset(
-      Assets.icons.commentsIcon,
-      colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
-      fit: BoxFit.none,
-    );
-
-    final label = Text(
-      commentCount.toFormattedString(),
-      style: AppTypography.captionMedium2.black,
-    );
-
     final row = Row(
       mainAxisSize: MainAxisSize.min,
-      children: [icon, const SizedBox(width: 12), label],
+      children: [
+        SvgPicture.asset(
+          Assets.icons.commentsIcon,
+          colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+          fit: BoxFit.none,
+        ),
+        const SizedBox(width: 12),
+        Text(
+          commentCount.toFormattedString(),
+          style: AppTypography.captionMedium2.black,
+        ),
+      ],
     );
 
-    // Interactive mode: GestureDetector
-    if (onPressed != null) {
-      return GestureDetector(
-        onTap: onPressed,
-        behavior: HitTestBehavior.opaque,
-        child: row,
-      );
-    }
-
-    // Display mode: Read-only Row
-    return row;
+    return onPressed != null
+        ? GestureDetector(
+            onTap: onPressed,
+            behavior: HitTestBehavior.opaque,
+            child: row,
+          )
+        : row;
   }
 }

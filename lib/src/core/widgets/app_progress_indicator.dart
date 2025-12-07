@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 
 class AppProgressIndicator extends StatelessWidget {
   final double? value;
-
   final Color? color;
-
   final double radius;
-
   final double strokeWidth;
 
   const AppProgressIndicator({

@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppRefreshIndicator extends StatelessWidget {
   final Future<void> Function() onRefresh;
-
   final Widget child;
-
   final Color? color;
-
   final Color? backgroundColor;
 
   const AppRefreshIndicator({

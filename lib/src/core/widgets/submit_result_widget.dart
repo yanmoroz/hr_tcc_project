@@ -7,9 +7,9 @@ import '../../../gen/assets.gen.dart';
 import '../theme/theme.dart';
 
 class SubmitResultWidget extends StatelessWidget {
-  final VoidCallback onClose;
   final String message;
   final bool isSuccess;
+  final VoidCallback onClose;
 
   const SubmitResultWidget({
     super.key,

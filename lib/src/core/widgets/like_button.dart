@@ -6,7 +6,6 @@ import '../../../src/core/extensions/int_extension.dart';
 
 class LikeButton extends StatelessWidget {
   final bool isLiked;
-
   final int likeCount;
   final double spacing;
   final double iconSize;
@@ -15,6 +14,7 @@ class LikeButton extends StatelessWidget {
   final Color likedIconColor;
   final Color notLikedIconColor;
   final VoidCallback onPressed;
+
   const LikeButton({
     required this.isLiked,
     required this.likeCount,
@@ -44,10 +44,6 @@ class LikeButton extends StatelessWidget {
             colorFilter: ColorFilter.mode(notLikedIconColor, BlendMode.srcIn),
           );
 
-    final text = isLiked
-        ? Text(likeCount.toFormattedString(), style: likedTextStyle)
-        : Text(likeCount.toFormattedString(), style: notLikedTextStyle);
-
     return GestureDetector(
       onTap: onPressed,
       behavior: HitTestBehavior.opaque,
@@ -56,7 +52,10 @@ class LikeButton extends StatelessWidget {
         children: [
           icon,
           SizedBox(width: spacing),
-          text,
+          Text(
+            likeCount.toFormattedString(),
+            style: isLiked ? likedTextStyle : notLikedTextStyle,
+          ),
         ],
       ),
     );
