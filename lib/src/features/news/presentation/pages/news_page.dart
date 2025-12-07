@@ -94,7 +94,6 @@ class _NewsPageState extends State<NewsPage> {
     // Success state
     final newsItems = state.newsItems;
     final isLoadingMore = state.isLoadingMore;
-    final coverImages = state.coverImages;
     final category = state.category;
     final search = state.search;
 
@@ -122,16 +121,15 @@ class _NewsPageState extends State<NewsPage> {
             );
           }
 
-          final newsItem = newsItems[index];
+          final viewModel = newsItems[index];
           return NewsItemWidget(
-            newsItem: newsItem,
-            coverImage: coverImages[newsItem.id],
+            viewModel: viewModel,
             onTap: () {
-              context.push('/home/news/${newsItem.id}');
+              context.push('/home/news/${viewModel.newsItem.id}');
             },
             onCommentsTap: () => context.push(
-              '/home/comments/news/${newsItem.id}',
-              extra: {'entityName': newsItem.title},
+              '/home/comments/news/${viewModel.newsItem.id}',
+              extra: {'entityName': viewModel.newsItem.title},
             ),
           );
         },

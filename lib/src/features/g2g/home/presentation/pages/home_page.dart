@@ -7,8 +7,8 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/widgets/widgets.dart';
 import '../../../../news/presentation/blocs/news_page/bloc.dart';
 import '../../../users/presentation/widgets/user_profile_header.dart';
-import '../widgets/menu_section.dart';
 import '../widgets/news_section.dart';
+import '../widgets/quick_link_bar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -40,42 +40,11 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingState() {
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        children: [
-          SizedBox(height: 16),
-          MenuSection(),
-          SizedBox(height: 24),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => Shimmer.fromColors(
-              baseColor: AppColors.grey200,
-              highlightColor: AppColors.grey100,
-              child: Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: AppColors.grey200,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemCount: 10,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildErrorState(BuildContext context) {
     return Column(
       children: [
         SizedBox(height: 16),
-        MenuSection(),
+        QuickLinkBar(),
         Expanded(
           child: NetworkErrorMessageWidget(
             onRetry: () => context.read<NewsListBloc>().add(
@@ -97,15 +66,43 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(height: 16),
-            MenuSection(),
+            QuickLinkBar(),
             SizedBox(height: 24),
-            NewsSection(
-              newsItems: state.newsItems,
-              coverImages: state.coverImages,
-            ),
+            NewsSection(newsItems: state.newsItems),
             SizedBox(height: 16),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          SizedBox(height: 16),
+          QuickLinkBar(),
+          SizedBox(height: 24),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) => Shimmer.fromColors(
+              baseColor: AppColors.grey200,
+              highlightColor: AppColors.grey100,
+              child: Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: AppColors.grey200,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemCount: 10,
+          ),
+        ],
       ),
     );
   }

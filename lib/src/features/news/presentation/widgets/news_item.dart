@@ -1,29 +1,28 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
-import '../../domain/domain.dart';
+import '../view_models/news_item_view_model.dart';
 
 class NewsItemWidget extends StatelessWidget {
-  final NewsItem newsItem;
-  final Uint8List? coverImage;
+  final NewsItemViewModel viewModel;
   final VoidCallback onTap;
   final VoidCallback onCommentsTap;
 
   const NewsItemWidget({
     super.key,
-    required this.newsItem,
-    this.coverImage,
+    required this.viewModel,
     required this.onTap,
     required this.onCommentsTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final newsItem = viewModel.newsItem;
+    final coverImage = viewModel.coverImage;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -40,7 +39,7 @@ class NewsItemWidget extends StatelessWidget {
               if (coverImage != null)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.memory(coverImage!),
+                  child: Image.memory(coverImage),
                 ),
               if (coverImage != null) const SizedBox(height: 12),
 

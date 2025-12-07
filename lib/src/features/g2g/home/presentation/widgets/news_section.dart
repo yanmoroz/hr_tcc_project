@@ -1,21 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/theme/theme.dart';
 import '../../../../../core/widgets/widgets.dart';
-import '../../../../news/domain/domain.dart';
+import '../../../../news/presentation/view_models/news_item_view_model.dart';
 import '../../../../news/presentation/widgets/news_item.dart';
 
 class NewsSection extends StatelessWidget {
-  final List<NewsItem> newsItems;
-  final Map<int, Uint8List> coverImages;
+  final List<NewsItemViewModel> newsItems;
 
-  const NewsSection({
-    super.key,
-    required this.newsItems,
-    required this.coverImages,
-  });
+  const NewsSection({super.key, required this.newsItems});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +22,9 @@ class NewsSection extends StatelessWidget {
       children: [
         // Section header
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Новости', style: AppTypography.textSemibold1.black),
-            const Spacer(),
             AppTextButton(
               onPressed: () => context.push('/home/news'),
               child: Text(
@@ -46,16 +40,15 @@ class NewsSection extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: newsItems.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final newsItem = newsItems[index];
             return NewsItemWidget(
-              newsItem: newsItem,
-              coverImage: coverImages[newsItem.id],
-              onTap: () => context.push('/home/news/${newsItem.id}'),
+              viewModel: newsItem,
+              onTap: () => context.push('/home/news/${newsItem.newsItem.id}'),
               onCommentsTap: () => context.push(
-                '/home/comments/news/${newsItem.id}',
-                extra: {'entityName': newsItem.title},
+                '/home/comments/news/${newsItem.newsItem.id}',
+                extra: {'entityName': newsItem.newsItem.title},
               ),
             );
           },

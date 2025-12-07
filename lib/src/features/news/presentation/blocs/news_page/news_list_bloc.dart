@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/base_types/result.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
+import '../../view_models/news_item_view_model.dart';
 import 'news_list_event.dart';
 import 'news_list_state.dart';
 
@@ -25,22 +25,19 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     on<LoadMoreNews>(_onLoadMoreNews);
   }
 
-  Future<void> _loadCoverImages(
-    List<NewsItem> newsItems,
-    Emitter<NewsListState> emit,
-  ) async {
+  Future<void> _loadCoverImages(Emitter<NewsListState> emit) async {
     final coverImages = <int, Uint8List>{};
 
     // Download images in parallel for news items that have image
-    final futures = newsItems
+    final futures = state.newsItems
         .where(
-          (newsItem) => newsItem.image != null && newsItem.image!.isNotEmpty,
+          (vm) => vm.newsItem.image != null && vm.newsItem.image!.isNotEmpty,
         )
-        .map((newsItem) async {
+        .map((vm) async {
           final result = await _downloadFileUsecase(
             systemType: SystemType.kp,
             download: false,
-            uriFile: newsItem.image,
+            uriFile: vm.newsItem.image,
           );
 
           result.fold(
@@ -48,24 +45,30 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
               // Silently fail for individual image downloads
             },
             (imageBytes) {
-              coverImages[newsItem.id] = imageBytes;
+              coverImages[vm.newsItem.id] = imageBytes;
             },
           );
         });
 
     await Future.wait(futures);
 
-    // Emit updated state with cover images, merging with existing ones
-    if (state.status == LoadingStatus.success) {
-      final mergedCoverImages = {...state.coverImages, ...coverImages};
-      emit(state.copyWith(coverImages: mergedCoverImages));
+    // Update ViewModels with loaded cover images
+    if (state.status == LoadingStatus.success && coverImages.isNotEmpty) {
+      final updatedNewsItems = state.newsItems.map((vm) {
+        final coverImage = coverImages[vm.newsItem.id];
+        if (coverImage != null) {
+          return vm.copyWith(coverImage: coverImage);
+        }
+        return vm;
+      }).toList();
+
+      emit(state.copyWith(newsItems: updatedNewsItems));
     }
   }
 
   Future<void> _loadMoreNews(
     Emitter<NewsListState> emit, {
-    required List<NewsItem> currentNewsItems,
-    required Map<int, Uint8List> currentCoverImages,
+    required List<NewsItemViewModel> currentNewsItems,
     required int nextPage,
     int? category,
     String? search,
@@ -85,27 +88,28 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
             currentPage: nextPage - 1,
             hasMorePages: true,
             isLoadingMore: false,
-            coverImages: currentCoverImages,
             category: category,
             search: search,
           ),
         );
       },
       (newNewsItems) async {
-        final allNewsItems = [...currentNewsItems, ...newNewsItems];
+        final newViewModels = newNewsItems
+            .map((item) => NewsItemViewModel(newsItem: item))
+            .toList();
+        final allNewsItems = [...currentNewsItems, ...newViewModels];
         emit(
           state.copyWith(
             newsItems: allNewsItems,
             currentPage: nextPage,
-            hasMorePages: newNewsItems.isNotEmpty, // No more pages if empty
+            hasMorePages: newNewsItems.isNotEmpty,
             isLoadingMore: false,
-            coverImages: currentCoverImages,
             category: category,
             search: search,
           ),
         );
-        // Load cover images for new news items only
-        await _loadCoverImages(newNewsItems, emit);
+        // Load cover images for new news items
+        await _loadCoverImages(emit);
       },
     );
   }
@@ -126,23 +130,25 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
       (error) async => emit(
         state.copyWith(
           status: LoadingStatus.error,
-          errorMessage: error.message,
+          errorMessage: error.toString(),
         ),
       ),
       (newsItems) async {
+        final viewModels = newsItems
+            .map((item) => NewsItemViewModel(newsItem: item))
+            .toList();
         emit(
           state.copyWith(
             status: LoadingStatus.success,
-            newsItems: newsItems,
+            newsItems: viewModels,
             currentPage: page,
-            hasMorePages:
-                newsItems.isNotEmpty, // Assume more pages if we got results
+            hasMorePages: newsItems.isNotEmpty,
             isLoadingMore: false,
             category: category,
             search: search,
           ),
         );
-        await _loadCoverImages(newsItems, emit);
+        await _loadCoverImages(emit);
       },
     );
   }
@@ -165,7 +171,6 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
     await _loadMoreNews(
       emit,
       currentNewsItems: state.newsItems,
-      currentCoverImages: state.coverImages,
       nextPage: state.currentPage + 1,
       category: state.category,
       search: state.search,

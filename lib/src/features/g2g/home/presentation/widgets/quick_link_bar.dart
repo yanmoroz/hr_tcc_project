@@ -3,10 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../gen/assets.gen.dart';
-import 'menu_button.dart';
+import 'quick_link_button.dart';
 
-class MenuSection extends StatelessWidget {
-  const MenuSection({super.key});
+class QuickLinkBar extends StatelessWidget {
+  const QuickLinkBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,27 +14,27 @@ class MenuSection extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MenuButton(
+        QuickLinkButton(
           iconPath: Assets.icons.telegramIcon,
           label: 'Телеграм-канал S8',
           onTap: () => _launchUrl('http://telegram.org'),
         ),
-        MenuButton(
+        QuickLinkButton(
           iconPath: Assets.icons.discountsIcon,
           label: 'Льготы и возможности',
           onTap: () => context.push('/home/discount-categories'),
         ),
-        MenuButton(
+        QuickLinkButton(
           iconPath: Assets.icons.pollsIcon,
           label: 'Опросы',
           onTap: () => context.push('/home/polls'),
         ),
-        MenuButton(
+        QuickLinkButton(
           iconPath: Assets.icons.resellIcon,
           label: 'Ресейл',
           onTap: () => context.push('/home/resell'),
         ),
-        MenuButton(
+        QuickLinkButton(
           iconPath: Assets.icons.s8Icon,
           label: 'ИТ-портал',
           onTap: () => _launchUrl('https://s8.capital'),

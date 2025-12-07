@@ -3,16 +3,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/theme/theme.dart';
 
-class MenuButton extends StatelessWidget {
-  final String iconPath;
+class QuickLinkButton extends StatelessWidget {
   final String label;
+  final String iconPath;
   final VoidCallback onTap;
 
-  const MenuButton({
-    required this.iconPath,
-    required this.label,
-    required this.onTap,
+  const QuickLinkButton({
     super.key,
+    required this.label,
+    required this.iconPath,
+    required this.onTap,
   });
 
   @override
