@@ -7,10 +7,10 @@ part 'notifications_list_event.freezed.dart';
 @freezed
 class NotificationsListEvent with _$NotificationsListEvent {
   const factory NotificationsListEvent.loadNotifications() = LoadNotifications;
-  const factory NotificationsListEvent.refreshNotifications() =
-      RefreshNotifications;
   const factory NotificationsListEvent.markAllAsRead() = MarkAllAsRead;
   const factory NotificationsListEvent.notificationsDidUpdate(
     List<Notification> notifications,
   ) = NotificationsDidUpdate;
+  const factory NotificationsListEvent.refreshNotifications() =
+      RefreshNotifications;
 }

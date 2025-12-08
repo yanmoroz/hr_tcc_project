@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/extensions/state_extension.dart';
 import '../../../../../core/theme/theme.dart';
 import '../../../../../core/widgets/widgets.dart';
 import '../blocs/notifications_list/bloc.dart';
 import '../widgets/notification_item.dart';
 
-class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({super.key});
+class NotificationsPage extends StatefulWidget {
+  NotificationsPage({super.key});
+
+  @override
+  State<NotificationsPage> createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+  double _buttonHeight = 0.0;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,55 +34,63 @@ class NotificationsPage extends StatelessWidget {
         );
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('Уведомления')),
         body: BlocBuilder<NotificationsListBloc, NotificationsListState>(
-          builder: (context, state) {
-            return switch (state.status) {
-              LoadingStatus.initial => _buildLoadingState(),
-              LoadingStatus.loading => _buildLoadingState(),
-              LoadingStatus.error => _buildErrorState(context),
-              LoadingStatus.success => _buildLoadedState(context, state),
-            };
-          },
+          builder: (context, state) => Stack(
+            children: [
+              CustomScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  CustomSliverAppBar(title: const Text('Уведомления')),
+                  SliverRefreshControl(
+                    onRefresh: () async {
+                      context.read<NotificationsListBloc>().add(
+                        const NotificationsListEvent.refreshNotifications(),
+                      );
+                    },
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      16,
+                      16,
+                      64 + _buttonHeight,
+                    ),
+                    sliver: switch (state.status) {
+                      LoadingStatus.initial => _buildLoadingState(),
+                      LoadingStatus.loading => _buildLoadingState(),
+                      LoadingStatus.error => _buildErrorState(context),
+                      LoadingStatus.success => _buildLoadedState(
+                        context,
+                        state,
+                      ),
+                    },
+                  ),
+                ],
+              ),
+              // Mark all as read button (bottom)
+              if (state.unreadNotificationsCount > 0)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
+                  child: SafeArea(child: _buildMarkAllAsReadButton(context)),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildLoadingState() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => Shimmer.fromColors(
-                baseColor: AppColors.grey200,
-                highlightColor: AppColors.grey100,
-                child: Container(
-                  width: double.infinity,
-                  height: 175,
-                  decoration: BoxDecoration(
-                    color: AppColors.grey200,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemCount: 10,
-            ),
-          ),
-          SizedBox(height: 16),
-        ],
-      ),
-    );
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Widget _buildErrorState(BuildContext context) {
-    return NetworkErrorMessageWidget(
+    return SliverNetworkErrorMessageWidget(
       onRetry: () {
         context.read<NotificationsListBloc>().add(
           const NotificationsListEvent.loadNotifications(),
@@ -85,73 +101,68 @@ class NotificationsPage extends StatelessWidget {
 
   Widget _buildLoadedState(BuildContext context, NotificationsListState state) {
     if (state.notifications.isEmpty) {
-      return Center(
-        child: Text('Нет уведомлений', style: AppTypography.textRegular1.black),
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Text(
+            'Нет уведомлений',
+            style: AppTypography.textRegular1.black,
+          ),
+        ),
       );
     }
 
-    return Stack(
-      children: [
-        // Notifications list
-        AppRefreshIndicator(
-          onRefresh: () async {
-            context.read<NotificationsListBloc>().add(
-              const NotificationsListEvent.refreshNotifications(),
-            );
+    return SliverList.separated(
+      itemCount: state.notifications.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        final notification = state.notifications[index];
+        return NotificationItem(
+          notification: notification,
+          onTap: () {
+            // Navigate to detail page
+            context.push('/notifications/${notification.id}');
           },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
-              itemCount: state.notifications.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final notification = state.notifications[index];
-                return NotificationItem(
-                  notification: notification,
-                  onTap: () {
-                    // Navigate to detail page
-                    context.push('/notifications/${notification.id}');
-                  },
-                );
-              },
-            ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return SliverShimmeringList(spacing: 12);
+  }
+
+  Widget _buildMarkAllAsReadButton(BuildContext context) {
+    return MeasureSize(
+      onChange: (size) {
+        safeSetState(() {
+          _buttonHeight = size.height;
+        });
+      },
+      onDispose: () {
+        if (mounted)
+          safeSetState(() {
+            _buttonHeight = 0.0;
+          });
+      },
+      child: ElevatedButton(
+        onPressed: () {
+          context.read<NotificationsListBloc>().add(
+            const NotificationsListEvent.markAllAsRead(),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          backgroundColor: AppColors.blue700,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
-
-        // Mark all as read button (bottom)
-        if (state.unreadNotificationsCount > 0)
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.read<NotificationsListBloc>().add(
-                      const NotificationsListEvent.markAllAsRead(),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: AppColors.blue700,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    'Отметить все как прочитанные',
-                    style: AppTypography.buttonMedium1.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
+        child: Text(
+          'Отметить все как прочитанные',
+          style: AppTypography.buttonMedium1.white,
+        ),
+      ),
     );
   }
 }

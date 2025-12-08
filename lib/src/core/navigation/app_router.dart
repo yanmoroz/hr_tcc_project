@@ -328,7 +328,7 @@ class AppRouter {
             create: (context) =>
                 BlocFactory.createNotificationsListBloc()
                   ..add(const NotificationsListEvent.loadNotifications()),
-            child: const NotificationsPage(),
+            child: NotificationsPage(),
           );
         },
         routes: [

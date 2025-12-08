@@ -30,7 +30,7 @@ class NotificationDetailPage extends StatelessWidget {
 
   _buildListView(Notification notification) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 48),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 48),
       children: [
         // Timestamp
         Text(
