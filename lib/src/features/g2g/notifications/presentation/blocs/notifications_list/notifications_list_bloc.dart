@@ -56,9 +56,6 @@ class NotificationsListBloc
           state.copyWith(
             status: LoadingStatus.success,
             notifications: notifications,
-            unreadNotificationsCount: notifications
-                .where((n) => !n.isRead)
-                .length,
           ),
         );
       },
@@ -80,13 +77,23 @@ class NotificationsListBloc
     if (state.status != LoadingStatus.success) return;
     if (state.notifications.every((n) => n.isRead)) return;
 
-    emit(state.copyWith(actionError: null));
+    emit(
+      state.copyWith(
+        actionError: null,
+        markAllAsReadStatus: LoadingStatus.loading,
+      ),
+    );
 
     final result = await markAllNotificationsAsReadUsecase();
 
     result.fold(
-      (error) => emit(state.copyWith(actionError: error.message)),
-      (_) {},
+      (error) => emit(
+        state.copyWith(
+          actionError: error.message,
+          markAllAsReadStatus: LoadingStatus.error,
+        ),
+      ),
+      (_) => emit(state.copyWith(markAllAsReadStatus: LoadingStatus.success)),
     );
   }
 

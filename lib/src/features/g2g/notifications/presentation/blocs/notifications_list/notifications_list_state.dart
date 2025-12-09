@@ -9,9 +9,14 @@ part 'notifications_list_state.freezed.dart';
 sealed class NotificationsListState with _$NotificationsListState {
   const factory NotificationsListState({
     @Default(LoadingStatus.initial) LoadingStatus status,
+    @Default(LoadingStatus.initial) LoadingStatus markAllAsReadStatus,
     @Default([]) List<Notification> notifications,
-    @Default(0) int unreadNotificationsCount,
     String? errorMessage,
     String? actionError,
   }) = _NotificationsListState;
+
+  const NotificationsListState._();
+
+  int get unreadNotificationsCount =>
+      notifications.where((n) => !n.isRead).length;
 }

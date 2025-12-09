@@ -25,6 +25,13 @@ class NotificationItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            const BoxShadow(
+              color: AppColors.shadowCard,
+              blurRadius: 30,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

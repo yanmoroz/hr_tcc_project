@@ -15,6 +15,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/absence-icon.svg
   String get absenceIcon => 'assets/icons/absence-icon.svg';
 
+  /// File path: assets/icons/add-icon.svg
+  String get addIcon => 'assets/icons/add-icon.svg';
+
   /// File path: assets/icons/alpina-digital-icon.svg
   String get alpinaDigitalIcon => 'assets/icons/alpina-digital-icon.svg';
 
@@ -97,6 +100,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/polls-icon.svg
   String get pollsIcon => 'assets/icons/polls-icon.svg';
 
+  /// File path: assets/icons/progress-icon.svg
+  String get progressIcon => 'assets/icons/progress-icon.svg';
+
   /// File path: assets/icons/referral-icon.svg
   String get referralIcon => 'assets/icons/referral-icon.svg';
 
@@ -124,6 +130,7 @@ class $AssetsIconsGen {
   /// List of all assets
   List<String> get values => [
     absenceIcon,
+    addIcon,
     alpinaDigitalIcon,
     applicationsIcon,
     arrowUp,
@@ -151,6 +158,7 @@ class $AssetsIconsGen {
     passIcon,
     planeIcon,
     pollsIcon,
+    progressIcon,
     referralIcon,
     repeatIcon,
     replyIcon,

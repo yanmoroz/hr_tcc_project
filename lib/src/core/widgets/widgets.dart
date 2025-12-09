@@ -5,6 +5,7 @@ export 'comments_button.dart';
 export 'like_button.dart';
 export 'measure_size.dart';
 export 'network_error_message_widget.dart';
+export 'primary_button.dart';
 export 'search_bar_widget.dart';
 export 'slivers/custom_sliver_app_bar.dart';
 export 'slivers/sliver_network_error_message_widget.dart';

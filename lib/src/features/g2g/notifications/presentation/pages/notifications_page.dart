@@ -3,21 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/extensions/state_extension.dart';
 import '../../../../../core/theme/theme.dart';
 import '../../../../../core/widgets/widgets.dart';
 import '../blocs/notifications_list/bloc.dart';
 import '../widgets/notification_item.dart';
 
 class NotificationsPage extends StatefulWidget {
-  NotificationsPage({super.key});
+  const NotificationsPage({super.key});
 
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  double _buttonHeight = 0.0;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -50,11 +48,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     },
                   ),
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(
-                      16,
-                      16,
-                      16,
-                      64 + _buttonHeight,
+                    padding: _calculateEdgeInsets(
+                      context,
+                      state.unreadNotificationsCount,
                     ),
                     sliver: switch (state.status) {
                       LoadingStatus.initial => _buildLoadingState(),
@@ -70,12 +66,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
               // Mark all as read button (bottom)
               if (state.unreadNotificationsCount > 0)
-                Positioned(
-                  left: 16,
-                  right: 16,
-                  bottom: 16,
-                  child: SafeArea(child: _buildMarkAllAsReadButton(context)),
-                ),
+                _buildMarkAllAsReadButton(context),
             ],
           ),
         ),
@@ -133,36 +124,41 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   Widget _buildMarkAllAsReadButton(BuildContext context) {
-    return MeasureSize(
-      onChange: (size) {
-        safeSetState(() {
-          _buttonHeight = size.height;
-        });
-      },
-      onDispose: () {
-        if (mounted)
-          safeSetState(() {
-            _buttonHeight = 0.0;
-          });
-      },
-      child: ElevatedButton(
-        onPressed: () {
-          context.read<NotificationsListBloc>().add(
-            const NotificationsListEvent.markAllAsRead(),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: AppColors.blue700,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+    return BlocSelector<
+      NotificationsListBloc,
+      NotificationsListState,
+      LoadingStatus
+    >(
+      selector: (state) => state.markAllAsReadStatus,
+      builder: (context, markAllAsReadStatus) => Positioned(
+        left: 16,
+        right: 16,
+        bottom: 16,
+        child: SafeArea(
+          child: PrimaryButton(
+            label: 'Отметить все как прочитанные',
+            size: PrimaryButtonSize.large,
+            style: PrimatyButtonStyle.colored,
+            isLoading: markAllAsReadStatus == LoadingStatus.loading,
+            onPressed: () {
+              context.read<NotificationsListBloc>().add(
+                const NotificationsListEvent.markAllAsRead(),
+              );
+            },
           ),
-        ),
-        child: Text(
-          'Отметить все как прочитанные',
-          style: AppTypography.buttonMedium1.white,
         ),
       ),
     );
+  }
+
+  EdgeInsets _calculateEdgeInsets(
+    BuildContext context,
+    int unreadNotificationsCount,
+  ) {
+    var bottomPadding = 48.0;
+    if (unreadNotificationsCount > 0) {
+      bottomPadding += PrimaryButtonSize.large.height + 16;
+    }
+    return EdgeInsets.fromLTRB(16, 16, 16, bottomPadding);
   }
 }
