@@ -7,7 +7,7 @@ import '../../../../../core/theme/theme.dart';
 import '../../../../../core/widgets/widgets.dart';
 import '../blocs/address_book/bloc.dart';
 import '../widgets/address_book_user_item.dart';
-import '../widgets/user_profile_header.dart';
+import '../widgets/user_info_bar.dart';
 
 class AddressBookPage extends StatefulWidget {
   const AddressBookPage({super.key});
@@ -34,7 +34,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
         backgroundColor: AppColors.grey100,
         body: Column(
           children: [
-            const UserProfileHeader(enableCorners: false),
+            const UserInfoBar(enableCorners: false),
             Expanded(
               child: BlocBuilder<AddressBookBloc, AddressBookState>(
                 builder: (context, state) {

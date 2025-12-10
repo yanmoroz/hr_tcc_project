@@ -120,7 +120,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   Widget _buildLoadingState() {
-    return SliverShimmeringList(spacing: 12);
+    return SliverShimmeringList(spacing: 12, maxHeight: 100);
   }
 
   Widget _buildMarkAllAsReadButton(BuildContext context) {

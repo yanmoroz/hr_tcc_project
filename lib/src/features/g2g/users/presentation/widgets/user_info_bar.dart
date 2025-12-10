@@ -13,10 +13,15 @@ import '../../../notifications/notifications.dart';
 import '../../domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 
-class UserProfileHeader extends StatelessWidget {
+class UserInfoBar extends StatelessWidget {
   final bool enableCorners;
+  final bool showShadow;
 
-  const UserProfileHeader({super.key, this.enableCorners = true});
+  const UserInfoBar({
+    super.key,
+    this.enableCorners = true,
+    this.showShadow = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +31,18 @@ class UserProfileHeader extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(enableCorners ? 12 : 0),
-              bottomRight: Radius.circular(enableCorners ? 12 : 0),
+              bottomLeft: Radius.circular(enableCorners ? 16 : 0),
+              bottomRight: Radius.circular(enableCorners ? 16 : 0),
             ),
+            boxShadow: showShadow
+                ? [
+                    BoxShadow(
+                      color: AppColors.shadow300,
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
           ),
           child: Padding(
             padding: EdgeInsets.fromLTRB(
