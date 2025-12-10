@@ -30,77 +30,25 @@ class UserProfileHeader extends StatelessWidget {
               bottomRight: Radius.circular(enableCorners ? 12 : 0),
             ),
           ),
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-          child: switch (state.status) {
-            LoadingStatus.initial => _buildLoadingState(),
-            LoadingStatus.loading => _buildLoadingState(),
-            LoadingStatus.error => _buildErrorState(context),
-            LoadingStatus.success =>
-              state.user != null
-                  ? _buildLoadedState(state.user!)
-                  : _buildErrorState(context),
-          },
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              4,
+              16,
+              4 + (enableCorners ? 8 : 0),
+            ),
+            child: switch (state.status) {
+              LoadingStatus.initial => _buildLoadingState(),
+              LoadingStatus.loading => _buildLoadingState(),
+              LoadingStatus.error => _buildErrorState(context),
+              LoadingStatus.success =>
+                state.user != null
+                    ? _buildLoadedState(state.user!)
+                    : _buildErrorState(context),
+            },
+          ),
         );
       },
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Row(
-      children: [
-        // Shimmer effect placeholder
-        Shimmer.fromColors(
-          baseColor: AppColors.grey200,
-          highlightColor: AppColors.grey100,
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.grey200,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Shimmer.fromColors(
-                baseColor: AppColors.grey200,
-                highlightColor: AppColors.grey100,
-                child: Container(
-                  width: 200,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: AppColors.grey200,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Shimmer.fromColors(
-                baseColor: AppColors.grey200,
-                highlightColor: AppColors.grey100,
-                child: Container(
-                  width: 150,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: AppColors.grey200,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        Shimmer.fromColors(
-          baseColor: AppColors.grey500,
-          highlightColor: AppColors.grey100,
-          child: SvgPicture.asset(Assets.icons.bellIcon),
-        ),
-      ],
     );
   }
 
@@ -227,6 +175,65 @@ class UserProfileHeader extends StatelessWidget {
               ),
             );
           },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Row(
+      children: [
+        // Shimmer effect placeholder
+        Shimmer.fromColors(
+          baseColor: AppColors.grey200,
+          highlightColor: AppColors.grey100,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.grey200,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Shimmer.fromColors(
+                baseColor: AppColors.grey200,
+                highlightColor: AppColors.grey100,
+                child: Container(
+                  width: 200,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Shimmer.fromColors(
+                baseColor: AppColors.grey200,
+                highlightColor: AppColors.grey100,
+                child: Container(
+                  width: 150,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Shimmer.fromColors(
+          baseColor: AppColors.grey500,
+          highlightColor: AppColors.grey100,
+          child: SvgPicture.asset(Assets.icons.bellIcon),
         ),
       ],
     );
