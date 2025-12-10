@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/theme/theme.dart';
-import '../../../../../core/widgets/widgets.dart';
-import '../../../../news/presentation/blocs/news_page/bloc.dart';
-import '../../../users/presentation/presentation.dart';
-import '../widgets/news_section.dart';
-import '../widgets/quick_link_bar.dart';
+import '../../../../../../core/base_types/loading_status.dart';
+import '../../../../../../core/theme/theme.dart';
+import '../../../../../../core/widgets/widgets.dart';
+import '../../../../../news/presentation/blocs/news_page/bloc.dart';
+import '../../widgets/news_section.dart';
+import '../../widgets/quick_link_bar.dart';
+import 'home_page_header_delegate.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
             slivers: [
               SliverPersistentHeader(
                 pinned: true,
-                delegate: _ShadowedUserBarDelegate(extent: 56.0),
+                delegate: ShadowedUserBarDelegate(extent: 56.0),
               ),
               SliverRefreshControl(
                 onRefresh: () async {
@@ -94,28 +94,4 @@ class HomePage extends StatelessWidget {
       ],
     );
   }
-}
-
-class _ShadowedUserBarDelegate extends SliverPersistentHeaderDelegate {
-  final double extent;
-
-  _ShadowedUserBarDelegate({required this.extent});
-
-  @override
-  double get maxExtent => extent;
-
-  @override
-  double get minExtent => extent;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return const UserInfoBar(enableCorners: true, showShadow: true);
-  }
-
-  @override
-  bool shouldRebuild(covariant _ShadowedUserBarDelegate oldDelegate) => false;
 }

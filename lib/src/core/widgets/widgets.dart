@@ -12,3 +12,4 @@ export 'slivers/sliver_network_error_message_widget.dart';
 export 'slivers/sliver_refresh_control.dart';
 export 'slivers/sliver_shimmering_list.dart';
 export 'submit_result_widget.dart';
+export 'user_info_bar.dart';

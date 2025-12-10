@@ -1,95 +1,18 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/theme/theme.dart';
-import '../../../../../core/widgets/widgets.dart';
-import '../blocs/address_book/bloc.dart';
-import '../widgets/address_book_user_item.dart';
-import '../widgets/user_info_bar.dart';
+import '../../../../../../core/base_types/loading_status.dart';
+import '../../../../../../core/theme/theme.dart';
+import '../../../../../../core/widgets/widgets.dart';
+import '../../blocs/address_book/bloc.dart';
+import '../../widgets/address_book_user_item.dart';
+import 'address_book_header_delegate.dart';
 
 class AddressBookPage extends StatefulWidget {
   const AddressBookPage({super.key});
 
   @override
   State<AddressBookPage> createState() => _AddressBookPageState();
-}
-
-class _AddressBookHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final double userBarExtent;
-  final double searchBarExtent;
-  final double searchBarMinHeight;
-  final AddressBookState state;
-  final Function(String) onSearchChanged;
-
-  _AddressBookHeaderDelegate({
-    required this.userBarExtent,
-    required this.searchBarExtent,
-    required this.searchBarMinHeight,
-    required this.state,
-    required this.onSearchChanged,
-  });
-
-  @override
-  double get maxExtent => userBarExtent + searchBarExtent;
-
-  @override
-  double get minExtent => userBarExtent + searchBarMinHeight;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    final searchBarHeight = max(
-      searchBarExtent - shrinkOffset,
-      searchBarMinHeight,
-    );
-
-    return Column(
-      children: [
-        Container(
-          child: const UserInfoBar(enableCorners: false),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadow300,
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: searchBarHeight,
-          child: Container(
-            decoration: BoxDecoration(color: AppColors.white),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Opacity(
-                opacity: (searchBarHeight / searchBarExtent).clamp(0.0, 1.0),
-                child: SearchBarWidget(
-                  hintText: 'Поиск',
-                  isLoading: state.filteringStatus == LoadingStatus.loading,
-                  onSearchChanged: onSearchChanged,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  bool shouldRebuild(covariant _AddressBookHeaderDelegate oldDelegate) =>
-      state.filteringStatus != oldDelegate.state.filteringStatus ||
-      userBarExtent != oldDelegate.userBarExtent ||
-      searchBarExtent != oldDelegate.searchBarExtent;
 }
 
 class _AddressBookPageState extends State<AddressBookPage> {
@@ -117,7 +40,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
                 SliverPersistentHeader(
                   pinned: true,
                   floating: true,
-                  delegate: _AddressBookHeaderDelegate(
+                  delegate: AddressBookHeaderDelegate(
                     userBarExtent: 48.0,
                     searchBarExtent: 64.0,
                     searchBarMinHeight: 8.0,

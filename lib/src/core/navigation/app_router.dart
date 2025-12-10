@@ -13,6 +13,7 @@ import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../blocs/current_user/bloc.dart';
 import '../di/bloc_factory.dart';
 import 'main_shell.dart';
 

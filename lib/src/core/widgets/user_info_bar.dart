@@ -4,14 +4,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../../../gen/assets.gen.dart';
-import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/theme/theme.dart';
-import '../../../../../core/utils/color_utils.dart';
-import '../../../../../core/utils/string_utils.dart';
-import '../../../notifications/notifications.dart';
-import '../../domain/domain.dart';
+import '../../../gen/assets.gen.dart';
+import '../base_types/loading_status.dart';
 import '../blocs/current_user/bloc.dart';
+import '../theme/theme.dart';
+import '../utils/color_utils.dart';
+import '../utils/string_utils.dart';
+import '../../features/g2g/notifications/notifications.dart';
+import '../../features/g2g/users/domain/domain.dart';
 
 class UserInfoBar extends StatelessWidget {
   final bool enableCorners;

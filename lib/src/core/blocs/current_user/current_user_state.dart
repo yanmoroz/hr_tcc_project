@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../../../core/base_types/loading_status.dart';
-import '../../../domain/domain.dart';
+import '../../base_types/loading_status.dart';
+import '../../../features/g2g/users/domain/domain.dart';
 
 part 'current_user_state.freezed.dart';
 
