@@ -37,7 +37,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
         backgroundColor: AppColors.grey100,
         body: Column(
           children: [
-            const UserInfoBar(),
+            const UserInfoBar(enableCorners: false),
             Expanded(
               child: BlocBuilder<ApplicationsListBloc, ApplicationsListState>(
                 builder: (context, state) {

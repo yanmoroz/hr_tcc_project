@@ -1,6 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/theme/theme.dart';
@@ -14,6 +15,81 @@ class AddressBookPage extends StatefulWidget {
 
   @override
   State<AddressBookPage> createState() => _AddressBookPageState();
+}
+
+class _AddressBookHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double userBarExtent;
+  final double searchBarExtent;
+  final double searchBarMinHeight;
+  final AddressBookState state;
+  final Function(String) onSearchChanged;
+
+  _AddressBookHeaderDelegate({
+    required this.userBarExtent,
+    required this.searchBarExtent,
+    required this.searchBarMinHeight,
+    required this.state,
+    required this.onSearchChanged,
+  });
+
+  @override
+  double get maxExtent => userBarExtent + searchBarExtent;
+
+  @override
+  double get minExtent => userBarExtent + searchBarMinHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    final searchBarHeight = max(
+      searchBarExtent - shrinkOffset,
+      searchBarMinHeight,
+    );
+
+    return Column(
+      children: [
+        Container(
+          child: const UserInfoBar(enableCorners: false),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow300,
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: searchBarHeight,
+          child: Container(
+            decoration: BoxDecoration(color: AppColors.white),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Opacity(
+                opacity: (searchBarHeight / searchBarExtent).clamp(0.0, 1.0),
+                child: SearchBarWidget(
+                  hintText: 'Поиск',
+                  isLoading: state.filteringStatus == LoadingStatus.loading,
+                  onSearchChanged: onSearchChanged,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _AddressBookHeaderDelegate oldDelegate) =>
+      state.filteringStatus != oldDelegate.state.filteringStatus ||
+      userBarExtent != oldDelegate.userBarExtent ||
+      searchBarExtent != oldDelegate.searchBarExtent;
 }
 
 class _AddressBookPageState extends State<AddressBookPage> {
@@ -32,22 +108,46 @@ class _AddressBookPageState extends State<AddressBookPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: AppColors.grey100,
-        body: Column(
-          children: [
-            const UserInfoBar(enableCorners: false),
-            Expanded(
-              child: BlocBuilder<AddressBookBloc, AddressBookState>(
-                builder: (context, state) {
-                  return switch (state.status) {
+        body: BlocBuilder<AddressBookBloc, AddressBookState>(
+          builder: (context, state) {
+            return CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  floating: true,
+                  delegate: _AddressBookHeaderDelegate(
+                    userBarExtent: 48.0,
+                    searchBarExtent: 64.0,
+                    searchBarMinHeight: 8.0,
+                    state: state,
+                    onSearchChanged: (query) {
+                      context.read<AddressBookBloc>().add(
+                        AddressBookEvent.searchAddressBook(query: query),
+                      );
+                    },
+                  ),
+                ),
+                SliverRefreshControl(
+                  onRefresh: () async {
+                    context.read<AddressBookBloc>().add(
+                      const AddressBookEvent.refreshAddressBook(),
+                    );
+                  },
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: switch (state.status) {
                     LoadingStatus.initial => _buildLoadingState(),
                     LoadingStatus.loading => _buildLoadingState(),
                     LoadingStatus.error => _buildErrorState(context),
                     LoadingStatus.success => _buildLoadedState(context, state),
-                  };
-                },
-              ),
-            ),
-          ],
+                  },
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -66,148 +166,65 @@ class _AddressBookPageState extends State<AddressBookPage> {
   }
 
   Widget _buildErrorState(BuildContext context) {
-    return NetworkErrorMessageWidget(
-      onRetry: () => context.read<AddressBookBloc>().add(
-        const AddressBookEvent.loadAddressBook(),
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: NetworkErrorMessageWidget(
+        onRetry: () => context.read<AddressBookBloc>().add(
+          const AddressBookEvent.loadAddressBook(),
+        ),
       ),
     );
   }
 
   Widget _buildLoadedState(BuildContext context, AddressBookState state) {
-    return Container(
-      color: AppColors.grey100,
-      child: Column(
-        children: [
-          // Search bar
-          Container(
-            color: AppColors.white,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: SearchBarWidget(
-                hintText: 'Поиск',
-                isLoading: state.filteringStatus == LoadingStatus.loading,
-                onSearchChanged: (query) {
-                  context.read<AddressBookBloc>().add(
-                    AddressBookEvent.searchAddressBook(query: query),
-                  );
-                },
-              ),
-            ),
-          ),
-          // Content area or filtering error
-          Expanded(
-            child: switch (state.filteringStatus) {
-              LoadingStatus.error => _buildErrorState(context),
-              _ => _buildUsersList(context, state),
-            },
-          ),
-        ],
-      ),
-    );
+    return switch (state.filteringStatus) {
+      LoadingStatus.error => _buildErrorState(context),
+      _ => _buildUsersList(context, state),
+    };
   }
 
   Widget _buildLoadingState() {
-    return Column(
-      children: [
-        Container(
-          color: AppColors.white,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Shimmer.fromColors(
-              baseColor: AppColors.grey200,
-              highlightColor: AppColors.grey100,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.grey100,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SizedBox(height: 40, width: double.infinity),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 28),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => Shimmer.fromColors(
-                      baseColor: AppColors.grey200,
-                      highlightColor: AppColors.grey100,
-                      child: Container(
-                        width: double.infinity,
-                        height: 175,
-                        decoration: BoxDecoration(
-                          color: AppColors.grey200,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemCount: 10,
-                  ),
-                ),
-                SizedBox(height: 32),
-              ],
-            ),
-          ),
-        ),
+    return SliverMainAxisGroup(
+      slivers: [
+        const SliverToBoxAdapter(child: SizedBox(height: 28)),
+        SliverShimmeringList(spacing: 12, maxHeight: 175),
       ],
     );
   }
 
   Widget _buildUsersList(BuildContext context, AddressBookState state) {
     if (state.users.isEmpty) {
-      return Center(
-        child: Text(
-          'Таких сотрудников нет',
-          style: AppTypography.textRegular1.black,
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Text(
+            'Таких сотрудников нет',
+            style: AppTypography.textRegular1.black,
+          ),
         ),
       );
     }
 
-    return AppRefreshIndicator(
-      onRefresh: () async {
-        context.read<AddressBookBloc>().add(
-          const AddressBookEvent.refreshAddressBook(),
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              SizedBox(height: 28),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: state.users.length + (state.isLoadingMore ? 1 : 0),
-                separatorBuilder: (context, index) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  if (index >= state.users.length) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: AppProgressIndicator(),
-                      ),
-                    );
-                  }
-                  return AddressBookUserItem(user: state.users[index]);
-                },
-              ),
-              SizedBox(height: 32),
-            ],
-          ),
+    return SliverMainAxisGroup(
+      slivers: [
+        const SliverToBoxAdapter(child: SizedBox(height: 28)),
+        SliverList.separated(
+          itemCount: state.users.length + (state.isLoadingMore ? 1 : 0),
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            if (index >= state.users.length) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: AppProgressIndicator(),
+                ),
+              );
+            }
+            return AddressBookUserItem(user: state.users[index]);
+          },
         ),
-      ),
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
+      ],
     );
   }
 
