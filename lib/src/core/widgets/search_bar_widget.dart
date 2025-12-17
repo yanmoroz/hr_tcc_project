@@ -12,6 +12,7 @@ class SearchBarWidget extends StatefulWidget {
   final String hintText;
   final int debounceMilliseconds;
   final bool isLoading;
+  final String? initialValue;
 
   const SearchBarWidget({
     super.key,
@@ -19,6 +20,7 @@ class SearchBarWidget extends StatefulWidget {
     this.debounceMilliseconds = 300,
     required this.onSearchChanged,
     this.isLoading = false,
+    this.initialValue,
   });
 
   @override
@@ -87,6 +89,14 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant SearchBarWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      _controller.text = widget.initialValue ?? '';
+    }
+  }
+
+  @override
   void dispose() {
     _debounce?.cancel();
     _controller.dispose();
@@ -96,6 +106,9 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialValue != null) {
+      _controller.text = widget.initialValue!;
+    }
     _controller.addListener(() {
       setState(() {});
     });

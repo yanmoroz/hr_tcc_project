@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/pluralization.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../g2g/users/users.dart';
 import '../../domain/domain.dart';
 import '../blocs/comments_page/bloc.dart';
+import '../blocs/mention/bloc.dart';
+import '../controllers/mention_text_editing_controller.dart';
 import '../delegates/date_header_delegate.dart';
 import '../widgets/comment_input_bar.dart';
 import '../widgets/comment_item.dart';
+import '../widgets/mention_overlay.dart';
 
 class CommentsPage extends StatefulWidget {
   const CommentsPage({super.key});
@@ -20,7 +25,8 @@ class CommentsPage extends StatefulWidget {
 }
 
 class _CommentsPageState extends State<CommentsPage> {
-  final TextEditingController _commentController = TextEditingController();
+  final MentionTextEditingController _commentController =
+      MentionTextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
   final Map<int, GlobalKey> _messageKeys = {};
@@ -151,6 +157,23 @@ class _CommentsPageState extends State<CommentsPage> {
               ),
             ),
 
+            // Mention user list
+            BlocBuilder<MentionCubit, MentionState>(
+              builder: (context, mentionState) {
+                if (mentionState.status == MentionStatus.idle) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.all(0),
+                  child: MentionOverlay(
+                    users: mentionState.users,
+                    isLoading: mentionState.status == MentionStatus.loading,
+                    onUserSelected: _onUserSelected,
+                  ),
+                );
+              },
+            ),
+            // Comment input bar
             BlocBuilder<CommentsBloc, CommentsState>(
               buildWhen: (previous, current) =>
                   previous.status != current.status ||
@@ -190,6 +213,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
   @override
   void dispose() {
+    _commentController.removeListener(_onTextChanged);
     _commentController.dispose();
     _inputFocusNode.dispose();
     _scrollController.dispose();
@@ -199,6 +223,7 @@ class _CommentsPageState extends State<CommentsPage> {
   @override
   void initState() {
     super.initState();
+    _commentController.addListener(_onTextChanged);
   }
 
   Future<void> jumpToMessage(int? parentId) async {
@@ -266,6 +291,12 @@ class _CommentsPageState extends State<CommentsPage> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           jumpToMessage(comment.parent);
         });
+      },
+      onMentionTap: (mentionName) {
+        context.go(Uri(
+          path: '/contacts',
+          queryParameters: {'search': mentionName},
+        ).toString());
       },
     );
   }
@@ -350,6 +381,25 @@ class _CommentsPageState extends State<CommentsPage> {
       '$count комментария',
       '$count комментариев',
     );
+  }
+
+  void _onTextChanged() {
+    final mentionContext = _commentController.getMentionContext();
+    final mentionCubit = context.read<MentionCubit>();
+
+    if (mentionContext != null) {
+      mentionCubit.searchUsers(mentionContext.query);
+    } else {
+      mentionCubit.clearMention();
+    }
+  }
+
+  void _onUserSelected(User user) {
+    final mentionContext = _commentController.getMentionContext();
+    if (mentionContext != null) {
+      _commentController.insertMention(user, mentionContext);
+    }
+    context.read<MentionCubit>().clearMention();
   }
 
   Future<void> _showDeleteDialog(BuildContext context, int commentId) async {

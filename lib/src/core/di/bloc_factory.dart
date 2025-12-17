@@ -59,6 +59,10 @@ class BlocFactory {
     );
   }
 
+  static MentionCubit createMentionCubit() {
+    return MentionCubit(getUsersUsecase: sl());
+  }
+
   static CurrentUserBloc createCurrentUserBloc() {
     return CurrentUserBloc(getCurrentUserInfoUsecase: sl());
   }

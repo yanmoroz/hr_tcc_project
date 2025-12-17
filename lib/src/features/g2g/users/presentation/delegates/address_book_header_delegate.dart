@@ -81,6 +81,7 @@ class AddressBookHeaderDelegate extends SliverPersistentHeaderDelegate {
                         isLoading:
                             state.filteringStatus == LoadingStatus.loading,
                         onSearchChanged: onSearchChanged,
+                        initialValue: state.searchQuery,
                       ),
                     ),
                   ),
@@ -96,6 +97,7 @@ class AddressBookHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant AddressBookHeaderDelegate oldDelegate) =>
       state.filteringStatus != oldDelegate.state.filteringStatus ||
+      state.searchQuery != oldDelegate.state.searchQuery ||
       userBarExtent != oldDelegate.userBarExtent ||
       searchBarExtent != oldDelegate.searchBarExtent;
 }

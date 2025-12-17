@@ -213,12 +213,20 @@ class AppRouter {
                       );
                       final entityName =
                           state.getExtra<String>('entityName') ?? '';
-                      return BlocProvider(
-                        create: (context) => BlocFactory.createCommentsBloc(
-                          entityId: entityId,
-                          entityType: entityType,
-                          entityName: entityName,
-                        )..add(const CommentsEvent.loadComments()),
+                      return MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (context) => BlocFactory.createCommentsBloc(
+                              entityId: entityId,
+                              entityType: entityType,
+                              entityName: entityName,
+                            )..add(const CommentsEvent.loadComments()),
+                          ),
+                          BlocProvider(
+                            create: (context) =>
+                                BlocFactory.createMentionCubit(),
+                          ),
+                        ],
                         child: const CommentsPage(),
                       );
                     },
@@ -297,14 +305,20 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/contacts',
-                pageBuilder: (context, state) => NoTransitionPage(
-                  child: BlocProvider(
-                    create: (context) =>
-                        BlocFactory.createAddressBookBloc()
-                          ..add(const AddressBookEvent.loadAddressBook()),
-                    child: const AddressBookPage(),
-                  ),
-                ),
+                pageBuilder: (context, state) {
+                  final search = state.uri.queryParameters['search'];
+                  return NoTransitionPage(
+                    child: BlocProvider(
+                      key: ValueKey(search),
+                      create: (context) =>
+                          BlocFactory.createAddressBookBloc()
+                            ..add(AddressBookEvent.loadAddressBook(
+                              search: search,
+                            )),
+                      child: const AddressBookPage(),
+                    ),
+                  );
+                },
               ),
             ],
           ),

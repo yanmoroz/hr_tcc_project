@@ -1,13 +1,18 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/base_types/result.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/value_objects/system_type.dart';
-import '../../../../core/widgets/like_button.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../domain/domain.dart';
+import 'comment_action_bar.dart';
+import 'comment_reply_indicator.dart';
+import 'mention_rich_text.dart';
 
-class CommentItem extends StatelessWidget {
+class CommentItem extends StatefulWidget {
   // TODO: Replace with actual current user ID from auth
   static const int _currentUserId = 20370;
   final Comment comment;
@@ -17,6 +22,9 @@ class CommentItem extends StatelessWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onReply;
   final VoidCallback? onParentTap;
+
+  /// Called when a mention is tapped. The mention name (without "@") is passed.
+  final void Function(String mentionName)? onMentionTap;
 
   final bool isLastInGroup;
 
@@ -29,199 +37,129 @@ class CommentItem extends StatelessWidget {
     this.onDelete,
     this.onReply,
     this.onParentTap,
+    this.onMentionTap,
     this.isLastInGroup = false,
   });
 
-  bool get _isCurrentUser => comment.author.id == _currentUserId;
+  @override
+  State<CommentItem> createState() => _CommentItemState();
+}
+
+class _CommentItemState extends State<CommentItem> {
+  Future<Result<Uint8List>>? _photoFuture;
+
+  bool get _isCurrentUser =>
+      widget.comment.author.id == CommentItem._currentUserId;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: isLastInGroup ? 0 : 16),
+      margin: EdgeInsets.only(bottom: widget.isLastInGroup ? 0 : 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: _isCurrentUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
+        mainAxisAlignment:
+            _isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          // Avatar on left for other users
           if (!_isCurrentUser) ...[_buildAvatar(), const SizedBox(width: 12)],
-          // Comment content container
-          Flexible(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width - 150,
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Reply indicator
-                    if (parentAuthorName != null &&
-                        parentComment != null &&
-                        onParentTap != null) ...[
-                      InkWell(
-                        onTap: onParentTap,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.grey100,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                          child: IntrinsicHeight(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Container(width: 2, color: AppColors.blue700),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                      10,
-                                      2,
-                                      10,
-                                      3,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'В ответ $parentAuthorName',
-                                          style:
-                                              AppTypography.textMedium2.blue700,
-                                        ),
-                                        SizedBox(height: 2),
-                                        Text(
-                                          '$parentComment',
-                                          style: AppTypography
-                                              .captionMedium2
-                                              .black,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                    ],
-                    // Author name and timestamp
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            comment.author.title,
-                            style: AppTypography.textSemibold2.black,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          _formatTime(comment.createdData),
-                          style: AppTypography.captionMedium3.grey500,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-
-                    // Comment content
-                    Text(
-                      comment.content,
-                      style: AppTypography.textRegular2.black,
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Like and action buttons
-                    Row(
-                      children: [
-                        // Like button
-                        _buildLikeButton(),
-                        const Spacer(),
-                        // Delete button for current user, Reply for others
-                        if (_isCurrentUser && onDelete != null)
-                          InkWell(
-                            onTap: onDelete,
-                            borderRadius: BorderRadius.circular(20),
-                            child: Text(
-                              'Удалить',
-                              style: AppTypography.textMedium2.grey500,
-                            ),
-                          )
-                        else if (!_isCurrentUser && onReply != null)
-                          InkWell(
-                            onTap: onReply,
-                            borderRadius: BorderRadius.circular(20),
-                            child: Text(
-                              'Ответить',
-                              style: AppTypography.textMedium2.grey500,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Avatar on right for current user
+          _buildBubble(context),
           if (_isCurrentUser) ...[const SizedBox(width: 12), _buildAvatar()],
         ],
       ),
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _photoFuture = createUserPhotoFuture(
+      systemType: SystemType.kp,
+      photoExists: widget.comment.author.photo.isNotEmpty,
+      userId: widget.comment.author.id.toString(),
+      uriFile: widget.comment.author.photo,
+    );
+  }
+
   Widget _buildAvatar() {
     return UserAvatar.fromFullName(
-      fullName: comment.author.title,
+      fullName: widget.comment.author.title,
       radius: 16,
-      photoFuture: createUserPhotoFuture(
-        systemType: SystemType.kp,
-        photoExists: comment.author.photo.isNotEmpty,
-        userId: comment.author.id.toString(),
-        uriFile: comment.author.photo,
+      photoFuture: _photoFuture,
+    );
+  }
+
+  Widget _buildBubble(BuildContext context) {
+    return Flexible(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 150,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildReplyIndicator(),
+              _buildHeader(),
+              const SizedBox(height: 4),
+              MentionRichText(
+                content: widget.comment.content,
+                onMentionTap: widget.onMentionTap,
+              ),
+              const SizedBox(height: 12),
+              CommentActionBar(
+                isLiked: widget.comment.like ?? false,
+                likeCount: widget.comment.likeCount ?? 0,
+                onLike: widget.onLike,
+                onDelete: widget.onDelete,
+                onReply: widget.onReply,
+                isCurrentUser: _isCurrentUser,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildLikeButton() {
-    final (
-      likedColor,
-      notLikedColor,
-      textStyleLiked,
-      textStyleNotLiked,
-    ) = _isCurrentUser
-        ? (
-            AppColors.grey200,
-            AppColors.grey200,
-            AppTypography.textMedium2.grey500,
-            AppTypography.textMedium2.grey500,
-          )
-        : (
-            AppColors.blue500,
-            AppColors.grey500,
-            AppTypography.textMedium2.blue700,
-            AppTypography.textMedium2.grey500,
-          );
+  Widget _buildHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            widget.comment.author.title,
+            style: AppTypography.textSemibold2.black,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          _formatTime(widget.comment.createdData),
+          style: AppTypography.captionMedium3.grey500,
+        ),
+      ],
+    );
+  }
 
-    return LikeButton(
-      isLiked: comment.like ?? false,
-      likeCount: comment.likeCount ?? 0,
-      likedIconColor: likedColor,
-      notLikedIconColor: notLikedColor,
-      likedTextStyle: textStyleLiked,
-      notLikedTextStyle: textStyleNotLiked,
-      spacing: 4,
-      iconSize: 20,
-      onPressed: onLike,
+  Widget _buildReplyIndicator() {
+    if (widget.parentAuthorName == null ||
+        widget.parentComment == null ||
+        widget.onParentTap == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: CommentReplyIndicator(
+        authorName: widget.parentAuthorName!,
+        comment: widget.parentComment!,
+        onTap: widget.onParentTap!,
+      ),
     );
   }
 
