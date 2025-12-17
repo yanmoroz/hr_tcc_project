@@ -5,12 +5,12 @@ import '../../../domain/domain.dart';
 
 part 'comments_state.freezed.dart';
 
-
-class CommentDayGroup {
-  final DateTime date;
-  final List<Comment> comments;
-
-  const CommentDayGroup({required this.date, required this.comments});
+@freezed
+sealed class CommentDayGroup with _$CommentDayGroup {
+  const factory CommentDayGroup({
+    required DateTime date,
+    required List<Comment> comments,
+  }) = _CommentDayGroup;
 }
 
 @freezed

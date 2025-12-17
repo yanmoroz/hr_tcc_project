@@ -8,6 +8,8 @@ import '../../../../core/widgets/like_button.dart';
 import '../../domain/domain.dart';
 
 class CommentItem extends StatelessWidget {
+  // TODO: Replace with actual current user ID from auth
+  static const int _currentUserId = 20370;
   final Comment comment;
   final String? parentAuthorName;
   final String? parentComment;
@@ -15,10 +17,8 @@ class CommentItem extends StatelessWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onReply;
   final VoidCallback? onParentTap;
-  final bool isLastInGroup;
 
-  // TODO: Replace with actual current user ID from auth
-  static const int _currentUserId = 20370;
+  final bool isLastInGroup;
 
   const CommentItem({
     super.key,
@@ -179,36 +179,6 @@ class CommentItem extends StatelessWidget {
     );
   }
 
-  Widget _buildLikeButton() {
-    if (_isCurrentUser) {
-      // Current user's comment - use different styling
-      return LikeButton(
-        isLiked: comment.like ?? false,
-        likeCount: comment.likeCount ?? 0,
-        likedIconColor: AppColors.grey200,
-        notLikedIconColor: AppColors.grey200,
-        likedTextStyle: AppTypography.textMedium2.grey500,
-        notLikedTextStyle: AppTypography.textMedium2.grey500,
-        spacing: 4,
-        iconSize: 20,
-        onPressed: onLike,
-      );
-    }
-
-    // Another user's comment - use different styling
-    return LikeButton(
-      isLiked: comment.like ?? false,
-      likeCount: comment.likeCount ?? 0,
-      likedIconColor: AppColors.blue500,
-      notLikedIconColor: AppColors.grey500,
-      likedTextStyle: AppTypography.textMedium2.blue700,
-      notLikedTextStyle: AppTypography.textMedium2.grey500,
-      spacing: 4,
-      iconSize: 20,
-      onPressed: onLike,
-    );
-  }
-
   Widget _buildAvatar() {
     return CircleAvatar(
       radius: 16,
@@ -217,6 +187,39 @@ class CommentItem extends StatelessWidget {
         getInitialsFromFullName(comment.author.title),
         style: AppTypography.textSemibold2.white,
       ),
+    );
+  }
+
+  Widget _buildLikeButton() {
+    final (
+      likedColor,
+      notLikedColor,
+      textStyleLiked,
+      textStyleNotLiked,
+    ) = _isCurrentUser
+        ? (
+            AppColors.grey200,
+            AppColors.grey200,
+            AppTypography.textMedium2.grey500,
+            AppTypography.textMedium2.grey500,
+          )
+        : (
+            AppColors.blue500,
+            AppColors.grey500,
+            AppTypography.textMedium2.blue700,
+            AppTypography.textMedium2.grey500,
+          );
+
+    return LikeButton(
+      isLiked: comment.like ?? false,
+      likeCount: comment.likeCount ?? 0,
+      likedIconColor: likedColor,
+      notLikedIconColor: notLikedColor,
+      likedTextStyle: textStyleLiked,
+      notLikedTextStyle: textStyleNotLiked,
+      spacing: 4,
+      iconSize: 20,
+      onPressed: onLike,
     );
   }
 

@@ -1,5 +1,6 @@
 export 'app_progress_indicator.dart';
 export 'app_refresh_indicator.dart';
+export 'dialogs.dart';
 export 'app_text_button.dart';
 export 'comments_button.dart';
 export 'like_button.dart';
