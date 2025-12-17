@@ -6,12 +6,11 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../gen/assets.gen.dart';
 import '../../features/g2g/notifications/notifications.dart';
-import '../../features/g2g/users/domain/domain.dart';
 import '../base_types/loading_status.dart';
 import '../blocs/current_user/bloc.dart';
+import '../entities/current_user.dart';
 import '../theme/theme.dart';
-import '../utils/color_utils.dart';
-import '../utils/string_utils.dart';
+import 'user_avatar.dart';
 
 class UserInfoBar extends StatelessWidget {
   final bool enableCorners;
@@ -133,19 +132,20 @@ class UserInfoBar extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadedState(AddressBookUser user) {
+  Widget _buildLoadedState(CurrentUser user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Avatar with initials
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: getAvatarColor(user.id),
-          child: Text(
-            getInitials(user.firstName, user.lastName),
-            style: AppTypography.textSemibold1.white,
-          ),
+        UserAvatar.fromName(
+          firstName: user.firstName,
+          lastName: user.lastName,
+          id: user.id,
+          // photoFuture: createUserPhotoFuture(
+          //   photoExists: user.photoExists,
+          //   userId: user.id,
+          // ),
         ),
         const SizedBox(width: 8),
         // User info

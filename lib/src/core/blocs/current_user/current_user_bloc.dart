@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../base_types/loading_status.dart';
 import '../../../features/g2g/users/domain/domain.dart';
+import '../../base_types/loading_status.dart';
+import '../../entities/current_user.dart';
 import 'current_user_event.dart';
 import 'current_user_state.dart';
 
@@ -33,7 +34,17 @@ class CurrentUserBloc extends Bloc<CurrentUserEvent, CurrentUserState> {
           errorMessage: error.toString(),
         ),
       ),
-      (user) => emit(state.copyWith(status: LoadingStatus.success, user: user)),
+      (addressBookUser) {
+        final currentUser = CurrentUser(
+          id: addressBookUser.id,
+          firstName: addressBookUser.firstName,
+          lastName: addressBookUser.lastName,
+          title: addressBookUser.title,
+          position: addressBookUser.position,
+          photoExists: addressBookUser.photoExists,
+        );
+        emit(state.copyWith(status: LoadingStatus.success, user: currentUser));
+      },
     );
   }
 }

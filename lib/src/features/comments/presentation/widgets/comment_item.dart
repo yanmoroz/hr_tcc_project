@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/theme.dart';
-import '../../../../core/utils/color_utils.dart';
-import '../../../../core/utils/string_utils.dart';
+import '../../../../core/value_objects/system_type.dart';
 import '../../../../core/widgets/like_button.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../../domain/domain.dart';
 
 class CommentItem extends StatelessWidget {
@@ -180,12 +180,14 @@ class CommentItem extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    return CircleAvatar(
+    return UserAvatar.fromFullName(
+      fullName: comment.author.title,
       radius: 16,
-      backgroundColor: getAvatarColor(comment.author.title),
-      child: Text(
-        getInitialsFromFullName(comment.author.title),
-        style: AppTypography.textSemibold2.white,
+      photoFuture: createUserPhotoFuture(
+        systemType: SystemType.kp,
+        photoExists: comment.author.photo.isNotEmpty,
+        userId: comment.author.id.toString(),
+        uriFile: comment.author.photo,
       ),
     );
   }

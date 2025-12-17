@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../core/theme/theme.dart';
-import '../../../../../core/utils/color_utils.dart';
-import '../../../../../core/utils/string_utils.dart';
-import '../../domain/entities/address_book_user.dart';
+import '../../../../../core/value_objects/system_type.dart';
+import '../../../../../core/widgets/user_avatar.dart';
+import '../../domain/domain.dart';
 
 class AddressBookUserItem extends StatelessWidget {
   final AddressBookUser user;
@@ -24,12 +24,14 @@ class AddressBookUserItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Avatar
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: getAvatarColor(user.id),
-              child: Text(
-                getInitials(user.firstName, user.lastName),
-                style: AppTypography.textSemibold1.white,
+            UserAvatar.fromName(
+              firstName: user.firstName,
+              lastName: user.lastName,
+              id: user.id,
+              photoFuture: createUserPhotoFuture(
+                systemType: SystemType.tcc,
+                photoExists: user.photoExists,
+                userId: user.id,
               ),
             ),
             const SizedBox(width: 12),
@@ -81,20 +83,6 @@ class AddressBookUserItem extends StatelessWidget {
     );
   }
 
-  Future<void> _launchPhone(String phone) async {
-    final uri = Uri(scheme: 'tel', path: phone);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    }
-  }
-
-  Future<void> _launchEmail(String email) async {
-    final uri = Uri(scheme: 'mailto', path: email);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    }
-  }
-
   Widget _buildInfoPill(String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -104,18 +92,6 @@ class AddressBookUserItem extends StatelessWidget {
       ),
       child: Text(text, style: AppTypography.captionMedium2.black),
     );
-  }
-
-  String _formatPhoneNumber(String phone) {
-    // Extract only digits from the phone number
-    final digits = phone.replaceAll(RegExp(r'\D'), '');
-
-    if (digits.length >= 11) {
-      // Format as +X XXX XXX-XX-XX
-      return '+${digits[0]} ${digits.substring(1, 4)} ${digits.substring(4, 7)}-${digits.substring(7, 9)}-${digits.substring(9, 11)}';
-    }
-
-    return phone; // Return original if format doesn't match
   }
 
   Widget _buildPhoneNumber(String phone, String label) {
@@ -138,5 +114,31 @@ class AddressBookUserItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatPhoneNumber(String phone) {
+    // Extract only digits from the phone number
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+
+    if (digits.length >= 11) {
+      // Format as +X XXX XXX-XX-XX
+      return '+${digits[0]} ${digits.substring(1, 4)} ${digits.substring(4, 7)}-${digits.substring(7, 9)}-${digits.substring(9, 11)}';
+    }
+
+    return phone; // Return original if format doesn't match
+  }
+
+  Future<void> _launchEmail(String email) async {
+    final uri = Uri(scheme: 'mailto', path: email);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
+  Future<void> _launchPhone(String phone) async {
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
   }
 }
