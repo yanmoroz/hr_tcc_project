@@ -28,7 +28,7 @@ class MoreItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadow100,
+              color: AppColors.shadow.withValues(alpha: 0.05),
               blurRadius: 30,
               offset: Offset(0, 4),
             ),

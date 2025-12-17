@@ -23,11 +23,11 @@ class NotificationItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: AppColors.grey50,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            const BoxShadow(
-              color: AppColors.shadowCard,
+            BoxShadow(
+              color: AppColors.shadowCard.withValues(alpha: 0.05),
               blurRadius: 30,
               offset: Offset(0, 4),
             ),

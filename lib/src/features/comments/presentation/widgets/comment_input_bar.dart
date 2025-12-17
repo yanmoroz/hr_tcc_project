@@ -46,7 +46,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
             color: AppColors.white,
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadow200,
+                color: AppColors.shadow.withValues(alpha: 0.05),
                 blurRadius: 12,
                 offset: const Offset(0, -4),
               ),

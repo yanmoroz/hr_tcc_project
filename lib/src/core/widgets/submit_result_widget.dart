@@ -25,7 +25,7 @@ class SubmitResultWidget extends StatelessWidget {
         // Blur effect
         BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(color: AppColors.shadow200),
+          child: Container(color: AppColors.blur.withValues(alpha: 0.15)),
         ),
         // Content
         Center(

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../../core/base_types/loading_status.dart';
-import '../../../../../../core/theme/theme.dart';
-import '../../../../../../core/widgets/widgets.dart';
-import '../../blocs/address_book/bloc.dart';
-import '../../widgets/address_book_user_item.dart';
-import 'address_book_header_delegate.dart';
+import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/theme/theme.dart';
+import '../../../../../core/widgets/widgets.dart';
+import '../blocs/address_book/bloc.dart';
+import '../delegates/address_book_header_delegate.dart';
+import '../widgets/address_book_user_item.dart';
 
 class AddressBookPage extends StatefulWidget {
   const AddressBookPage({super.key});

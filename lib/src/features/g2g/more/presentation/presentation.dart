@@ -1,1 +1,1 @@
-export 'pages/more_page/more_page.dart';
+export 'pages/more_page.dart';

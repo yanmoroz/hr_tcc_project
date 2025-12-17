@@ -21,7 +21,6 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   static const double _barContainerCornerRadius = 16;
-  static const double _barContainerTopPadding = 12;
   static const double _barItemSize = 32;
   static const double _barItemCornerRadius = 8;
   static const double _iconToLabelSpacing = 2;
@@ -43,7 +42,7 @@ class _MainShellState extends State<MainShell> {
         child: Container(
           color: AppColors.grey100,
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(_barContainerCornerRadius),
@@ -51,55 +50,60 @@ class _MainShellState extends State<MainShell> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.shadow100,
+                  color: AppColors.shadow.withValues(alpha: 0.05),
                   blurRadius: _shadowBlurRadius,
                   offset: _shadowOffset,
                 ),
               ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: _barContainerTopPadding),
-              child: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: widget.navigationShell.currentIndex,
-                onTap: _onItemTapped,
-                elevation: 0,
-                backgroundColor: AppColors.transparent,
-                selectedItemColor: AppColors.blue700,
-                unselectedItemColor: AppColors.grey700,
-                selectedLabelStyle: AppTypography.captionMedium3,
-                unselectedLabelStyle: AppTypography.captionMedium3,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: _buildIcon(
-                      assetPath: Assets.icons.homeIcon,
-                      isSelected: widget.navigationShell.currentIndex == 0,
-                    ),
-                    label: 'Главная',
+            child: NavigationBar(
+              selectedIndex: widget.navigationShell.currentIndex,
+              onDestinationSelected: _onItemTapped,
+              height: 68,
+              backgroundColor: AppColors.transparent,
+              indicatorColor: AppColors.transparent,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              labelPadding: const EdgeInsets.only(top: _iconToLabelSpacing),
+              labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return AppTypography.captionMedium3.copyWith(
+                    color: AppColors.blue700,
+                  );
+                }
+                return AppTypography.captionMedium3.copyWith(
+                  color: AppColors.grey700,
+                );
+              }),
+              destinations: [
+                NavigationDestination(
+                  icon: _buildIcon(
+                    assetPath: Assets.icons.homeIcon,
+                    isSelected: widget.navigationShell.currentIndex == 0,
                   ),
-                  BottomNavigationBarItem(
-                    icon: _buildIcon(
-                      assetPath: Assets.icons.applicationsIcon,
-                      isSelected: widget.navigationShell.currentIndex == 1,
-                    ),
-                    label: 'Мои заявки',
+                  label: 'Главная',
+                ),
+                NavigationDestination(
+                  icon: _buildIcon(
+                    assetPath: Assets.icons.applicationsIcon,
+                    isSelected: widget.navigationShell.currentIndex == 1,
                   ),
-                  BottomNavigationBarItem(
-                    icon: _buildIcon(
-                      assetPath: Assets.icons.contactsIcon,
-                      isSelected: widget.navigationShell.currentIndex == 2,
-                    ),
-                    label: 'Контакты',
+                  label: 'Мои заявки',
+                ),
+                NavigationDestination(
+                  icon: _buildIcon(
+                    assetPath: Assets.icons.contactsIcon,
+                    isSelected: widget.navigationShell.currentIndex == 2,
                   ),
-                  BottomNavigationBarItem(
-                    icon: _buildIcon(
-                      assetPath: Assets.icons.moreIcon,
-                      isSelected: widget.navigationShell.currentIndex == 3,
-                    ),
-                    label: 'Ещё',
+                  label: 'Контакты',
+                ),
+                NavigationDestination(
+                  icon: _buildIcon(
+                    assetPath: Assets.icons.moreIcon,
+                    isSelected: widget.navigationShell.currentIndex == 3,
                   ),
-                ],
-              ),
+                  label: 'Ещё',
+                ),
+              ],
             ),
           ),
         ),
@@ -122,7 +126,6 @@ class _MainShellState extends State<MainShell> {
 
   Widget _buildIcon({required String assetPath, required bool isSelected}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: _iconToLabelSpacing),
       decoration: BoxDecoration(
         color: isSelected ? AppColors.blue700 : AppColors.transparent,
         borderRadius: BorderRadius.circular(_barItemCornerRadius),

@@ -12,10 +12,9 @@ class DateSeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 16),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: AppColors.shadow300,
+          color: AppColors.shadow.withValues(alpha: 0.40),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(

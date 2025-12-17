@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/theme/theme.dart';
-import '../../../../../core/widgets/widgets.dart';
-import '../../blocs/applications_list_page/bloc.dart';
-import '../../widgets/application_card.dart';
-import '../../widgets/empty_applications_state.dart';
-import 'my_applications_header_delegate.dart';
+import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/widgets.dart';
+import '../blocs/applications_list_page/bloc.dart';
+import '../delegates/my_applications_header_delegate.dart';
+import '../widgets/application_card.dart';
+import '../widgets/empty_applications_state.dart';
 
 class MyApplicationsPage extends StatefulWidget {
   const MyApplicationsPage({super.key});

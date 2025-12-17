@@ -35,6 +35,7 @@ class MainApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'HR TCC Project',
         routerConfig: AppRouter.router,
+        debugShowCheckedModeBanner: false,
         theme: Theme.of(context).copyWith(
           scaffoldBackgroundColor: AppColors.grey100,
           appBarTheme: AppBarTheme.of(context).copyWith(

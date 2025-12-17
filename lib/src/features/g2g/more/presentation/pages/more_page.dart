@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../../../gen/assets.gen.dart';
-import '../../../../../../core/theme/app_colors.dart';
-import '../../widgets/more_item.dart';
-import 'more_page_header_delegate.dart';
+import '../../../../../../gen/assets.gen.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../delegates/more_page_header_delegate.dart';
+import '../widgets/more_item.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});

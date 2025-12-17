@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/base_types/loading_status.dart';
-import '../../../../../../core/theme/theme.dart';
-import '../../../../../../core/widgets/widgets.dart';
-import '../../blocs/address_book/bloc.dart';
+import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/theme/theme.dart';
+import '../../../../../core/widgets/widgets.dart';
+import '../blocs/address_book/bloc.dart';
 
 class AddressBookHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double userBarExtent;
@@ -50,7 +50,7 @@ class AddressBookHeaderDelegate extends SliverPersistentHeaderDelegate {
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow300,
+            color: AppColors.shadow.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

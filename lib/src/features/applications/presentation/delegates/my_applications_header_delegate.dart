@@ -2,12 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../../../core/base_types/loading_status.dart';
-import '../../../../../core/theme/theme.dart';
-import '../../../../../core/value_objects/status_group_type.dart';
-import '../../../../../core/widgets/widgets.dart';
-import '../../blocs/applications_list_page/bloc.dart';
-import '../../widgets/status_filter_tabs.dart';
+import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/value_objects/status_group_type.dart';
+import '../../../../core/widgets/widgets.dart';
+import '../blocs/applications_list_page/bloc.dart';
+import '../widgets/status_filter_tabs.dart';
 
 class MyApplicationsHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double userBarExtent;
@@ -68,7 +68,7 @@ class MyApplicationsHeaderDelegate extends SliverPersistentHeaderDelegate {
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow300,
+            color: AppColors.shadow.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

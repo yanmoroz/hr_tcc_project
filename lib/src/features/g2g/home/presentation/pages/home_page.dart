@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../../core/base_types/loading_status.dart';
-import '../../../../../../core/theme/theme.dart';
-import '../../../../../../core/widgets/widgets.dart';
-import '../../../../../news/presentation/blocs/news_page/bloc.dart';
-import '../../widgets/news_section.dart';
-import '../../widgets/quick_link_bar.dart';
-import 'home_page_header_delegate.dart';
+import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/theme/theme.dart';
+import '../../../../../core/widgets/widgets.dart';
+import '../../../../news/presentation/blocs/news_page/bloc.dart';
+import '../delegates/home_page_header_delegate.dart';
+import '../widgets/news_section.dart';
+import '../widgets/quick_link_bar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

@@ -46,8 +46,9 @@ class AppColors {
   static const green300 = Color(0xFFDDF5E7);
 
   // Shadow
-  static const shadowCard = Color(0x0A38990D);
-  static const shadow300 = Color(0x1A343D57);
-  static const shadow200 = Color(0x263C3E26);
-  static const shadow100 = Color(0x0D343D57);
+  static const shadowCard = Color(0xFF0A3899);
+  static const shadow = Color(0xFF343D57);
+
+  // Blur
+  static const blur = Color(0xFF3C3C3E);
 }
