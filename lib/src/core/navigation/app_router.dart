@@ -13,6 +13,7 @@ import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../../shared/files/files.dart';
 import '../blocs/current_user/bloc.dart';
 import '../di/bloc_factory.dart';
 import 'main_shell.dart';
@@ -231,6 +232,10 @@ class AppRouter {
                       );
                     },
                   ),
+                  GoRoute(
+                    path: 'attachments-sandbox',
+                    builder: (context, state) => const AttachmentsSandboxPage(),
+                  ),
                 ],
               ),
             ],
@@ -310,11 +315,8 @@ class AppRouter {
                   return NoTransitionPage(
                     child: BlocProvider(
                       key: ValueKey(search),
-                      create: (context) =>
-                          BlocFactory.createAddressBookBloc()
-                            ..add(AddressBookEvent.loadAddressBook(
-                              search: search,
-                            )),
+                      create: (context) => BlocFactory.createAddressBookBloc()
+                        ..add(AddressBookEvent.loadAddressBook(search: search)),
                       child: const AddressBookPage(),
                     ),
                   );
@@ -326,10 +328,15 @@ class AppRouter {
           StatefulShellBranch(
             navigatorKey: _moreNavigatorKey,
             routes: [
+              // GoRoute(
+              //   path: '/more',
+              //   pageBuilder: (context, state) =>
+              //       const NoTransitionPage(child: MorePage()),
+              // ),
               GoRoute(
-                path: '/more',
+                path: '/attachments-sandbox',
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: MorePage()),
+                    const NoTransitionPage(child: AttachmentsSandboxPage()),
               ),
             ],
           ),

@@ -46,6 +46,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/close-Icon.svg
   String get closeIcon => 'assets/icons/close-Icon.svg';
 
+  /// File path: assets/icons/close-bold-icon.svg
+  String get closeBoldIcon => 'assets/icons/close-bold-icon.svg';
+
   /// File path: assets/icons/comments-icon.svg
   String get commentsIcon => 'assets/icons/comments-icon.svg';
 
@@ -140,6 +143,7 @@ class $AssetsIconsGen {
     bellWithGreenCircleIcon,
     carIcon,
     closeIcon,
+    closeBoldIcon,
     commentsIcon,
     contactsIcon,
     deliveryIcon,
