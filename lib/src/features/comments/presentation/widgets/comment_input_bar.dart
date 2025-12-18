@@ -3,7 +3,10 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../shared/files/presentation/models/uploading_attachment_state.dart';
+import '../../../../shared/files/presentation/widgets/uploading_attachment.dart';
 import '../../domain/domain.dart';
+import '../blocs/comments_page/comments_state.dart';
 
 /// Callback with two parameters: content and optional parent comment ID.
 typedef OnSendComment = void Function(String content, int? parentId);
@@ -15,6 +18,10 @@ class CommentInputBar extends StatefulWidget {
   final VoidCallback onCancelReply;
   final bool isAddingComment;
   final Comment? replyingToComment;
+  final List<UploadingFile> uploadingFiles;
+  final VoidCallback onAttachmentTap;
+  final void Function(String fileId) onRemoveFile;
+  final void Function(String fileId) onCancelUpload;
 
   const CommentInputBar({
     super.key,
@@ -24,6 +31,10 @@ class CommentInputBar extends StatefulWidget {
     required this.onCancelReply,
     this.isAddingComment = false,
     this.replyingToComment,
+    this.uploadingFiles = const [],
+    required this.onAttachmentTap,
+    required this.onRemoveFile,
+    required this.onCancelUpload,
   });
 
   @override
@@ -63,7 +74,107 @@ class _CommentInputBarState extends State<CommentInputBar> {
         children: [
           if (widget.replyingToComment != null)
             _buildReplyHeader(widget.replyingToComment!),
+          if (widget.uploadingFiles.isNotEmpty) _buildAttachmentsRow(),
           _buildInputRow(),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void didUpdateWidget(CommentInputBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode.removeListener(_onFocusChange);
+      widget.focusNode.addListener(_onFocusChange);
+    }
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_onTextChange);
+      widget.controller.addListener(_onTextChange);
+      _hasText = widget.controller.text.trim().isNotEmpty;
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode.removeListener(_onFocusChange);
+    widget.controller.removeListener(_onTextChange);
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(_onFocusChange);
+    widget.controller.addListener(_onTextChange);
+    _hasText = widget.controller.text.trim().isNotEmpty;
+  }
+
+  Widget _buildAttachmentsRow() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      child: SizedBox(
+        height: 104,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: widget.uploadingFiles.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final file = widget.uploadingFiles[index];
+            final isLoading = file.state is UploadingAttachmentLoading;
+            return UploadingAttachment(
+              fileName: file.fileName,
+              state: file.state,
+              imageFile: file.file,
+              displayFileName: false,
+              onCancel: isLoading ? () => widget.onCancelUpload(file.id) : null,
+              onDelete: () => widget.onRemoveFile(file.id),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputRow() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(0, _isReplyMode ? 8 : 16, 0, 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const SizedBox(width: 12),
+          InkWell(
+            onTap: widget.onAttachmentTap,
+            child: SvgPicture.asset(Assets.icons.attachmentIcon),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: widget.controller,
+              focusNode: widget.focusNode,
+              style: AppTypography.textRegular1.black,
+              decoration: InputDecoration(
+                hintText: _isReplyMode ? 'Ваш ответ' : 'Ваш комментарий',
+                hintStyle: AppTypography.textRegular1.grey700,
+                isDense: true,
+                filled: true,
+                fillColor: AppColors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                border: _inputBorder,
+                enabledBorder: _inputBorder,
+                focusedBorder: _inputBorder,
+              ),
+              minLines: 1,
+              maxLines: 8,
+              enabled: !widget.isAddingComment,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _buildSendButton(),
+          const SizedBox(width: 12),
         ],
       ),
     );
@@ -119,52 +230,6 @@ class _CommentInputBarState extends State<CommentInputBar> {
     );
   }
 
-  Widget _buildInputRow() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, _isReplyMode ? 8 : 16, 0, 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const SizedBox(width: 12),
-          InkWell(
-            onTap: () {
-              // TODO: Implement attachment functionality
-            },
-            child: SvgPicture.asset(Assets.icons.attachmentIcon),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: widget.controller,
-              focusNode: widget.focusNode,
-              style: AppTypography.textRegular1.black,
-              decoration: InputDecoration(
-                hintText: _isReplyMode ? 'Ваш ответ' : 'Ваш комментарий',
-                hintStyle: AppTypography.textRegular1.grey700,
-                isDense: true,
-                filled: true,
-                fillColor: AppColors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                border: _inputBorder,
-                enabledBorder: _inputBorder,
-                focusedBorder: _inputBorder,
-              ),
-              minLines: 1,
-              maxLines: 8,
-              enabled: !widget.isAddingComment,
-            ),
-          ),
-          const SizedBox(width: 8),
-          _buildSendButton(),
-          const SizedBox(width: 12),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSendButton() {
     if (!_isFocused || !_hasText) {
       return const SizedBox.shrink();
@@ -193,42 +258,10 @@ class _CommentInputBarState extends State<CommentInputBar> {
         padding: const EdgeInsets.all(4),
         child: SvgPicture.asset(
           Assets.icons.arrowUp,
-          colorFilter: const ColorFilter.mode(
-            AppColors.white,
-            BlendMode.srcIn,
-          ),
+          colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
         ),
       ),
     );
-  }
-
-  @override
-  void didUpdateWidget(CommentInputBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.focusNode != widget.focusNode) {
-      oldWidget.focusNode.removeListener(_onFocusChange);
-      widget.focusNode.addListener(_onFocusChange);
-    }
-    if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(_onTextChange);
-      widget.controller.addListener(_onTextChange);
-      _hasText = widget.controller.text.trim().isNotEmpty;
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(_onFocusChange);
-    widget.controller.removeListener(_onTextChange);
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(_onFocusChange);
-    widget.controller.addListener(_onTextChange);
-    _hasText = widget.controller.text.trim().isNotEmpty;
   }
 
   void _onFocusChange() {

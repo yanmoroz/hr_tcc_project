@@ -1,7 +1,12 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/theme/theme.dart';
@@ -13,6 +18,7 @@ import '../blocs/comments_page/bloc.dart';
 import '../blocs/mention/bloc.dart';
 import '../controllers/mention_text_editing_controller.dart';
 import '../delegates/date_header_delegate.dart';
+import '../widgets/attachment_picker_bottom_sheet.dart';
 import '../widgets/comment_input_bar.dart';
 import '../widgets/comment_item.dart';
 import '../widgets/mention_overlay.dart';
@@ -30,6 +36,7 @@ class _CommentsPageState extends State<CommentsPage> {
   final FocusNode _inputFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
   final Map<int, GlobalKey> _messageKeys = {};
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -55,18 +62,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       style: AppTypography.textRegular2.grey700,
                     )
                   else
-                    Shimmer.fromColors(
-                      baseColor: AppColors.grey100,
-                      highlightColor: AppColors.grey50,
-                      child: Container(
-                        width: 140,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          color: AppColors.grey200,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
+                    SizedBox(height: 18),
                 ],
               );
             },
@@ -107,7 +103,7 @@ class _CommentsPageState extends State<CommentsPage> {
             Expanded(
               child: MultiBlocListener(
                 listeners: [
-                  // Scroll to bottom on initial data load
+                  // Scroll to bottom and preload images on initial data load
                   BlocListener<CommentsBloc, CommentsState>(
                     listenWhen: (previous, current) {
                       return previous.status == LoadingStatus.loading &&
@@ -117,9 +113,13 @@ class _CommentsPageState extends State<CommentsPage> {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         scrollToBottomSafely();
                       });
+                      // Trigger preloading of image attachments
+                      context.read<CommentsBloc>().add(
+                        const CommentsEvent.preloadImageAttachments(),
+                      );
                     },
                   ),
-                  // Scroll to bottom when a comment is successfully added
+                  // Scroll to bottom and preload images when a comment is successfully added
                   BlocListener<CommentsBloc, CommentsState>(
                     listenWhen: (previous, current) {
                       return previous.isAddingComment == true &&
@@ -129,13 +129,33 @@ class _CommentsPageState extends State<CommentsPage> {
                     },
                     listener: (context, state) {
                       scrollToBottomSafely();
+                      // Preload images for new comment's attachments
+                      context.read<CommentsBloc>().add(
+                        const CommentsEvent.preloadImageAttachments(),
+                      );
+                    },
+                  ),
+                  // Handle attachment download completion
+                  BlocListener<CommentsBloc, CommentsState>(
+                    listenWhen: (previous, current) {
+                      return previous.downloadingAttachment !=
+                              current.downloadingAttachment &&
+                          current.downloadingAttachment?.status ==
+                              DownloadingAttachmentStatus.success;
+                    },
+                    listener: (context, state) {
+                      final data = state.downloadingAttachment?.data;
+                      if (data != null) {
+                        _showImageViewer(context, data);
+                      }
                     },
                   ),
                 ],
                 child: BlocBuilder<CommentsBloc, CommentsState>(
                   buildWhen: (previous, current) =>
                       previous.status != current.status ||
-                      previous.groupedComments != current.groupedComments,
+                      previous.groupedComments != current.groupedComments ||
+                      previous.preloadedImages != current.preloadedImages,
                   builder: (context, state) {
                     return switch (state.status) {
                       LoadingStatus.initial => _buildLoadingState(
@@ -178,7 +198,8 @@ class _CommentsPageState extends State<CommentsPage> {
               buildWhen: (previous, current) =>
                   previous.status != current.status ||
                   previous.isAddingComment != current.isAddingComment ||
-                  previous.replyingToComment != current.replyingToComment,
+                  previous.replyingToComment != current.replyingToComment ||
+                  previous.uploadingFiles != current.uploadingFiles,
               builder: (context, state) {
                 if (state.status != LoadingStatus.success) {
                   return const SizedBox.shrink();
@@ -189,6 +210,7 @@ class _CommentsPageState extends State<CommentsPage> {
                   focusNode: _inputFocusNode,
                   isAddingComment: state.isAddingComment,
                   replyingToComment: state.replyingToComment,
+                  uploadingFiles: state.uploadingFiles,
                   onSend: (content, parentId) {
                     context.read<CommentsBloc>().add(
                       CommentsEvent.addComment(
@@ -200,6 +222,17 @@ class _CommentsPageState extends State<CommentsPage> {
                   onCancelReply: () {
                     context.read<CommentsBloc>().add(
                       const CommentsEvent.cancelReply(),
+                    );
+                  },
+                  onAttachmentTap: () => _showAttachmentPicker(context),
+                  onRemoveFile: (fileId) {
+                    context.read<CommentsBloc>().add(
+                      CommentsEvent.removeAttachment(fileId),
+                    );
+                  },
+                  onCancelUpload: (fileId) {
+                    context.read<CommentsBloc>().add(
+                      CommentsEvent.cancelAttachmentUpload(fileId),
                     );
                   },
                 );
@@ -252,7 +285,9 @@ class _CommentsPageState extends State<CommentsPage> {
 
     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     await Future.delayed(const Duration(milliseconds: 50), () {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      _scrollController.jumpTo(
+        _scrollController.position.maxScrollExtent + 300,
+      );
     });
   }
 
@@ -261,6 +296,7 @@ class _CommentsPageState extends State<CommentsPage> {
     String? parentAuthorName,
     String? parentComment,
     bool isLastInGroup,
+    Map<int, Uint8List> preloadedImages,
   ) {
     _messageKeys.putIfAbsent(comment.id, () => GlobalKey());
 
@@ -270,6 +306,7 @@ class _CommentsPageState extends State<CommentsPage> {
       parentAuthorName: parentAuthorName,
       parentComment: parentComment,
       isLastInGroup: isLastInGroup,
+      preloadedImages: preloadedImages,
       onLike: () {
         context.read<CommentsBloc>().add(
           CommentsEvent.toggleCommentLike(comment.id),
@@ -293,11 +330,14 @@ class _CommentsPageState extends State<CommentsPage> {
         });
       },
       onMentionTap: (mentionName) {
-        context.go(Uri(
-          path: '/contacts',
-          queryParameters: {'search': mentionName},
-        ).toString());
+        context.go(
+          Uri(
+            path: '/contacts',
+            queryParameters: {'search': mentionName},
+          ).toString(),
+        );
       },
+      onAttachmentTap: (attachment) => _openAttachment(attachment),
     );
   }
 
@@ -351,6 +391,7 @@ class _CommentsPageState extends State<CommentsPage> {
                       parentAuthorName,
                       parentComment,
                       isLastInGroup,
+                      state.preloadedImages,
                     );
                   }, childCount: group.comments.length),
                 ),
@@ -383,6 +424,19 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
+  bool _isImageAttachment(Attachment attachment) {
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+    return imageExtensions.contains(attachment.extension.toLowerCase()) ||
+        attachment.thumbnail != null;
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   void _onTextChanged() {
     final mentionContext = _commentController.getMentionContext();
     final mentionCubit = context.read<MentionCubit>();
@@ -402,6 +456,62 @@ class _CommentsPageState extends State<CommentsPage> {
     context.read<MentionCubit>().clearMention();
   }
 
+  void _openAttachment(Attachment attachment) {
+    if (_isImageAttachment(attachment)) {
+      context.read<CommentsBloc>().add(
+        CommentsEvent.fetchAttachment(attachment),
+      );
+    } else {
+      _launchUrl(attachment.url);
+    }
+  }
+
+  Future<void> _pickDocuments(BuildContext context) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.any,
+      );
+      if (result == null || result.files.isEmpty || !context.mounted) return;
+
+      final files = result.files
+          .where((file) => file.path != null)
+          .map((file) => File(file.path!))
+          .where(
+            (file) =>
+                file.existsSync() &&
+                !FileSystemEntity.isDirectorySync(file.path),
+          )
+          .toList();
+
+      if (files.isNotEmpty) {
+        context.read<CommentsBloc>().add(CommentsEvent.addAttachments(files));
+      }
+    } catch (e) {
+      // Handle error silently or show a snackbar
+    }
+  }
+
+  Future<void> _pickPhotos(BuildContext context) async {
+    try {
+      final images = await _imagePicker.pickMultiImage();
+      if (images.isEmpty || !context.mounted) return;
+
+      final files = images.map((xFile) => File(xFile.path)).toList();
+      context.read<CommentsBloc>().add(CommentsEvent.addAttachments(files));
+    } catch (e) {
+      // Handle error silently or show a snackbar
+    }
+  }
+
+  void _showAttachmentPicker(BuildContext context) {
+    AttachmentPickerBottomSheet.show(
+      context,
+      onPickPhoto: () => _pickPhotos(context),
+      onPickDocument: () => _pickDocuments(context),
+    );
+  }
+
   Future<void> _showDeleteDialog(BuildContext context, int commentId) async {
     final confirmed = await showConfirmationDialog(
       context,
@@ -414,5 +524,37 @@ class _CommentsPageState extends State<CommentsPage> {
     if (confirmed == true && context.mounted) {
       context.read<CommentsBloc>().add(CommentsEvent.deleteComment(commentId));
     }
+  }
+
+  void _showImageViewer(BuildContext context, Uint8List imageData) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(color: Colors.black87),
+            ),
+            InteractiveViewer(
+              child: Center(
+                child: Image.memory(imageData, fit: BoxFit.contain),
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 16,
+              right: 16,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -9,6 +9,7 @@ import '../../../../core/value_objects/system_type.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../domain/domain.dart';
 import 'comment_action_bar.dart';
+import 'comment_attachment_item.dart';
 import 'comment_reply_indicator.dart';
 import 'mention_rich_text.dart';
 
@@ -26,6 +27,12 @@ class CommentItem extends StatefulWidget {
   /// Called when a mention is tapped. The mention name (without "@") is passed.
   final void Function(String mentionName)? onMentionTap;
 
+  /// Called when an attachment is tapped.
+  final void Function(Attachment attachment)? onAttachmentTap;
+
+  /// Preloaded image data for attachments, keyed by attachment ID.
+  final Map<int, Uint8List> preloadedImages;
+
   final bool isLastInGroup;
 
   const CommentItem({
@@ -38,6 +45,8 @@ class CommentItem extends StatefulWidget {
     this.onReply,
     this.onParentTap,
     this.onMentionTap,
+    this.onAttachmentTap,
+    this.preloadedImages = const {},
     this.isLastInGroup = false,
   });
 
@@ -57,8 +66,9 @@ class _CommentItemState extends State<CommentItem> {
       margin: EdgeInsets.only(bottom: widget.isLastInGroup ? 0 : 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment:
-            _isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: _isCurrentUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
           if (!_isCurrentUser) ...[_buildAvatar(), const SizedBox(width: 12)],
           _buildBubble(context),
@@ -76,6 +86,36 @@ class _CommentItemState extends State<CommentItem> {
       photoExists: widget.comment.author.photo.isNotEmpty,
       userId: widget.comment.author.id.toString(),
       uriFile: widget.comment.author.photo,
+    );
+  }
+
+  Widget _buildAttachments() {
+    final attachments = widget.comment.attachments;
+    if (attachments == null || attachments.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: SizedBox(
+        height: 85,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemCount: attachments.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final attachment = attachments[index];
+            return CommentAttachmentItem(
+              attachment: attachment,
+              imageData: widget.preloadedImages[attachment.id],
+              onTap: widget.onAttachmentTap != null
+                  ? () => widget.onAttachmentTap!(attachment)
+                  : null,
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -104,6 +144,7 @@ class _CommentItemState extends State<CommentItem> {
             children: [
               _buildReplyIndicator(),
               _buildHeader(),
+              _buildAttachments(),
               const SizedBox(height: 4),
               MentionRichText(
                 content: widget.comment.content,

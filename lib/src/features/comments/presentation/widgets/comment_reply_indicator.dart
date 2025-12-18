@@ -6,6 +6,8 @@ import '../../../../core/theme/theme.dart';
 ///
 /// Used in comment items to show which comment is being replied to.
 class CommentReplyIndicator extends StatelessWidget {
+  static final _tagRegExp = RegExp(r'<[^>]*>');
+
   final String authorName;
   final String comment;
   final VoidCallback onTap;
@@ -16,6 +18,9 @@ class CommentReplyIndicator extends StatelessWidget {
     required this.comment,
     required this.onTap,
   });
+
+  String get _cleanComment =>
+      comment.replaceAll(_tagRegExp, '').replaceAll('&nbsp;', ' ');
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +49,9 @@ class CommentReplyIndicator extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        comment,
+                        _cleanComment,
                         style: AppTypography.captionMedium2.black,
-                        maxLines: 2,
+                        maxLines: 5,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

@@ -6,6 +6,7 @@ import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../../shared/files/domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 import '../entities/application_form.dart';
 import 'service_locator.dart';
@@ -56,6 +57,8 @@ class BlocFactory {
       addCommentUsecase: sl(),
       deleteCommentUsecase: sl(),
       toggleCommentLikeUsecase: sl(),
+      uploadFileUsecase: sl<UploadFileUsecase>(),
+      downloadFileUsecase: sl<DownloadFileUsecase>(),
     );
   }
 
