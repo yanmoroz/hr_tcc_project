@@ -291,15 +291,15 @@ class _CommentsPageState extends State<CommentsPage> {
     if (key.currentContext == null) {
       await _scrollSearchForKey(
         key,
-        startOffset: _scrollController.position.minScrollExtent,
-        forward: true,
+        startOffset: _scrollController.position.maxScrollExtent,
+        forward: false,
       );
     }
     if (key.currentContext == null) {
       await _scrollSearchForKey(
         key,
-        startOffset: _scrollController.position.maxScrollExtent,
-        forward: false,
+        startOffset: _scrollController.position.minScrollExtent,
+        forward: true,
       );
     }
     if (key.currentContext == null) return;
