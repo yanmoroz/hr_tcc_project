@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/base_types/loading_status.dart';
@@ -75,7 +79,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 color: AppColors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: AppColors.black.withValues(alpha: 0.1),
                     blurRadius: 12,
                     offset: const Offset(0, -4),
                   ),
@@ -144,10 +148,28 @@ class _CommentsPageState extends State<CommentsPage> {
                               DownloadingAttachmentStatus.success;
                     },
                     listener: (context, state) {
-                      final data = state.downloadingAttachment?.data;
-                      if (data != null) {
-                        _showImageViewer(context, data);
-                      }
+                      final downloading = state.downloadingAttachment;
+                      final data = downloading?.data;
+                      if (downloading == null || data == null) return;
+
+                      final attachment = _findAttachmentById(
+                        comments: state.comments,
+                        attachmentId: downloading.attachmentId,
+                      );
+                      final suggestedExtension = attachment?.extension;
+                      final suggestedName = attachment?.name;
+
+                      unawaited(
+                        _openBytesWithOpenFilex(
+                          context,
+                          bytes: data,
+                          fileName: _buildSafeFileName(
+                            attachmentId: downloading.attachmentId,
+                            name: suggestedName,
+                            extension: suggestedExtension,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -261,19 +283,29 @@ class _CommentsPageState extends State<CommentsPage> {
 
   Future<void> jumpToMessage(int? parentId) async {
     if (parentId == null) return;
-    final key = _messageKeys[parentId];
+    final key = _messageKeys.putIfAbsent(parentId, () => GlobalKey());
+    if (!_scrollController.hasClients) return;
 
-    if (key?.currentContext == null) {
-      // First jump near top (or bottom, depending on your UX)
-      _scrollController.jumpTo(_scrollController.position.minScrollExtent);
-
-      await Future.delayed(const Duration(milliseconds: 50));
+    // Try immediately (in case it's already built), then do a bounded search.
+    await SchedulerBinding.instance.endOfFrame;
+    if (key.currentContext == null) {
+      await _scrollSearchForKey(
+        key,
+        startOffset: _scrollController.position.minScrollExtent,
+        forward: true,
+      );
     }
-
-    if (key?.currentContext == null) return;
+    if (key.currentContext == null) {
+      await _scrollSearchForKey(
+        key,
+        startOffset: _scrollController.position.maxScrollExtent,
+        forward: false,
+      );
+    }
+    if (key.currentContext == null) return;
 
     Scrollable.ensureVisible(
-      key!.currentContext!,
+      key.currentContext!,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       alignment: 0.5, // center it (0 = top, 1 = bottom)
@@ -283,12 +315,20 @@ class _CommentsPageState extends State<CommentsPage> {
   Future<void> scrollToBottomSafely() async {
     if (!_scrollController.hasClients) return;
 
-    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    await Future.delayed(const Duration(milliseconds: 50), () {
-      _scrollController.jumpTo(
-        _scrollController.position.maxScrollExtent + 300,
-      );
-    });
+    // Content height can change after this call (images, pinned headers, keyboard).
+    // Retry a few times until we're truly at the bottom.
+    for (var i = 0; i < 10; i++) {
+      if (!_scrollController.hasClients) return;
+      await SchedulerBinding.instance.endOfFrame;
+      if (!_scrollController.hasClients) return;
+
+      final pos = _scrollController.position;
+      if (pos.extentAfter <= 2.0) return; // close enough
+
+      _scrollController.jumpTo(pos.maxScrollExtent);
+      // Give layout a moment to settle before checking again.
+      await Future.delayed(const Duration(milliseconds: 24));
+    }
   }
 
   Widget _buildCommentItem(
@@ -411,6 +451,41 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
+  String _buildSafeFileName({
+    required int attachmentId,
+    String? name,
+    String? extension,
+  }) {
+    final sanitizedName = _sanitizeFileName(name?.trim());
+    final fallbackExtension = _sanitizeExtension(extension) ?? 'png';
+
+    if (sanitizedName == null || sanitizedName.isEmpty) {
+      return 'attachment_$attachmentId.$fallbackExtension';
+    }
+
+    // If backend already provides a name with extension, keep it.
+    if (sanitizedName.contains('.') && !sanitizedName.endsWith('.')) {
+      return sanitizedName;
+    }
+
+    return '$sanitizedName.$fallbackExtension';
+  }
+
+  Attachment? _findAttachmentById({
+    required List<Comment> comments,
+    required int attachmentId,
+  }) {
+    for (final comment in comments) {
+      final attachments = comment.attachments;
+      if (attachments == null || attachments.isEmpty) continue;
+
+      for (final attachment in attachments) {
+        if (attachment.id == attachmentId) return attachment;
+      }
+    }
+    return null;
+  }
+
   String _getCommentCountText(int count) {
     return pluralizeRu(
       count,
@@ -462,6 +537,34 @@ class _CommentsPageState extends State<CommentsPage> {
     }
   }
 
+  Future<void> _openBytesWithOpenFilex(
+    BuildContext context, {
+    required Uint8List bytes,
+    required String fileName,
+  }) async {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = '${tempDir.path}/$fileName';
+    final file = File(filePath);
+    await file.writeAsBytes(bytes, flush: true);
+
+    final result = await OpenFilex.open(file.path);
+    if (!context.mounted) return;
+
+    if (result.type == ResultType.done) return;
+
+    // Silent failure by default (matches existing "handle silently" approach),
+    // but leave a minimal log surface via SnackBar for better debuggability.
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          result.message.isNotEmpty
+              ? result.message
+              : 'Не удалось открыть файл',
+        ),
+      ),
+    );
+  }
+
   Future<void> _pickDocuments(BuildContext context) async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -500,6 +603,63 @@ class _CommentsPageState extends State<CommentsPage> {
     }
   }
 
+  String? _sanitizeExtension(String? extension) {
+    final ext = extension?.trim().toLowerCase();
+    if (ext == null || ext.isEmpty) return null;
+    return ext.replaceAll(RegExp(r'[^a-z0-9]+'), '');
+  }
+
+  String? _sanitizeFileName(String? name) {
+    if (name == null) return null;
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return null;
+    // Replace path separators + characters commonly invalid across platforms.
+    final sanitized = trimmed.replaceAll(RegExp(r'[\\/:*?"<>|]+'), '_').trim();
+    return sanitized.isEmpty ? null : sanitized;
+  }
+
+  Future<void> _scrollSearchForKey(
+    GlobalKey key, {
+    required double startOffset,
+    required bool forward,
+  }) async {
+    if (!_scrollController.hasClients) return;
+
+    // Jump first, then advance in viewport-sized steps while the item builds.
+    final position = _scrollController.position;
+    final clampedStart = startOffset.clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    _scrollController.jumpTo(clampedStart);
+
+    // If layout is still settling, wait a frame so slivers can build children.
+    await SchedulerBinding.instance.endOfFrame;
+    if (key.currentContext != null || !_scrollController.hasClients) return;
+
+    final step =
+        (position.viewportDimension > 0
+                ? position.viewportDimension * 0.8
+                : 300.0)
+            .clamp(120.0, 800.0);
+
+    // Bounded search: enough to cover long lists, but avoids infinite loops.
+    for (var i = 0; i < 60; i++) {
+      if (!_scrollController.hasClients) return;
+      if (key.currentContext != null) return;
+
+      final pos = _scrollController.position;
+      final next = forward ? (pos.pixels + step) : (pos.pixels - step);
+      final clampedNext = next.clamp(pos.minScrollExtent, pos.maxScrollExtent);
+
+      // Can't move further.
+      if ((clampedNext - pos.pixels).abs() < 0.5) return;
+
+      _scrollController.jumpTo(clampedNext);
+      await SchedulerBinding.instance.endOfFrame;
+    }
+  }
+
   void _showAttachmentPicker(BuildContext context) {
     AttachmentPickerBottomSheet.show(
       context,
@@ -520,37 +680,5 @@ class _CommentsPageState extends State<CommentsPage> {
     if (confirmed == true && context.mounted) {
       context.read<CommentsBloc>().add(CommentsEvent.deleteComment(commentId));
     }
-  }
-
-  void _showImageViewer(BuildContext context, Uint8List imageData) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(color: Colors.black87),
-            ),
-            InteractiveViewer(
-              child: Center(
-                child: Image.memory(imageData, fit: BoxFit.contain),
-              ),
-            ),
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 16,
-              right: 16,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 28),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

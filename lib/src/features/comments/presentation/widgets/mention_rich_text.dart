@@ -30,8 +30,9 @@ class MentionRichText extends StatelessWidget {
     final processedContent = content.replaceAll('&nbsp;', ' ');
 
     // Extract mentions from HTML <a> tags
-    final (processedText, htmlMentions) =
-        _extractMentionsFromHtml(processedContent);
+    final (processedText, htmlMentions) = _extractMentionsFromHtml(
+      processedContent,
+    );
 
     // If we found HTML mentions, use the processed text
     if (htmlMentions.isNotEmpty) {
@@ -85,7 +86,7 @@ class MentionRichText extends StatelessWidget {
 
       spans.add(
         TextSpan(
-          text: mention.name,
+          text: "@" + mention.name,
           style: textStyle.copyWith(color: mentionColor),
           recognizer: onMentionTap != null
               ? (TapGestureRecognizer()
@@ -125,7 +126,7 @@ class MentionRichText extends StatelessWidget {
       final mentionName = match.group(1)!;
       spans.add(
         TextSpan(
-          text: mentionName,
+          text: "@" + mentionName,
           style: textStyle.copyWith(color: mentionColor),
           recognizer: onMentionTap != null
               ? (TapGestureRecognizer()
@@ -172,11 +173,9 @@ class MentionRichText extends StatelessWidget {
       buffer.write(mentionName);
       final mentionEnd = buffer.length;
 
-      mentions.add(_MentionRange(
-        start: mentionStart,
-        end: mentionEnd,
-        name: mentionName,
-      ));
+      mentions.add(
+        _MentionRange(start: mentionStart, end: mentionEnd, name: mentionName),
+      );
 
       lastEnd = match.end;
     }

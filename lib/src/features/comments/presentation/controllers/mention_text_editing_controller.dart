@@ -51,8 +51,7 @@ class MentionTextEditingController extends TextEditingController {
       // Add styled mention
       children.add(TextSpan(
         text: match.group(0),
-        style: style?.copyWith(color: AppColors.blue500) ??
-            TextStyle(color: AppColors.blue500),
+        style: AppTypography.textRegular2.blue500,
       ));
 
       lastEnd = match.end;
