@@ -56,6 +56,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     on<CancelAttachmentUpload>(_onCancelAttachmentUpload);
     on<FetchAttachment>(_onFetchAttachment);
     on<PreloadImageAttachments>(_onPreloadImageAttachments);
+    on<ImagePreloaded>(_onImagePreloaded);
   }
 
   FileGroup get _fileGroup => entityType == CommentableEntityType.news
@@ -163,7 +164,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
     // Upload files one by one sequentially
     for (final (fileId, file) in filesToUpload) {
-      await _startUpload(fileId, file);
+      await _startUpload(emit, fileId, file);
       await Future.delayed(const Duration(milliseconds: 500));
     }
   }
@@ -267,7 +268,6 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       uriFile: attachment.url,
       onProgress: (received, total) {
         if (total > 0) {
-          // ignore: invalid_use_of_visible_for_testing_member
           emit(
             state.copyWith(
               downloadingAttachment: DownloadingAttachment(
@@ -303,6 +303,14 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     );
   }
 
+  void _onImagePreloaded(ImagePreloaded event, Emitter<CommentsState> emit) {
+    if (state.preloadedImages.containsKey(event.attachmentId)) return;
+
+    final updatedCache = Map<int, Uint8List>.from(state.preloadedImages);
+    updatedCache[event.attachmentId] = event.data;
+    emit(state.copyWith(preloadedImages: updatedCache));
+  }
+
   Future<void> _onLoadComments(
     LoadComments event,
     Emitter<CommentsState> emit,
@@ -329,7 +337,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       }
     }
 
-    // Preload each image in parallel
+    // Kick off background preloading; results will be applied via ImagePreloaded events.
     for (final attachment in imageAttachments) {
       _preloadImage(attachment);
     }
@@ -433,15 +441,19 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     result.fold(
       (_) {}, // Ignore errors for preloading
       (data) {
-        final updatedCache = Map<int, Uint8List>.from(state.preloadedImages);
-        updatedCache[attachment.id] = data;
-        // ignore: invalid_use_of_visible_for_testing_member
-        emit(state.copyWith(preloadedImages: updatedCache));
+        if (isClosed) return;
+        add(
+          CommentsEvent.imagePreloaded(attachmentId: attachment.id, data: data),
+        );
       },
     );
   }
 
-  Future<void> _startUpload(String fileId, File file) async {
+  Future<void> _startUpload(
+    Emitter<CommentsState> emit,
+    String fileId,
+    File file,
+  ) async {
     final result = await _uploadFileUsecase(
       file: file,
       systemType: SystemType.kp,
@@ -449,7 +461,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       onProgress: (sent, total) {
         if (_cancelledUploads.contains(fileId)) return;
 
-        _updateFileProgress(fileId, sent / total);
+        _updateFileProgress(emit, fileId, sent / total);
       },
     );
 
@@ -458,15 +470,19 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       return;
     }
 
-    result.fold((error) => _updateFileError(fileId, error.toString()), (
+    result.fold((error) => _updateFileError(emit, fileId, error.toString()), (
       uploadedFile,
     ) {
       final kpFile = uploadedFile.asKp;
-      _updateFileSuccess(fileId, uploadedFile.size ?? 0, kpFile?.id);
+      _updateFileSuccess(emit, fileId, uploadedFile.size ?? 0, kpFile?.id);
     });
   }
 
-  void _updateFileError(String fileId, String errorMessage) {
+  void _updateFileError(
+    Emitter<CommentsState> emit,
+    String fileId,
+    String errorMessage,
+  ) {
     final updatedFiles = state.uploadingFiles.map((f) {
       if (f.id == fileId) {
         return f.copyWith(
@@ -476,11 +492,14 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       return f;
     }).toList();
 
-    // ignore: invalid_use_of_visible_for_testing_member
     emit(state.copyWith(uploadingFiles: updatedFiles));
   }
 
-  void _updateFileProgress(String fileId, double progress) {
+  void _updateFileProgress(
+    Emitter<CommentsState> emit,
+    String fileId,
+    double progress,
+  ) {
     final updatedFiles = state.uploadingFiles.map((f) {
       if (f.id == fileId) {
         return f.copyWith(
@@ -490,11 +509,15 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       return f;
     }).toList();
 
-    // ignore: invalid_use_of_visible_for_testing_member
     emit(state.copyWith(uploadingFiles: updatedFiles));
   }
 
-  void _updateFileSuccess(String fileId, int fileSize, int? uploadedFileId) {
+  void _updateFileSuccess(
+    Emitter<CommentsState> emit,
+    String fileId,
+    int fileSize,
+    int? uploadedFileId,
+  ) {
     final updatedFiles = state.uploadingFiles.map((f) {
       if (f.id == fileId) {
         return f.copyWith(
@@ -505,7 +528,6 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       return f;
     }).toList();
 
-    // ignore: invalid_use_of_visible_for_testing_member
     emit(state.copyWith(uploadingFiles: updatedFiles));
   }
 }

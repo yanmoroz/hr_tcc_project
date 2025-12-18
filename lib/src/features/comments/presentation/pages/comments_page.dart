@@ -349,6 +349,10 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Widget _buildLoadedState(BuildContext context, CommentsState state) {
+    final commentsById = <int, Comment>{
+      for (final c in state.comments) c.id: c,
+    };
+
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
@@ -372,19 +376,11 @@ class _CommentsPageState extends State<CommentsPage> {
                     final comment = group.comments[commentIndex];
                     final isLastInGroup =
                         commentIndex == group.comments.length - 1;
-                    final parentAuthorName = comment.parent != null
-                        ? state.comments
-                              .where((c) => c.id == comment.parent)
-                              .firstOrNull
-                              ?.author
-                              .title
+                    final parent = comment.parent != null
+                        ? commentsById[comment.parent!]
                         : null;
-                    final parentComment = comment.parent != null
-                        ? state.comments
-                              .where((c) => c.id == comment.parent)
-                              .firstOrNull
-                              ?.content
-                        : null;
+                    final parentAuthorName = parent?.author.title;
+                    final parentComment = parent?.content;
 
                     return _buildCommentItem(
                       comment,

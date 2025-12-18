@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -19,6 +20,10 @@ class CommentsEvent with _$CommentsEvent {
   const factory CommentsEvent.deleteComment(int commentId) = DeleteComment;
   const factory CommentsEvent.fetchAttachment(Attachment attachment) =
       FetchAttachment;
+  const factory CommentsEvent.imagePreloaded({
+    required int attachmentId,
+    required Uint8List data,
+  }) = ImagePreloaded;
   const factory CommentsEvent.loadComments() = LoadComments;
   const factory CommentsEvent.preloadImageAttachments() = PreloadImageAttachments;
   const factory CommentsEvent.refreshComments() = RefreshComments;
