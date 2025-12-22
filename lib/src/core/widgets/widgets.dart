@@ -1,8 +1,10 @@
 export 'app_progress_indicator.dart';
 export 'app_refresh_indicator.dart';
-export 'dialogs.dart';
 export 'app_text_button.dart';
 export 'comments_button.dart';
+export 'dialogs.dart';
+export 'filters_bar/filter_item.dart';
+export 'filters_bar/filters_bar.dart';
 export 'like_button.dart';
 export 'measure_size.dart';
 export 'network_error_message_widget.dart';

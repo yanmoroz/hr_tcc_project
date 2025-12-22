@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/delegates/delegates.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../core/value_objects/status_group_type.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../blocs/applications_list_page/bloc.dart';
-import '../delegates/my_applications_header_delegate.dart';
 import '../widgets/application_card.dart';
 import '../widgets/empty_applications_state.dart';
 
@@ -44,19 +45,40 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                     SliverPersistentHeader(
                       pinned: true,
                       floating: true,
-                      delegate: MyApplicationsHeaderDelegate(
-                        userBarExtent: 48.0,
-                        tabsExtent: state.statistics.isNotEmpty ? 62.0 : 0.0,
-                        searchBarExtent: 60.0,
-                        collapsedExtent: 8.0,
-                        state: state,
-                        onStatusGroupChanged: (newStatusGroup) {
-                          context.read<ApplicationsListBloc>().add(
-                            ApplicationsListEvent.changeStatusFilter(
-                              newStatusGroup,
+                      delegate: FiltersAndSearchBarsHeaderDelegate(
+                        headerWidget: const UserInfoBar(enableCorners: false),
+                        headerExtent: 48.0,
+                        filtersBar: FiltersBar<StatusGroupType>(
+                          items: [
+                            FilterItem(
+                              value: null,
+                              label: 'Все статусы',
+                              count: state.statistics.fold<int>(
+                                0,
+                                (sum, stat) => sum + stat.count,
+                              ),
                             ),
-                          );
-                        },
+                            ...state.statistics.map(
+                              (stat) => FilterItem(
+                                value: stat.statusGroup,
+                                label: stat.statusGroupName,
+                                count: stat.count,
+                              ),
+                            ),
+                          ],
+                          selectedValue: state.statusGroup,
+                          onFilterChanged: (newStatusGroup) {
+                            context.read<ApplicationsListBloc>().add(
+                              ApplicationsListEvent.changeStatusFilter(
+                                newStatusGroup,
+                              ),
+                            );
+                          },
+                        ),
+                        filtersExtent: state.statistics.isNotEmpty ? 62.0 : 0.0,
+                        searchHint: 'Поиск по заявкам',
+                        isSearchLoading:
+                            state.filteringStatus == LoadingStatus.loading,
                         onSearchChanged: (query) {
                           context.read<ApplicationsListBloc>().add(
                             ApplicationsListEvent.changeSearchQuery(

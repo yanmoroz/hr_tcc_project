@@ -66,16 +66,17 @@ class NewsItemWidget extends StatelessWidget {
               const SizedBox(height: 8),
 
               // Summary
-              Text(
-                newsItem.summary,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF767679),
+              if (newsItem.summary != null)
+                Text(
+                  newsItem.summary!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF767679),
+                  ),
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-              ),
               const SizedBox(height: 12),
 
               // Bottom row: likes, comments, and category badge
@@ -106,23 +107,24 @@ class NewsItemWidget extends StatelessWidget {
                   const Spacer(),
 
                   // Category badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDAE0EF),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      newsItem.categoryName,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                  if (newsItem.categoryName != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDAE0EF),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        newsItem.categoryName!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ],

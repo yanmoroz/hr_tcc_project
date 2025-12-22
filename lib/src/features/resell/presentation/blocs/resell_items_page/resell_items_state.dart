@@ -9,11 +9,15 @@ part 'resell_items_state.freezed.dart';
 sealed class ResellItemsState with _$ResellItemsState {
   const factory ResellItemsState({
     @Default(LoadingStatus.initial) LoadingStatus status,
+    @Default(LoadingStatus.initial) LoadingStatus filteringStatus,
     @Default([]) List<ResellItem> items,
     @Default(0) int currentPage,
     @Default(true) bool hasMorePages,
     @Default(false) bool isLoadingMore,
-    @Default(0) int currentStatus,
+    @Default(1) int currentStatus,
+    @Default(0) int totalOnSale,
+    @Default(0) int totalReserved,
+    String? search,
     String? errorMessage,
   }) = _ResellItemsState;
 }

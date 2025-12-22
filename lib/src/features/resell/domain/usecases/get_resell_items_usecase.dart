@@ -1,15 +1,14 @@
 import 'package:hr_tcc_project/src/core/base_types/result.dart';
 
-import '../entities/resell_item.dart';
-import '../value_objects/resell_status.dart';
 import '../repositories/resell_repository.dart';
+import '../value_objects/resell_status.dart';
 
 class GetResellItemsUsecase {
   final ResellRepository resellRepository;
 
   GetResellItemsUsecase(this.resellRepository);
 
-  Future<Result<List<ResellItem>>> call({
+  Future<Result<ResellItemsResult>> call({
     required ResellStatus status,
     String? search,
     required int page,

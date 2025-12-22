@@ -35,17 +35,17 @@ void main() {
     });
 
     test('E2E', () async {
-      final items = await getOrFail(
+      final result = await getOrFail(
         getResellItemsUsecase(
           status: ResellStatus.onSale,
           page: 0,
           pageSize: 20,
         ),
       );
-      expect(items, isA<List<ResellItem>>());
-      AppLogger.d('Fetched resell items: ${items.length} items');
+      expect(result, isA<ResellItemsResult>());
+      AppLogger.d('Fetched resell items: ${result.items.length} items');
 
-      final detail = await getOrFail(getResellDetailUsecase(items.first.id));
+      final detail = await getOrFail(getResellDetailUsecase(result.items.first.id));
       expect(detail, isA<ResellDetail>());
       AppLogger.d('Fetched resell detail: ${detail.toString()}');
 

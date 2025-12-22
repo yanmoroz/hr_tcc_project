@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/delegates/delegates.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/pluralization.dart';
+import '../../../../core/widgets/widgets.dart';
 import '../blocs/resell_items_page/bloc.dart';
 import '../widgets/resell_item_card.dart';
-import '../widgets/resell_status_chip.dart';
 
 class ResellItemsPage extends StatefulWidget {
   const ResellItemsPage({super.key});
@@ -17,24 +20,6 @@ class ResellItemsPage extends StatefulWidget {
 class _ResellItemsPageState extends State<ResellItemsPage> {
   final ScrollController _scrollController = ScrollController();
 
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_isBottom) {
-      context.read<ResellItemsBloc>().add(const ResellItemsEvent.loadMore());
-    }
-  }
-
   bool get _isBottom {
     if (!_scrollController.hasClients) return false;
     final maxScroll = _scrollController.position.maxScrollExtent;
@@ -44,119 +29,166 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Барахолка')),
-      body: BlocBuilder<ResellItemsBloc, ResellItemsState>(
-        builder: (context, state) {
-          final currentStatus = state.status == LoadingStatus.success
-              ? state.currentStatus
-              : 1;
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.grey100,
+        appBar: AppBar(
+          title: BlocSelector<ResellItemsBloc, ResellItemsState, int>(
+            selector: (state) => state.totalOnSale + state.totalReserved,
+            builder: (context, totalCount) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text('Реализация имущества'),
+                  if (totalCount > 0)
+                    Text(
+                      _getItemCountText(totalCount),
+                      style: AppTypography.textRegular2.grey700,
+                    )
+                  else
+                    const SizedBox(height: 18),
+                ],
+              );
+            },
+          ),
+        ),
+        body: BlocBuilder<ResellItemsBloc, ResellItemsState>(
+          builder: (context, state) {
+            final currentStatus = state.status == LoadingStatus.success
+                ? state.currentStatus
+                : 1;
 
-          return Column(
-            children: [
-              // Status Filter
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    ResellStatusChip(
-                      label: 'Активные',
-                      isSelected: currentStatus == 1,
-                      onTap: () => context.read<ResellItemsBloc>().add(
-                        const ResellItemsEvent.filterByStatus(1),
-                      ),
+            return CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  floating: true,
+                  delegate: FiltersAndSearchBarsHeaderDelegate(
+                    filtersBar: FiltersBar<int>(
+                      items: [
+                        FilterItem(
+                          value: 1,
+                          label: 'В продаже',
+                          count: state.totalOnSale,
+                        ),
+                        FilterItem(
+                          value: 2,
+                          label: 'Забронировано',
+                          count: state.totalReserved,
+                        ),
+                      ],
+                      selectedValue: currentStatus,
+                      onFilterChanged: (value) => context
+                          .read<ResellItemsBloc>()
+                          .add(ResellItemsEvent.filterByStatus(value ?? 1)),
                     ),
-                    ResellStatusChip(
-                      label: 'Забронированные',
-                      isSelected: currentStatus == 2,
-                      onTap: () => context.read<ResellItemsBloc>().add(
-                        const ResellItemsEvent.filterByStatus(2),
-                      ),
-                    ),
-                    ResellStatusChip(
-                      label: 'Все',
-                      isSelected: currentStatus == 0,
-                      onTap: () => context.read<ResellItemsBloc>().add(
-                        const ResellItemsEvent.filterByStatus(0),
-                      ),
-                    ),
-                  ],
+                    filtersExtent: 62.0,
+                    searchHint: 'Поиск',
+                    isSearchLoading:
+                        state.filteringStatus == LoadingStatus.loading,
+                    onSearchChanged: (query) {
+                      context.read<ResellItemsBloc>().add(
+                        ResellItemsEvent.changeSearchQuery(
+                          query.isEmpty ? null : query,
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-
-              // Items List
-              Expanded(child: _buildBody(context, state)),
-            ],
-          );
-        },
+                SliverRefreshControl(
+                  onRefresh: () async {
+                    context.read<ResellItemsBloc>().add(
+                      const ResellItemsEvent.refreshItems(),
+                    );
+                  },
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: _buildContent(context, state),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildBody(BuildContext context, ResellItemsState state) {
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  Widget _buildContent(BuildContext context, ResellItemsState state) {
     if (state.status == LoadingStatus.loading ||
         state.status == LoadingStatus.initial) {
-      return const Center(child: CircularProgressIndicator());
+      return SliverShimmeringList(spacing: 8, maxHeight: 120);
     }
 
     if (state.status == LoadingStatus.error) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Ошибка: ${state.errorMessage ?? 'Unknown error'}'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                context.read<ResellItemsBloc>().add(
-                  const ResellItemsEvent.loadResellItems(),
-                );
-              },
-              child: const Text('Повторить'),
-            ),
-          ],
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: NetworkErrorMessageWidget(
+          onRetry: () => context.read<ResellItemsBloc>().add(
+            const ResellItemsEvent.loadResellItems(),
+          ),
         ),
       );
     }
 
     // Success state
     final items = state.items;
-    final isLoadingMore = state.isLoadingMore;
 
     if (items.isEmpty) {
-      return const Center(child: Text('Нет товаров'));
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Text('Нет товаров', style: AppTypography.textRegular1.black),
+        ),
+      );
     }
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<ResellItemsBloc>().add(
-          const ResellItemsEvent.refreshItems(),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-      },
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: items.length + (isLoadingMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= items.length) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-
-          final item = items[index];
-          return ResellItemCard(
-            item: item,
-            onTap: () {
-              context.push('/home/resell/detail/${item.id}');
-            },
+    return SliverList.separated(
+      itemCount: items.length + (state.isLoadingMore ? 1 : 0),
+      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        if (index >= items.length) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: AppProgressIndicator(),
+            ),
           );
-        },
-      ),
+        }
+
+        final item = items[index];
+        return ResellItemCard(
+          item: item,
+          onTap: () {
+            context.push('/home/resell/detail/${item.id}');
+          },
+        );
+      },
     );
+  }
+
+  String _getItemCountText(int count) {
+    return pluralizeRu(count, '$count лот', '$count лота', '$count лотов');
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<ResellItemsBloc>().add(const ResellItemsEvent.loadMore());
+    }
   }
 }

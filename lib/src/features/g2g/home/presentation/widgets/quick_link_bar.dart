@@ -31,7 +31,7 @@ class QuickLinkBar extends StatelessWidget {
         ),
         QuickLinkButton(
           iconPath: Assets.icons.resellIcon,
-          label: 'Ресейл',
+          label: 'Реализация имущества',
           onTap: () => context.push('/home/resell'),
         ),
         QuickLinkButton(

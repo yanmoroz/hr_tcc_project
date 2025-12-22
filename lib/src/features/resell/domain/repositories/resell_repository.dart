@@ -6,8 +6,10 @@ import '../entities/resell_item.dart';
 import '../value_objects/booking_transition.dart';
 import '../value_objects/resell_status.dart';
 
+typedef ResellItemsResult = ({List<ResellItem> items, int total});
+
 abstract class ResellRepository {
-  Future<Result<List<ResellItem>>> getResellItems({
+  Future<Result<ResellItemsResult>> getResellItems({
     required ResellStatus status,
     String? search,
     required int page,

@@ -10,7 +10,7 @@ class ResellRepositoryImpl implements ResellRepository {
   ResellRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Result<List<ResellItem>>> getResellItems({
+  Future<Result<ResellItemsResult>> getResellItems({
     required ResellStatus status,
     String? search,
     required int page,
@@ -24,7 +24,10 @@ class ResellRepositoryImpl implements ResellRepository {
     );
 
     return result.map((response) {
-      return response.items.map((model) => model.toDomain()).toList();
+      return (
+        items: response.items.map((model) => model.toDomain()).toList(),
+        total: response.total,
+      );
     });
   }
 

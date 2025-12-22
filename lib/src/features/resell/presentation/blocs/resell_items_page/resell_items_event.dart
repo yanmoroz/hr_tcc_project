@@ -8,4 +8,6 @@ class ResellItemsEvent with _$ResellItemsEvent {
   const factory ResellItemsEvent.loadMore() = LoadMore;
   const factory ResellItemsEvent.refreshItems() = RefreshItems;
   const factory ResellItemsEvent.filterByStatus(int status) = FilterByStatus;
+  const factory ResellItemsEvent.changeSearchQuery(String? query) =
+      ChangeSearchQuery;
 }
