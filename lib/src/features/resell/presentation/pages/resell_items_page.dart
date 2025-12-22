@@ -53,13 +53,35 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
             },
           ),
         ),
-        body: BlocBuilder<ResellItemsBloc, ResellItemsState>(
-          builder: (context, state) {
-            final currentStatus = state.status == LoadingStatus.success
-                ? state.currentStatus
-                : 1;
+        body: BlocListener<ResellItemsBloc, ResellItemsState>(
+          listenWhen: (previous, current) =>
+              previous.bookingItemId != current.bookingItemId ||
+              previous.isBooking != current.isBooking,
+          listener: (context, state) {
+            if (state.bookingItemId != null && !state.isBooking) {
+              final itemId = state.bookingItemId!;
+              context.push('/home/resell/booking/$itemId').then((_) {
+                context.read<ResellItemsBloc>()
+                  ..add(const ResellItemsEvent.clearBookingState())
+                  ..add(const ResellItemsEvent.refreshItems());
+              });
+            }
 
-            return CustomScrollView(
+            if (state.errorMessage != null && !state.isBooking) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Ошибка: ${state.errorMessage}'),
+                ),
+              );
+            }
+          },
+          child: BlocBuilder<ResellItemsBloc, ResellItemsState>(
+            builder: (context, state) {
+              final currentStatus = state.status == LoadingStatus.success
+                  ? state.currentStatus
+                  : 1;
+
+              return CustomScrollView(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
@@ -110,8 +132,9 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
                   sliver: _buildContent(context, state),
                 ),
               ],
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -172,8 +195,15 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
         }
 
         final item = items[index];
+        final coverImage = state.coverImages[item.id];
         return ResellItemCard(
           item: item,
+          coverImage: coverImage,
+          onBookPressed: state.currentStatus == 1
+              ? () => context
+                  .read<ResellItemsBloc>()
+                  .add(ResellItemsEvent.bookItem(item.id))
+              : null,
           onTap: () {
             context.push('/home/resell/detail/${item.id}');
           },

@@ -10,4 +10,6 @@ class ResellItemsEvent with _$ResellItemsEvent {
   const factory ResellItemsEvent.filterByStatus(int status) = FilterByStatus;
   const factory ResellItemsEvent.changeSearchQuery(String? query) =
       ChangeSearchQuery;
+  const factory ResellItemsEvent.bookItem(String itemId) = BookItem;
+  const factory ResellItemsEvent.clearBookingState() = ClearBookingState;
 }

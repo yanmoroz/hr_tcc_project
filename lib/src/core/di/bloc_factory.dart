@@ -154,7 +154,7 @@ class BlocFactory {
   }
 
   static ResellItemsBloc createResellItemsBloc() {
-    return ResellItemsBloc(sl());
+    return ResellItemsBloc(sl(), sl(), sl());
   }
 
   static UnreadNotificationsCubit getUnreadNotificationsCubit() {

@@ -127,6 +127,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/telegram-icon.svg
   String get telegramIcon => 'assets/icons/telegram-icon.svg';
 
+  /// File path: assets/icons/unblock-icon.svg
+  String get unblockIcon => 'assets/icons/unblock-icon.svg';
+
   /// File path: assets/icons/warning-icon.svg
   String get warningIcon => 'assets/icons/warning-icon.svg';
 
@@ -170,6 +173,7 @@ class $AssetsIconsGen {
     s8Icon,
     searchIcon,
     telegramIcon,
+    unblockIcon,
     warningIcon,
   ];
 }

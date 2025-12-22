@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/logging/app_logger.dart';
+import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
+import '../../cache/resell_image_cache.dart';
 import 'resell_items_event.dart';
 import 'resell_items_state.dart';
 
@@ -10,14 +14,60 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
   static const int _pageSize = 20;
 
   final GetResellItemsUsecase _getResellItemsUsecase;
+  final BookResellItemUsecase _bookResellItemUsecase;
+  final DownloadFileUsecase _downloadFileUsecase;
 
-  ResellItemsBloc(this._getResellItemsUsecase)
-    : super(const ResellItemsState()) {
+  ResellItemsBloc(
+    this._getResellItemsUsecase,
+    this._bookResellItemUsecase,
+    this._downloadFileUsecase,
+  ) : super(const ResellItemsState()) {
     on<LoadResellItems>(_onLoadResellItems);
     on<LoadMore>(_onLoadMore);
     on<RefreshItems>(_onRefreshItems);
     on<FilterByStatus>(_onFilterByStatus);
     on<ChangeSearchQuery>(_onChangeSearchQuery);
+    on<BookItem>(_onBookItem);
+    on<ClearBookingState>(_onClearBookingState);
+  }
+
+  Future<void> _loadCoverImages(
+    List<ResellItem> items,
+    Emitter<ResellItemsState> emit,
+  ) async {
+    final coverImages = <String, Uint8List>{};
+    final cache = ResellImageCache.instance;
+
+    final futures = items
+        .where(
+          (item) => item.generalPhoto != null && item.generalPhoto!.isNotEmpty,
+        )
+        .map((item) async {
+          // Check cache first
+          final cached = cache.getCached(item.id);
+          if (cached != null) {
+            coverImages[item.id] = cached;
+            return;
+          }
+
+          // Fetch via cache
+          final imageBytes = await cache.getOrFetch(
+            itemId: item.id,
+            photoId: item.generalPhoto,
+            downloadFileUsecase: _downloadFileUsecase,
+          );
+
+          if (imageBytes != null) {
+            coverImages[item.id] = imageBytes;
+          }
+        });
+
+    await Future.wait(futures);
+
+    if (!emit.isDone && coverImages.isNotEmpty) {
+      final mergedCoverImages = {...state.coverImages, ...coverImages};
+      emit(state.copyWith(coverImages: mergedCoverImages));
+    }
   }
 
   Future<void> _loadItems(
@@ -33,51 +83,54 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
       pageSize: _pageSize,
     );
 
-    if (!emit.isDone) {
-      result.fold(
-        (error) {
-          AppLogger.e('Failed to load resell items: ${error.toString()}');
-          if (existingItems != null) {
-            // If loading more failed, revert to previous state
-            emit(
-              state.copyWith(
-                items: existingItems,
-                currentPage: page - 1,
-                hasMorePages: true,
-                isLoadingMore: false,
-                currentStatus: status,
-                filteringStatus: LoadingStatus.success,
-              ),
-            );
-          } else {
-            emit(
-              state.copyWith(
-                status: LoadingStatus.error,
-                filteringStatus: LoadingStatus.error,
-                errorMessage: error.toString(),
-              ),
-            );
-          }
-        },
-        (result) {
-          final allItems = existingItems != null
-              ? [...existingItems, ...result.items]
-              : result.items;
+    if (emit.isDone) return;
 
+    await result.fold(
+      (error) async {
+        AppLogger.e('Failed to load resell items: ${error.toString()}');
+        if (existingItems != null) {
+          // If loading more failed, revert to previous state
           emit(
             state.copyWith(
-              status: LoadingStatus.success,
-              filteringStatus: LoadingStatus.success,
-              items: allItems,
-              currentPage: page,
-              hasMorePages: result.items.length == _pageSize,
+              items: existingItems,
+              currentPage: page - 1,
+              hasMorePages: true,
               isLoadingMore: false,
               currentStatus: status,
+              filteringStatus: LoadingStatus.success,
             ),
           );
-        },
-      );
-    }
+        } else {
+          emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              filteringStatus: LoadingStatus.error,
+              errorMessage: error.toString(),
+            ),
+          );
+        }
+      },
+      (result) async {
+        final allItems = existingItems != null
+            ? [...existingItems, ...result.items]
+            : result.items;
+
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            filteringStatus: LoadingStatus.success,
+            items: allItems,
+            currentPage: page,
+            hasMorePages: result.items.length == _pageSize,
+            isLoadingMore: false,
+            currentStatus: status,
+          ),
+        );
+
+        // Load cover images for new items
+        await _loadCoverImages(result.items, emit);
+      },
+    );
   }
 
   Future<void> _loadItemsAndCounts(
@@ -104,46 +157,77 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
     final itemsResult = results[0];
     final otherCountResult = results[1];
 
+    if (emit.isDone) return;
+
+    await itemsResult.fold(
+      (error) async {
+        AppLogger.e('Failed to load resell items: ${error.toString()}');
+        emit(
+          state.copyWith(
+            status: LoadingStatus.error,
+            filteringStatus: LoadingStatus.error,
+            errorMessage: error.toString(),
+          ),
+        );
+      },
+      (result) async {
+        final otherCount = otherCountResult.fold(
+          (_) => currentStatus == ResellStatus.onSale
+              ? state.totalReserved
+              : state.totalOnSale,
+          (r) => r.total,
+        );
+
+        final totalOnSale = currentStatus == ResellStatus.onSale
+            ? result.total
+            : otherCount;
+        final totalReserved = currentStatus == ResellStatus.booked
+            ? result.total
+            : otherCount;
+
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            filteringStatus: LoadingStatus.success,
+            items: result.items,
+            currentPage: page,
+            hasMorePages: result.items.length == _pageSize,
+            isLoadingMore: false,
+            currentStatus: status,
+            totalOnSale: totalOnSale,
+            totalReserved: totalReserved,
+          ),
+        );
+
+        // Load cover images for items
+        await _loadCoverImages(result.items, emit);
+      },
+    );
+  }
+
+  Future<void> _onBookItem(
+    BookItem event,
+    Emitter<ResellItemsState> emit,
+  ) async {
+    emit(state.copyWith(isBooking: true, bookingItemId: event.itemId));
+
+    final result = await _bookResellItemUsecase(event.itemId);
+
     if (!emit.isDone) {
-      itemsResult.fold(
+      result.fold(
         (error) {
-          AppLogger.e('Failed to load resell items: ${error.toString()}');
+          AppLogger.e('Failed to book resell item: ${error.toString()}');
           emit(
             state.copyWith(
-              status: LoadingStatus.error,
-              filteringStatus: LoadingStatus.error,
+              isBooking: false,
+              bookingItemId: null,
               errorMessage: error.toString(),
             ),
           );
         },
-        (result) {
-          final otherCount = otherCountResult.fold(
-            (_) => currentStatus == ResellStatus.onSale
-                ? state.totalReserved
-                : state.totalOnSale,
-            (r) => r.total,
-          );
-
-          final totalOnSale = currentStatus == ResellStatus.onSale
-              ? result.total
-              : otherCount;
-          final totalReserved = currentStatus == ResellStatus.booked
-              ? result.total
-              : otherCount;
-
-          emit(
-            state.copyWith(
-              status: LoadingStatus.success,
-              filteringStatus: LoadingStatus.success,
-              items: result.items,
-              currentPage: page,
-              hasMorePages: result.items.length == _pageSize,
-              isLoadingMore: false,
-              currentStatus: status,
-              totalOnSale: totalOnSale,
-              totalReserved: totalReserved,
-            ),
-          );
+        (_) {
+          AppLogger.d('Booking successful');
+          emit(state.copyWith(isBooking: false));
         },
       );
     }
@@ -160,6 +244,13 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
       ),
     );
     await _loadItems(emit, 0, state.currentStatus);
+  }
+
+  void _onClearBookingState(
+    ClearBookingState event,
+    Emitter<ResellItemsState> emit,
+  ) {
+    emit(state.copyWith(bookingItemId: null));
   }
 
   Future<void> _onFilterByStatus(

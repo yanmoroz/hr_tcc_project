@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
@@ -19,5 +21,8 @@ sealed class ResellItemsState with _$ResellItemsState {
     @Default(0) int totalReserved,
     String? search,
     String? errorMessage,
+    String? bookingItemId,
+    @Default(false) bool isBooking,
+    @Default({}) Map<String, Uint8List> coverImages,
   }) = _ResellItemsState;
 }
