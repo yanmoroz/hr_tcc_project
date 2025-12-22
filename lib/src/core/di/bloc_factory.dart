@@ -1,6 +1,6 @@
 import '../../features/applications/applications.dart';
-import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
+import '../../features/g2g/comments/comments.dart';
 import '../../features/g2g/notifications/notifications.dart';
 import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
@@ -62,10 +62,6 @@ class BlocFactory {
     );
   }
 
-  static MentionCubit createMentionCubit() {
-    return MentionCubit(getUsersUsecase: sl());
-  }
-
   static CurrentUserBloc createCurrentUserBloc() {
     return CurrentUserBloc(getCurrentUserInfoUsecase: sl());
   }
@@ -93,6 +89,10 @@ class BlocFactory {
       downloadFileUsecase: sl(),
       toggleDiscountLikeUsecase: sl(),
     );
+  }
+
+  static MentionCubit createMentionCubit() {
+    return MentionCubit(getUsersUsecase: sl());
   }
 
   static NewsDetailBloc createNewsDetailBloc(int newsId) {

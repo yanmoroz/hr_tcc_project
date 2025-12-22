@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/entities/application_form.dart';
 import '../../features/applications/applications.dart';
-import '../../features/comments/comments.dart';
 import '../../features/discounts/discounts.dart';
+import '../../features/g2g/comments/comments.dart';
 import '../../features/g2g/home/home.dart';
 import '../../features/g2g/more/more.dart';
 import '../../features/g2g/notifications/notifications.dart';

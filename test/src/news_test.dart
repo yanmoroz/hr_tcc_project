@@ -1,10 +1,9 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'package:flutter_test/flutter_test.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/features/comments/comments.dart';
+import 'package:hr_tcc_project/src/features/g2g/comments/comments.dart';
 import 'package:hr_tcc_project/src/features/news/news.dart';
 
 import 'helpers/result_helper.dart';
