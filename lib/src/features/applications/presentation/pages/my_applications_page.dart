@@ -68,6 +68,9 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                           ],
                           selectedValue: state.statusGroup,
                           onFilterChanged: (newStatusGroup) {
+                            if (_scrollController.hasClients) {
+                              _scrollController.jumpTo(0);
+                            }
                             context.read<ApplicationsListBloc>().add(
                               ApplicationsListEvent.changeStatusFilter(
                                 newStatusGroup,
@@ -80,6 +83,9 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                         isSearchLoading:
                             state.filteringStatus == LoadingStatus.loading,
                         onSearchChanged: (query) {
+                          if (_scrollController.hasClients) {
+                            _scrollController.jumpTo(0);
+                          }
                           context.read<ApplicationsListBloc>().add(
                             ApplicationsListEvent.changeSearchQuery(
                               query.isEmpty ? null : query,

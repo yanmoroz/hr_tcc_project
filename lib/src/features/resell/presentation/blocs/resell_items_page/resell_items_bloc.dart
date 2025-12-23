@@ -257,7 +257,12 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
     FilterByStatus event,
     Emitter<ResellItemsState> emit,
   ) async {
-    emit(state.copyWith(status: LoadingStatus.loading));
+    emit(
+      state.copyWith(
+        status: LoadingStatus.loading,
+        currentStatus: event.status,
+      ),
+    );
     await _loadItems(emit, 0, event.status);
   }
 

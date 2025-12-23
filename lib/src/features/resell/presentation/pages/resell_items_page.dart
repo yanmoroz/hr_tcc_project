@@ -77,9 +77,7 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
           },
           child: BlocBuilder<ResellItemsBloc, ResellItemsState>(
             builder: (context, state) {
-              final currentStatus = state.status == LoadingStatus.success
-                  ? state.currentStatus
-                  : 1;
+              final currentStatus = state.currentStatus;
 
               return CustomScrollView(
               controller: _scrollController,
@@ -103,15 +101,23 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
                         ),
                       ],
                       selectedValue: currentStatus,
-                      onFilterChanged: (value) => context
-                          .read<ResellItemsBloc>()
-                          .add(ResellItemsEvent.filterByStatus(value ?? 1)),
+                      onFilterChanged: (value) {
+                        if (_scrollController.hasClients) {
+                          _scrollController.jumpTo(0);
+                        }
+                        context
+                            .read<ResellItemsBloc>()
+                            .add(ResellItemsEvent.filterByStatus(value ?? 1));
+                      },
                     ),
                     filtersExtent: 62.0,
                     searchHint: 'Поиск',
                     isSearchLoading:
                         state.filteringStatus == LoadingStatus.loading,
                     onSearchChanged: (query) {
+                      if (_scrollController.hasClients) {
+                        _scrollController.jumpTo(0);
+                      }
                       context.read<ResellItemsBloc>().add(
                         ResellItemsEvent.changeSearchQuery(
                           query.isEmpty ? null : query,
