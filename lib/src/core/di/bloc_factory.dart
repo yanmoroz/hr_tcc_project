@@ -8,6 +8,7 @@ import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
 import '../../shared/files/domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
+import '../cache/image_cache_service.dart';
 import '../entities/application_form.dart';
 import 'service_locator.dart';
 
@@ -106,7 +107,10 @@ class BlocFactory {
   }
 
   static NewsListBloc createNewsListBloc() {
-    return NewsListBloc(getNewsListUsecase: sl(), downloadFileUsecase: sl());
+    return NewsListBloc(
+      getNewsListUsecase: sl(),
+      imageCacheService: sl<ImageCacheService>(),
+    );
   }
 
   static NotificationDetailBloc createNotificationDetailBloc(
@@ -154,7 +158,7 @@ class BlocFactory {
   }
 
   static ResellItemsBloc createResellItemsBloc() {
-    return ResellItemsBloc(sl(), sl(), sl());
+    return ResellItemsBloc(sl(), sl(), sl<ImageCacheService>());
   }
 
   static UnreadNotificationsCubit getUnreadNotificationsCubit() {

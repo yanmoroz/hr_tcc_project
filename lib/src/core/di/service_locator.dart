@@ -10,6 +10,7 @@ import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
 import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
+import '../cache/image_cache_service.dart';
 import '../dictionaries/dictionaries.dart';
 import '../network/api_client.dart';
 import '../retry/retry_notifier.dart';
@@ -128,6 +129,11 @@ void _initializeFileDependencies() {
   // Use cases
   sl.registerFactory<UploadFileUsecase>(() => UploadFileUsecase(sl()));
   sl.registerFactory<DownloadFileUsecase>(() => DownloadFileUsecase(sl()));
+
+  // Services
+  sl.registerLazySingleton<ImageCacheService>(
+    () => ImageCacheService(sl<FileRepository>()),
+  );
 }
 
 void _initializeMasterDataDependencies() {

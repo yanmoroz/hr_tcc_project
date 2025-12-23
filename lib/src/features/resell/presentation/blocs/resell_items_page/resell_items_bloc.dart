@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/cache/image_cache_service.dart';
 import '../../../../../core/logging/app_logger.dart';
-import '../../../../../shared/files/domain/domain.dart';
+import '../../../../../core/value_objects/system_type.dart';
 import '../../../domain/domain.dart';
-import '../../cache/resell_image_cache.dart';
 import 'resell_items_event.dart';
 import 'resell_items_state.dart';
 
@@ -15,12 +15,12 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
 
   final GetResellItemsUsecase _getResellItemsUsecase;
   final BookResellItemUsecase _bookResellItemUsecase;
-  final DownloadFileUsecase _downloadFileUsecase;
+  final ImageCacheService _imageCacheService;
 
   ResellItemsBloc(
     this._getResellItemsUsecase,
     this._bookResellItemUsecase,
-    this._downloadFileUsecase,
+    this._imageCacheService,
   ) : super(const ResellItemsState()) {
     on<LoadResellItems>(_onLoadResellItems);
     on<LoadMore>(_onLoadMore);
@@ -36,25 +36,25 @@ class ResellItemsBloc extends Bloc<ResellItemsEvent, ResellItemsState> {
     Emitter<ResellItemsState> emit,
   ) async {
     final coverImages = <String, Uint8List>{};
-    final cache = ResellImageCache.instance;
 
     final futures = items
         .where(
           (item) => item.generalPhoto != null && item.generalPhoto!.isNotEmpty,
         )
         .map((item) async {
+          final photoId = item.generalPhoto!;
+
           // Check cache first
-          final cached = cache.getCached(item.id);
+          final cached = _imageCacheService.getCached(photoId);
           if (cached != null) {
             coverImages[item.id] = cached;
             return;
           }
 
-          // Fetch via cache
-          final imageBytes = await cache.getOrFetch(
-            itemId: item.id,
-            photoId: item.generalPhoto,
-            downloadFileUsecase: _downloadFileUsecase,
+          // Fetch via cache service
+          final imageBytes = await _imageCacheService.getImageById(
+            fileId: photoId,
+            systemType: SystemType.elma,
           );
 
           if (imageBytes != null) {

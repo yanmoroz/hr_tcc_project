@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/cache/image_cache_service.dart';
 import '../../../../../core/value_objects/system_type.dart';
-import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 import '../../view_models/news_item_view_model.dart';
 import 'news_list_event.dart';
@@ -12,13 +12,13 @@ import 'news_list_state.dart';
 
 class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
   final GetNewsListUsecase _getNewsListUsecase;
-  final DownloadFileUsecase _downloadFileUsecase;
+  final ImageCacheService _imageCacheService;
 
   NewsListBloc({
     required GetNewsListUsecase getNewsListUsecase,
-    required DownloadFileUsecase downloadFileUsecase,
+    required ImageCacheService imageCacheService,
   }) : _getNewsListUsecase = getNewsListUsecase,
-       _downloadFileUsecase = downloadFileUsecase,
+       _imageCacheService = imageCacheService,
        super(const NewsListState()) {
     on<LoadNews>(_onLoadNews);
     on<RefreshNews>(_onRefreshNews);
@@ -34,20 +34,24 @@ class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
           (vm) => vm.newsItem.image != null && vm.newsItem.image!.isNotEmpty,
         )
         .map((vm) async {
-          final result = await _downloadFileUsecase(
+          final imageUri = vm.newsItem.image!;
+
+          // Check cache first
+          final cached = _imageCacheService.getCached(imageUri);
+          if (cached != null) {
+            coverImages[vm.newsItem.id] = cached;
+            return;
+          }
+
+          // Fetch via cache service
+          final imageBytes = await _imageCacheService.getImageByUri(
+            uri: imageUri,
             systemType: SystemType.kp,
-            download: false,
-            uriFile: vm.newsItem.image,
           );
 
-          result.fold(
-            (error) {
-              // Silently fail for individual image downloads
-            },
-            (imageBytes) {
-              coverImages[vm.newsItem.id] = imageBytes;
-            },
-          );
+          if (imageBytes != null) {
+            coverImages[vm.newsItem.id] = imageBytes;
+          }
         });
 
     await Future.wait(futures);
