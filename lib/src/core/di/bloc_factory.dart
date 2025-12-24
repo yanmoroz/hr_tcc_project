@@ -147,8 +147,11 @@ class BlocFactory {
     );
   }
 
-  static ResellBookingBloc createResellBookingBloc(String itemId) {
-    return ResellBookingBloc(itemId, sl());
+  static ResellBookingBloc createResellBookingBloc(
+    String itemId,
+    String itemName,
+  ) {
+    return ResellBookingBloc(itemId, itemName, sl());
   }
 
   static ResellDetailBloc createResellDetailBloc(String itemId) {
@@ -156,6 +159,7 @@ class BlocFactory {
       itemId: itemId,
       getResellDetailUsecase: sl(),
       bookResellItemUsecase: sl(),
+      imageCacheService: sl<ImageCacheService>(),
     );
   }
 

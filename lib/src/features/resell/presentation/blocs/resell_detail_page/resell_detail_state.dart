@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
@@ -12,5 +14,6 @@ sealed class ResellDetailState with _$ResellDetailState {
     ResellDetail? detail,
     @Default(false) bool isBooking,
     String? errorMessage,
+    @Default({}) Map<String, Uint8List> carouselImages,
   }) = _ResellDetailState;
 }

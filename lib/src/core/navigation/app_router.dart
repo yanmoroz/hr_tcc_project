@@ -168,9 +168,14 @@ class AppRouter {
                         path: 'booking/:id',
                         builder: (context, state) {
                           final itemId = state.pathParameters['id']!;
+                          final itemName =
+                              state.getExtra<String>('itemName') ?? '';
                           return BlocProvider(
                             create: (context) =>
-                                BlocFactory.createResellBookingBloc(itemId),
+                                BlocFactory.createResellBookingBloc(
+                                  itemId,
+                                  itemName,
+                                ),
                             child: const ResellBookingPage(),
                           );
                         },

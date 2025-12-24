@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
@@ -22,14 +24,6 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
 
   BookingTransition _selectedTransition = BookingTransition.confirm;
   bool _pickupLotMyself = false;
-
-  @override
-  void dispose() {
-    _innController.dispose();
-    _addressController.dispose();
-    _employeePlaceController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +52,25 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Бронирование')),
+        appBar: AppBar(
+          title: const Text('Бронирование'),
+          automaticallyImplyLeading: false,
+          actions: [
+            BlocBuilder<ResellBookingBloc, ResellBookingState>(
+              builder: (context, state) {
+                return IconButton(
+                  icon: SvgPicture.asset(Assets.icons.closeIcon),
+                  onPressed: () => _showCancelBookingDialog(
+                    context,
+                    state.itemId,
+                    state.itemName,
+                  ),
+                  // onPressed: () => context.pop(),
+                );
+              },
+            ),
+          ],
+        ),
         body: BlocBuilder<ResellBookingBloc, ResellBookingState>(
           builder: (context, state) {
             final isLoading = state.isConfirming;
@@ -204,7 +216,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                       child: ElevatedButton(
                         onPressed: isLoading
                             ? null
-                            : () => _submitForm(context),
+                            : () => _submitForm(context, state),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
@@ -235,6 +247,14 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
     );
   }
 
+  @override
+  void dispose() {
+    _innController.dispose();
+    _addressController.dispose();
+    _employeePlaceController.dispose();
+    super.dispose();
+  }
+
   String _getTransitionLabel(BookingTransition transition) {
     switch (transition) {
       case BookingTransition.confirm:
@@ -244,10 +264,30 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
     }
   }
 
-  void _submitForm(BuildContext context) {
+  Future<void> _showCancelBookingDialog(
+    BuildContext context,
+    String itemId,
+    String itemName,
+  ) async {
+    final confirmed = await showConfirmationDialog(
+      context,
+      title: 'Прекратить бронирование товара?',
+      content: itemName,
+      confirmText: 'Удалить',
+      isDestructive: true,
+    );
+
+    if (confirmed == true && context.mounted) {
+      context.read<ResellBookingBloc>().add(
+        ResellBookingEvent.cancelBooking(itemId),
+      );
+    }
+  }
+
+  void _submitForm(BuildContext context, ResellBookingState state) {
     if (_formKey.currentState?.validate() ?? false) {
       final confirmation = ConfirmResellBookingParams(
-        id: context.read<ResellBookingBloc>().itemId,
+        id: state.itemId,
         transition: _selectedTransition,
         inn: _innController.text.isEmpty ? null : _innController.text,
         address: _addressController.text.isEmpty

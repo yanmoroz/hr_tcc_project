@@ -3,16 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/logging/app_logger.dart';
 import '../../../domain/domain.dart';
-
 import 'resell_booking_event.dart';
 import 'resell_booking_state.dart';
 
 class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
-  final String itemId;
   final ConfirmResellBookingUsecase _confirmResellBookingUsecase;
 
-  ResellBookingBloc(this.itemId, this._confirmResellBookingUsecase)
-    : super(const ResellBookingState()) {
+  ResellBookingBloc(
+    String itemId,
+    String itemName,
+    this._confirmResellBookingUsecase,
+  ) : super(ResellBookingState(itemId: itemId, itemName: itemName)) {
     on<ConfirmBooking>(_onConfirmBooking);
   }
 
@@ -23,7 +24,7 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
     emit(state.copyWith(isConfirming: true));
 
     final result = await _confirmResellBookingUsecase(
-      params: event.params.copyWith(id: itemId),
+      params: event.params.copyWith(id: state.itemId),
     );
 
     if (!emit.isDone) {

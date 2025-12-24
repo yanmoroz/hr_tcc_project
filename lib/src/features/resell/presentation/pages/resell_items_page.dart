@@ -58,20 +58,26 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
               previous.bookingItemId != current.bookingItemId ||
               previous.isBooking != current.isBooking,
           listener: (context, state) {
+            final itemName = state.items
+                .firstWhere((item) => item.id == state.bookingItemId)
+                .shortName;
+
             if (state.bookingItemId != null && !state.isBooking) {
-              final itemId = state.bookingItemId!;
-              context.push('/home/resell/booking/$itemId').then((_) {
-                context.read<ResellItemsBloc>()
-                  ..add(const ResellItemsEvent.clearBookingState())
-                  ..add(const ResellItemsEvent.refreshItems());
-              });
+              context
+                  .push(
+                    '/home/resell/booking/${state.bookingItemId}',
+                    extra: {'itemName': itemName},
+                  )
+                  .then((_) {
+                    context.read<ResellItemsBloc>()
+                      ..add(const ResellItemsEvent.clearBookingState())
+                      ..add(const ResellItemsEvent.refreshItems());
+                  });
             }
 
             if (state.errorMessage != null && !state.isBooking) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Ошибка: ${state.errorMessage}'),
-                ),
+                SnackBar(content: Text('Ошибка: ${state.errorMessage}')),
               );
             }
           },
@@ -80,64 +86,64 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
               final currentStatus = state.currentStatus;
 
               return CustomScrollView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverPersistentHeader(
-                  pinned: true,
-                  floating: true,
-                  delegate: FiltersAndSearchBarsHeaderDelegate(
-                    filtersBar: FiltersBar<int>(
-                      items: [
-                        FilterItem(
-                          value: 1,
-                          label: 'В продаже',
-                          count: state.totalOnSale,
-                        ),
-                        FilterItem(
-                          value: 2,
-                          label: 'Забронировано',
-                          count: state.totalReserved,
-                        ),
-                      ],
-                      selectedValue: currentStatus,
-                      onFilterChanged: (value) {
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverPersistentHeader(
+                    pinned: true,
+                    floating: true,
+                    delegate: FiltersAndSearchBarsHeaderDelegate(
+                      filtersBar: FiltersBar<int>(
+                        items: [
+                          FilterItem(
+                            value: 1,
+                            label: 'В продаже',
+                            count: state.totalOnSale,
+                          ),
+                          FilterItem(
+                            value: 2,
+                            label: 'Забронировано',
+                            count: state.totalReserved,
+                          ),
+                        ],
+                        selectedValue: currentStatus,
+                        onFilterChanged: (value) {
+                          if (_scrollController.hasClients) {
+                            _scrollController.jumpTo(0);
+                          }
+                          context.read<ResellItemsBloc>().add(
+                            ResellItemsEvent.filterByStatus(value ?? 1),
+                          );
+                        },
+                      ),
+                      filtersExtent: 62.0,
+                      searchHint: 'Поиск',
+                      isSearchLoading:
+                          state.filteringStatus == LoadingStatus.loading,
+                      onSearchChanged: (query) {
                         if (_scrollController.hasClients) {
                           _scrollController.jumpTo(0);
                         }
-                        context
-                            .read<ResellItemsBloc>()
-                            .add(ResellItemsEvent.filterByStatus(value ?? 1));
+                        context.read<ResellItemsBloc>().add(
+                          ResellItemsEvent.changeSearchQuery(
+                            query.isEmpty ? null : query,
+                          ),
+                        );
                       },
                     ),
-                    filtersExtent: 62.0,
-                    searchHint: 'Поиск',
-                    isSearchLoading:
-                        state.filteringStatus == LoadingStatus.loading,
-                    onSearchChanged: (query) {
-                      if (_scrollController.hasClients) {
-                        _scrollController.jumpTo(0);
-                      }
+                  ),
+                  SliverRefreshControl(
+                    onRefresh: () async {
                       context.read<ResellItemsBloc>().add(
-                        ResellItemsEvent.changeSearchQuery(
-                          query.isEmpty ? null : query,
-                        ),
+                        const ResellItemsEvent.refreshItems(),
                       );
                     },
                   ),
-                ),
-                SliverRefreshControl(
-                  onRefresh: () async {
-                    context.read<ResellItemsBloc>().add(
-                      const ResellItemsEvent.refreshItems(),
-                    );
-                  },
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: _buildContent(context, state),
-                ),
-              ],
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16),
+                    sliver: _buildContent(context, state),
+                  ),
+                ],
               );
             },
           ),
@@ -206,9 +212,9 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
           item: item,
           coverImage: coverImage,
           onBookPressed: state.currentStatus == 1
-              ? () => context
-                  .read<ResellItemsBloc>()
-                  .add(ResellItemsEvent.bookItem(item.id))
+              ? () => context.read<ResellItemsBloc>().add(
+                  ResellItemsEvent.bookItem(item.id),
+                )
               : null,
           onTap: () {
             context.push('/home/resell/detail/${item.id}');
