@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart' hide State;
 import 'package:shimmer/shimmer.dart';
 
-import '../../shared/files/domain/domain.dart';
 import '../base_types/result.dart';
 import '../di/service_locator.dart';
+import '../files/files_service.dart';
 import '../theme/theme.dart';
 import '../utils/color_utils.dart';
 import '../utils/string_utils.dart';
@@ -65,7 +65,7 @@ class UserPhotoCache {
     }
 
     // Start new request
-    final future = sl<DownloadFileUsecase>()(
+    final future = sl<FilesService>().downloadFile(
       systemType: systemType,
       download: false,
       imageDestination: TccImageDestinationType.person,

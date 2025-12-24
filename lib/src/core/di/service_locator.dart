@@ -8,9 +8,9 @@ import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
-import '../../shared/files/files.dart';
 import '../auth/auth_token_provider.dart';
 import '../cache/image_cache_service.dart';
+import '../files/files.dart';
 import '../dictionaries/dictionaries.dart';
 import '../network/api_client.dart';
 import '../retry/retry_notifier.dart';
@@ -122,17 +122,21 @@ void _initializeFileDependencies() {
   sl.registerLazySingleton<FileRemoteDataSource>(
     () => FileRemoteDataSourceImpl(sl()),
   );
+  sl.registerLazySingleton<FileLocalDataSource>(
+    () => FileLocalDataSourceImpl(),
+  );
 
-  // Repositories
-  sl.registerLazySingleton<FileRepository>(() => FileRepositoryImpl(sl()));
+  // Files service
+  sl.registerLazySingleton<FilesService>(
+    () => FilesServiceImpl(
+      sl<FileRemoteDataSource>(),
+      sl<FileLocalDataSource>(),
+    ),
+  );
 
-  // Use cases
-  sl.registerFactory<UploadFileUsecase>(() => UploadFileUsecase(sl()));
-  sl.registerFactory<DownloadFileUsecase>(() => DownloadFileUsecase(sl()));
-
-  // Services
+  // Image cache service
   sl.registerLazySingleton<ImageCacheService>(
-    () => ImageCacheService(sl<FileRepository>()),
+    () => ImageCacheService(sl<FilesService>()),
   );
 }
 

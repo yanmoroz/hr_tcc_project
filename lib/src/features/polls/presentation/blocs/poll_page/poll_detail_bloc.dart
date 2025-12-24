@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
-import '../../../../../shared/files/domain/usecases/upload_file_usecase.dart';
+import '../../../../../core/files/entities/uploaded_file.dart';
+import '../../../../../core/files/files_service.dart';
+import '../../../../../core/value_objects/system_type.dart';
 import '../../../domain/domain.dart';
 
 import 'poll_detail_event.dart';
@@ -13,15 +17,16 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
   final GetPollDetailUsecase getPollDetailUsecase;
   final SubmitPollAnswersUsecase submitPollAnswersUsecase;
   final GetStaffUsecase getStaffUsecase;
-  final UploadFileUsecase uploadFileUsecase;
+  final FilesService _filesService;
 
   PollDetailBloc({
     required this.pollId,
     required this.getPollDetailUsecase,
     required this.submitPollAnswersUsecase,
     required this.getStaffUsecase,
-    required this.uploadFileUsecase,
-  }) : super(const PollDetailState()) {
+    required FilesService filesService,
+  }) : _filesService = filesService,
+       super(const PollDetailState()) {
     on<PollDetailEvent>((event, emit) async {
       await event.when(
         loadPollDetail: () => _onLoadPollDetail(emit),
@@ -111,6 +116,19 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
           staffSearchError: null,
         ),
       ),
+    );
+  }
+
+  /// Uploads a file attachment for poll answers.
+  Future<Result<UploadedFile>> uploadFile({
+    required File file,
+    required SystemType systemType,
+    required void Function(int sent, int total) onProgress,
+  }) {
+    return _filesService.uploadFile(
+      file: file,
+      systemType: systemType,
+      onProgress: onProgress,
     );
   }
 }

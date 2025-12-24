@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
+import '../../../../../core/files/files_service.dart';
 import '../../../../../core/value_objects/system_type.dart';
-import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 
 import 'polls_list_event.dart';
@@ -13,11 +13,11 @@ import 'polls_list_state.dart';
 
 class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
   final GetPollsUsecase getPollsUsecase;
-  final DownloadFileUsecase downloadFileUsecase;
+  final FilesService filesService;
 
   PollsListBloc({
     required this.getPollsUsecase,
-    required this.downloadFileUsecase,
+    required this.filesService,
   }) : super(const PollsListState()) {
     on<PollsListEvent>((event, emit) async {
       await event.when(
@@ -81,7 +81,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
     final futures = polls
         .where((poll) => poll.cover != null && poll.cover!.isNotEmpty)
         .map((poll) async {
-          final result = await downloadFileUsecase(
+          final result = await filesService.downloadFile(
             systemType: SystemType.kp,
             download: false,
             uriFile: poll.cover,

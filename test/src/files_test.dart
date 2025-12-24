@@ -5,19 +5,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
+import 'package:hr_tcc_project/src/core/files/files.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
 import 'package:hr_tcc_project/src/core/value_objects/system_type.dart';
-import 'package:hr_tcc_project/src/shared/files/files.dart';
 
 import 'helpers/result_helper.dart';
 
 void main() {
-  group('Dictionaries', () {
+  group('Files', () {
     late AuthTokenProvider authTokenProvider;
     late ApiClient apiClient;
-    late FileRemoteDataSource dataSource;
-    late FileRepository repository;
+    late FileRemoteDataSource remoteDataSource;
+    late FileLocalDataSource localDataSource;
+    late FilesService filesService;
 
     setUpAll(() async {
       await dotenv.load(fileName: ".env");
@@ -26,13 +27,14 @@ void main() {
     setUp(() {
       authTokenProvider = LocalAuthTokenProvider();
       apiClient = InsecureApiClient(authTokenProvider);
-      dataSource = FileRemoteDataSourceImpl(apiClient);
-      repository = FileRepositoryImpl(dataSource);
+      remoteDataSource = FileRemoteDataSourceImpl(apiClient);
+      localDataSource = FileLocalDataSourceImpl();
+      filesService = FilesServiceImpl(remoteDataSource, localDataSource);
     });
 
     test('E2E Download', () async {
       final file = await getOrFail(
-        repository.downloadFile(
+        filesService.downloadFile(
           systemType: SystemType.elma,
           download: false,
           idFile: '019937dc-0be4-7dfd-b15e-d3dbb52778d2',
@@ -44,7 +46,7 @@ void main() {
 
     test('E2E Upload', () async {
       final file = await getOrFail(
-        repository.uploadFile(
+        filesService.uploadFile(
           file: File('test/assets/test_image.png'),
           systemType: SystemType.elma,
           issueIdOrKey: 'MOBHR-132',

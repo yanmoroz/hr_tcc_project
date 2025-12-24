@@ -3,14 +3,14 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
-import '../../../../core/base_types/result.dart';
-import '../../../../core/logging/app_logger.dart';
-import '../../../../core/network/api_call_executor.dart';
-import '../../../../core/network/api_client.dart';
-import '../../../../core/network/api_constants.dart';
-import '../../../../core/value_objects/system_type.dart';
-import '../../../../core/value_objects/tcc_image_destination_type.dart';
-import '../../domain/domain.dart';
+import '../../../base_types/result.dart';
+import '../../../logging/app_logger.dart';
+import '../../../network/api_call_executor.dart';
+import '../../../network/api_client.dart';
+import '../../../network/api_constants.dart';
+import '../../../value_objects/system_type.dart';
+import '../../../value_objects/tcc_image_destination_type.dart';
+import '../../value_objects/file_group.dart';
 import '../models/uploaded_file_model.dart';
 import 'file_remote_data_source.dart';
 

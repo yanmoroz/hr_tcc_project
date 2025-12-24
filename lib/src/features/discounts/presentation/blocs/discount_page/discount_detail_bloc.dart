@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
+import '../../../../../core/files/files_service.dart';
 import '../../../../../core/value_objects/system_type.dart';
-import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'discount_detail_event.dart';
 import 'discount_detail_state.dart';
@@ -14,18 +14,18 @@ class DiscountDetailBloc
   final GetDiscountDetailUsecase _getDiscountDetailUsecase;
   final GetDiscountStatsUsecase _getDiscountStatsUsecase;
   final ToggleDiscountLikeUsecase _toggleDiscountLikeUsecase;
-  final DownloadFileUsecase _downloadFileUsecase;
+  final FilesService _filesService;
 
   DiscountDetailBloc({
     required this.discountId,
     required GetDiscountDetailUsecase getDiscountDetailUsecase,
     required GetDiscountStatsUsecase getDiscountStatsUsecase,
     required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
-    required DownloadFileUsecase downloadFileUsecase,
+    required FilesService filesService,
   }) : _getDiscountDetailUsecase = getDiscountDetailUsecase,
        _getDiscountStatsUsecase = getDiscountStatsUsecase,
        _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
-       _downloadFileUsecase = downloadFileUsecase,
+       _filesService = filesService,
        super(const DiscountDetailState()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleLike>(_onToggleLike);
@@ -119,7 +119,7 @@ class DiscountDetailBloc
       return;
     }
 
-    final result = await _downloadFileUsecase(
+    final result = await _filesService.downloadFile(
       systemType: SystemType.kp,
       download: false,
       uriFile: discount.image,

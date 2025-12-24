@@ -270,14 +270,7 @@ class _PollPageState extends State<PollPage> {
             child: buildQuestionWidget(
               question: question,
               onAnswerChanged: _onAnswerChanged,
-              onFileUpload:
-                  ({required file, required systemType, required onProgress}) {
-                    return bloc.uploadFileUsecase(
-                      file: file,
-                      systemType: systemType,
-                      onProgress: onProgress,
-                    );
-                  },
+              onFileUpload: bloc.uploadFile,
               onStaffSearch: (target, search) {
                 bloc.add(
                   PollDetailEvent.searchStaff(target: target, search: search),

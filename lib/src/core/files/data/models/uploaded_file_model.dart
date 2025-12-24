@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/value_objects/system_type.dart';
-import '../../domain/domain.dart';
+import '../../../value_objects/system_type.dart';
+import '../../entities/uploaded_file.dart';
 import 'jira_author_model.dart';
 
 part 'uploaded_file_model.freezed.dart';

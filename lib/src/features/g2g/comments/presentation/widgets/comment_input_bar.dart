@@ -3,8 +3,8 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../../../gen/assets.gen.dart';
 import '../../../../../core/theme/theme.dart';
-import '../../../../../shared/files/presentation/models/uploading_attachment_state.dart';
-import '../../../../../shared/files/presentation/widgets/uploading_attachment.dart';
+import '../../../../../core/widgets/uploading_attachment/uploading_attachment.dart';
+import '../../../../../core/widgets/uploading_attachment/uploading_attachment_state.dart';
 import '../../domain/domain.dart';
 import '../blocs/comments_page/comments_state.dart';
 

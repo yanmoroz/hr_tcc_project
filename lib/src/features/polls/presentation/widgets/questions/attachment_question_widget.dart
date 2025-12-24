@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../core/files/entities/uploaded_file.dart';
 import '../../../../../core/value_objects/system_type.dart';
-import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
 

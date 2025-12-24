@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
+import '../../../../../core/files/files_service.dart';
 import '../../../../../core/value_objects/system_type.dart';
-import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'news_detail_event.dart';
 import 'news_detail_state.dart';
@@ -13,18 +13,18 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
   final GetNewsDetailUsecase _getNewsDetailUsecase;
   final GetNewsStatsUsecase _getNewsStatsUsecase;
   final ToggleNewsLikeUsecase _toggleNewsLikeUsecase;
-  final DownloadFileUsecase _downloadFileUsecase;
+  final FilesService _filesService;
 
   NewsDetailBloc({
     required this.newsId,
     required GetNewsDetailUsecase getNewsDetailUsecase,
     required GetNewsStatsUsecase getNewsStatsUsecase,
     required ToggleNewsLikeUsecase toggleNewsLikeUsecase,
-    required DownloadFileUsecase downloadFileUsecase,
+    required FilesService filesService,
   }) : _getNewsDetailUsecase = getNewsDetailUsecase,
        _getNewsStatsUsecase = getNewsStatsUsecase,
        _toggleNewsLikeUsecase = toggleNewsLikeUsecase,
-       _downloadFileUsecase = downloadFileUsecase,
+       _filesService = filesService,
        super(const NewsDetailState()) {
     on<LoadDetail>(_onLoadDetail);
     on<ToggleLike>(_onToggleLike);
@@ -39,7 +39,7 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
       return;
     }
 
-    final result = await _downloadFileUsecase(
+    final result = await _filesService.downloadFile(
       systemType: SystemType.kp,
       download: false,
       uriFile: newsDetail.image,

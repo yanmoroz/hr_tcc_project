@@ -4,23 +4,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/base_types/result.dart';
+import '../../../../../core/files/files_service.dart';
 import '../../../../../core/value_objects/system_type.dart';
-import '../../../../../shared/files/domain/domain.dart';
 import '../../../domain/domain.dart';
 import 'discounts_list_event.dart';
 import 'discounts_list_state.dart';
 
 class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
   final GetDiscountsUsecase _getDiscountsUsecase;
-  final DownloadFileUsecase _downloadFileUsecase;
+  final FilesService _filesService;
   final ToggleDiscountLikeUsecase _toggleDiscountLikeUsecase;
 
   DiscountsListBloc({
     required GetDiscountsUsecase getDiscountsUsecase,
-    required DownloadFileUsecase downloadFileUsecase,
+    required FilesService filesService,
     required ToggleDiscountLikeUsecase toggleDiscountLikeUsecase,
   }) : _getDiscountsUsecase = getDiscountsUsecase,
-       _downloadFileUsecase = downloadFileUsecase,
+       _filesService = filesService,
        _toggleDiscountLikeUsecase = toggleDiscountLikeUsecase,
        super(const DiscountsListState()) {
     on<LoadDiscounts>(_onLoadDiscounts);
@@ -172,7 +172,7 @@ class DiscountsListBloc extends Bloc<DiscountsListEvent, DiscountsListState> {
           (discount) => discount.image != null && discount.image!.isNotEmpty,
         )
         .map((discount) async {
-          final result = await _downloadFileUsecase(
+          final result = await _filesService.downloadFile(
             systemType: SystemType.kp,
             download: false,
             uriFile: discount.image,

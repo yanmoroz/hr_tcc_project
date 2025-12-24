@@ -1,17 +1,17 @@
 import 'dart:typed_data';
 
-import '../../shared/files/domain/domain.dart';
 import '../base_types/result.dart';
+import '../files/files_service.dart';
 import '../value_objects/system_type.dart';
 
 class ImageCacheService {
-  final FileRepository _fileRepository;
+  final FilesService _filesService;
 
   final Map<String, Uint8List> _cache = {};
   final Map<String, Future<Uint8List?>> _pendingRequests = {};
   final Set<String> _failedKeys = {};
 
-  ImageCacheService(this._fileRepository);
+  ImageCacheService(this._filesService);
 
   /// Get image by file ID (for resell, elma system, etc.)
   Future<Uint8List?> getImageById({
@@ -20,7 +20,7 @@ class ImageCacheService {
   }) async {
     return _getOrFetch(
       cacheKey: fileId,
-      download: () => _fileRepository.downloadFile(
+      download: () => _filesService.downloadFile(
         systemType: systemType,
         download: false,
         idFile: fileId,
@@ -35,7 +35,7 @@ class ImageCacheService {
   }) async {
     return _getOrFetch(
       cacheKey: uri,
-      download: () => _fileRepository.downloadFile(
+      download: () => _filesService.downloadFile(
         systemType: systemType,
         download: false,
         uriFile: uri,

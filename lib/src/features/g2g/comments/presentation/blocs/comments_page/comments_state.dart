@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../../../core/base_types/loading_status.dart';
-import '../../../../../../shared/files/presentation/models/uploading_attachment_state.dart';
+import '../../../../../../core/widgets/uploading_attachment/uploading_attachment_state.dart';
 import '../../../domain/domain.dart';
 
 part 'comments_state.freezed.dart';

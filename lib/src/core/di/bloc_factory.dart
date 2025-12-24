@@ -6,10 +6,10 @@ import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
-import '../../shared/files/domain/domain.dart';
 import '../blocs/current_user/bloc.dart';
 import '../cache/image_cache_service.dart';
 import '../entities/application_form.dart';
+import '../files/files_service.dart';
 import 'service_locator.dart';
 
 class BlocFactory {
@@ -58,8 +58,7 @@ class BlocFactory {
       addCommentUsecase: sl(),
       deleteCommentUsecase: sl(),
       toggleCommentLikeUsecase: sl(),
-      uploadFileUsecase: sl<UploadFileUsecase>(),
-      downloadFileUsecase: sl<DownloadFileUsecase>(),
+      filesService: sl<FilesService>(),
     );
   }
 
@@ -80,14 +79,14 @@ class BlocFactory {
       getDiscountDetailUsecase: sl(),
       getDiscountStatsUsecase: sl(),
       toggleDiscountLikeUsecase: sl(),
-      downloadFileUsecase: sl(),
+      filesService: sl<FilesService>(),
     );
   }
 
   static DiscountsListBloc createDiscountsListBloc() {
     return DiscountsListBloc(
       getDiscountsUsecase: sl(),
-      downloadFileUsecase: sl(),
+      filesService: sl<FilesService>(),
       toggleDiscountLikeUsecase: sl(),
     );
   }
@@ -102,7 +101,7 @@ class BlocFactory {
       getNewsDetailUsecase: sl(),
       getNewsStatsUsecase: sl(),
       toggleNewsLikeUsecase: sl(),
-      downloadFileUsecase: sl(),
+      filesService: sl<FilesService>(),
     );
   }
 
@@ -137,12 +136,15 @@ class BlocFactory {
       getPollDetailUsecase: sl(),
       submitPollAnswersUsecase: sl(),
       getStaffUsecase: sl(),
-      uploadFileUsecase: sl(),
+      filesService: sl<FilesService>(),
     );
   }
 
   static PollsListBloc createPollsListBloc() {
-    return PollsListBloc(getPollsUsecase: sl(), downloadFileUsecase: sl());
+    return PollsListBloc(
+      getPollsUsecase: sl(),
+      filesService: sl<FilesService>(),
+    );
   }
 
   static ResellBookingBloc createResellBookingBloc(String itemId) {

@@ -4,9 +4,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../../gen/assets.gen.dart';
-import '../../../../core/theme/theme.dart';
-import '../models/uploading_attachment_state.dart';
+import '../../../../gen/assets.gen.dart';
+import '../../theme/theme.dart';
+import 'uploading_attachment_state.dart';
 
 class UploadingAttachment extends StatelessWidget {
   final String fileName;

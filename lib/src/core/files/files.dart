@@ -1,0 +1,10 @@
+export 'data/datasources/file_local_data_source.dart';
+export 'data/datasources/file_local_data_source_impl.dart';
+export 'data/datasources/file_remote_data_source.dart';
+export 'data/datasources/file_remote_data_source_impl.dart';
+export 'entities/jira_author.dart';
+export 'entities/jira_avatar_urls.dart';
+export 'entities/uploaded_file.dart';
+export 'files_service.dart';
+export 'files_service_impl.dart';
+export 'value_objects/file_group.dart';

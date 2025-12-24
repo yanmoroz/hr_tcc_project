@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../core/base_types/loading_status.dart';
 import '../../../../../../core/extensions/date_time_extension.dart';
+import '../../../../../../core/files/files.dart';
 import '../../../../../../core/value_objects/system_type.dart';
-import '../../../../../../shared/files/domain/domain.dart';
-import '../../../../../../shared/files/presentation/models/uploading_attachment_state.dart';
+import '../../../../../../core/widgets/uploading_attachment/uploading_attachment_state.dart';
 import '../../../domain/domain.dart';
 import 'comments_event.dart';
 import 'comments_state.dart';
@@ -21,9 +21,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   final AddCommentUsecase _addCommentUsecase;
   final DeleteCommentUsecase _deleteCommentUsecase;
   final ToggleCommentLikeUsecase _toggleCommentLikeUsecase;
-  final UploadFileUsecase _uploadFileUsecase;
-
-  final DownloadFileUsecase _downloadFileUsecase;
+  final FilesService _filesService;
 
   final Set<String> _cancelledUploads = {};
 
@@ -35,14 +33,12 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     required AddCommentUsecase addCommentUsecase,
     required DeleteCommentUsecase deleteCommentUsecase,
     required ToggleCommentLikeUsecase toggleCommentLikeUsecase,
-    required UploadFileUsecase uploadFileUsecase,
-    required DownloadFileUsecase downloadFileUsecase,
+    required FilesService filesService,
   }) : _getCommentsUsecase = getCommentsUsecase,
        _addCommentUsecase = addCommentUsecase,
        _deleteCommentUsecase = deleteCommentUsecase,
        _toggleCommentLikeUsecase = toggleCommentLikeUsecase,
-       _uploadFileUsecase = uploadFileUsecase,
-       _downloadFileUsecase = downloadFileUsecase,
+       _filesService = filesService,
        super(const CommentsState()) {
     on<LoadComments>(_onLoadComments);
     on<RefreshComments>(_onRefreshComments);
@@ -262,7 +258,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       ),
     );
 
-    final result = await _downloadFileUsecase(
+    final result = await _filesService.downloadFile(
       systemType: SystemType.kp,
       download: false,
       uriFile: attachment.url,
@@ -432,7 +428,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   }
 
   Future<void> _preloadImage(Attachment attachment) async {
-    final result = await _downloadFileUsecase(
+    final result = await _filesService.downloadFile(
       systemType: SystemType.kp,
       download: false,
       uriFile: attachment.url,
@@ -454,7 +450,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
     String fileId,
     File file,
   ) async {
-    final result = await _uploadFileUsecase(
+    final result = await _filesService.uploadFile(
       file: file,
       systemType: SystemType.kp,
       group: _fileGroup,

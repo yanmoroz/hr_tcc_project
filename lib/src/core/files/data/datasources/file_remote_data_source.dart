@@ -3,14 +3,13 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
-import '../../../../core/base_types/result.dart';
-import '../../../../core/value_objects/system_type.dart';
-import '../../../../core/value_objects/tcc_image_destination_type.dart';
-import '../domain.dart';
+import '../../../base_types/result.dart';
+import '../../../value_objects/system_type.dart';
+import '../../../value_objects/tcc_image_destination_type.dart';
+import '../../value_objects/file_group.dart';
+import '../models/uploaded_file_model.dart';
 
-abstract class FileRepository {
-  Future<void> cleanupExpiredCache();
-
+abstract class FileRemoteDataSource {
   Future<Result<Uint8List>> downloadFile({
     required SystemType systemType,
     required bool download,
@@ -22,7 +21,7 @@ abstract class FileRepository {
     ProgressCallback? onProgress,
   });
 
-  Future<Result<UploadedFile>> uploadFile({
+  Future<Result<UploadedFileModel>> uploadFile({
     required File file,
     required SystemType systemType,
     FileGroup? group,
