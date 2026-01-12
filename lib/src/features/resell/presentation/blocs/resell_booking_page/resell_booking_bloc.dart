@@ -23,9 +23,16 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
   ) async {
     emit(state.copyWith(isConfirming: true));
 
-    final result = await _confirmResellBookingUsecase(
-      params: event.params.copyWith(id: state.itemId),
+    final params = ConfirmResellBookingParams(
+      id: state.itemId,
+      transition: BookingTransition.confirm,
+      inn: event.inn,
+      address: event.address,
+      employeePlace: event.employeePlace,
+      pickupLotMyself: event.pickupLotMyself,
     );
+
+    final result = await _confirmResellBookingUsecase(params: params);
 
     if (!emit.isDone) {
       result.fold(

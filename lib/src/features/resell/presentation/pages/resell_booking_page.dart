@@ -8,7 +8,6 @@ import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../domain/domain.dart';
 import '../blocs/resell_booking_page/bloc.dart';
 
 class ResellBookingPage extends StatefulWidget {
@@ -25,6 +24,27 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   final _employeePlaceController = TextEditingController();
 
   bool _pickupLotMyself = false;
+  bool _isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _innController.addListener(_validateForm);
+    _addressController.addListener(_validateForm);
+    _employeePlaceController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    final isValid = _innController.text.isNotEmpty &&
+        _addressController.text.isNotEmpty &&
+        _employeePlaceController.text.isNotEmpty;
+
+    if (_isFormValid != isValid) {
+      setState(() {
+        _isFormValid = isValid;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -219,6 +239,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
           label: 'Отправить',
           size: PrimaryButtonSize.large,
           style: PrimatyButtonStyle.colored,
+          enabled: _isFormValid,
           isLoading: isLoading,
           onPressed: () => _submitForm(context, state),
         ),
@@ -256,21 +277,17 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
 
   void _submitForm(BuildContext context, ResellBookingState state) {
     if (_formKey.currentState?.validate() ?? false) {
-      final confirmation = ConfirmResellBookingParams(
-        id: state.itemId,
-        transition: BookingTransition.confirm,
-        inn: _innController.text.isEmpty ? null : _innController.text,
-        address: _addressController.text.isEmpty
-            ? null
-            : _addressController.text,
-        employeePlace: _employeePlaceController.text.isEmpty
-            ? null
-            : _employeePlaceController.text,
-        pickupLotMyself: _pickupLotMyself,
-      );
-
       context.read<ResellBookingBloc>().add(
-        ResellBookingEvent.confirmBooking(params: confirmation),
+        ResellBookingEvent.confirmBooking(
+          inn: _innController.text.isEmpty ? null : _innController.text,
+          address: _addressController.text.isEmpty
+              ? null
+              : _addressController.text,
+          employeePlace: _employeePlaceController.text.isEmpty
+              ? null
+              : _employeePlaceController.text,
+          pickupLotMyself: _pickupLotMyself,
+        ),
       );
     }
   }
