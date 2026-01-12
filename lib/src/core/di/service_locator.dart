@@ -10,8 +10,9 @@ import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
 import '../auth/auth_token_provider.dart';
 import '../cache/image_cache_service.dart';
-import '../files/files.dart';
+import '../dadata/dadata.dart';
 import '../dictionaries/dictionaries.dart';
+import '../files/files.dart';
 import '../network/api_client.dart';
 import '../retry/retry_notifier.dart';
 
@@ -20,6 +21,7 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
   _initializeCoreDependencies();
   _initializeFileDependencies();
+  _initializeDaDataDependencies();
   _initializeMasterDataDependencies();
   _initializeCommentDependencies();
   _initializeNotificationDependencies();
@@ -87,6 +89,24 @@ void _initializeCoreDependencies() {
   sl.registerLazySingleton<RetryNotifier>(() => RetryNotifier());
 }
 
+void _initializeDaDataDependencies() {
+  // Token provider
+  sl.registerLazySingleton<DaDataTokenProvider>(
+    () => LocalDaDataTokenProvider(),
+  );
+
+  // DaData client
+  sl.registerLazySingleton<DaDataClient>(() => DaDataClient(sl()));
+
+  // Data sources
+  sl.registerLazySingleton<DaDataRemoteDataSource>(
+    () => DaDataRemoteDataSourceImpl(sl()),
+  );
+
+  // Service
+  sl.registerLazySingleton<DaDataService>(() => DaDataServiceImpl(sl()));
+}
+
 void _initializeDiscountDependencies() {
   // Data sources
   sl.registerLazySingleton<DiscountRemoteDataSource>(
@@ -128,10 +148,8 @@ void _initializeFileDependencies() {
 
   // Files service
   sl.registerLazySingleton<FilesService>(
-    () => FilesServiceImpl(
-      sl<FileRemoteDataSource>(),
-      sl<FileLocalDataSource>(),
-    ),
+    () =>
+        FilesServiceImpl(sl<FileRemoteDataSource>(), sl<FileLocalDataSource>()),
   );
 
   // Image cache service
