@@ -35,7 +35,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
         if (state.status == LoadingStatus.success &&
             !state.isConfirming &&
             state.isCanceled) {
-          context.go('/home/resell'); // Navigate back to resell list
+          context.pop();
           return;
         }
 
@@ -46,7 +46,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
             message: 'Товар забронирован',
             isSuccess: true,
             onClose: () {
-              context.go('/home/resell'); // Navigate back to resell list
+              context.pop();
             },
           );
         }
