@@ -11,6 +11,7 @@ sealed class ResellBookingState with _$ResellBookingState {
     required String itemName,
     @Default(LoadingStatus.initial) LoadingStatus status,
     @Default(false) bool isConfirming,
+    @Default(false) bool isCanceled,
     String? errorMessage,
   }) = _ResellBookingState;
 }

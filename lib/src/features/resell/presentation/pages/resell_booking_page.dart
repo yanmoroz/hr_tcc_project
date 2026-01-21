@@ -27,31 +27,19 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   bool _isFormValid = false;
 
   @override
-  void initState() {
-    super.initState();
-    _innController.addListener(_validateForm);
-    _addressController.addListener(_validateForm);
-    _employeePlaceController.addListener(_validateForm);
-  }
-
-  void _validateForm() {
-    final isValid = _innController.text.isNotEmpty &&
-        _addressController.text.isNotEmpty &&
-        _employeePlaceController.text.isNotEmpty;
-
-    if (_isFormValid != isValid) {
-      setState(() {
-        _isFormValid = isValid;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocListener<ResellBookingBloc, ResellBookingState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        // Handle successful booking
+        // Handle successful cancellation - just navigate back
+        if (state.status == LoadingStatus.success &&
+            !state.isConfirming &&
+            state.isCanceled) {
+          context.go('/home/resell'); // Navigate back to resell list
+          return;
+        }
+
+        // Handle successful booking confirmation
         if (state.status == LoadingStatus.success && !state.isConfirming) {
           SubmitResultWidget.show(
             context: context,
@@ -87,7 +75,6 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                     state.itemId,
                     state.itemName,
                   ),
-                  // onPressed: () => context.pop(),
                 );
               },
             ),
@@ -163,7 +150,10 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(state.itemName, style: AppTypography.textRegular1),
+                          Text(
+                            state.itemName,
+                            style: AppTypography.textRegular1,
+                          ),
                           const SizedBox(height: 16),
 
                           // INN Field
@@ -203,8 +193,9 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
                                 value: _pickupLotMyself,
                                 onChanged: isLoading
                                     ? null
-                                    : (value) =>
-                                        setState(() => _pickupLotMyself = value),
+                                    : (value) => setState(
+                                        () => _pickupLotMyself = value,
+                                      ),
                                 activeTrackColor: AppColors.blue500,
                               ),
                             ],
@@ -223,6 +214,22 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _innController.dispose();
+    _addressController.dispose();
+    _employeePlaceController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _innController.addListener(_validateForm);
+    _addressController.addListener(_validateForm);
+    _employeePlaceController.addListener(_validateForm);
   }
 
   Widget _buildBottomButtonContainer(
@@ -245,14 +252,6 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _innController.dispose();
-    _addressController.dispose();
-    _employeePlaceController.dispose();
-    super.dispose();
   }
 
   Future<void> _showCancelBookingDialog(
@@ -289,6 +288,19 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
           pickupLotMyself: _pickupLotMyself,
         ),
       );
+    }
+  }
+
+  void _validateForm() {
+    final isValid =
+        _innController.text.isNotEmpty &&
+        _addressController.text.isNotEmpty &&
+        _employeePlaceController.text.isNotEmpty;
+
+    if (_isFormValid != isValid) {
+      setState(() {
+        _isFormValid = isValid;
+      });
     }
   }
 }

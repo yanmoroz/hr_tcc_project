@@ -15,6 +15,7 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
     this._confirmResellBookingUsecase,
   ) : super(ResellBookingState(itemId: itemId, itemName: itemName)) {
     on<ConfirmBooking>(_onConfirmBooking);
+    on<CancelBooking>(_onCancelBooking);
   }
 
   Future<void> _onConfirmBooking(
@@ -50,6 +51,45 @@ class ResellBookingBloc extends Bloc<ResellBookingEvent, ResellBookingState> {
           AppLogger.d('Booking confirmed successfully');
           emit(
             state.copyWith(status: LoadingStatus.success, isConfirming: false),
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _onCancelBooking(
+    CancelBooking event,
+    Emitter<ResellBookingState> emit,
+  ) async {
+    emit(state.copyWith(isConfirming: true));
+
+    final params = ConfirmResellBookingParams(
+      id: event.itemId,
+      transition: BookingTransition.cancel,
+    );
+
+    final result = await _confirmResellBookingUsecase(params: params);
+
+    if (!emit.isDone) {
+      result.fold(
+        (error) {
+          AppLogger.e('Failed to cancel booking: ${error.toString()}');
+          emit(
+            state.copyWith(
+              status: LoadingStatus.error,
+              errorMessage: error.toString(),
+              isConfirming: false,
+            ),
+          );
+        },
+        (booking) {
+          AppLogger.d('Booking canceled successfully');
+          emit(
+            state.copyWith(
+              status: LoadingStatus.success,
+              isConfirming: false,
+              isCanceled: true,
+            ),
           );
         },
       );
