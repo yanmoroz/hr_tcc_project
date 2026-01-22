@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/auth/auth_status_notifier.dart';
 import '../../../../core/auth/auth_token_provider.dart';
 import '../../../../core/base_types/loading_status.dart';
 import '../../domain/usecases/login_usecase.dart';
@@ -11,14 +12,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUsecase _loginUsecase;
   final LogoutUsecase _logoutUsecase;
   final AuthTokenProvider _tokenProvider;
+  final AuthStatusNotifier _authStatusNotifier;
 
   AuthBloc({
     required LoginUsecase loginUsecase,
     required LogoutUsecase logoutUsecase,
     required AuthTokenProvider tokenProvider,
+    required AuthStatusNotifier authStatusNotifier,
   })  : _loginUsecase = loginUsecase,
         _logoutUsecase = logoutUsecase,
         _tokenProvider = tokenProvider,
+        _authStatusNotifier = authStatusNotifier,
         super(const AuthState()) {
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
@@ -44,13 +48,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           isAuthenticated: false,
         ),
       ),
-      (_) => emit(
-        state.copyWith(
-          status: LoadingStatus.success,
-          isAuthenticated: true,
-          errorMessage: null,
-        ),
-      ),
+      (_) {
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            isAuthenticated: true,
+            errorMessage: null,
+          ),
+        );
+        _authStatusNotifier.notifyLoggedIn();
+      },
     );
   }
 
@@ -69,13 +76,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           errorMessage: error.toString(),
         ),
       ),
-      (_) => emit(
-        state.copyWith(
-          status: LoadingStatus.success,
-          isAuthenticated: false,
-          errorMessage: null,
-        ),
-      ),
+      (_) {
+        emit(
+          state.copyWith(
+            status: LoadingStatus.success,
+            isAuthenticated: false,
+            errorMessage: null,
+          ),
+        );
+        _authStatusNotifier.notifyLoggedOut();
+      },
     );
   }
 

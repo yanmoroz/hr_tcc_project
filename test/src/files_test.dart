@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:hr_tcc_project/src/core/auth/auth_status_notifier.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/files/files.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
@@ -26,7 +27,10 @@ void main() {
 
     setUp(() {
       authTokenProvider = LocalAuthTokenProvider();
-      apiClient = InsecureApiClient(authTokenProvider);
+      apiClient = InsecureApiClient(
+        authTokenProvider,
+        AuthStatusNotifier(authTokenProvider),
+      );
       remoteDataSource = FileRemoteDataSourceImpl(apiClient);
       localDataSource = FileLocalDataSourceImpl();
       filesService = FilesServiceImpl(remoteDataSource, localDataSource);

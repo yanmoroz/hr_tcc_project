@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+import '../auth/auth_status_notifier.dart';
 import '../auth/auth_token_provider.dart';
 import 'api_constants.dart';
 
@@ -37,8 +38,9 @@ abstract class ApiClient {
 abstract class BaseApiClient implements ApiClient {
   late final Dio _dio;
   final AuthTokenProvider _authTokenProvider;
+  final AuthStatusNotifier _authStatusNotifier;
 
-  BaseApiClient(this._authTokenProvider) {
+  BaseApiClient(this._authTokenProvider, this._authStatusNotifier) {
     _initialize();
   }
 
@@ -124,7 +126,7 @@ abstract class BaseApiClient implements ApiClient {
       ),
     );
 
-    // Add auth interceptor
+    // Add auth interceptor with 401/403 handling
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -133,6 +135,15 @@ abstract class BaseApiClient implements ApiClient {
             options.headers[ApiConstants.authorizationHeader] = 'Bearer $token';
           }
           handler.next(options);
+        },
+        onError: (error, handler) async {
+          final statusCode = error.response?.statusCode;
+          if (statusCode == 401 || statusCode == 403) {
+            // Clear tokens and notify logout - GoRouter will redirect to login
+            await _authTokenProvider.clearToken();
+            _authStatusNotifier.notifyLoggedOut();
+          }
+          handler.next(error);
         },
       ),
     );
@@ -164,7 +175,10 @@ abstract class BaseApiClient implements ApiClient {
 }
 
 class InsecureApiClient extends BaseApiClient {
-  InsecureApiClient(super._authTokenProvider);
+  InsecureApiClient(
+    AuthTokenProvider authTokenProvider,
+    AuthStatusNotifier authStatusNotifier,
+  ) : super(authTokenProvider, authStatusNotifier);
 
   @override
   void _configureCertificateValidation() {
@@ -179,5 +193,8 @@ class InsecureApiClient extends BaseApiClient {
 }
 
 class SecureApiClient extends BaseApiClient {
-  SecureApiClient(super._authTokenProvider);
+  SecureApiClient(
+    AuthTokenProvider authTokenProvider,
+    AuthStatusNotifier authStatusNotifier,
+  ) : super(authTokenProvider, authStatusNotifier);
 }

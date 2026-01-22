@@ -14,8 +14,10 @@ import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../auth/auth_status_notifier.dart';
 import '../blocs/current_user/bloc.dart';
 import '../di/bloc_factory.dart';
+import '../di/service_locator.dart';
 import 'main_shell.dart';
 
 class AppRouter {
@@ -25,13 +27,15 @@ class AppRouter {
   static final _contactsNavigatorKey = GlobalKey<NavigatorState>();
   static final _moreNavigatorKey = GlobalKey<NavigatorState>();
 
+  static AuthStatusNotifier get _authStatusNotifier => sl<AuthStatusNotifier>();
+
   static final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
     debugLogDiagnostics: true,
+    refreshListenable: _authStatusNotifier,
     redirect: (context, state) {
-      final authBloc = BlocFactory.getAuthBloc();
-      final isAuthenticated = authBloc.state.isAuthenticated;
+      final isAuthenticated = _authStatusNotifier.isAuthenticated;
       final isLoginRoute = state.matchedLocation == '/login';
 
       // If not authenticated and not on login page, redirect to login
@@ -48,11 +52,11 @@ class AppRouter {
       return null;
     },
     routes: [
-      // Login Route (outside of shell)
+      // Login Route (outside of shell) - AuthBloc created locally
       GoRoute(
         path: '/login',
-        builder: (context, state) => BlocProvider.value(
-          value: BlocFactory.getAuthBloc(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => BlocFactory.createAuthBloc(),
           child: const LoginPage(),
         ),
       ),

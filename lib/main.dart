@@ -5,28 +5,23 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import 'gen/assets.gen.dart';
-import 'src/core/di/bloc_factory.dart';
 import 'src/core/di/service_locator.dart';
 import 'src/core/files/files_service.dart';
 import 'src/core/navigation/app_router.dart';
 import 'src/core/retry/retry_notifier.dart';
 import 'src/core/theme/theme.dart';
-import 'src/features/auth/presentation/presentation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock orientation to portrait only
+  // Lock orientation to portrait onlys
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Load environment variables
   await dotenv.load(fileName: ".env");
 
-  // Initialize dependencies
+  // Initialize dependencies (includes AuthStatusNotifier which checks initial auth status)
   await initializeDependencies();
-
-  // Check auth status on app start
-  BlocFactory.getAuthBloc().add(const AuthEvent.checkAuthStatus());
 
   // Cleanup expired file cache (runs in background, doesn't block startup)
   sl<FilesService>().cleanupExpiredCache();

@@ -1,5 +1,6 @@
 import '../../features/applications/applications.dart';
 import '../../features/auth/auth.dart';
+import '../auth/auth_status_notifier.dart';
 import '../../features/discounts/discounts.dart';
 import '../../features/g2g/comments/comments.dart';
 import '../../features/g2g/notifications/notifications.dart';
@@ -172,7 +173,12 @@ class BlocFactory {
     return sl<UnreadNotificationsCubit>();
   }
 
-  static AuthBloc getAuthBloc() {
-    return sl<AuthBloc>();
-  }
+  static AuthBloc createAuthBloc() => AuthBloc(
+        loginUsecase: sl(),
+        logoutUsecase: sl(),
+        tokenProvider: sl(),
+        authStatusNotifier: sl(),
+      );
+
+  static AuthStatusNotifier getAuthStatusNotifier() => sl<AuthStatusNotifier>();
 }

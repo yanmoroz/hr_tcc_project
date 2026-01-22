@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:hr_tcc_project/src/core/auth/auth_status_notifier.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
@@ -21,7 +22,10 @@ void main() {
 
     setUp(() {
       authTokenProvider = LocalAuthTokenProvider();
-      apiClient = InsecureApiClient(authTokenProvider);
+      apiClient = InsecureApiClient(
+        authTokenProvider,
+        AuthStatusNotifier(authTokenProvider),
+      );
       dataSource = ApplicationRemoteDataSourceImpl(apiClient);
       repository = ApplicationRepositoryImpl(dataSource);
     });

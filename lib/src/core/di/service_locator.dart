@@ -10,6 +10,7 @@ import '../../features/g2g/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../auth/auth_status_notifier.dart';
 import '../auth/auth_token_provider.dart';
 import '../cache/image_cache_service.dart';
 import '../dadata/dadata.dart';
@@ -83,6 +84,16 @@ Future<void> _initializeAuthDependencies() async {
   await secureAuthTokenProvider.initialize();
   sl.registerLazySingleton<AuthTokenProvider>(() => secureAuthTokenProvider);
 
+  // Auth Status Notifier (reactive auth status for GoRouter)
+  final authStatusNotifier = AuthStatusNotifier(sl());
+  await authStatusNotifier.checkInitialStatus();
+  sl.registerLazySingleton<AuthStatusNotifier>(() => authStatusNotifier);
+
+  // API Client (handles 401/403 by triggering logout via AuthStatusNotifier)
+  sl.registerLazySingleton<ApiClient>(
+    () => InsecureApiClient(sl<AuthTokenProvider>(), sl<AuthStatusNotifier>()),
+  );
+
   // Keycloak API Client (lightweight client for OAuth2 token requests only)
   sl.registerLazySingleton<KeycloakApiClient>(() => KeycloakApiClient());
 
@@ -100,12 +111,6 @@ Future<void> _initializeAuthDependencies() async {
   sl.registerFactory(() => LoginUsecase(sl()));
   sl.registerFactory(() => LogoutUsecase(sl()));
   sl.registerFactory(() => RefreshTokenUsecase(sl()));
-
-  // AuthBloc as singleton (shared across app)
-  sl.registerLazySingleton<AuthBloc>(
-    () =>
-        AuthBloc(loginUsecase: sl(), logoutUsecase: sl(), tokenProvider: sl()),
-  );
 }
 
 void _initializeCommentDependencies() {
@@ -127,8 +132,8 @@ void _initializeCoreDependencies() {
   sl.registerLazySingleton<LocalAuthTokenProvider>(
     () => LocalAuthTokenProvider(),
   );
-  sl.registerLazySingleton<ApiClient>(() => InsecureApiClient(sl()));
   sl.registerLazySingleton<RetryNotifier>(() => RetryNotifier());
+  // NOTE: ApiClient moved to _initializeAuthDependencies() - requires AuthStatusNotifier
 }
 
 void _initializeDaDataDependencies() {

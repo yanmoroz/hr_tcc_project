@@ -1,20 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../gen/assets.gen.dart';
-import '../../../../../core/base_types/loading_status.dart';
 import '../../../../../core/di/bloc_factory.dart';
+import '../../../../../core/di/service_locator.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/widgets/widgets.dart';
+import '../../../../auth/domain/usecases/logout_usecase.dart';
 import '../delegates/more_page_header_delegate.dart';
 import '../widgets/more_item.dart';
-import '../../../../auth/auth.dart';
 
-class MorePage extends StatelessWidget {
+class MorePage extends StatefulWidget {
   const MorePage({super.key});
+
+  @override
+  State<MorePage> createState() => _MorePageState();
+}
+
+class _MorePageState extends State<MorePage> {
+  bool _isLoggingOut = false;
+
+  Future<void> _handleLogout() async {
+    setState(() => _isLoggingOut = true);
+
+    final logoutUsecase = sl<LogoutUsecase>();
+    final result = await logoutUsecase();
+
+    result.fold(
+      (error) {
+        setState(() => _isLoggingOut = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка выхода: ${error.toString()}'),
+            backgroundColor: AppColors.red500,
+          ),
+        );
+      },
+      (_) {
+        // Notify AuthStatusNotifier - GoRouter will automatically redirect to login
+        BlocFactory.getAuthStatusNotifier().notifyLoggedOut();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,31 +123,13 @@ class MorePage extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: SafeArea(
         top: false,
-        child: BlocConsumer<AuthBloc, AuthState>(
-          bloc: BlocFactory.getAuthBloc(),
-          listener: (context, state) {
-            // Navigate to login page when logout succeeds
-            if (state.status == LoadingStatus.success &&
-                !state.isAuthenticated) {
-              context.go('/login');
-            }
-          },
-          builder: (context, state) {
-            final isLoading = state.status == LoadingStatus.loading;
-
-            return PrimaryButton(
-              label: 'Выйти',
-              size: PrimaryButtonSize.large,
-              style: PrimatyButtonStyle.colored,
-              enabled: !isLoading,
-              isLoading: isLoading,
-              onPressed: () {
-                BlocFactory.getAuthBloc().add(
-                  const AuthEvent.logoutRequested(),
-                );
-              },
-            );
-          },
+        child: PrimaryButton(
+          label: 'Выйти',
+          size: PrimaryButtonSize.large,
+          style: PrimatyButtonStyle.colored,
+          enabled: !_isLoggingOut,
+          isLoading: _isLoggingOut,
+          onPressed: _handleLogout,
         ),
       ),
     );
