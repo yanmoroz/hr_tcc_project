@@ -1,4 +1,5 @@
 import '../../features/applications/applications.dart';
+import '../../features/auth/auth.dart';
 import '../../features/discounts/discounts.dart';
 import '../../features/g2g/comments/comments.dart';
 import '../../features/g2g/notifications/notifications.dart';
@@ -169,5 +170,9 @@ class BlocFactory {
 
   static UnreadNotificationsCubit getUnreadNotificationsCubit() {
     return sl<UnreadNotificationsCubit>();
+  }
+
+  static AuthBloc getAuthBloc() {
+    return sl<AuthBloc>();
   }
 }

@@ -1,6 +1,8 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../features/applications/applications.dart';
+import '../../features/auth/auth.dart';
 import '../../features/discounts/discounts.dart';
 import '../../features/g2g/comments/comments.dart';
 import '../../features/g2g/notifications/notifications.dart';
@@ -14,12 +16,14 @@ import '../dadata/dadata.dart';
 import '../dictionaries/dictionaries.dart';
 import '../files/files.dart';
 import '../network/api_client.dart';
+import '../network/keycloak_api_client.dart';
 import '../retry/retry_notifier.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
   _initializeCoreDependencies();
+  await _initializeAuthDependencies();
   _initializeFileDependencies();
   _initializeDaDataDependencies();
   _initializeMasterDataDependencies();
@@ -68,6 +72,42 @@ void _initializeApplicationDependencies() {
   );
 }
 
+Future<void> _initializeAuthDependencies() async {
+  // Secure storage
+  sl.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(),
+  );
+
+  // Auth Token Provider - use SecureAuthTokenProvider for production
+  final secureAuthTokenProvider = SecureAuthTokenProvider(sl());
+  await secureAuthTokenProvider.initialize();
+  sl.registerLazySingleton<AuthTokenProvider>(() => secureAuthTokenProvider);
+
+  // Keycloak API Client (lightweight client for OAuth2 token requests only)
+  sl.registerLazySingleton<KeycloakApiClient>(() => KeycloakApiClient());
+
+  // Data sources - inject Keycloak client
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: sl(), tokenProvider: sl()),
+  );
+
+  // Use cases
+  sl.registerFactory(() => LoginUsecase(sl()));
+  sl.registerFactory(() => LogoutUsecase(sl()));
+  sl.registerFactory(() => RefreshTokenUsecase(sl()));
+
+  // AuthBloc as singleton (shared across app)
+  sl.registerLazySingleton<AuthBloc>(
+    () =>
+        AuthBloc(loginUsecase: sl(), logoutUsecase: sl(), tokenProvider: sl()),
+  );
+}
+
 void _initializeCommentDependencies() {
   sl.registerLazySingleton<CommentRemoteDataSource>(
     () => CommentRemoteDataSourceImpl(sl()),
@@ -84,7 +124,9 @@ void _initializeCommentDependencies() {
 }
 
 void _initializeCoreDependencies() {
-  sl.registerLazySingleton<AuthTokenProvider>(() => LocalAuthTokenProvider());
+  sl.registerLazySingleton<LocalAuthTokenProvider>(
+    () => LocalAuthTokenProvider(),
+  );
   sl.registerLazySingleton<ApiClient>(() => InsecureApiClient(sl()));
   sl.registerLazySingleton<RetryNotifier>(() => RetryNotifier());
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/entities/application_form.dart';
 import '../../features/applications/applications.dart';
+import '../../features/auth/auth.dart';
 import '../../features/discounts/discounts.dart';
 import '../../features/g2g/comments/comments.dart';
 import '../../features/g2g/home/home.dart';
@@ -28,7 +29,34 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      final authBloc = BlocFactory.getAuthBloc();
+      final isAuthenticated = authBloc.state.isAuthenticated;
+      final isLoginRoute = state.matchedLocation == '/login';
+
+      // If not authenticated and not on login page, redirect to login
+      if (!isAuthenticated && !isLoginRoute) {
+        return '/login';
+      }
+
+      // If authenticated and on login page, redirect to home
+      if (isAuthenticated && isLoginRoute) {
+        return '/home';
+      }
+
+      // No redirect needed
+      return null;
+    },
     routes: [
+      // Login Route (outside of shell)
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => BlocProvider.value(
+          value: BlocFactory.getAuthBloc(),
+          child: const LoginPage(),
+        ),
+      ),
+
       // Shared BLoC provider wrapper for all tabs
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
