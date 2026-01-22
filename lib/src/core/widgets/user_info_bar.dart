@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../gen/assets.gen.dart';
-import '../../features/g2g/notifications/notifications.dart';
+import '../../features/notifications/notifications.dart';
 import '../base_types/loading_status.dart';
 import '../blocs/current_user/bloc.dart';
 import '../entities/current_user.dart';

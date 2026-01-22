@@ -5,7 +5,7 @@ import 'package:hr_tcc_project/src/core/auth/auth_status_notifier.dart';
 import 'package:hr_tcc_project/src/core/auth/auth_token_provider.dart';
 import 'package:hr_tcc_project/src/core/logging/app_logger.dart';
 import 'package:hr_tcc_project/src/core/network/api_client.dart';
-import 'package:hr_tcc_project/src/features/g2g/notifications/notifications.dart';
+import 'package:hr_tcc_project/src/features/notifications/notifications.dart';
 
 import 'helpers/result_helper.dart';
 

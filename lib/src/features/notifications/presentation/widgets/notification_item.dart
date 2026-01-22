@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart' hide Notification;
+import 'package:flutter_html/flutter_html.dart';
+
+import '../../../../core/extensions/date_time_extension.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/html_styles.dart';
+import '../../domain/domain.dart';
+
+class NotificationItem extends StatelessWidget {
+  final Notification notification;
+  final VoidCallback onTap;
+
+  const NotificationItem({
+    super.key,
+    required this.notification,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.grey50,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowCard.withValues(alpha: 0.05),
+              blurRadius: 30,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Content
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Timestamp with green dot (for unread) or without (for read)
+                  Row(
+                    children: [
+                      if (!notification.isRead)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: AppColors.green500,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      Text(
+                        notification.created.toRelativeTime(),
+                        style: AppTypography.captionMedium2.grey700,
+                      ),
+                    ],
+                  ),
+
+                  // Title (if available)
+                  const SizedBox(height: 8),
+                  Html(
+                    data: notification.notificationText,
+                    style: {
+                      "body": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                        fontSize: FontSize(16),
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.black,
+                      ),
+                      ...commonHtmlElementStyles,
+                    },
+                  ),
+
+                  // Body text
+                  if (notification.text != null &&
+                      notification.text!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      child: Html(
+                        data: notification.text,
+                        style: {
+                          "body": Style(
+                            margin: Margins.zero,
+                            padding: HtmlPaddings.zero,
+                            fontSize: FontSize(14),
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.grey700,
+                          ),
+                          ...commonHtmlElementStyles,
+                        },
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Chevron icon - vertically centered
+            Icon(Icons.chevron_right, color: AppColors.grey700),
+          ],
+        ),
+      ),
+    );
+  }
+}

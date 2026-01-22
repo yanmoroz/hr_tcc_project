@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../features/g2g/users/domain/domain.dart';
+import '../../../features/users/domain/domain.dart';
 import '../../base_types/loading_status.dart';
 import '../../entities/current_user.dart';
 import 'current_user_event.dart';
