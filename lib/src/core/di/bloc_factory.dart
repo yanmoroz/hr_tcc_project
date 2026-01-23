@@ -8,6 +8,7 @@ import '../../features/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../../features/security/security.dart';
 import '../blocs/current_user/bloc.dart';
 import '../cache/image_cache_service.dart';
 import '../entities/application_form.dart';
@@ -181,4 +182,23 @@ class BlocFactory {
   );
 
   static AuthStatusNotifier getAuthStatusNotifier() => sl<AuthStatusNotifier>();
+
+  static SetupPincodeBloc createSetupPincodeBloc() => SetupPincodeBloc(
+    setupPincodeUsecase: sl(),
+  );
+
+  static VerifyPincodeBloc createVerifyPincodeBloc() => VerifyPincodeBloc(
+    verifyPincodeUsecase: sl(),
+    authenticateWithBiometricsUsecase: sl(),
+    getSecuritySettingsUsecase: sl(),
+    checkBiometricsAvailabilityUsecase: sl(),
+    authStatusNotifier: sl(),
+  );
+
+  static SetupBiometricsBloc createSetupBiometricsBloc() => SetupBiometricsBloc(
+    checkBiometricsAvailabilityUsecase: sl(),
+    enableBiometricsUsecase: sl(),
+    authenticateWithBiometricsUsecase: sl(),
+    authStatusNotifier: sl(),
+  );
 }

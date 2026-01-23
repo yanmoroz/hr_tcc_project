@@ -40,5 +40,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Для быстрого входа в приложение</string>
 </dict>
 </plist>

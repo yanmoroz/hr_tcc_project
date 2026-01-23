@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:local_auth/local_auth.dart';
 
 import '../../features/applications/applications.dart';
 import '../../features/auth/auth.dart';
@@ -10,6 +11,7 @@ import '../../features/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../../features/security/security.dart';
 import '../auth/auth_status_notifier.dart';
 import '../auth/auth_token_provider.dart';
 import '../cache/image_cache_service.dart';
@@ -25,6 +27,7 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
   _initializeCoreDependencies();
   await _initializeAuthDependencies();
+  await _initializeSecurityDependencies();
   _initializeFileDependencies();
   _initializeDaDataDependencies();
   _initializeMasterDataDependencies();
@@ -109,8 +112,46 @@ Future<void> _initializeAuthDependencies() async {
 
   // Use cases
   sl.registerFactory(() => LoginUsecase(sl()));
-  sl.registerFactory(() => LogoutUsecase(sl()));
+  // Note: LogoutUsecase registration moved to _initializeSecurityDependencies
+  // because it depends on SecurityRepository
   sl.registerFactory(() => RefreshTokenUsecase(sl()));
+}
+
+Future<void> _initializeSecurityDependencies() async {
+  // Local Auth
+  sl.registerLazySingleton<LocalAuthentication>(() => LocalAuthentication());
+
+  // Data sources
+  sl.registerLazySingleton<SecurityLocalDataSource>(
+    () => SecurityLocalDataSourceImpl(sl<FlutterSecureStorage>(), sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<SecurityRepository>(
+    () => SecurityRepositoryImpl(sl()),
+  );
+
+  // Use cases
+  sl.registerFactory(() => SetupPincodeUsecase(sl()));
+  sl.registerFactory(() => VerifyPincodeUsecase(sl()));
+  sl.registerFactory(() => EnableBiometricsUsecase(sl()));
+  sl.registerFactory(() => CheckBiometricsAvailabilityUsecase(sl()));
+  sl.registerFactory(() => AuthenticateWithBiometricsUsecase(sl()));
+  sl.registerFactory(() => GetSecuritySettingsUsecase(sl()));
+  sl.registerFactory(() => ClearSecuritySettingsUsecase(sl()));
+
+  // Register LogoutUsecase here because it depends on SecurityRepository
+  sl.registerFactory(() => LogoutUsecase(sl(), sl()));
+
+  // Configure AuthStatusNotifier with security checkers
+  final authStatusNotifier = sl<AuthStatusNotifier>();
+  final securityRepository = sl<SecurityRepository>();
+  authStatusNotifier.configureSecurityCheckers(
+    isPincodeSet: securityRepository.isPincodeSet,
+  );
+
+  // Re-check initial status now that security is configured
+  await authStatusNotifier.checkInitialStatus();
 }
 
 void _initializeCommentDependencies() {

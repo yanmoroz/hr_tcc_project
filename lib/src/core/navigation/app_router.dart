@@ -14,6 +14,7 @@ import '../../features/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../../features/security/security.dart';
 import '../auth/auth_status_notifier.dart';
 import '../blocs/current_user/bloc.dart';
 import '../di/bloc_factory.dart';
@@ -35,21 +36,32 @@ class AppRouter {
     debugLogDiagnostics: true,
     refreshListenable: _authStatusNotifier,
     redirect: (context, state) {
-      final isAuthenticated = _authStatusNotifier.isAuthenticated;
-      final isLoginRoute = state.matchedLocation == '/login';
+      final authStatus = _authStatusNotifier.status;
+      final currentPath = state.matchedLocation;
 
-      // If not authenticated and not on login page, redirect to login
-      if (!isAuthenticated && !isLoginRoute) {
-        return '/login';
+      final isLoginRoute = currentPath == '/login';
+      final isSecuritySetupRoute = currentPath.startsWith('/security/setup');
+      final isUnlockRoute = currentPath == '/security/unlock';
+
+      switch (authStatus) {
+        case AuthStatus.unauthenticated:
+          if (!isLoginRoute) return '/login';
+          return null;
+
+        case AuthStatus.needsPincodeSetup:
+          if (!isSecuritySetupRoute) return '/security/setup-pincode';
+          return null;
+
+        case AuthStatus.needsUnlock:
+          if (!isUnlockRoute) return '/security/unlock';
+          return null;
+
+        case AuthStatus.authenticated:
+          if (isLoginRoute || isUnlockRoute || isSecuritySetupRoute) {
+            return '/home';
+          }
+          return null;
       }
-
-      // If authenticated and on login page, redirect to home
-      if (isAuthenticated && isLoginRoute) {
-        return '/home';
-      }
-
-      // No redirect needed
-      return null;
     },
     routes: [
       // Login Route (outside of shell) - AuthBloc created locally
@@ -58,6 +70,31 @@ class AppRouter {
         builder: (context, state) => BlocProvider(
           create: (context) => BlocFactory.createAuthBloc(),
           child: const LoginPage(),
+        ),
+      ),
+
+      // Security Routes (pincode setup, biometrics setup, unlock)
+      GoRoute(
+        path: '/security/setup-pincode',
+        builder: (context, state) => BlocProvider(
+          create: (context) => BlocFactory.createSetupPincodeBloc(),
+          child: const SetupPincodePage(),
+        ),
+      ),
+      GoRoute(
+        path: '/security/setup-biometrics',
+        builder: (context, state) => BlocProvider(
+          create: (context) => BlocFactory.createSetupBiometricsBloc()
+            ..add(const SetupBiometricsEvent.checkAvailability()),
+          child: const SetupBiometricsPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/security/unlock',
+        builder: (context, state) => BlocProvider(
+          create: (context) => BlocFactory.createVerifyPincodeBloc()
+            ..add(const VerifyPincodeEvent.checkBiometrics()),
+          child: const VerifyPincodePage(),
         ),
       ),
 
