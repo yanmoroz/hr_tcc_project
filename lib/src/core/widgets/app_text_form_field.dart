@@ -3,6 +3,11 @@ import 'package:flutter/services.dart';
 
 import '../theme/theme.dart';
 
+enum AppTextFieldStyle {
+  outlined,
+  filled,
+}
+
 class AppTextFormField extends StatefulWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -23,6 +28,7 @@ class AppTextFormField extends StatefulWidget {
   final void Function()? onTap;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
+  final AppTextFieldStyle fieldStyle;
 
   const AppTextFormField({
     super.key,
@@ -45,6 +51,7 @@ class AppTextFormField extends StatefulWidget {
     this.onTap,
     this.suffixIcon,
     this.prefixIcon,
+    this.fieldStyle = AppTextFieldStyle.outlined,
   });
 
   @override
@@ -63,6 +70,33 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   FocusNode get _focusNode =>
       widget.focusNode ?? (_internalFocusNode ??= FocusNode());
 
+  Color _getBackgroundColor(bool isFocused) {
+    if (!widget.enabled) return AppColors.grey50;
+
+    if (widget.fieldStyle == AppTextFieldStyle.filled) {
+      return isFocused ? AppColors.white : AppColors.grey100;
+    }
+    return AppColors.white;
+  }
+
+  Border _getBorder(bool hasError, bool isFocused) {
+    if (hasError) {
+      return Border.all(color: AppColors.red500, width: 1);
+    }
+
+    if (widget.fieldStyle == AppTextFieldStyle.filled) {
+      if (isFocused) {
+        return Border.all(color: AppColors.blue300, width: 1);
+      }
+      return Border.all(color: AppColors.transparent, width: 0);
+    }
+
+    return Border.all(
+      color: isFocused ? AppColors.blue300 : AppColors.grey500,
+      width: 1,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -79,16 +113,9 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: widget.enabled ? AppColors.white : AppColors.grey50,
+                color: _getBackgroundColor(isFocused),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: hasError
-                      ? AppColors.red500
-                      : isFocused
-                      ? AppColors.blue300
-                      : AppColors.grey500,
-                  width: 1,
-                ),
+                border: _getBorder(hasError, isFocused),
               ),
               child: TextFormField(
                 controller: _controller,
