@@ -100,21 +100,25 @@ class NumericKeypad extends StatelessWidget {
   }
 
   Widget _buildBiometricsButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Material(
-        color: AppColors.transparent,
-        child: InkWell(
-          onTap: onBiometricsPressed,
-          borderRadius: BorderRadius.circular(40),
-          child: Container(
-            width: 80,
-            height: 80,
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.fingerprint,
-              color: AppColors.blue700,
-              size: 32,
+    return Container(
+      width: 64,
+      height: 64,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Material(
+          color: AppColors.transparent,
+          child: InkWell(
+            onTap: onBiometricsPressed,
+            borderRadius: BorderRadius.circular(40),
+            child: Container(
+              width: 80,
+              height: 80,
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.fingerprint,
+                color: AppColors.black,
+                size: 32,
+              ),
             ),
           ),
         ),
