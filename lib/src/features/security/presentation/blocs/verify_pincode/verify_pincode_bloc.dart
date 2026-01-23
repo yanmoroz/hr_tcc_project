@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/auth/auth_status_notifier.dart';
 import '../../../../../core/base_types/loading_status.dart';
+import '../../../../auth/domain/usecases/logout_usecase.dart';
 import '../../../domain/entities/security_settings.dart';
 import '../../../domain/usecases/authenticate_with_biometrics_usecase.dart';
 import '../../../domain/usecases/check_biometrics_availability_usecase.dart';
@@ -15,6 +16,7 @@ class VerifyPincodeBloc extends Bloc<VerifyPincodeEvent, VerifyPincodeState> {
   final AuthenticateWithBiometricsUsecase _authenticateWithBiometricsUsecase;
   final GetSecuritySettingsUsecase _getSecuritySettingsUsecase;
   final CheckBiometricsAvailabilityUsecase _checkBiometricsAvailabilityUsecase;
+  final LogoutUsecase _logoutUsecase;
   final AuthStatusNotifier _authStatusNotifier;
   static const _pincodeLength = 4;
 
@@ -23,11 +25,13 @@ class VerifyPincodeBloc extends Bloc<VerifyPincodeEvent, VerifyPincodeState> {
     required AuthenticateWithBiometricsUsecase authenticateWithBiometricsUsecase,
     required GetSecuritySettingsUsecase getSecuritySettingsUsecase,
     required CheckBiometricsAvailabilityUsecase checkBiometricsAvailabilityUsecase,
+    required LogoutUsecase logoutUsecase,
     required AuthStatusNotifier authStatusNotifier,
   })  : _verifyPincodeUsecase = verifyPincodeUsecase,
         _authenticateWithBiometricsUsecase = authenticateWithBiometricsUsecase,
         _getSecuritySettingsUsecase = getSecuritySettingsUsecase,
         _checkBiometricsAvailabilityUsecase = checkBiometricsAvailabilityUsecase,
+        _logoutUsecase = logoutUsecase,
         _authStatusNotifier = authStatusNotifier,
         super(const VerifyPincodeState()) {
     on<VerifyDigitEntered>(_onDigitEntered);
@@ -36,6 +40,7 @@ class VerifyPincodeBloc extends Bloc<VerifyPincodeEvent, VerifyPincodeState> {
     on<CheckBiometrics>(_onCheckBiometrics);
     on<AuthenticateWithBiometrics>(_onAuthenticateWithBiometrics);
     on<VerifyReset>(_onReset);
+    on<PasswordLoginRequested>(_onPasswordLoginRequested);
   }
 
   Future<void> _onCheckBiometrics(
@@ -164,5 +169,13 @@ class VerifyPincodeBloc extends Bloc<VerifyPincodeEvent, VerifyPincodeState> {
 
   void _onReset(VerifyReset event, Emitter<VerifyPincodeState> emit) {
     emit(const VerifyPincodeState());
+  }
+
+  Future<void> _onPasswordLoginRequested(
+    PasswordLoginRequested event,
+    Emitter<VerifyPincodeState> emit,
+  ) async {
+    await _logoutUsecase();
+    _authStatusNotifier.notifyLoggedOut();
   }
 }

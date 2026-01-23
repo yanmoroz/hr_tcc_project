@@ -192,6 +192,7 @@ class BlocFactory {
     authenticateWithBiometricsUsecase: sl(),
     getSecuritySettingsUsecase: sl(),
     checkBiometricsAvailabilityUsecase: sl(),
+    logoutUsecase: sl(),
     authStatusNotifier: sl(),
   );
 

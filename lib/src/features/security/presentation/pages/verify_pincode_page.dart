@@ -81,6 +81,7 @@ class VerifyPincodePage extends StatelessWidget {
                       child: NumericKeypad(
                         showBiometrics: showBiometrics,
                         showDelete: state.enteredPincode.isNotEmpty,
+                        showPasswordLogin: true,
                         onDigitPressed: (digit) {
                           context.read<VerifyPincodeBloc>().add(
                             VerifyPincodeEvent.digitEntered(digit),
@@ -98,6 +99,11 @@ class VerifyPincodePage extends StatelessWidget {
                                 );
                               }
                             : null,
+                        onPasswordLoginPressed: () {
+                          context.read<VerifyPincodeBloc>().add(
+                            const VerifyPincodeEvent.passwordLoginRequested(),
+                          );
+                        },
                       ),
                     ),
                 ],

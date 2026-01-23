@@ -7,16 +7,20 @@ class NumericKeypad extends StatelessWidget {
   final void Function(String digit) onDigitPressed;
   final VoidCallback onDeletePressed;
   final VoidCallback? onBiometricsPressed;
+  final VoidCallback? onPasswordLoginPressed;
   final bool showBiometrics;
   final bool showDelete;
+  final bool showPasswordLogin;
 
   const NumericKeypad({
     super.key,
     required this.onDigitPressed,
     required this.onDeletePressed,
     this.onBiometricsPressed,
+    this.onPasswordLoginPressed,
     this.showBiometrics = false,
     this.showDelete = true,
+    this.showPasswordLogin = false,
   });
 
   @override
@@ -43,14 +47,30 @@ class NumericKeypad extends StatelessWidget {
   }
 
   Widget _buildBottomRow() {
+    // Left: "Вход по паролю" button (if showPasswordLogin)
+    // Center: "0" digit
+    // Right: Biometrics (if showBiometrics && no digits) OR Delete (if digits) OR empty
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        showBiometrics ? _buildBiometricsButton() : const SizedBox(width: 64),
+        showPasswordLogin
+            ? _buildPasswordLoginButton()
+            : const SizedBox(width: 64),
         _buildDigitButton('0'),
-        showDelete ? _buildDeleteButton() : const SizedBox(width: 64),
+        _buildRightButton(),
       ],
     );
+  }
+
+  Widget _buildRightButton() {
+    // Show biometrics only when no digits entered (showDelete is false)
+    if (showBiometrics && !showDelete) {
+      return _buildBiometricsButton();
+    }
+    if (showDelete) {
+      return _buildDeleteButton();
+    }
+    return const SizedBox(width: 64);
   }
 
   Widget _buildDigitButton(String digit) {
@@ -111,14 +131,36 @@ class NumericKeypad extends StatelessWidget {
             onTap: onBiometricsPressed,
             borderRadius: BorderRadius.circular(40),
             child: Container(
-              width: 80,
-              height: 80,
               alignment: Alignment.center,
               child: const Icon(
                 Icons.fingerprint,
                 color: AppColors.black,
                 size: 32,
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordLoginButton() {
+    return Container(
+      width: 64,
+      height: 64,
+      child: Material(
+        color: AppColors.transparent,
+        child: InkWell(
+          onTap: onPasswordLoginPressed,
+          borderRadius: BorderRadius.circular(40),
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+              'Вход по\nпаролю',
+              style: AppTypography.textRegular2.copyWith(
+                color: AppColors.grey700,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
         ),

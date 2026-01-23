@@ -16,4 +16,7 @@ class VerifyPincodeEvent with _$VerifyPincodeEvent {
       AuthenticateWithBiometrics;
 
   const factory VerifyPincodeEvent.reset() = VerifyReset;
+
+  const factory VerifyPincodeEvent.passwordLoginRequested() =
+      PasswordLoginRequested;
 }
