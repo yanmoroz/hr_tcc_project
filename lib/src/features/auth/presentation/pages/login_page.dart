@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleLogin() {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_isFormValid) {
       context.read<AuthBloc>().add(
         AuthEvent.loginRequested(
           username: _usernameController.text.trim(),
@@ -121,12 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.next,
                           enabled: !isLoading,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Введите логин';
-                            }
-                            return null;
-                          },
+                          hintStyle: AppTypography.textRegular1.grey500,
                         ),
                         const SizedBox(height: 16),
                         AppTextFormField(
@@ -151,12 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                               });
                             },
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Введите пароль';
-                            }
-                            return null;
-                          },
+                          hintStyle: AppTypography.textRegular1.grey500,
                         ),
                         const SizedBox(height: 32),
                         _buildConsentRow(isLoading),
@@ -185,8 +175,8 @@ class _LoginPageState extends State<LoginPage> {
                   right: 16,
                   bottom: MediaQuery.of(context).padding.bottom + 24,
                   child: Text(
-                    'Если у вас нет учётной записи, обратитесь в компанию',
-                    style: AppTypography.textRegular2.grey700,
+                    'Если у вас нет учётной записи,\nобратитесь в компанию',
+                    style: AppTypography.textRegular1.grey700,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -203,8 +193,8 @@ class _LoginPageState extends State<LoginPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width: 48,
-          height: 48,
+          width: 24,
+          height: 24,
           child: AppCheckBox(
             value: _consentChecked,
             onChanged: isLoading
@@ -215,15 +205,16 @@ class _LoginPageState extends State<LoginPage> {
                   },
           ),
         ),
+        const SizedBox(width: 8),
         Expanded(
           child: Text.rich(
             TextSpan(
-              style: AppTypography.textRegular2.black,
+              style: AppTypography.captionMedium2.grey700,
               children: [
                 const TextSpan(text: 'Я согласен(на) на '),
                 TextSpan(
                   text: 'обработку персональных данных',
-                  style: AppTypography.textRegular2.blue500,
+                  style: AppTypography.captionMedium2.blue700,
                   recognizer: TapGestureRecognizer()
                     ..onTap = _showPrivacyPolicy,
                 ),

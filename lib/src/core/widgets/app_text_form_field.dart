@@ -3,10 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme/theme.dart';
 
-enum AppTextFieldStyle {
-  outlined,
-  filled,
-}
+enum AppTextFieldStyle { outlined, filled }
 
 class AppTextFormField extends StatefulWidget {
   final TextEditingController? controller;
@@ -29,6 +26,7 @@ class AppTextFormField extends StatefulWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final AppTextFieldStyle fieldStyle;
+  final TextStyle? hintStyle;
 
   const AppTextFormField({
     super.key,
@@ -52,6 +50,7 @@ class AppTextFormField extends StatefulWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.fieldStyle = AppTextFieldStyle.outlined,
+    this.hintStyle,
   });
 
   @override
@@ -143,12 +142,19 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
                   labelStyle: AppTypography.textRegular1.grey700,
                   floatingLabelStyle: AppTypography.textRegular2.grey700,
                   hintText: showLabel ? null : widget.labelText,
-                  hintStyle: AppTypography.textRegular1.grey700,
+                  hintStyle:
+                      widget.hintStyle ?? AppTypography.textRegular1.grey700,
                   alignLabelWithHint: true,
                   errorStyle: const TextStyle(height: 0, fontSize: 0),
                   border: InputBorder.none,
                   suffixIcon: widget.suffixIcon,
+                  suffixIconConstraints: widget.suffixIcon != null
+                      ? const BoxConstraints(maxHeight: 36, minWidth: 48)
+                      : null,
                   prefixIcon: widget.prefixIcon,
+                  prefixIconConstraints: widget.prefixIcon != null
+                      ? const BoxConstraints(minHeight: 24, minWidth: 48)
+                      : null,
                 ),
                 cursorColor: AppColors.blue300,
               ),

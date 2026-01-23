@@ -59,7 +59,7 @@ class AppCheckBox extends StatelessWidget {
         onTap: _handleTap,
         behavior: HitTestBehavior.opaque,
         child: Padding(
-          padding: const EdgeInsets.all(12.0), // 48×48 tap target
+          padding: const EdgeInsets.all(4.0),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
