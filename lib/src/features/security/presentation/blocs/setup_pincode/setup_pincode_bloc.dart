@@ -9,10 +9,9 @@ class SetupPincodeBloc extends Bloc<SetupPincodeEvent, SetupPincodeState> {
   final SetupPincodeUsecase _setupPincodeUsecase;
   static const _pincodeLength = 4;
 
-  SetupPincodeBloc({
-    required SetupPincodeUsecase setupPincodeUsecase,
-  })  : _setupPincodeUsecase = setupPincodeUsecase,
-        super(const SetupPincodeState()) {
+  SetupPincodeBloc({required SetupPincodeUsecase setupPincodeUsecase})
+    : _setupPincodeUsecase = setupPincodeUsecase,
+      super(const SetupPincodeState()) {
     on<DigitEntered>(_onDigitEntered);
     on<DigitDeleted>(_onDigitDeleted);
     on<PincodeEntered>(_onPincodeEntered);
@@ -85,10 +84,7 @@ class SetupPincodeBloc extends Bloc<SetupPincodeEvent, SetupPincodeState> {
 
     if (state.enteredPincode != state.confirmedPincode) {
       emit(
-        state.copyWith(
-          errorMessage: 'Пин-коды не совпадают',
-          confirmedPincode: '',
-        ),
+        state.copyWith(errorMessage: 'Код не совпадает', confirmedPincode: ''),
       );
       return;
     }

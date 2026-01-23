@@ -22,7 +22,7 @@ class PincodeDots extends StatelessWidget {
         final isFilled = index < filledCount;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 16),
           width: 16,
           height: 16,
           decoration: BoxDecoration(
@@ -30,8 +30,8 @@ class PincodeDots extends StatelessWidget {
             color: hasError
                 ? AppColors.red500
                 : isFilled
-                    ? AppColors.blue700
-                    : AppColors.grey500,
+                ? AppColors.blue700
+                : AppColors.grey200,
           ),
         );
       }),

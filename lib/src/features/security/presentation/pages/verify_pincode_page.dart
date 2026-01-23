@@ -17,6 +17,7 @@ class VerifyPincodePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
+      appBar: AppBar(),
       body: BlocConsumer<VerifyPincodeBloc, VerifyPincodeState>(
         listener: (context, state) {
           if (state.isVerified) {
@@ -28,76 +29,79 @@ class VerifyPincodePage extends StatelessWidget {
               state.isBiometricsAvailable && state.isBiometricsEnabled;
 
           return SafeArea(
-            child: Column(
-              children: [
-                const Spacer(flex: 2),
-
-                Text(
-                  'Введите пин-код',
-                  style: AppTypography.titleBold1,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-
-                if (state.attempts > 0)
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
                   Text(
-                    'Осталось попыток: ${state.maxAttempts - state.attempts}',
-                    style: AppTypography.textRegular2.copyWith(
-                      color: AppColors.red500,
-                    ),
-                    textAlign: TextAlign.center,
-                  )
-                else
-                  Text(
-                    'Для доступа к приложению',
-                    style: AppTypography.textRegular1.grey700,
+                    'Введите код доступа',
+                    style: AppTypography.titleBold2,
                     textAlign: TextAlign.center,
                   ),
-                const SizedBox(height: 40),
+                  const SizedBox(height: 24),
 
-                PincodeDots(
-                  filledCount: state.enteredPincode.length,
-                  hasError: state.errorMessage != null,
-                ),
-
-                if (state.errorMessage != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    state.errorMessage!,
-                    style: AppTypography.textRegular2.copyWith(
-                      color: AppColors.red500,
+                  if (state.attempts > 0)
+                    Text(
+                      'Осталось попыток: ${state.maxAttempts - state.attempts}',
+                      style: AppTypography.textRegular2.copyWith(
+                        color: AppColors.red500,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  else
+                    Text(
+                      'Для доступа к приложению',
+                      style: AppTypography.textRegular1.black,
+                      textAlign: TextAlign.center,
                     ),
+                  const SizedBox(height: 48),
+
+                  PincodeDots(
+                    filledCount: state.enteredPincode.length,
+                    hasError: state.errorMessage != null,
                   ),
+
+                  if (state.errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      state.errorMessage!,
+                      style: AppTypography.textRegular2.copyWith(
+                        color: AppColors.red500,
+                      ),
+                    ),
+                  ],
+
+                  const Spacer(flex: 1),
+
+                  if (state.status == LoadingStatus.loading)
+                    const CircularProgressIndicator()
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: NumericKeypad(
+                        showBiometrics: showBiometrics,
+                        showDelete: state.enteredPincode.isNotEmpty,
+                        onDigitPressed: (digit) {
+                          context.read<VerifyPincodeBloc>().add(
+                            VerifyPincodeEvent.digitEntered(digit),
+                          );
+                        },
+                        onDeletePressed: () {
+                          context.read<VerifyPincodeBloc>().add(
+                            const VerifyPincodeEvent.digitDeleted(),
+                          );
+                        },
+                        onBiometricsPressed: showBiometrics
+                            ? () {
+                                context.read<VerifyPincodeBloc>().add(
+                                  const VerifyPincodeEvent.authenticateWithBiometrics(),
+                                );
+                              }
+                            : null,
+                      ),
+                    ),
                 ],
-
-                const Spacer(flex: 1),
-
-                if (state.status == LoadingStatus.loading)
-                  const CircularProgressIndicator()
-                else
-                  NumericKeypad(
-                    showBiometrics: showBiometrics,
-                    onDigitPressed: (digit) {
-                      context.read<VerifyPincodeBloc>().add(
-                        VerifyPincodeEvent.digitEntered(digit),
-                      );
-                    },
-                    onDeletePressed: () {
-                      context.read<VerifyPincodeBloc>().add(
-                        const VerifyPincodeEvent.digitDeleted(),
-                      );
-                    },
-                    onBiometricsPressed: showBiometrics
-                        ? () {
-                            context.read<VerifyPincodeBloc>().add(
-                              const VerifyPincodeEvent.authenticateWithBiometrics(),
-                            );
-                          }
-                        : null,
-                  ),
-
-                const SizedBox(height: 48),
-              ],
+              ),
             ),
           );
         },
