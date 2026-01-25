@@ -70,6 +70,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/education-icon.svg
   String get educationIcon => 'assets/icons/education-icon.svg';
 
+  /// File path: assets/icons/faceid.svg
+  String get faceid => 'assets/icons/faceid.svg';
+
   /// File path: assets/icons/home-icon.svg
   String get homeIcon => 'assets/icons/home-icon.svg';
 
@@ -154,6 +157,7 @@ class $AssetsIconsGen {
     document1Icon,
     document2Icon,
     educationIcon,
+    faceid,
     homeIcon,
     ispringIcon,
     likeIcon,
