@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/html_styles.dart';
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
 import '../blocs/news_detail_page/bloc.dart';
@@ -17,7 +18,11 @@ class NewsDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NewsDetailBloc, NewsDetailState>(
       builder: (context, state) {
-        return Scaffold(appBar: AppBar(), body: _buildBody(context, state));
+        return Scaffold(
+          appBar: AppBar(),
+          body: _buildBody(context, state),
+          backgroundColor: AppColors.white,
+        );
       },
     );
   }
@@ -68,10 +73,21 @@ class NewsDetailPage extends StatelessWidget {
         context.read<NewsDetailBloc>().add(const NewsDetailEvent.refresh());
       },
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Date
+            Row(
+              children: [
+                Text(
+                  _formatDate(newsDetail.createdData),
+                  style: AppTypography.captionMedium2.grey700,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
             // Image
             if (coverImage != null)
               ClipRRect(
@@ -92,53 +108,23 @@ class NewsDetailPage extends StatelessWidget {
             if (coverImage != null) const SizedBox(height: 16),
 
             // Title
-            Text(
-              newsDetail.title,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-
-            // Date
-            Row(
-              children: [
-                const Icon(Icons.calendar_today, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  _formatDate(newsDetail.createdData),
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+            Text(newsDetail.title, style: AppTypography.titleBold2.black),
+            const SizedBox(height: 12),
 
             // Content (HTML)
             if (newsDetail.content.isNotEmpty) ...[
-              Text(
-                'Content',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              Html(
+                data: newsDetail.content,
+                style: {
+                  "body": Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                  ),
+                  ...commonHtmlElementStyles,
+                },
               ),
-              const SizedBox(height: 8),
-              Html(data: newsDetail.content),
               const SizedBox(height: 16),
             ],
-
-            // Author
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(
-                  '${newsDetail.author.firstName} ${newsDetail.author.lastName}',
-                ),
-                subtitle: newsDetail.author.title.isNotEmpty
-                    ? Text(newsDetail.author.title)
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 16),
 
             // Like and Comment buttons
             Container(
@@ -170,6 +156,8 @@ class NewsDetailPage extends StatelessWidget {
                 ],
               ),
             ),
+
+            const SizedBox(height: 16),
           ],
         ),
       ),
