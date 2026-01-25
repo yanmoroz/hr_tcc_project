@@ -107,7 +107,7 @@ class _NewsPageState extends State<NewsPage> {
           NewsListEvent.refreshNews(category: category, search: search),
         );
       },
-      child: ListView.builder(
+      child: ListView.separated(
         controller: _scrollController,
         padding: const EdgeInsets.all(16),
         itemCount: newsItems.length + (isLoadingMore ? 1 : 0),
@@ -133,6 +133,7 @@ class _NewsPageState extends State<NewsPage> {
             ),
           );
         },
+        separatorBuilder: (context, index) => const SizedBox(height: 8),
       ),
     );
   }

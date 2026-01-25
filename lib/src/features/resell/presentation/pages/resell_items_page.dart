@@ -58,11 +58,12 @@ class _ResellItemsPageState extends State<ResellItemsPage> {
               previous.bookingItemId != current.bookingItemId ||
               previous.isBooking != current.isBooking,
           listener: (context, state) {
-            final itemName = state.items
-                .firstWhere((item) => item.id == state.bookingItemId)
-                .shortName;
-
             if (state.bookingItemId != null && !state.isBooking) {
+              final item = state.items
+                  .where((item) => item.id == state.bookingItemId)
+                  .firstOrNull;
+              final itemName = item?.shortName ?? '';
+
               context
                   .push(
                     '/home/resell/booking/${state.bookingItemId}',

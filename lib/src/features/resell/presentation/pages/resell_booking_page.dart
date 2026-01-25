@@ -294,6 +294,7 @@ class _ResellBookingPageState extends State<ResellBookingPage> {
   void _validateForm() {
     final isValid =
         _innController.text.isNotEmpty &&
+        _innController.text.length == 12 &&
         _addressController.text.isNotEmpty &&
         _employeePlaceController.text.isNotEmpty;
 
