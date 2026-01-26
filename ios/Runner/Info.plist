@@ -35,6 +35,9 @@
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
@@ -42,5 +45,11 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Для быстрого входа в приложение</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Приложению требуется доступ к вашей фотогалерее для выбора и загрузки фотографий</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Приложению требуется доступ для сохранения фотографий в вашу галерею</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Приложению требуется доступ к камере для съемки и загрузки фотографий</string>
 </dict>
 </plist>
