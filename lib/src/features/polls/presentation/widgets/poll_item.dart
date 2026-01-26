@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/primary_button.dart';
 import 'poll_item_view_model.dart';
 
 class PollItem extends StatelessWidget {
@@ -10,83 +12,185 @@ class PollItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final poll = viewModel.poll;
-
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12.0),
-        child: Container(
-          decoration: viewModel.decoration,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  poll.title,
-                  style: viewModel.titleStyle(
-                    theme.textTheme,
-                    theme.colorScheme,
-                  ),
-                ),
-                if (viewModel.shouldShowShortDescription) ...[
-                  const SizedBox(height: 8.0),
-                  Text(
-                    poll.shortDescription,
-                    style: viewModel.shortDescriptionStyle(
-                      theme.textTheme,
-                      theme.colorScheme,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 8.0),
-                Row(
-                  children: [
-                    if (viewModel.answersCountText != null)
-                      Text(
-                        viewModel.answersCountText!,
-                        style: viewModel.answersCountStyle(
-                          theme.textTheme,
-                          theme.colorScheme,
-                        ),
-                      ),
-                    if (viewModel.answersCountText != null && poll.canAnswer)
-                      Text(
-                        ' • ',
-                        style: viewModel.separatorStyle(
-                          theme.textTheme,
-                          theme.colorScheme,
-                        ),
-                      ),
-                    Text(
-                      viewModel.statusText,
-                      style: viewModel.statusStyle(
-                        theme.textTheme,
-                        theme.colorScheme,
-                      ),
-                    ),
-                  ],
-                ),
-                if (viewModel.shouldShowNewBadge) ...[
-                  const SizedBox(height: 8.0),
-                  Chip(
-                    label: const Text('New'),
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    labelStyle: TextStyle(
-                      color: theme.colorScheme.onPrimaryContainer,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: viewModel.cardBackgroundColor,
+          borderRadius: BorderRadius.circular(12.0),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadow.withValues(alpha: 0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTimeLabel(),
+                  const SizedBox(height: 8.0),
+                  _buildTitle(),
+                  if (viewModel.shouldShowShortDescription) ...[
+                    const SizedBox(height: 8.0),
+                    _buildDescription(),
+                  ],
+                  const SizedBox(height: 24.0),
+                  _buildBottomSection(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    if (viewModel.hasCoverImage) {
+      return ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(12.0),
+          topRight: Radius.circular(12.0),
+        ),
+        child: Image.memory(
+          viewModel.coverImage!,
+          height: 140,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    if (viewModel.isActivePoll) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16.0),
+        decoration: const BoxDecoration(
+          color: AppColors.orange500,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                viewModel.poll.title,
+                style: AppTypography.textSemibold1.copyWith(
+                  color: AppColors.white,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8.0),
+            const Text('📊', style: TextStyle(fontSize: 24)),
+          ],
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildTimeLabel() {
+    return Text(
+      viewModel.timeText,
+      style: AppTypography.captionMedium2.copyWith(
+        color: viewModel.secondaryTextColor,
+      ),
+    );
+  }
+
+  Widget _buildTitle() {
+    if (viewModel.isActivePoll) {
+      return Text(
+        viewModel.poll.shortDescription.isNotEmpty
+            ? viewModel.poll.shortDescription
+            : viewModel.poll.title,
+        style: AppTypography.titleSemibold3.copyWith(
+          color: viewModel.textColor,
+        ),
+      );
+    }
+
+    return Text(
+      viewModel.poll.title,
+      style: AppTypography.titleSemibold3.copyWith(color: viewModel.textColor),
+    );
+  }
+
+  Widget _buildDescription() {
+    if (viewModel.isActivePoll) {
+      return const SizedBox.shrink();
+    }
+
+    return Text(
+      viewModel.poll.shortDescription,
+      style: AppTypography.textRegular2.copyWith(
+        color: viewModel.secondaryTextColor,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildBottomSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _buildStatusChip(),
+            const Spacer(),
+            _buildAnswersCountChip(),
+          ],
+        ),
+        if (viewModel.shouldShowActionButton) ...[
+          const SizedBox(height: 16.0),
+          SizedBox(
+            width: double.infinity,
+            child: PrimaryButton(
+              label: 'Пройти опрос',
+              size: PrimaryButtonSize.small,
+              style: PrimatyButtonStyle.colored,
+              onPressed: onTap,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildStatusChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      decoration: BoxDecoration(
+        color: viewModel.statusChipBackgroundColor,
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: Text(
+        viewModel.statusText,
+        style: AppTypography.captionMedium2.copyWith(
+          color: viewModel.statusChipTextColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnswersCountChip() {
+    return Text(
+      viewModel.answersCountText,
+      style: AppTypography.textRegular2.black,
     );
   }
 }

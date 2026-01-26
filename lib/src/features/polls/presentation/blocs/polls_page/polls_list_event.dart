@@ -4,6 +4,8 @@ part 'polls_list_event.freezed.dart';
 
 @freezed
 abstract class PollsListEvent with _$PollsListEvent {
-  const factory PollsListEvent.loadPolls({int? status}) = LoadPolls;
-  const factory PollsListEvent.refreshPolls({int? status}) = RefreshPolls;
+  const factory PollsListEvent.loadPolls() = LoadPolls;
+  const factory PollsListEvent.loadMore() = LoadMore;
+  const factory PollsListEvent.refreshPolls() = RefreshPolls;
+  const factory PollsListEvent.filterByStatus(int? status) = FilterByStatus;
 }

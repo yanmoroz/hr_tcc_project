@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../../../../core/theme/theme.dart';
 import '../../domain/domain.dart';
 
 class PollItemViewModel {
@@ -10,84 +12,59 @@ class PollItemViewModel {
 
   const PollItemViewModel({required this.poll, this.coverImage});
 
-  String? get answersCountText {
-    if (poll.countAnswers == 0) {
-      return null;
-    }
-    return '${poll.countAnswers} answers';
-  }
-
-  BoxDecoration? get decoration {
-    if (!hasCoverImage) {
-      return null;
-    }
-
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(12.0),
-      image: DecorationImage(
-        image: MemoryImage(coverImage!),
-        fit: BoxFit.cover,
-        colorFilter: ColorFilter.mode(
-          Colors.black.withAlpha(40),
-          BlendMode.darken,
-        ),
-      ),
-    );
+  String get answersCountText {
+    return 'Прошли: ${poll.countAnswers}';
   }
 
   bool get hasCoverImage => coverImage != null;
 
-  bool get shouldShowNewBadge => poll.isNew;
+  bool get isActivePoll => poll.canAnswer && !hasCoverImage;
+
+  bool get shouldShowActionButton => poll.canAnswer;
 
   bool get shouldShowShortDescription => poll.shortDescription.isNotEmpty;
 
   String get statusText {
-    return poll.canAnswer ? 'Can answer' : 'Cannot answer';
+    return poll.canAnswer ? 'Не пройден' : 'Пройден';
   }
 
-  TextStyle? answersCountStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.bodySmall?.copyWith(
-      color: getSecondaryTextColor(colorScheme),
-    );
+  String get timeText {
+    final formattedTime = DateFormat('HH:mm').format(poll.createdAt);
+    return 'Выход в $formattedTime';
   }
 
-  Color? getSecondaryTextColor(ColorScheme colorScheme) {
-    return hasCoverImage ? Colors.white70 : null;
-  }
-
-  Color getStatusColor(ColorScheme colorScheme) {
-    if (hasCoverImage) {
-      return Colors.white70;
+  Color get cardBackgroundColor {
+    if (isActivePoll) {
+      return AppColors.blue700;
     }
-    return poll.canAnswer ? colorScheme.primary : colorScheme.error;
+    return AppColors.white;
   }
 
-  Color? getTextColor(ColorScheme colorScheme) {
-    return hasCoverImage ? Colors.white : null;
+  Color get statusChipBackgroundColor {
+    if (poll.canAnswer) {
+      return AppColors.orange100;
+    }
+    return AppColors.grey500;
   }
 
-  TextStyle? separatorStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.bodySmall?.copyWith(
-      color: getSecondaryTextColor(colorScheme),
-    );
+  Color get statusChipTextColor {
+    if (poll.canAnswer) {
+      return AppColors.black;
+    }
+    return AppColors.white;
   }
 
-  TextStyle? shortDescriptionStyle(
-    TextTheme textTheme,
-    ColorScheme colorScheme,
-  ) {
-    return textTheme.bodyMedium?.copyWith(color: getTextColor(colorScheme));
+  Color get textColor {
+    if (isActivePoll) {
+      return AppColors.white;
+    }
+    return AppColors.black;
   }
 
-  TextStyle statusStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.bodySmall?.copyWith(color: getStatusColor(colorScheme)) ??
-        const TextStyle();
-  }
-
-  TextStyle? titleStyle(TextTheme textTheme, ColorScheme colorScheme) {
-    return textTheme.titleLarge?.copyWith(
-      color: getTextColor(colorScheme),
-      fontWeight: FontWeight.bold,
-    );
+  Color get secondaryTextColor {
+    if (isActivePoll) {
+      return AppColors.white.withValues(alpha: 0.7);
+    }
+    return AppColors.grey700;
   }
 }
