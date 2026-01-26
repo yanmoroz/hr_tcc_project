@@ -32,7 +32,7 @@ class CommentsButton extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           commentCount.toFormattedString(),
-          style: AppTypography.captionMedium2.black,
+          style: AppTypography.captionMedium2.copyWith(color: textColor),
         ),
       ],
     );

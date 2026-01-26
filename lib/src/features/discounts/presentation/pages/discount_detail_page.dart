@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../core/utils/html_styles.dart';
 import '../../../../core/widgets/comments_button.dart';
 import '../../../../core/widgets/like_button.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../blocs/discount_page/bloc.dart';
 
 class DiscountDetailPage extends StatelessWidget {
@@ -29,7 +33,16 @@ class DiscountDetailPage extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
           ),
-          child: Scaffold(body: _buildBody(context, state)),
+          child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: AppColors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+
+            body: _buildBody(context, state),
+          ),
         );
       },
     );
@@ -83,10 +96,91 @@ class DiscountDetailPage extends StatelessWidget {
         );
       },
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Duration and creation date
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Duration badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    _getDurationText(discount.dateTo),
+                    style: AppTypography.captionMedium2.black,
+                  ),
+                ),
+                // Creation date
+                if (discount.createDate != null)
+                  Text(
+                    _formatDateTime(discount.createDate!),
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 21),
+
+            // Author
+            Row(
+              children: [
+                UserAvatar.fromName(
+                  firstName: discount.author.firstName,
+                  lastName: discount.author.lastName,
+                  id: discount.author.id.toString(),
+                  radius: 24,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Публикация',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        discount.author.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Title
+            Text(
+              discount.title,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            if (coverImage != null) const SizedBox(height: 16),
+
             // Image
             if (coverImage != null)
               ClipRRect(
@@ -104,98 +198,133 @@ class DiscountDetailPage extends StatelessWidget {
                   },
                 ),
               ),
-            if (coverImage != null) const SizedBox(height: 16),
-
-            // Title
-            Text(
-              discount.title,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Category
-            if (discount.category != null)
-              Chip(
-                label: Text(discount.category!.title),
-                avatar: const Icon(Icons.category, size: 16),
-              ),
-            if (discount.category != null) const SizedBox(height: 16),
-
-            // Dates
-            if (discount.dateFrom != null && discount.dateTo != null)
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${_formatDate(discount.dateFrom!)} - ${_formatDate(discount.dateTo!)}',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
-              ),
-            const SizedBox(height: 16),
 
             // Description
             if (discount.description != null) ...[
-              Html(data: discount.description),
+              Html(
+                data: discount.description,
+                style: {
+                  "body": Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                  ),
+                  ...commonHtmlElementStyles,
+                  "span": Style(fontSize: FontSize(16)),
+                  "p": Style(fontSize: FontSize(16)),
+                  "span.rte-document": Style(display: Display.none),
+                  "a": Style(
+                    color: AppColors.white,
+                    textDecoration: TextDecoration.none,
+                  ),
+                },
+              ),
               const SizedBox(height: 16),
             ],
 
-            // Contact Info
+            // Contact Info & Promo Code Container
             if (discount.contact != null ||
                 discount.phone != null ||
                 discount.email != null ||
-                discount.site != null) ...[
-              if (discount.contact != null)
-                _buildInfoRow(context, Icons.person, discount.contact!),
-              if (discount.phone != null)
-                _buildInfoRow(context, Icons.phone, discount.phone!),
-              if (discount.email != null)
-                _buildInfoRow(context, Icons.email, discount.email!),
-              if (discount.site != null)
-                _buildInfoRow(context, Icons.language, discount.site!),
-              const SizedBox(height: 16),
-            ],
-
-            // Promo Code
-            if (discount.promocode != null) ...[
-              Card(
-                color: Colors.green[50],
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.local_offer, color: Colors.green),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Promo Code: ${discount.promocode}',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green[900],
-                            ),
+                discount.site != null ||
+                discount.promocode != null) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.blue500,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Contact Info
+                    if (discount.phone != null) ...[
+                      _buildContactInfoRow(
+                        'Телефон',
+                        discount.phone!,
+                        onTap: () => _launchPhone(discount.phone!),
                       ),
+                      const SizedBox(height: 16),
                     ],
-                  ),
+                    if (discount.email != null) ...[
+                      _buildContactInfoRow(
+                        'Адрес',
+                        discount.email!,
+                        onTap: () => _launchEmail(discount.email!),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    if (discount.contact != null) ...[
+                      _buildContactInfoRow(
+                        'Контактное лицо',
+                        discount.contact!,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    if (discount.site != null) ...[
+                      _buildContactInfoRow(
+                        'Сайт',
+                        discount.site!,
+                        onTap: () => _launchUrl(discount.site!),
+                      ),
+                      if (discount.promocode != null)
+                        const SizedBox(height: 24),
+                    ],
+
+                    // Promo Code
+                    if (discount.promocode != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF5A7FD5),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Промокод',
+                              style: AppTypography.textSemibold2.white,
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  discount.promocode!,
+                                  style: AppTypography.textMedium2.blue200,
+                                ),
+                                const SizedBox(width: 12),
+                                GestureDetector(
+                                  onTap: () {
+                                    Clipboard.setData(
+                                      ClipboardData(text: discount.promocode!),
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Промокод скопирован'),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                  child: const Icon(
+                                    Icons.copy_outlined,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
             ],
-
-            // Author
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(discount.author.title),
-                subtitle: discount.author.position != null
-                    ? Text(discount.author.position!)
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 16),
 
             // Like and Comment buttons
             Row(
@@ -220,33 +349,95 @@ class DiscountDetailPage extends StatelessWidget {
                 const SizedBox(width: 16),
                 CommentsButton(
                   commentCount: commentCount,
+                  textColor: AppColors.white,
+                  iconColor: AppColors.white,
                   onPressed: () {
-                    context.push('/comments/discount/${discount.id}');
+                    context.push('/home/comments/discount/${discount.id}');
                   },
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.grey[600]),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text)),
-        ],
+  Widget _buildContactInfoRow(
+    String label,
+    String value, {
+    VoidCallback? onTap,
+  }) {
+    final valueWidget = Text(
+      value,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        decoration: onTap != null ? TextDecoration.underline : null,
+        decorationColor: Colors.white,
       ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.7),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 4),
+        onTap != null
+            ? GestureDetector(onTap: onTap, child: valueWidget)
+            : valueWidget,
+      ],
     );
   }
 
-  String _formatDate(DateTime date) {
-    return DateFormat('dd.MM.yyyy').format(date);
+  Future<void> _launchPhone(String phone) async {
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
+  Future<void> _launchEmail(String email) async {
+    final uri = Uri(scheme: 'mailto', path: email);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url.startsWith('http') ? url : 'https://$url');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  String _getDurationText(DateTime? dateTo) {
+    if (dateTo == null) {
+      return 'Бессрочно';
+    }
+    return 'До ${DateFormat('dd.MM.yyyy').format(dateTo)}';
+  }
+
+  String _formatDateTime(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dateToCheck = DateTime(date.year, date.month, date.day);
+
+    final timeFormat = DateFormat('HH:mm');
+
+    if (dateToCheck == today) {
+      return 'Вчера в ${timeFormat.format(date)}';
+    } else {
+      return '${DateFormat('dd.MM.yyyy').format(date)} в ${timeFormat.format(date)}';
+    }
   }
 }

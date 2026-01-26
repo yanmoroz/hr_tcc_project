@@ -12,7 +12,7 @@ abstract class CommentModel with _$CommentModel {
   const factory CommentModel({
     int? parent,
     required int id,
-    required String content,
+    String? content,
     required DateTime createdData,
     required AuthorModel author,
     List<AttachmentModel>? attachments,
@@ -29,7 +29,7 @@ extension CommentModelX on CommentModel {
   Comment toDomain() => Comment(
     parent: parent,
     id: id,
-    content: content,
+    content: content ?? '',
     createdData: createdData,
     author: author.toDomain(),
     attachments: attachments?.map((a) => a.toDomain()).toList(),

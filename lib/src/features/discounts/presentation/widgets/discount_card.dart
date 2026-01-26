@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../gen/assets.gen.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/comments_button.dart';
+import '../../../../core/widgets/like_button.dart';
 import '../../domain/domain.dart';
 
 class DiscountCard extends StatelessWidget {
@@ -113,68 +113,31 @@ class DiscountCard extends StatelessWidget {
                       Row(
                         children: [
                           // Likes
-                          GestureDetector(
-                            onTap: onLikeTap,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                discount.like
-                                    ? SvgPicture.asset(
-                                        Assets.icons.likeWhiteIcon,
-                                        width: 24,
-                                        height: 24,
-                                        colorFilter: const ColorFilter.mode(
-                                          Colors.white,
-                                          BlendMode.srcIn,
-                                        ),
-                                      )
-                                    : SvgPicture.asset(
-                                        Assets.icons.likeIcon,
-                                        width: 24,
-                                        height: 24,
-                                        colorFilter: const ColorFilter.mode(
-                                          Colors.white,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${discount.likeCount}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
+                          LikeButton(
+                            isLiked: discount.like,
+                            likeCount: discount.likeCount,
+                            spacing: 4,
+                            iconSize: 24,
+                            likedTextStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
                             ),
+                            notLikedTextStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                            likedIconColor: Colors.white,
+                            notLikedIconColor: Colors.white,
+                            onPressed: onLikeTap,
                           ),
                           const SizedBox(width: 16),
 
                           // Comments
-                          GestureDetector(
-                            onTap: onCommentTap,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SvgPicture.asset(
-                                  Assets.icons.commentsIcon,
-                                  width: 24,
-                                  height: 24,
-                                  colorFilter: const ColorFilter.mode(
-                                    Colors.white,
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${discount.commentCount}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          CommentsButton(
+                            commentCount: discount.commentCount,
+                            textColor: Colors.white,
+                            iconColor: Colors.white,
+                            onPressed: onCommentTap,
                           ),
                         ],
                       ),
