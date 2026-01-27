@@ -51,5 +51,7 @@
 	<string>Приложению требуется доступ для сохранения фотографий в вашу галерею</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Приложению требуется доступ к камере для съемки и загрузки фотографий</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
