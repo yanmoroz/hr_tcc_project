@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/utils/string_utils.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
 
@@ -75,7 +76,7 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
           children: [
             Expanded(
               child: Text(
-                widget.question.title,
+                stripHtmlTags(widget.question.title),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -102,26 +103,30 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
           initialValue: _selectedAnswer,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            labelText: 'Select an answer',
+            labelText: 'Выберите ответ',
           ),
           items: answers.map((answer) {
             return DropdownMenuItem<Answer>(
               value: answer,
-              child: Text(answer.text ?? 'Option ${answer.id}'),
+              child: Text(
+                stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
+              ),
             );
           }).toList(),
           onChanged: _onAnswerSelected,
         ),
-        if (widget.question.hasCustomAnswer && _selectedAnswer != null) ...[
-          const SizedBox(height: 8.0),
+        // Custom answer text field - always shown after dropdown if hasCustomAnswer is true
+        if (widget.question.hasCustomAnswer) ...[
+          const SizedBox(height: 12.0),
           TextField(
             controller: _customTextController,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              labelText: 'Custom answer (optional)',
-              hintText: 'Enter your custom answer...',
+              labelText: 'Ваш вариант ответа (необязательно)',
+              hintText: 'Введите свой вариант...',
             ),
             onChanged: _onCustomTextChanged,
+            maxLines: 2,
           ),
         ],
       ],

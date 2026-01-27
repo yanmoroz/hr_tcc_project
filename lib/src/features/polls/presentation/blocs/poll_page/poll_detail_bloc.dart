@@ -30,6 +30,8 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
     on<PollDetailEvent>((event, emit) async {
       await event.when(
         loadPollDetail: () => _onLoadPollDetail(emit),
+        nextPage: () => _onNextPage(emit),
+        previousPage: () => _onPreviousPage(emit),
         submitAnswers: (request) => _onSubmitAnswers(request, emit),
         searchStaff: (target, search) => _onSearchStaff(target, search, emit),
       );
@@ -41,17 +43,59 @@ class PollDetailBloc extends Bloc<PollDetailEvent, PollDetailState> {
 
     final result = await getPollDetailUsecase(pollId);
 
-    result.fold(
-      (error) => emit(
+    await result.fold(
+      (error) async => emit(
         state.copyWith(
           status: LoadingStatus.error,
           errorMessage: error.message,
         ),
       ),
-      (pollDetail) => emit(
-        state.copyWith(status: LoadingStatus.success, pollDetail: pollDetail),
-      ),
+      (pollDetail) async {
+        emit(
+          state.copyWith(status: LoadingStatus.success, pollDetail: pollDetail),
+        );
+        await _loadCoverImage(pollDetail, emit);
+      },
     );
+  }
+
+  Future<void> _loadCoverImage(
+    PollDetail pollDetail,
+    Emitter<PollDetailState> emit,
+  ) async {
+    if (pollDetail.cover.isEmpty) return;
+
+    final result = await _filesService.downloadFile(
+      systemType: SystemType.kp,
+      download: false,
+      uriFile: pollDetail.cover,
+    );
+
+    result.fold(
+      (error) {
+        // Silently fail for cover image download
+      },
+      (imageBytes) {
+        if (state.status == LoadingStatus.success) {
+          emit(state.copyWith(coverImage: imageBytes));
+        }
+      },
+    );
+  }
+
+  Future<void> _onNextPage(Emitter<PollDetailState> emit) async {
+    if (state.pollDetail == null) return;
+
+    final totalPages = state.pollDetail!.pages.length;
+    if (state.currentPageIndex < totalPages - 1) {
+      emit(state.copyWith(currentPageIndex: state.currentPageIndex + 1));
+    }
+  }
+
+  Future<void> _onPreviousPage(Emitter<PollDetailState> emit) async {
+    if (state.currentPageIndex > 0) {
+      emit(state.copyWith(currentPageIndex: state.currentPageIndex - 1));
+    }
   }
 
   Future<void> _onSubmitAnswers(

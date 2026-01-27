@@ -29,8 +29,25 @@ class PollItemViewModel {
   }
 
   String get timeText {
-    final formattedTime = DateFormat('HH:mm').format(poll.createdAt);
-    return 'Выход в $formattedTime';
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final pollDate = DateTime(
+      poll.createdAt.year,
+      poll.createdAt.month,
+      poll.createdAt.day,
+    );
+
+    final timeFormat = DateFormat('HH:mm').format(poll.createdAt);
+
+    if (pollDate == today) {
+      return 'Сегодня в $timeFormat';
+    } else if (pollDate == yesterday) {
+      return 'Вчера в $timeFormat';
+    } else {
+      final dateFormat = DateFormat('dd.MM.yyyy').format(poll.createdAt);
+      return '$dateFormat в $timeFormat';
+    }
   }
 
   Color get cardBackgroundColor {

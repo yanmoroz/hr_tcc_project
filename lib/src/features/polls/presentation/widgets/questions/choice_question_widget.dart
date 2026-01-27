@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/utils/string_utils.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
 
@@ -19,16 +20,11 @@ class ChoiceQuestionWidget extends StatefulWidget {
 
 class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
   final Set<int> _selectedAnswerIds = {};
-  final Map<int, TextEditingController> _customTextControllers = {};
-  final TextEditingController _singleCustomTextController =
-      TextEditingController();
+  final TextEditingController _customTextController = TextEditingController();
 
   @override
   void dispose() {
-    for (var controller in _customTextControllers.values) {
-      controller.dispose();
-    }
-    _singleCustomTextController.dispose();
+    _customTextController.dispose();
     super.dispose();
   }
 
@@ -36,13 +32,8 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
     setState(() {
       if (_selectedAnswerIds.contains(answer.id)) {
         _selectedAnswerIds.remove(answer.id);
-        _customTextControllers[answer.id]?.dispose();
-        _customTextControllers.remove(answer.id);
       } else {
         _selectedAnswerIds.add(answer.id);
-        if (widget.question.hasCustomAnswer) {
-          _customTextControllers[answer.id] = TextEditingController();
-        }
       }
       _updateAnswer();
     });
@@ -56,11 +47,7 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
     });
   }
 
-  void _onCustomTextChanged(int answerId, String text) {
-    _updateAnswer();
-  }
-
-  void _onSingleCustomTextChanged(String text) {
+  void _onCustomTextChanged(String text) {
     _updateAnswer();
   }
 
@@ -78,21 +65,16 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
     );
 
     String? customText;
-    if (widget.question.hasCustomAnswer) {
-      if (widget.question.hasMultipliAnswer == true) {
-        customText = _customTextControllers[firstAnswerId]?.text;
-      } else {
-        customText = _singleCustomTextController.text.isNotEmpty
-            ? _singleCustomTextController.text
-            : null;
-      }
+    if (widget.question.hasCustomAnswer &&
+        _customTextController.text.isNotEmpty) {
+      customText = _customTextController.text;
     }
 
     final pollAnswer = PollAnswer.type1(
       type: 1,
       questionId: widget.question.id,
       answerId: answer.id,
-      text: customText?.isNotEmpty == true ? customText : null,
+      text: customText,
     );
     widget.onAnswerChanged(widget.question, pollAnswer);
   }
@@ -111,7 +93,7 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
           children: [
             Expanded(
               child: Text(
-                widget.question.title,
+                stripHtmlTags(widget.question.title),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -135,37 +117,13 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
         const SizedBox(height: 8.0),
         if (isMultiple)
           ...answers.map((answer) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CheckboxListTile(
-                  title: Text(answer.text ?? 'Option ${answer.id}'),
-                  value: _selectedAnswerIds.contains(answer.id),
-                  onChanged: (value) => _onAnswerToggled(answer),
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                if (widget.question.hasCustomAnswer &&
-                    _selectedAnswerIds.contains(answer.id)) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 40.0,
-                      right: 16.0,
-                      bottom: 8.0,
-                    ),
-                    child: TextField(
-                      controller: _customTextControllers[answer.id],
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Custom answer (optional)',
-                        hintText: 'Enter your custom answer...',
-                        isDense: true,
-                      ),
-                      onChanged: (text) =>
-                          _onCustomTextChanged(answer.id, text),
-                    ),
-                  ),
-                ],
-              ],
+            return CheckboxListTile(
+              title: Text(
+                stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
+              ),
+              value: _selectedAnswerIds.contains(answer.id),
+              onChanged: (value) => _onAnswerToggled(answer),
+              controlAffinity: ListTileControlAffinity.leading,
             );
           })
         else
@@ -180,41 +138,31 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
               }
             },
             child: Column(
-              children: [
-                ...answers.map((answer) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RadioListTile<int>(
-                        title: Text(answer.text ?? 'Option ${answer.id}'),
-                        value: answer.id,
-                      ),
-                      if (widget.question.hasCustomAnswer &&
-                          _selectedAnswerIds.contains(answer.id)) ...[
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 40.0,
-                            right: 16.0,
-                            bottom: 8.0,
-                          ),
-                          child: TextField(
-                            controller: _singleCustomTextController,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Custom answer (optional)',
-                              hintText: 'Enter your custom answer...',
-                              isDense: true,
-                            ),
-                            onChanged: _onSingleCustomTextChanged,
-                          ),
-                        ),
-                      ],
-                    ],
-                  );
-                }),
-              ],
+              children: answers.map((answer) {
+                return RadioListTile<int>(
+                  title: Text(
+                    stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
+                  ),
+                  value: answer.id,
+                );
+              }).toList(),
             ),
           ),
+        // Custom answer text field - always shown after all options if hasCustomAnswer is true
+        if (widget.question.hasCustomAnswer) ...[
+          const SizedBox(height: 12.0),
+          TextField(
+            controller: _customTextController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Ваш вариант ответа (необязательно)',
+              hintText: 'Введите свой вариант...',
+              isDense: true,
+            ),
+            onChanged: _onCustomTextChanged,
+            maxLines: 2,
+          ),
+        ],
       ],
     );
   }

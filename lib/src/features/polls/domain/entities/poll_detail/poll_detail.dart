@@ -42,5 +42,7 @@ abstract class PollDetail with _$PollDetail {
     List<Department>? deniedDepartments,
     List<String>? allowedOrganisations,
     List<String>? deniedOrganisations,
+    required bool canAnswer,
+    DateTime? createdAt,
   }) = _PollDetail;
 }

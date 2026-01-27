@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart' hide Page;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/dialogs.dart';
+import '../../../../core/widgets/primary_button.dart';
 import '../../domain/domain.dart';
 import '../blocs/poll_page/bloc.dart';
+import '../widgets/poll_success_dialog.dart';
 import '../widgets/questions/question_widget_factory.dart';
 
 class PollPage extends StatefulWidget {
@@ -16,6 +21,7 @@ class PollPage extends StatefulWidget {
 class _PollPageState extends State<PollPage> {
   final Map<int, PollAnswer> _answers = {};
   final Set<int> _requiredQuestionIds = {};
+  bool _submittedSuccessfully = false;
 
   void _onAnswerChanged(Question question, Object? answer) {
     setState(() {
@@ -27,18 +33,16 @@ class _PollPageState extends State<PollPage> {
     });
   }
 
-  void _collectRequiredQuestions(PollDetail pollDetail) {
+  void _collectRequiredQuestionsForCurrentPage(Page page) {
     _requiredQuestionIds.clear();
-    for (final page in pollDetail.pages) {
-      for (final question in [...page.questions, ...page.scaleQuestions]) {
-        if (question.isRequired == true) {
-          _requiredQuestionIds.add(question.id);
-        }
+    for (final question in [...page.questions, ...page.scaleQuestions]) {
+      if (question.isRequired == true) {
+        _requiredQuestionIds.add(question.id);
       }
     }
   }
 
-  bool _validateAnswers() {
+  bool _validateCurrentPage() {
     for (final questionId in _requiredQuestionIds) {
       if (!_answers.containsKey(questionId)) {
         return false;
@@ -47,44 +51,121 @@ class _PollPageState extends State<PollPage> {
     return true;
   }
 
-  void _submitAnswers(BuildContext context, PollDetail pollDetail) {
-    if (!_validateAnswers()) {
+  void _handlePrimaryButton(
+    BuildContext context,
+    PollDetail pollDetail,
+    bool isLastPage,
+  ) {
+    final currentPage =
+        pollDetail.pages[context.read<PollDetailBloc>().state.currentPageIndex];
+    _collectRequiredQuestionsForCurrentPage(currentPage);
+
+    if (!_validateCurrentPage()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please answer all required questions'),
+          content: Text('Пожалуйста, ответьте на все обязательные вопросы'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    final answersList = _answers.values.toList();
-    context.read<PollDetailBloc>().add(
-      PollDetailEvent.submitAnswers(answers: answersList),
-    );
+    if (isLastPage) {
+      // Mark that we're attempting submission
+      setState(() {
+        _submittedSuccessfully = true;
+      });
+
+      // Submit all answers
+      final answersList = _answers.values.toList();
+      context.read<PollDetailBloc>().add(
+        PollDetailEvent.submitAnswers(answers: answersList),
+      );
+    } else {
+      // Move to next page
+      context.read<PollDetailBloc>().add(const PollDetailEvent.nextPage());
+    }
+  }
+
+  String _formatPollDate(DateTime? dateTime) {
+    if (dateTime == null) return '';
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final pollDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    final timeFormat = DateFormat('HH:mm').format(dateTime);
+
+    if (pollDate == today) {
+      return 'Сегодня в $timeFormat';
+    } else if (pollDate == yesterday) {
+      return 'Вчера в $timeFormat';
+    } else {
+      final dateFormat = DateFormat('dd.MM.yyyy').format(dateTime);
+      return '$dateFormat в $timeFormat';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PollDetailBloc, PollDetailState>(
+    return BlocConsumer<PollDetailBloc, PollDetailState>(
+      listener: (context, state) {
+        // Handle successful submission
+        if (state.status == LoadingStatus.success &&
+            !state.isSubmitting &&
+            state.pollDetail != null &&
+            _submittedSuccessfully) {
+          // Show success modal dialog
+          PollSuccessDialog.show(context);
+        }
+      },
       builder: (context, state) {
-        // Get poll title for app bar
-        final title = _getAppBarTitle(state);
+        final isFirstPage = state.currentPageIndex == 0;
 
         return Scaffold(
-          appBar: AppBar(title: Text(title)),
+          appBar: AppBar(
+            leading: isFirstPage
+                ? null
+                : IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => context.read<PollDetailBloc>().add(
+                      const PollDetailEvent.previousPage(),
+                    ),
+                  ),
+            automaticallyImplyLeading: false,
+            title: Text(_getAppBarTitle(state)),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () async {
+                  final shouldExit = await showConfirmationDialog(
+                    context,
+                    title: 'Прекратить прохождение опроса?',
+                    content: '',
+                    confirmText: 'Прекратить',
+                    cancelText: 'Отмена',
+                    isDestructive: true,
+                  );
+                  if (shouldExit == true && context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ],
+          ),
           body: _buildBody(context, state),
+          backgroundColor: AppColors.white,
         );
       },
     );
   }
 
   String _getAppBarTitle(PollDetailState state) {
-    // if (state.status == LoadingStatus.success && state.pollDetail != null) {
-    //   return state.pollDetail!.title;
-    // }
-    // return 'Poll';
-    return 'Шаг X/Y';
+    if (state.pollDetail != null) {
+      return 'Шаг ${state.currentPageIndex + 1}/${state.pollDetail!.pages.length}';
+    }
+    return 'Шаг 1/1';
   }
 
   Widget _buildBody(BuildContext context, PollDetailState state) {
@@ -99,7 +180,7 @@ class _PollPageState extends State<PollPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: ${state.errorMessage ?? 'Unknown error'}',
+              'Ошибка: ${state.errorMessage ?? 'Неизвестная ошибка'}',
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
@@ -110,7 +191,7 @@ class _PollPageState extends State<PollPage> {
                   const PollDetailEvent.loadPollDetail(),
                 );
               },
-              child: const Text('Retry'),
+              child: const Text('Повторить'),
             ),
           ],
         ),
@@ -121,126 +202,167 @@ class _PollPageState extends State<PollPage> {
     final pollDetail = state.pollDetail;
 
     if (pollDetail == null) {
-      return const Center(child: Text('No data available'));
+      return const Center(child: Text('Нет данных'));
     }
 
-    _collectRequiredQuestions(pollDetail);
+    final currentPage = pollDetail.pages[state.currentPageIndex];
 
-    return _buildPollDetail(
+    return _buildSinglePageView(
       context,
       pollDetail,
+      currentPage,
+      state.currentPageIndex,
       isSubmitting: state.isSubmitting,
     );
   }
 
-  Widget _buildPollDetail(
+  Widget _buildSinglePageView(
     BuildContext context,
-    PollDetail pollDetail, {
+    PollDetail pollDetail,
+    Page page,
+    int pageIndex, {
     bool isSubmitting = false,
   }) {
+    final allQuestions = [...page.questions, ...page.scaleQuestions]
+      ..sort((a, b) => a.position.compareTo(b.position));
+
     return Column(
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (pollDetail.description != null &&
-                    pollDetail.description!.isNotEmpty) ...[
-                  Text(
-                    pollDetail.description!,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                // Content with padding
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Status chip and creation date
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                              vertical: 6.0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: pollDetail.canAnswer
+                                  ? AppColors.orange100
+                                  : AppColors.grey500,
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            child: Text(
+                              pollDetail.canAnswer ? 'Не пройден' : 'Пройден',
+                              style: AppTypography.captionMedium2.copyWith(
+                                color: pollDetail.canAnswer
+                                    ? AppColors.black
+                                    : AppColors.white,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            _formatPollDate(pollDetail.createdAt),
+                            style: AppTypography.captionMedium2.copyWith(
+                              color: AppColors.grey700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Cover image (if available)
+                      if (context.read<PollDetailBloc>().state.coverImage !=
+                          null) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(
+                            context.read<PollDetailBloc>().state.coverImage!,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // Poll title
+                      Text(
+                        page.title ?? pollDetail.title,
+                        style: AppTypography.titleSemibold3.copyWith(
+                          color: AppColors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Render questions
+                      ...allQuestions.map(
+                        (question) => _buildQuestion(context, question),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                ],
-                ...pollDetail.pages.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final page = entry.value;
-                  return _buildPage(
-                    context,
-                    page,
-                    index + 1,
-                    pollDetail.pages.length,
-                  );
-                }),
-                if (isSubmitting)
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                ),
               ],
             ),
           ),
         ),
-        if (!isSubmitting)
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: ElevatedButton(
-                onPressed: () => _submitAnswers(context, pollDetail),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                ),
-                child: const Text('Submit Answers'),
-              ),
-            ),
-          ),
+
+        // Navigation buttons
+        _buildNavigationButtons(context, pollDetail, pageIndex, isSubmitting),
       ],
     );
   }
 
-  Widget _buildPage(
+  Widget _buildNavigationButtons(
     BuildContext context,
-    Page page,
-    int pageNumber,
-    int totalPages,
+    PollDetail pollDetail,
+    int currentPageIndex,
+    bool isSubmitting,
   ) {
-    final allQuestions = [...page.questions, ...page.scaleQuestions]
-      ..sort((a, b) => a.position.compareTo(b.position));
+    final isFirstPage = currentPageIndex == 0;
+    final isLastPage = currentPageIndex == pollDetail.pages.length - 1;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (page.title != null && page.title!.isNotEmpty)
-              Text(
-                'Page $pageNumber of $totalPages: ${page.title}',
-                style: Theme.of(context).textTheme.titleLarge,
-              )
-            else
-              Text(
-                'Page $pageNumber of $totalPages',
-                style: Theme.of(context).textTheme.titleLarge,
+            // "Go Back" button (only show if not first page)
+            if (!isFirstPage) ...[
+              PrimaryButton(
+                label: 'Вернуться назад',
+                size: PrimaryButtonSize.large,
+                style: PrimatyButtonStyle.white,
+                enabled: !isSubmitting,
+                onPressed: () => context.read<PollDetailBloc>().add(
+                  const PollDetailEvent.previousPage(),
+                ),
               ),
-            if (page.description != null && page.description!.isNotEmpty) ...[
-              const SizedBox(height: 8.0),
-              Text(
-                page.description!,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
+              const SizedBox(height: 16),
             ],
-            if (allQuestions.isNotEmpty) ...[
-              const SizedBox(height: 16.0),
-              Text('Questions', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8.0),
-              ...allQuestions.map(
-                (question) => _buildQuestion(context, question),
-              ),
-            ],
+
+            // "Continue" or "Submit" button
+            PrimaryButton(
+              label: isLastPage ? 'Завершить опрос' : 'Продолжить',
+              size: PrimaryButtonSize.large,
+              style: PrimatyButtonStyle.colored,
+              enabled: !isSubmitting,
+              isLoading: isSubmitting,
+              onPressed: () =>
+                  _handlePrimaryButton(context, pollDetail, isLastPage),
+            ),
           ],
         ),
       ),

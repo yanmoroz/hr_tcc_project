@@ -15,10 +15,8 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
   final GetPollsUsecase getPollsUsecase;
   final FilesService filesService;
 
-  PollsListBloc({
-    required this.getPollsUsecase,
-    required this.filesService,
-  }) : super(const PollsListState()) {
+  PollsListBloc({required this.getPollsUsecase, required this.filesService})
+    : super(const PollsListState()) {
     on<LoadPolls>(_onLoadPolls);
     on<LoadMore>(_onLoadMore);
     on<RefreshPolls>(_onRefreshPolls);
@@ -31,7 +29,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
   ) async {
     emit(state.copyWith(status: LoadingStatus.loading));
 
-    final result = await getPollsUsecase(status: state.currentStatus, page: 1);
+    final result = await getPollsUsecase(status: state.currentStatus, page: 0);
 
     await result.fold(
       (error) async => emit(
@@ -45,7 +43,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
           state.copyWith(
             status: LoadingStatus.success,
             polls: polls,
-            currentPage: 1,
+            currentPage: 0,
             hasMorePages: polls.length >= 20,
           ),
         );
@@ -55,10 +53,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
     );
   }
 
-  Future<void> _onLoadMore(
-    LoadMore event,
-    Emitter<PollsListState> emit,
-  ) async {
+  Future<void> _onLoadMore(LoadMore event, Emitter<PollsListState> emit) async {
     if (state.isLoadingMore || !state.hasMorePages) return;
 
     emit(state.copyWith(isLoadingMore: true));
@@ -90,7 +85,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
     RefreshPolls event,
     Emitter<PollsListState> emit,
   ) async {
-    final result = await getPollsUsecase(status: state.currentStatus, page: 1);
+    final result = await getPollsUsecase(status: state.currentStatus, page: 0);
 
     await result.fold(
       (error) async => emit(
@@ -104,7 +99,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
           state.copyWith(
             status: LoadingStatus.success,
             polls: polls,
-            currentPage: 1,
+            currentPage: 0,
             hasMorePages: polls.length >= 20,
           ),
         );
@@ -125,7 +120,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
       ),
     );
 
-    final result = await getPollsUsecase(status: event.status, page: 1);
+    final result = await getPollsUsecase(status: event.status, page: 0);
 
     await result.fold(
       (error) async => emit(
@@ -140,7 +135,7 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
             filteringStatus: LoadingStatus.success,
             status: LoadingStatus.success,
             polls: polls,
-            currentPage: 1,
+            currentPage: 0,
             hasMorePages: polls.length >= 20,
           ),
         );
@@ -151,28 +146,19 @@ class PollsListBloc extends Bloc<PollsListEvent, PollsListState> {
 
   Future<void> _loadTotalCounts(Emitter<PollsListState> emit) async {
     // Load counts for all statuses in parallel
-    final allResult = await getPollsUsecase(status: null, page: 1);
-    final notPassedResult = await getPollsUsecase(status: 1, page: 1);
-    final passedResult = await getPollsUsecase(status: 2, page: 1);
+    final allResult = await getPollsUsecase(status: null, page: 0);
+    final notPassedResult = await getPollsUsecase(status: 1, page: 0);
+    final passedResult = await getPollsUsecase(status: 2, page: 0);
 
     int totalAll = 0;
     int totalNotPassed = 0;
     int totalPassed = 0;
 
-    allResult.fold(
-      (error) {},
-      (polls) => totalAll = polls.length,
-    );
+    allResult.fold((error) {}, (polls) => totalAll = polls.length);
 
-    notPassedResult.fold(
-      (error) {},
-      (polls) => totalNotPassed = polls.length,
-    );
+    notPassedResult.fold((error) {}, (polls) => totalNotPassed = polls.length);
 
-    passedResult.fold(
-      (error) {},
-      (polls) => totalPassed = polls.length,
-    );
+    passedResult.fold((error) {}, (polls) => totalPassed = polls.length);
 
     emit(
       state.copyWith(

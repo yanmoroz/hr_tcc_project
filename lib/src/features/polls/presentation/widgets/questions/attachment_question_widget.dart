@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/files/entities/uploaded_file.dart';
+import '../../../../../core/utils/string_utils.dart';
 import '../../../../../core/value_objects/system_type.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
@@ -226,7 +227,7 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
           children: [
             Expanded(
               child: Text(
-                widget.question.title,
+                stripHtmlTags(widget.question.title),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),

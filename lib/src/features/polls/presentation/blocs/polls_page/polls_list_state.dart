@@ -13,7 +13,7 @@ sealed class PollsListState with _$PollsListState {
     @Default(LoadingStatus.initial) LoadingStatus status,
     @Default(LoadingStatus.initial) LoadingStatus filteringStatus,
     @Default([]) List<Poll> polls,
-    @Default(1) int currentPage,
+    @Default(0) int currentPage,
     @Default(true) bool hasMorePages,
     @Default(false) bool isLoadingMore,
     int? currentStatus, // null = "Все", 1 = "Непройденные", 2 = "Пройденные"

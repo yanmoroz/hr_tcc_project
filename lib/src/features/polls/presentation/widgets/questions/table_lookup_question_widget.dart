@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/utils/string_utils.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
 
@@ -98,7 +99,7 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
           children: [
             Expanded(
               child: Text(
-                widget.question.title,
+                stripHtmlTags(widget.question.title),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),

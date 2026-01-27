@@ -62,7 +62,6 @@ class PollItem extends StatelessWidget {
         ),
         child: Image.memory(
           viewModel.coverImage!,
-          height: 140,
           width: double.infinity,
           fit: BoxFit.cover,
         ),

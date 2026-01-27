@@ -43,6 +43,8 @@ abstract class PollDetailModel with _$PollDetailModel {
     List<DepartmentModel>? deniedDepartments,
     List<String>? allowedOrganisations,
     List<String>? deniedOrganisations,
+    bool? canAnswer,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
   }) = _PollDetailModel;
 
   factory PollDetailModel.fromJson(Map<String, dynamic> json) =>
@@ -93,5 +95,7 @@ extension PollDetailModelX on PollDetailModel {
         .toList(),
     allowedOrganisations: allowedOrganisations,
     deniedOrganisations: deniedOrganisations,
+    canAnswer: this.canAnswer ?? false,
+    createdAt: this.createdAt,
   );
 }

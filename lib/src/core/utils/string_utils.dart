@@ -13,3 +13,22 @@ String getInitialsFromFullName(String fullName) {
   }
   return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
 }
+
+/// Removes HTML tags from a string and decodes HTML entities
+String stripHtmlTags(String htmlString) {
+  if (htmlString.isEmpty) return htmlString;
+
+  // Remove HTML tags
+  final text = htmlString.replaceAll(RegExp(r'<[^>]*>'), '');
+
+  // Decode common HTML entities
+  return text
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&apos;', "'")
+      .trim();
+}
