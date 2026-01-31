@@ -61,7 +61,10 @@ class VerifyPincodePage extends StatelessWidget {
                     hasError: state.errorMessage != null,
                   ),
 
-                  if (state.errorMessage != null) ...[
+                  if (state.status == LoadingStatus.loading) ...[
+                    const SizedBox(height: 48),
+                    const CircularProgressIndicator(),
+                  ] else if (state.errorMessage != null) ...[
                     const SizedBox(height: 16),
                     Text(
                       state.errorMessage!,
@@ -73,39 +76,36 @@ class VerifyPincodePage extends StatelessWidget {
 
                   const Spacer(flex: 1),
 
-                  if (state.status == LoadingStatus.loading)
-                    const CircularProgressIndicator()
-                  else
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: NumericKeypad(
-                        showBiometrics: showBiometrics,
-                        showDelete: state.enteredPincode.isNotEmpty,
-                        showPasswordLogin: true,
-                        onDigitPressed: (digit) {
-                          context.read<VerifyPincodeBloc>().add(
-                            VerifyPincodeEvent.digitEntered(digit),
-                          );
-                        },
-                        onDeletePressed: () {
-                          context.read<VerifyPincodeBloc>().add(
-                            const VerifyPincodeEvent.digitDeleted(),
-                          );
-                        },
-                        onBiometricsPressed: showBiometrics
-                            ? () {
-                                context.read<VerifyPincodeBloc>().add(
-                                  const VerifyPincodeEvent.authenticateWithBiometrics(),
-                                );
-                              }
-                            : null,
-                        onPasswordLoginPressed: () {
-                          context.read<VerifyPincodeBloc>().add(
-                            const VerifyPincodeEvent.passwordLoginRequested(),
-                          );
-                        },
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: NumericKeypad(
+                      showBiometrics: showBiometrics,
+                      showDelete: state.enteredPincode.isNotEmpty,
+                      showPasswordLogin: true,
+                      onDigitPressed: (digit) {
+                        context.read<VerifyPincodeBloc>().add(
+                          VerifyPincodeEvent.digitEntered(digit),
+                        );
+                      },
+                      onDeletePressed: () {
+                        context.read<VerifyPincodeBloc>().add(
+                          const VerifyPincodeEvent.digitDeleted(),
+                        );
+                      },
+                      onBiometricsPressed: showBiometrics
+                          ? () {
+                              context.read<VerifyPincodeBloc>().add(
+                                const VerifyPincodeEvent.authenticateWithBiometrics(),
+                              );
+                            }
+                          : null,
+                      onPasswordLoginPressed: () {
+                        context.read<VerifyPincodeBloc>().add(
+                          const VerifyPincodeEvent.passwordLoginRequested(),
+                        );
+                      },
                     ),
+                  ),
                 ],
               ),
             ),

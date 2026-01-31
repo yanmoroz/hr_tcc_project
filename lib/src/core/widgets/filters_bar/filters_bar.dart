@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../models/models.dart';
 import '../../theme/theme.dart';
-import 'filter_item.dart';
 
 class FiltersBar<T> extends StatelessWidget {
   final List<FilterItem<T>> items;

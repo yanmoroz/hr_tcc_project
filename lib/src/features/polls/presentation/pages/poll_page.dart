@@ -370,8 +370,6 @@ class _PollPageState extends State<PollPage> {
   }
 
   Widget _buildQuestion(BuildContext context, Question question) {
-    final hasError =
-        question.isRequired == true && !_answers.containsKey(question.id);
     final bloc = context.read<PollDetailBloc>();
 
     return BlocBuilder<PollDetailBloc, PollDetailState>(
@@ -380,28 +378,20 @@ class _PollPageState extends State<PollPage> {
         final staffItems = state.staffItems;
         final staffSearchError = state.staffSearchError;
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12.0),
-          color: hasError
-              ? Theme.of(
-                  context,
-                ).colorScheme.errorContainer.withValues(alpha: 0.1)
-              : Theme.of(context).colorScheme.surfaceContainerHighest,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: buildQuestionWidget(
-              question: question,
-              onAnswerChanged: _onAnswerChanged,
-              onFileUpload: bloc.uploadFile,
-              onStaffSearch: (target, search) {
-                bloc.add(
-                  PollDetailEvent.searchStaff(target: target, search: search),
-                );
-              },
-              isSearchingStaff: isSearchingStaff,
-              staffItems: staffItems,
-              staffSearchError: staffSearchError,
-            ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24.0),
+          child: buildQuestionWidget(
+            question: question,
+            onAnswerChanged: _onAnswerChanged,
+            onFileUpload: bloc.uploadFile,
+            onStaffSearch: (target, search) {
+              bloc.add(
+                PollDetailEvent.searchStaff(target: target, search: search),
+              );
+            },
+            isSearchingStaff: isSearchingStaff,
+            staffItems: staffItems,
+            staffSearchError: staffSearchError,
           ),
         );
       },

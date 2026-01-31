@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/delegates/delegates.dart';
+import '../../../../core/models/models.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/pluralization.dart';
 import '../../../../core/widgets/widgets.dart';

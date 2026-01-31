@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/models/models.dart';
+import '../../../../../core/theme/theme.dart';
 import '../../../../../core/utils/string_utils.dart';
+import '../../../../../core/widgets/widgets.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
 
@@ -118,32 +121,33 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
         if (isMultiple)
           ...answers.map((answer) {
             return CheckboxListTile(
-              title: Text(
-                stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
-              ),
+              title: Text(stripHtmlTags(answer.text ?? 'Option ${answer.id}')),
               value: _selectedAnswerIds.contains(answer.id),
               onChanged: (value) => _onAnswerToggled(answer),
               controlAffinity: ListTileControlAffinity.leading,
             );
           })
         else
-          RadioGroup<int>(
-            groupValue: _selectedAnswerIds.isEmpty
-                ? null
-                : _selectedAnswerIds.first,
-            onChanged: (value) {
-              if (value != null) {
-                final answer = answers.firstWhere((a) => a.id == value);
-                _onSingleAnswerSelected(answer);
-              }
-            },
-            child: Column(
-              children: answers.map((answer) {
-                return RadioListTile<int>(
-                  title: Text(
-                    stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
-                  ),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: AppColors.grey100,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: AppRadioButtonGroup<int>(
+              value: _selectedAnswerIds.isEmpty
+                  ? null
+                  : _selectedAnswerIds.first,
+              onChanged: (value) {
+                if (value != null) {
+                  final answer = answers.firstWhere((a) => a.id == value);
+                  _onSingleAnswerSelected(answer);
+                }
+              },
+              items: answers.map((answer) {
+                return RadioButtonItem<int>(
                   value: answer.id,
+                  label: stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
                 );
               }).toList(),
             ),

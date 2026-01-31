@@ -68,36 +68,6 @@ class PollItem extends StatelessWidget {
       );
     }
 
-    if (viewModel.isActivePoll) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16.0),
-        decoration: const BoxDecoration(
-          color: AppColors.orange500,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12.0),
-            topRight: Radius.circular(12.0),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                viewModel.poll.title,
-                style: AppTypography.textSemibold1.copyWith(
-                  color: AppColors.white,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 8.0),
-            const Text('📊', style: TextStyle(fontSize: 24)),
-          ],
-        ),
-      );
-    }
-
     return const SizedBox.shrink();
   }
 
