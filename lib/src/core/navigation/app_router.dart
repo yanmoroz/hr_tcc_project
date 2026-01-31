@@ -14,6 +14,7 @@ import '../../features/users/users.dart';
 import '../../features/news/news.dart';
 import '../../features/polls/polls.dart';
 import '../../features/resell/resell.dart';
+import '../../features/debug/presentation/pages/radio_button_test_page.dart';
 import '../../features/security/security.dart';
 import '../auth/auth_status_notifier.dart';
 import '../blocs/current_user/bloc.dart';
@@ -42,6 +43,10 @@ class AppRouter {
       final isLoginRoute = currentPath == '/login';
       final isSecuritySetupRoute = currentPath.startsWith('/security/setup');
       final isUnlockRoute = currentPath == '/security/unlock';
+      final isDebugRoute = currentPath.startsWith('/debug');
+
+      // Allow debug routes to bypass auth in debug mode
+      if (isDebugRoute) return null;
 
       switch (authStatus) {
         case AuthStatus.unauthenticated:
@@ -84,16 +89,18 @@ class AppRouter {
       GoRoute(
         path: '/security/setup-biometrics',
         builder: (context, state) => BlocProvider(
-          create: (context) => BlocFactory.createSetupBiometricsBloc()
-            ..add(const SetupBiometricsEvent.checkAvailability()),
+          create: (context) =>
+              BlocFactory.createSetupBiometricsBloc()
+                ..add(const SetupBiometricsEvent.checkAvailability()),
           child: const SetupBiometricsPage(),
         ),
       ),
       GoRoute(
         path: '/security/unlock',
         builder: (context, state) => BlocProvider(
-          create: (context) => BlocFactory.createVerifyPincodeBloc()
-            ..add(const VerifyPincodeEvent.checkBiometrics()),
+          create: (context) =>
+              BlocFactory.createVerifyPincodeBloc()
+                ..add(const VerifyPincodeEvent.checkBiometrics()),
           child: const VerifyPincodePage(),
         ),
       ),
@@ -430,6 +437,11 @@ class AppRouter {
             },
           ),
         ],
+      ),
+      // Debug Routes
+      GoRoute(
+        path: '/debug/radio-buttons',
+        builder: (context, state) => const RadioButtonTestPage(),
       ),
     ],
   );

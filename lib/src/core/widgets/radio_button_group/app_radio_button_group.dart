@@ -67,11 +67,20 @@ class AppRadioButtonGroup<T> extends StatelessWidget {
     for (var i = 0; i < widgets.length; i++) {
       result.add(widgets[i]);
       if (i < widgets.length - 1) {
-        result.add(
-          axis == Axis.horizontal
-              ? SizedBox(width: spacing)
-              : SizedBox(height: spacing),
-        );
+        if (axis == Axis.horizontal) {
+          result.add(SizedBox(width: spacing));
+        } else {
+          result.add(
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: spacing / 2),
+              child: const Divider(
+                height: 1,
+                thickness: 1,
+                color: AppColors.white,
+              ),
+            ),
+          );
+        }
       }
     }
     return result;

@@ -28,16 +28,14 @@ class AppRadioButton extends StatelessWidget {
 
   Color get _borderColor {
     // Both selected and unselected have blue/grey border
-    return _isEnabled
+    return _isEnabled && _isSelected
         ? (activeColor ?? AppColors.blue500)
         : AppColors.grey500;
   }
 
   Color get _innerDotColor {
     // Inner dot is blue (same as border) when selected
-    return _isEnabled
-        ? (activeColor ?? AppColors.blue500)
-        : AppColors.grey500;
+    return _isEnabled ? (activeColor ?? AppColors.blue500) : AppColors.grey500;
   }
 
   void _handleTap() {
@@ -64,10 +62,7 @@ class AppRadioButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: _backgroundColor,
               shape: BoxShape.circle,
-              border: Border.all(
-                width: 2,
-                color: _borderColor,
-              ),
+              border: Border.all(width: 2, color: _borderColor),
             ),
             child: _isSelected
                 ? Center(
