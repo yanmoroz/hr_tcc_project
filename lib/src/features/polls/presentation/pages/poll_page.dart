@@ -19,7 +19,7 @@ class PollPage extends StatefulWidget {
 }
 
 class _PollPageState extends State<PollPage> {
-  final Map<int, PollAnswer> _answers = {};
+  final Map<int, List<PollAnswer>> _answers = {};
   final Set<int> _requiredQuestionIds = {};
   bool _submittedSuccessfully = false;
 
@@ -28,6 +28,8 @@ class _PollPageState extends State<PollPage> {
       if (answer == null) {
         _answers.remove(question.id);
       } else if (answer is PollAnswer) {
+        _answers[question.id] = [answer];
+      } else if (answer is List<PollAnswer>) {
         _answers[question.id] = answer;
       }
     });
@@ -56,20 +58,6 @@ class _PollPageState extends State<PollPage> {
     PollDetail pollDetail,
     bool isLastPage,
   ) {
-    final currentPage =
-        pollDetail.pages[context.read<PollDetailBloc>().state.currentPageIndex];
-    _collectRequiredQuestionsForCurrentPage(currentPage);
-
-    if (!_validateCurrentPage()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Пожалуйста, ответьте на все обязательные вопросы'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
     if (isLastPage) {
       // Mark that we're attempting submission
       setState(() {
@@ -77,7 +65,7 @@ class _PollPageState extends State<PollPage> {
       });
 
       // Submit all answers
-      final answersList = _answers.values.toList();
+      final answersList = _answers.values.expand((e) => e).toList();
       context.read<PollDetailBloc>().add(
         PollDetailEvent.submitAnswers(answers: answersList),
       );
@@ -123,39 +111,42 @@ class _PollPageState extends State<PollPage> {
       builder: (context, state) {
         final isFirstPage = state.currentPageIndex == 0;
 
-        return Scaffold(
-          appBar: AppBar(
-            leading: isFirstPage
-                ? null
-                : IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => context.read<PollDetailBloc>().add(
-                      const PollDetailEvent.previousPage(),
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            appBar: AppBar(
+              leading: isFirstPage
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () => context.read<PollDetailBloc>().add(
+                        const PollDetailEvent.previousPage(),
+                      ),
                     ),
-                  ),
-            automaticallyImplyLeading: false,
-            title: Text(_getAppBarTitle(state)),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () async {
-                  final shouldExit = await showConfirmationDialog(
-                    context,
-                    title: 'Прекратить прохождение опроса?',
-                    content: '',
-                    confirmText: 'Прекратить',
-                    cancelText: 'Отмена',
-                    isDestructive: true,
-                  );
-                  if (shouldExit == true && context.mounted) {
-                    Navigator.of(context).pop();
-                  }
-                },
-              ),
-            ],
+              automaticallyImplyLeading: false,
+              title: Text(_getAppBarTitle(state)),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () async {
+                    final shouldExit = await showConfirmationDialog(
+                      context,
+                      title: 'Прекратить прохождение опроса?',
+                      content: '',
+                      confirmText: 'Прекратить',
+                      cancelText: 'Отмена',
+                      isDestructive: true,
+                    );
+                    if (shouldExit == true && context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+              ],
+            ),
+            body: _buildBody(context, state),
+            backgroundColor: AppColors.white,
           ),
-          body: _buildBody(context, state),
-          backgroundColor: AppColors.white,
         );
       },
     );
@@ -223,6 +214,8 @@ class _PollPageState extends State<PollPage> {
     int pageIndex, {
     bool isSubmitting = false,
   }) {
+    _collectRequiredQuestionsForCurrentPage(page);
+
     final allQuestions = [...page.questions, ...page.scaleQuestions]
       ..sort((a, b) => a.position.compareTo(b.position));
 
@@ -248,17 +241,13 @@ class _PollPageState extends State<PollPage> {
                               vertical: 6.0,
                             ),
                             decoration: BoxDecoration(
-                              color: pollDetail.canAnswer
-                                  ? AppColors.orange100
-                                  : AppColors.grey500,
+                              color: AppColors.yellow100,
                               borderRadius: BorderRadius.circular(4.0),
                             ),
                             child: Text(
-                              pollDetail.canAnswer ? 'Не пройден' : 'Пройден',
+                              'Не пройден',
                               style: AppTypography.captionMedium2.copyWith(
-                                color: pollDetail.canAnswer
-                                    ? AppColors.black
-                                    : AppColors.white,
+                                color: AppColors.black,
                               ),
                             ),
                           ),
@@ -358,7 +347,7 @@ class _PollPageState extends State<PollPage> {
               label: isLastPage ? 'Завершить опрос' : 'Продолжить',
               size: PrimaryButtonSize.large,
               style: PrimatyButtonStyle.colored,
-              enabled: !isSubmitting,
+              enabled: _validateCurrentPage() && !isSubmitting,
               isLoading: isSubmitting,
               onPressed: () =>
                   _handlePrimaryButton(context, pollDetail, isLastPage),

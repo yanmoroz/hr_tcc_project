@@ -14,7 +14,7 @@ abstract class QuestionModel with _$QuestionModel {
     required String title,
     String? picture,
     String? comment,
-    @JsonKey(name: 'isReqered') bool? isRequired,
+    @JsonKey(name: 'required') bool? isRequired,
     required bool hasCustomAnswer,
     bool? hasMultipliAnswer,
     bool? isArchive,

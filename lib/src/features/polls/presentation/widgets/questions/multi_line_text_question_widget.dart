@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/utils/string_utils.dart';
+import '../../../../../core/widgets/widgets.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
 
@@ -22,8 +23,6 @@ class MultiLineTextQuestionWidget extends StatefulWidget {
 class _MultiLineTextQuestionWidgetState
     extends State<MultiLineTextQuestionWidget> {
   final TextEditingController _controller = TextEditingController();
-  bool _hasError = false;
-
   @override
   void dispose() {
     _controller.dispose();
@@ -31,10 +30,6 @@ class _MultiLineTextQuestionWidgetState
   }
 
   void _onTextChanged(String text) {
-    setState(() {
-      _hasError = false;
-    });
-
     if (text.isEmpty) {
       widget.onAnswerChanged(widget.question, null);
     } else {
@@ -57,22 +52,18 @@ class _MultiLineTextQuestionWidgetState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                stripHtmlTags(widget.question.title),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            if (widget.question.isRequired == true)
-              Chip(
-                label: const Text('Required'),
-                labelStyle: const TextStyle(fontSize: 10),
-                padding: EdgeInsets.zero,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              ),
-          ],
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: [
+              TextSpan(text: stripHtmlTags(widget.question.title)),
+              if (widget.question.isRequired == true)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
         if (widget.question.comment != null &&
             widget.question.comment!.isNotEmpty) ...[
@@ -83,14 +74,11 @@ class _MultiLineTextQuestionWidgetState
           ),
         ],
         const SizedBox(height: 8.0),
-        TextField(
+        AppTextFormField(
           controller: _controller,
-          maxLines: 5,
-          decoration: InputDecoration(
-            hintText: 'Enter your answer here...',
-            border: const OutlineInputBorder(),
-            errorText: _hasError ? 'This field is required' : null,
-          ),
+          labelText: 'Ваш ответ',
+          maxLines: 10,
+          minLines: 5,
           onChanged: _onTextChanged,
         ),
       ],

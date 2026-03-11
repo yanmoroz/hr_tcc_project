@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/models/models.dart';
 import '../../../../../core/utils/string_utils.dart';
+import '../../../../../core/widgets/widgets.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
 
@@ -72,22 +74,18 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                stripHtmlTags(widget.question.title),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            if (widget.question.isRequired == true)
-              Chip(
-                label: const Text('Required'),
-                labelStyle: const TextStyle(fontSize: 10),
-                padding: EdgeInsets.zero,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              ),
-          ],
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: [
+              TextSpan(text: stripHtmlTags(widget.question.title)),
+              if (widget.question.isRequired == true)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
         if (widget.question.comment != null &&
             widget.question.comment!.isNotEmpty) ...[
@@ -98,35 +96,26 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
           ),
         ],
         const SizedBox(height: 8.0),
-        DropdownButtonFormField<Answer>(
-          key: ValueKey(_selectedAnswer?.id),
-          initialValue: _selectedAnswer,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Выберите ответ',
-          ),
+        AppDropdownFormField<Answer>(
+          value: _selectedAnswer,
+          onChanged: _onAnswerSelected,
+          labelText: 'Выберите вариант',
+          modalTitle: 'Выберите вариант',
           items: answers.map((answer) {
-            return DropdownMenuItem<Answer>(
+            return RadioButtonItem<Answer>(
               value: answer,
-              child: Text(
-                stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
-              ),
+              label: stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
             );
           }).toList(),
-          onChanged: _onAnswerSelected,
         ),
         // Custom answer text field - always shown after dropdown if hasCustomAnswer is true
         if (widget.question.hasCustomAnswer) ...[
           const SizedBox(height: 12.0),
-          TextField(
+          AppTextFormField(
             controller: _customTextController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Ваш вариант ответа (необязательно)',
-              hintText: 'Введите свой вариант...',
-            ),
+            labelText: 'Ваш вариант ответа (необязательно)',
             onChanged: _onCustomTextChanged,
-            maxLines: 2,
+            maxLines: 4,
           ),
         ],
       ],

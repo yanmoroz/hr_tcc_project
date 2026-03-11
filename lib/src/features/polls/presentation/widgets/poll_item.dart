@@ -12,43 +12,40 @@ class PollItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: viewModel.cardBackgroundColor,
-          borderRadius: BorderRadius.circular(12.0),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTimeLabel(),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTimeLabel(),
+                const SizedBox(height: 8.0),
+                _buildTitle(),
+                if (viewModel.shouldShowShortDescription) ...[
                   const SizedBox(height: 8.0),
-                  _buildTitle(),
-                  if (viewModel.shouldShowShortDescription) ...[
-                    const SizedBox(height: 8.0),
-                    _buildDescription(),
-                  ],
-                  const SizedBox(height: 24.0),
-                  _buildBottomSection(),
+                  _buildDescription(),
                 ],
-              ),
+                const SizedBox(height: 24.0),
+                _buildBottomSection(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -74,9 +71,7 @@ class PollItem extends StatelessWidget {
   Widget _buildTimeLabel() {
     return Text(
       viewModel.timeText,
-      style: AppTypography.captionMedium2.copyWith(
-        color: viewModel.secondaryTextColor,
-      ),
+      style: AppTypography.captionMedium2.copyWith(color: AppColors.grey700),
     );
   }
 
@@ -86,15 +81,13 @@ class PollItem extends StatelessWidget {
         viewModel.poll.shortDescription.isNotEmpty
             ? viewModel.poll.shortDescription
             : viewModel.poll.title,
-        style: AppTypography.titleSemibold3.copyWith(
-          color: viewModel.textColor,
-        ),
+        style: AppTypography.titleSemibold3.copyWith(color: AppColors.black),
       );
     }
 
     return Text(
       viewModel.poll.title,
-      style: AppTypography.titleSemibold3.copyWith(color: viewModel.textColor),
+      style: AppTypography.titleSemibold3.copyWith(color: AppColors.black),
     );
   }
 
@@ -105,9 +98,7 @@ class PollItem extends StatelessWidget {
 
     return Text(
       viewModel.poll.shortDescription,
-      style: AppTypography.textRegular2.copyWith(
-        color: viewModel.secondaryTextColor,
-      ),
+      style: AppTypography.textRegular2.copyWith(color: AppColors.grey700),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );

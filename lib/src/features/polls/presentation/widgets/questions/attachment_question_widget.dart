@@ -1,13 +1,34 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/files/entities/uploaded_file.dart';
 import '../../../../../core/utils/string_utils.dart';
 import '../../../../../core/value_objects/system_type.dart';
+import '../../../../../core/widgets/uploading_attachment/uploading_attachment.dart';
+import '../../../../../core/widgets/uploading_attachment/uploading_attachment_state.dart';
+import '../../../../../core/widgets/widgets.dart';
+import '../../../../../../gen/assets.gen.dart';
+import '../../../../comments/presentation/widgets/attachment_picker_bottom_sheet.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
+
+class _UploadEntry {
+  final String id;
+  final File file;
+  final String fileName;
+  UploadingAttachmentState state;
+  AttachmentFile? uploadedFile;
+
+  _UploadEntry({
+    required this.id,
+    required this.file,
+    required this.fileName,
+    required this.state,
+  });
+}
 
 class AttachmentQuestionWidget extends StatefulWidget {
   final Question question;
@@ -27,195 +48,147 @@ class AttachmentQuestionWidget extends StatefulWidget {
 }
 
 class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
-  final List<XFile> _selectedFiles = [];
+  final List<_UploadEntry> _uploads = [];
+  final Set<String> _cancelledUploads = {};
   final ImagePicker _picker = ImagePicker();
-  final Map<int, bool> _uploadingFiles =
-      {}; // Track which files are being uploaded
-  final Map<int, double> _uploadProgress = {}; // Track upload progress
-  final Map<int, AttachmentFile> _uploadedFiles =
-      {}; // Track uploaded files by index
 
-  Future<void> _pickFiles() async {
+  Future<void> _pickPhotos() async {
     try {
-      final List<XFile> files = await _picker.pickMultiImage();
+      final images = await _picker.pickMultiImage();
+      if (images.isEmpty) return;
+      _addFiles(images.map((xFile) => File(xFile.path)).toList());
+    } catch (_) {}
+  }
 
-      if (files.isNotEmpty) {
-        setState(() {
-          _selectedFiles.addAll(files);
-        });
-        _updateAnswer();
-      }
-    } catch (e) {
-      // Handle error - user might have canceled or permission denied
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error picking files: $e')));
-      }
+  Future<void> _pickDocuments() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.any,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final files = result.files
+          .where((f) => f.path != null)
+          .map((f) => File(f.path!))
+          .toList();
+      _addFiles(files);
+    } catch (_) {}
+  }
+
+  void _addFiles(List<File> files) {
+    final baseTs = DateTime.now().millisecondsSinceEpoch;
+    for (var i = 0; i < files.length; i++) {
+      final file = files[i];
+      final entry = _UploadEntry(
+        id: '${baseTs}_$i',
+        file: file,
+        fileName: file.path.split('/').last,
+        state: const UploadingAttachmentState.loading(progress: 0),
+      );
+      setState(() => _uploads.add(entry));
+      _startUpload(entry);
     }
   }
 
-  void _removeFile(int index) {
-    setState(() {
-      _selectedFiles.removeAt(index);
-      _uploadingFiles.remove(index);
-      _uploadProgress.remove(index);
-      _uploadedFiles.remove(index);
-      // Re-index remaining files
-      final newUploadingFiles = <int, bool>{};
-      final newUploadProgress = <int, double>{};
-      final newUploadedFiles = <int, AttachmentFile>{};
-      for (var i = 0; i < _selectedFiles.length; i++) {
-        if (i < index) {
-          if (_uploadingFiles.containsKey(i))
-            newUploadingFiles[i] = _uploadingFiles[i]!;
-          if (_uploadProgress.containsKey(i))
-            newUploadProgress[i] = _uploadProgress[i]!;
-          if (_uploadedFiles.containsKey(i))
-            newUploadedFiles[i] = _uploadedFiles[i]!;
-        } else if (i > index) {
-          if (_uploadingFiles.containsKey(i))
-            newUploadingFiles[i - 1] = _uploadingFiles[i]!;
-          if (_uploadProgress.containsKey(i))
-            newUploadProgress[i - 1] = _uploadProgress[i]!;
-          if (_uploadedFiles.containsKey(i))
-            newUploadedFiles[i - 1] = _uploadedFiles[i]!;
+  Future<void> _startUpload(_UploadEntry entry) async {
+    final result = await widget.onFileUpload(
+      file: entry.file,
+      systemType: SystemType.elma,
+      onProgress: (sent, total) {
+        if (_cancelledUploads.contains(entry.id)) return;
+        if (mounted) {
+          setState(() {
+            entry.state = UploadingAttachmentState.loading(
+              progress: sent / total,
+            );
+          });
         }
-      }
-      _uploadingFiles.clear();
-      _uploadingFiles.addAll(newUploadingFiles);
-      _uploadProgress.clear();
-      _uploadProgress.addAll(newUploadProgress);
-      _uploadedFiles.clear();
-      _uploadedFiles.addAll(newUploadedFiles);
-    });
+      },
+    );
+
+    if (_cancelledUploads.contains(entry.id)) {
+      _cancelledUploads.remove(entry.id);
+      return;
+    }
+    if (!mounted) return;
+
+    result.fold(
+      (failure) {
+        setState(() {
+          entry.state = UploadingAttachmentState.error(
+            message: failure.toString(),
+          );
+        });
+      },
+      (uploadedFile) {
+        final attachmentFile = _toAttachmentFile(uploadedFile);
+        setState(() {
+          entry.state = UploadingAttachmentState.success(
+            fileSize: uploadedFile.size ?? 0,
+          );
+          entry.uploadedFile = attachmentFile;
+        });
+        _updateAnswer();
+      },
+    );
+  }
+
+  AttachmentFile? _toAttachmentFile(UploadedFile uploadedFile) {
+    final kpFile = uploadedFile.asKp;
+    if (kpFile == null) return null;
+    return AttachmentFile(
+      id: kpFile.id,
+      name: kpFile.name,
+      url: kpFile.url,
+      folder: kpFile.folder,
+      extension: kpFile.extension,
+      size: kpFile.size,
+      created: kpFile.created,
+      fileType: kpFile.fileType,
+      systemType: 'KP',
+      icon: kpFile.icon,
+      width: kpFile.width,
+      height: kpFile.height,
+      thumbnail: kpFile.thumbnail,
+    );
+  }
+
+  void _cancelUpload(String id) {
+    _cancelledUploads.add(id);
+    setState(() => _uploads.removeWhere((e) => e.id == id));
     _updateAnswer();
   }
 
-  Future<void> _uploadFile(XFile file, int index) async {
-    setState(() {
-      _uploadingFiles[index] = true;
-      _uploadProgress[index] = 0.0;
-    });
-
-    try {
-      final fileToUpload = File(file.path);
-      final result = await widget.onFileUpload(
-        file: fileToUpload,
-        systemType: SystemType.kp,
-        onProgress: (sent, total) {
-          if (mounted) {
-            setState(() {
-              _uploadProgress[index] = sent / total;
-            });
-          }
-        },
-      );
-
-      result.fold(
-        (failure) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Failed to upload ${file.name}: ${failure.toString()}',
-                ),
-              ),
-            );
-            setState(() {
-              _uploadingFiles[index] = false;
-            });
-          }
-        },
-        (uploadedFile) {
-          // File uploaded successfully, store it and update the answer
-          _updateAnswerWithUploadedFile(uploadedFile, index);
-          setState(() {
-            _uploadingFiles[index] = false;
-            _uploadProgress[index] = 1.0;
-          });
-        },
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading ${file.name}: $e')),
-        );
-        setState(() {
-          _uploadingFiles[index] = false;
-        });
-      }
-    }
+  void _removeFile(String id) {
+    setState(() => _uploads.removeWhere((e) => e.id == id));
+    _updateAnswer();
   }
 
-  void _updateAnswerWithUploadedFile(UploadedFile uploadedFile, int index) {
-    // Convert UploadedFile (KP system) to AttachmentFile
-    // Use asKp extension method to get KP-specific fields
-    final kpFile = uploadedFile.asKp;
-
-    if (kpFile != null) {
-      final attachmentFile = AttachmentFile(
-        id: kpFile.id,
-        name: kpFile.name,
-        url: kpFile.url,
-        folder: kpFile.folder,
-        extension: kpFile.extension,
-        size: kpFile.size,
-        created: kpFile.created,
-        fileType: kpFile.fileType,
-        systemType: 'KP',
-        icon: kpFile.icon,
-        width: kpFile.width,
-        height: kpFile.height,
-        thumbnail: kpFile.thumbnail,
-      );
-
-      // Store uploaded file
-      setState(() {
-        _uploadedFiles[index] = attachmentFile;
-      });
-
-      // Update answer with all uploaded files
-      _updateAnswerFromUploadedFiles();
-    }
-  }
-
-  void _updateAnswerFromUploadedFiles() {
-    // Collect all uploaded files
-    final uploadedFiles = _uploadedFiles.values.toList();
+  void _updateAnswer() {
+    final uploadedFiles = _uploads
+        .where((e) => e.uploadedFile != null)
+        .map((e) => e.uploadedFile!)
+        .toList();
 
     if (uploadedFiles.isEmpty) {
       widget.onAnswerChanged(widget.question, null);
       return;
     }
 
-    // Update the answer with all uploaded files
-    final pollAnswer = PollAnswer.type5(
-      type: 5,
-      questionId: widget.question.id,
-      answerData: uploadedFiles,
+    widget.onAnswerChanged(
+      widget.question,
+      PollAnswer.type5(
+        type: 5,
+        questionId: widget.question.id,
+        answerData: uploadedFiles,
+      ),
     );
-    widget.onAnswerChanged(widget.question, pollAnswer);
   }
 
-  void _updateAnswer() {
-    // Upload all files that haven't been uploaded yet
-    for (var i = 0; i < _selectedFiles.length; i++) {
-      if (!_uploadingFiles.containsKey(i) || !_uploadingFiles[i]!) {
-        if (!_uploadedFiles.containsKey(i)) {
-          _uploadFile(_selectedFiles[i], i);
-        }
-      }
-    }
-
-    // Update answer with already uploaded files
-    _updateAnswerFromUploadedFiles();
-  }
-
-  String _formatFileSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  bool _isImageFile(String fileName) {
+    final ext = fileName.split('.').last.toLowerCase();
+    return const {'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif'}
+        .contains(ext);
   }
 
   @override
@@ -223,22 +196,18 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                stripHtmlTags(widget.question.title),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            if (widget.question.isRequired == true)
-              Chip(
-                label: const Text('Required'),
-                labelStyle: const TextStyle(fontSize: 10),
-                padding: EdgeInsets.zero,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              ),
-          ],
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: [
+              TextSpan(text: stripHtmlTags(widget.question.title)),
+              if (widget.question.isRequired == true)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
         if (widget.question.comment != null &&
             widget.question.comment!.isNotEmpty) ...[
@@ -249,49 +218,39 @@ class _AttachmentQuestionWidgetState extends State<AttachmentQuestionWidget> {
           ),
         ],
         const SizedBox(height: 8.0),
-        ElevatedButton.icon(
-          onPressed: _pickFiles,
-          icon: const Icon(Icons.attach_file),
-          label: const Text('Select Files'),
-        ),
-        if (_selectedFiles.isNotEmpty) ...[
-          const SizedBox(height: 16.0),
-          Text(
-            'Selected Files:',
-            style: Theme.of(context).textTheme.titleSmall,
+        PrimaryButton(
+          label: 'Прикрепить файлы',
+          icon: Assets.icons.addIcon,
+          size: PrimaryButtonSize.large,
+          style: PrimatyButtonStyle.white,
+          onPressed: () => AttachmentPickerBottomSheet.show(
+            context,
+            onPickPhoto: _pickPhotos,
+            onPickDocument: _pickDocuments,
           ),
-          const SizedBox(height: 8.0),
-          ..._selectedFiles.asMap().entries.map((entry) {
-            final index = entry.key;
-            final file = entry.value;
-            final fileSize = File(file.path).lengthSync();
-            final isUploading = _uploadingFiles[index] ?? false;
-            final progress = _uploadProgress[index] ?? 0.0;
-
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8.0),
-              child: ListTile(
-                leading: isUploading
-                    ? CircularProgressIndicator(
-                        value: progress > 0 ? progress : null,
-                      )
-                    : const Icon(Icons.insert_drive_file),
-                title: Text(file.name),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(_formatFileSize(fileSize)),
-                    if (isUploading)
-                      LinearProgressIndicator(value: progress, minHeight: 2),
-                  ],
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: isUploading ? null : () => _removeFile(index),
-                ),
-              ),
-            );
-          }),
+        ),
+        if (_uploads.isNotEmpty) ...[
+          const SizedBox(height: 16.0),
+          SizedBox(
+            height: 104,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _uploads.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final entry = _uploads[index];
+                final isLoading = entry.state is UploadingAttachmentLoading;
+                return UploadingAttachment(
+                  fileName: entry.fileName,
+                  state: entry.state,
+                  imageFile: _isImageFile(entry.fileName) ? entry.file : null,
+                  displayFileName: false,
+                  onCancel: isLoading ? () => _cancelUpload(entry.id) : null,
+                  onDelete: isLoading ? null : () => _removeFile(entry.id),
+                );
+              },
+            ),
+          ),
         ],
       ],
     );

@@ -31,17 +31,6 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
     super.dispose();
   }
 
-  void _onAnswerToggled(Answer answer) {
-    setState(() {
-      if (_selectedAnswerIds.contains(answer.id)) {
-        _selectedAnswerIds.remove(answer.id);
-      } else {
-        _selectedAnswerIds.add(answer.id);
-      }
-      _updateAnswer();
-    });
-  }
-
   void _onSingleAnswerSelected(Answer answer) {
     setState(() {
       _selectedAnswerIds.clear();
@@ -92,22 +81,18 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                stripHtmlTags(widget.question.title),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            if (widget.question.isRequired == true)
-              Chip(
-                label: const Text('Required'),
-                labelStyle: const TextStyle(fontSize: 10),
-                padding: EdgeInsets.zero,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              ),
-          ],
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: [
+              TextSpan(text: stripHtmlTags(widget.question.title)),
+              if (widget.question.isRequired == true)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
         if (widget.question.comment != null &&
             widget.question.comment!.isNotEmpty) ...[
@@ -119,14 +104,30 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
         ],
         const SizedBox(height: 8.0),
         if (isMultiple)
-          ...answers.map((answer) {
-            return CheckboxListTile(
-              title: Text(stripHtmlTags(answer.text ?? 'Option ${answer.id}')),
-              value: _selectedAnswerIds.contains(answer.id),
-              onChanged: (value) => _onAnswerToggled(answer),
-              controlAffinity: ListTileControlAffinity.leading,
-            );
-          })
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: AppColors.grey100,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: AppCheckBoxGroup<int>(
+              value: _selectedAnswerIds,
+              onChanged: (newSet) {
+                setState(() {
+                  _selectedAnswerIds
+                    ..clear()
+                    ..addAll(newSet);
+                  _updateAnswer();
+                });
+              },
+              items: answers.map((answer) {
+                return CheckBoxItem<int>(
+                  value: answer.id,
+                  label: stripHtmlTags(answer.text ?? 'Option ${answer.id}'),
+                );
+              }).toList(),
+            ),
+          )
         else
           Container(
             padding: const EdgeInsets.all(16.0),
@@ -155,16 +156,11 @@ class _ChoiceQuestionWidgetState extends State<ChoiceQuestionWidget> {
         // Custom answer text field - always shown after all options if hasCustomAnswer is true
         if (widget.question.hasCustomAnswer) ...[
           const SizedBox(height: 12.0),
-          TextField(
+          AppTextFormField(
             controller: _customTextController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Ваш вариант ответа (необязательно)',
-              hintText: 'Введите свой вариант...',
-              isDense: true,
-            ),
+            labelText: 'Ваш вариант ответа (необязательно)',
             onChanged: _onCustomTextChanged,
-            maxLines: 2,
+            maxLines: 4,
           ),
         ],
       ],

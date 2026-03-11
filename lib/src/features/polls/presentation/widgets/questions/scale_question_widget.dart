@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/theme/theme.dart';
 import '../../../../../core/utils/string_utils.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
@@ -19,7 +20,7 @@ class ScaleQuestionWidget extends StatefulWidget {
 }
 
 class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
-  int? _selectedValue;
+  final Map<int, int> _sliderValues = {};
   late final int _maxValue;
   late final int _minValue;
 
@@ -30,22 +31,33 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
     _minValue = 1;
   }
 
-  void _onValueChanged(int value) {
+  List<Answer> get _answers =>
+      widget.question.answers.where((a) => a.isArchive != true).toList();
+
+  void _onSliderChanged(Answer answer, int value) {
     setState(() {
-      _selectedValue = value;
+      _sliderValues[answer.id] = value;
     });
 
-    // For scale questions, answerId might be the question's ID or we need a default
-    final answerId = widget.question.answers.isNotEmpty
-        ? widget.question.answers.first.id
-        : widget.question.id;
-    final pollAnswer = PollAnswer.type4(
-      type: 4,
-      questionId: widget.question.id,
-      answerId: answerId,
-      answerData: value,
-    );
-    widget.onAnswerChanged(widget.question, pollAnswer);
+    final allAnswered = _answers.every((a) => _sliderValues.containsKey(a.id));
+
+    if (!allAnswered) {
+      widget.onAnswerChanged(widget.question, null);
+      return;
+    }
+
+    final pollAnswers = _answers
+        .map(
+          (a) => PollAnswer.type4(
+            type: 4,
+            questionId: widget.question.id,
+            answerId: a.id,
+            answerData: _sliderValues[a.id]!,
+          ),
+        )
+        .toList();
+
+    widget.onAnswerChanged(widget.question, pollAnswers);
   }
 
   @override
@@ -53,22 +65,18 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                stripHtmlTags(widget.question.title),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            if (widget.question.isRequired == true)
-              Chip(
-                label: const Text('Required'),
-                labelStyle: const TextStyle(fontSize: 10),
-                padding: EdgeInsets.zero,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              ),
-          ],
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: [
+              TextSpan(text: stripHtmlTags(widget.question.title)),
+              if (widget.question.isRequired == true)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
         if (widget.question.comment != null &&
             widget.question.comment!.isNotEmpty) ...[
@@ -79,67 +87,72 @@ class _ScaleQuestionWidgetState extends State<ScaleQuestionWidget> {
           ),
         ],
         const SizedBox(height: 16.0),
-        Row(
-          children: [
-            if (widget.question.startText != null &&
-                widget.question.startText!.isNotEmpty)
-              Expanded(
-                child: Text(
-                  widget.question.startText!,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            if (widget.question.middleText != null &&
-                widget.question.middleText!.isNotEmpty)
-              Expanded(
-                child: Text(
-                  widget.question.middleText!,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            if (widget.question.endText != null &&
-                widget.question.endText!.isNotEmpty)
-              Expanded(
-                child: Text(
-                  widget.question.endText!,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.right,
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 8.0),
-        Slider(
-          value: _selectedValue?.toDouble() ?? _minValue.toDouble(),
-          min: _minValue.toDouble(),
-          max: _maxValue.toDouble(),
-          divisions: _maxValue - _minValue,
-          label: _selectedValue?.toString() ?? _minValue.toString(),
-          onChanged: (value) => _onValueChanged(value.toInt()),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              _minValue.toString(),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            if (_selectedValue != null)
-              Text(
-                'Selected: $_selectedValue',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            Text(
-              _maxValue.toString(),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
+        ..._answers.map(_buildAnswerSlider),
       ],
+    );
+  }
+
+  Widget _buildAnswerSlider(Answer answer) {
+    final value = _sliderValues[answer.id];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  stripHtmlTags(answer.text ?? ''),
+                  style: AppTypography.textMedium1.copyWith(
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+              if (value != null)
+                Text(
+                  value.toString(),
+                  style: AppTypography.textMedium1.copyWith(
+                    color: AppColors.blue500,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4.0),
+          Slider(
+            value: (value ?? _minValue).toDouble(),
+            min: _minValue.toDouble(),
+            max: _maxValue.toDouble(),
+            divisions: _maxValue - _minValue,
+            label: (value ?? _minValue).toString(),
+            onChanged: (v) => _onSliderChanged(answer, v.toInt()),
+            activeColor: AppColors.blue500,
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (widget.question.startText != null &&
+                  widget.question.startText!.isNotEmpty)
+                Text(
+                  widget.question.startText!,
+                  style: AppTypography.textRegular2.copyWith(
+                    color: AppColors.grey700,
+                  ),
+                ),
+              if (widget.question.endText != null &&
+                  widget.question.endText!.isNotEmpty)
+                Text(
+                  widget.question.endText!,
+                  style: AppTypography.textRegular2.copyWith(
+                    color: AppColors.grey700,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

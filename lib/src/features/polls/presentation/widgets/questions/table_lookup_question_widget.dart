@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/theme/theme.dart';
 import '../../../../../core/utils/string_utils.dart';
+import '../../../../../core/widgets/widgets.dart';
 import '../../../domain/domain.dart';
 import 'question_callbacks.dart';
+
+class _StaffSearchData {
+  final List<StaffItem>? items;
+  final bool isSearching;
+  final String? error;
+
+  const _StaffSearchData({this.items, required this.isSearching, this.error});
+}
 
 class TableLookupQuestionWidget extends StatefulWidget {
   final Question question;
@@ -28,25 +38,43 @@ class TableLookupQuestionWidget extends StatefulWidget {
 }
 
 class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
-  final TextEditingController _searchController = TextEditingController();
+  late final ValueNotifier<_StaffSearchData> _staffNotifier;
   StaffItem? _selectedItem;
 
   @override
   void initState() {
     super.initState();
+    _staffNotifier = ValueNotifier(
+      _StaffSearchData(
+        items: widget.staffItems,
+        isSearching: widget.isSearchingStaff,
+        error: widget.staffSearchError,
+      ),
+    );
     _loadStaff();
-    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void didUpdateWidget(TableLookupQuestionWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.staffItems != widget.staffItems ||
+        oldWidget.isSearchingStaff != widget.isSearchingStaff ||
+        oldWidget.staffSearchError != widget.staffSearchError) {
+      _staffNotifier.value = _StaffSearchData(
+        items: widget.staffItems,
+        isSearching: widget.isSearchingStaff,
+        error: widget.staffSearchError,
+      );
+    }
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _staffNotifier.dispose();
     super.dispose();
   }
 
   StaffTarget _getStaffTarget() {
-    // Map lookupType to StaffTarget
-    // Common mappings: 0 = employee, 1 = department, 2 = organisation
     switch (widget.question.lookupType) {
       case 0:
         return StaffTarget.employee;
@@ -55,7 +83,7 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
       case 2:
         return StaffTarget.organisation;
       default:
-        return StaffTarget.employee; // Default to employee
+        return StaffTarget.employee;
     }
   }
 
@@ -63,21 +91,9 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
     widget.onStaffSearch(_getStaffTarget(), search);
   }
 
-  void _onSearchChanged() {
-    final search = _searchController.text.trim();
-    if (search.isEmpty) {
-      _loadStaff();
-    } else {
-      _loadStaff(search: search);
-    }
-  }
-
   void _onItemSelected(StaffItem item) {
-    setState(() {
-      _selectedItem = item;
-    });
+    setState(() => _selectedItem = item);
 
-    // For tableLookup, answerId might be the question's ID or we need a default
     final answerId = widget.question.answers.isNotEmpty
         ? widget.question.answers.first.id
         : widget.question.id;
@@ -90,27 +106,47 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
     widget.onAnswerChanged(widget.question, pollAnswer);
   }
 
+  void _openModal() {
+    final target = _getStaffTarget();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(top: MediaQuery.of(ctx).size.height * 0.065),
+        child: _StaffSearchModal(
+          title: target.displayName,
+          staffNotifier: _staffNotifier,
+          onSearch: (query) => _loadStaff(search: query.isEmpty ? null : query),
+          onSelected: (item) {
+            Navigator.pop(ctx);
+            _onItemSelected(item);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final target = _getStaffTarget();
+    final labelText = 'Выберите ${target.displayName.toLowerCase()}';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                stripHtmlTags(widget.question.title),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            if (widget.question.isRequired == true)
-              Chip(
-                label: const Text('Required'),
-                labelStyle: const TextStyle(fontSize: 10),
-                padding: EdgeInsets.zero,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              ),
-          ],
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: [
+              TextSpan(text: stripHtmlTags(widget.question.title)),
+              if (widget.question.isRequired == true)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
         ),
         if (widget.question.comment != null &&
             widget.question.comment!.isNotEmpty) ...[
@@ -121,72 +157,239 @@ class _TableLookupQuestionWidgetState extends State<TableLookupQuestionWidget> {
           ),
         ],
         const SizedBox(height: 8.0),
-        TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            labelText: 'Search ${_getStaffTarget().displayName.toLowerCase()}',
-            hintText: 'Type to search...',
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: widget.isSearchingStaff
-                ? const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  )
-                : null,
-          ),
-        ),
-        if (widget.staffSearchError != null) ...[
-          const SizedBox(height: 8.0),
-          Text(
-            widget.staffSearchError!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
+        GestureDetector(
+          onTap: _openModal,
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.grey500),
+            ),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _selectedItem != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              labelText,
+                              style: AppTypography.textRegular2.grey700,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _selectedItem!.title,
+                              style: AppTypography.textRegular1.black,
+                            ),
+                          ],
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            labelText,
+                            style: AppTypography.textRegular1.grey700,
+                          ),
+                        ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: AppColors.grey700,
+                  size: 24,
+                ),
+              ],
             ),
           ),
-        ],
-        if (_selectedItem != null) ...[
-          const SizedBox(height: 8.0),
-          Card(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: ListTile(
-              title: Text(_selectedItem!.title),
-              trailing: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  setState(() {
-                    _selectedItem = null;
-                  });
-                  widget.onAnswerChanged(widget.question, null);
+        ),
+      ],
+    );
+  }
+}
+
+class _StaffSearchModal extends StatefulWidget {
+  final String title;
+  final ValueNotifier<_StaffSearchData> staffNotifier;
+  final void Function(String query) onSearch;
+  final void Function(StaffItem item) onSelected;
+
+  const _StaffSearchModal({
+    required this.title,
+    required this.staffNotifier,
+    required this.onSearch,
+    required this.onSelected,
+  });
+
+  @override
+  State<_StaffSearchModal> createState() => _StaffSearchModalState();
+}
+
+class _StaffSearchModalState extends State<_StaffSearchModal> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    widget.onSearch(_searchController.text.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: AppTypography.titleBold1.black,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    behavior: HitTestBehavior.opaque,
+                    child: const Icon(
+                      Icons.close,
+                      color: AppColors.grey700,
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, thickness: 1, color: AppColors.grey200),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: AppTextFormField(
+                controller: _searchController,
+                labelText: 'Поиск',
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.grey700,
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Divider(height: 1, thickness: 1, color: AppColors.grey200),
+            Flexible(
+              child: ValueListenableBuilder<_StaffSearchData>(
+                valueListenable: widget.staffNotifier,
+                builder: (context, data, _) {
+                  if (data.isSearching) {
+                    return const Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  if (data.error != null) {
+                    return Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Center(
+                        child: Text(
+                          data.error!,
+                          style: AppTypography.textRegular2.red500,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final items = data.items ?? [];
+                  if (items.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Center(
+                        child: Text(
+                          'Ничего не найдено',
+                          style: AppTypography.textRegular1.grey700,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: _buildRows(items),
+                    ),
+                  );
                 },
               ),
             ),
-          ),
-        ],
-        if (widget.staffItems != null &&
-            widget.staffItems!.isNotEmpty &&
-            _selectedItem == null) ...[
-          const SizedBox(height: 8.0),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 200),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: widget.staffItems!.length,
-              itemBuilder: (context, index) {
-                final item = widget.staffItems![index];
-                return ListTile(
-                  title: Text(item.title),
-                  onTap: () => _onItemSelected(item),
-                );
-              },
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildRows(List<StaffItem> items) {
+    final rows = <Widget>[];
+    for (var i = 0; i < items.length; i++) {
+      final item = items[i];
+      rows.add(
+        GestureDetector(
+          onTap: () => widget.onSelected(item),
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.title,
+                    style: AppTypography.textRegular1.black,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                AppRadioButton(
+                  value: false,
+                  onChanged: (_) => widget.onSelected(item),
+                ),
+              ],
             ),
           ),
-        ],
-      ],
-    );
+        ),
+      );
+      if (i < items.length - 1) {
+        rows.add(
+          const Divider(
+            height: 1,
+            thickness: 1,
+            color: AppColors.grey200,
+            indent: 16,
+            endIndent: 16,
+          ),
+        );
+      }
+    }
+    return rows;
   }
 }

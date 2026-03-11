@@ -65,7 +65,6 @@ class UploadingAttachment extends StatelessWidget {
                 color: Colors.grey.shade400,
               ),
             ),
-          // Center(child: _buildStatusIndicator(context)),
           if (state is UploadingAttachmentLoading && onCancel != null)
             Center(child: _buildStatusIndicator(context)),
           if (state is UploadingAttachmentSuccess) ...[
@@ -76,6 +75,8 @@ class UploadingAttachment extends StatelessWidget {
               child: _buildFileSizeBadge(imageFile?.lengthSync() ?? 0),
             ),
           ],
+          if (state is UploadingAttachmentError)
+            Positioned(top: 4, right: 4, child: _buildDeleteButton(onDelete)),
         ],
       ),
     );
@@ -159,7 +160,7 @@ class UploadingAttachment extends StatelessWidget {
             ),
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: onDelete,
+              onTap: onCancel,
               child: SizedBox(
                 width: 26,
                 height: 26,

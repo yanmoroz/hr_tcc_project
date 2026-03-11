@@ -50,13 +50,6 @@ class PollItemViewModel {
     }
   }
 
-  Color get cardBackgroundColor {
-    if (isActivePoll) {
-      return AppColors.blue700;
-    }
-    return AppColors.white;
-  }
-
   Color get statusChipBackgroundColor {
     if (poll.canAnswer) {
       return AppColors.orange100;
@@ -69,19 +62,5 @@ class PollItemViewModel {
       return AppColors.black;
     }
     return AppColors.white;
-  }
-
-  Color get textColor {
-    if (isActivePoll) {
-      return AppColors.white;
-    }
-    return AppColors.black;
-  }
-
-  Color get secondaryTextColor {
-    if (isActivePoll) {
-      return AppColors.white.withValues(alpha: 0.7);
-    }
-    return AppColors.grey700;
   }
 }
