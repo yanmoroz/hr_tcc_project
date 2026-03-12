@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/domain.dart';
 import '../blocs/application_form_page/bloc.dart';
@@ -33,6 +34,7 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
           ),
         ],
       ),
+      backgroundColor: AppColors.white,
       body: BlocListener<ApplicationFormBloc, ApplicationFormState>(
         listenWhen: (previous, current) {
           // Only listen when transitioning FROM submitting TO not submitting
@@ -62,20 +64,12 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
         },
         child: Column(
           children: [
-            // Form title
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
+            // Form title + Form content (scrollable together)
+            Expanded(
+              child: _buildFormContent(
                 context.read<ApplicationFormBloc>().applicationForm.name,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
               ),
             ),
-
-            // Form content
-            Expanded(child: _buildFormContent()),
 
             // Submit button
             Padding(
@@ -133,11 +127,24 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
     );
   }
 
-  Widget _buildFormContent() {
+  Widget _buildFormTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildFormContent(String title) {
+    final titleWidget = _buildFormTitle(title);
+
     // Switch on form code to display appropriate form
     switch (context.read<ApplicationFormBloc>().applicationForm.code) {
       case 'alpinaAccess':
         return AlpinaAccessForm(
+          titleWidget: titleWidget,
           onFormChanged: (params) {
             setState(() {
               _currentParams = params;
@@ -147,6 +154,7 @@ class _ApplicationFormPageState extends State<ApplicationFormPage> {
 
       case 'absence':
         return AbsenceForm(
+          titleWidget: titleWidget,
           onFormChanged: (params) {
             setState(() {
               _currentParams = params;

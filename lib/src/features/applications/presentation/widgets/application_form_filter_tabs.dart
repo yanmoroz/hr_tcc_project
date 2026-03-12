@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_tcc_project/src/core/theme/app_colors.dart';
 
 import '../../../../core/entities/application_form.dart';
 import '../../../../core/entities/application_form_group.dart';
@@ -70,7 +71,7 @@ class ApplicationFormFilterTabs extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2196F3) : const Color(0xFFF5F5F5),
+          color: isSelected ? AppColors.blue700 : AppColors.grey100,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -81,16 +82,14 @@ class ApplicationFormFilterTabs extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF212121),
+                color: isSelected ? AppColors.white : AppColors.black,
               ),
             ),
             const SizedBox(width: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? Colors.white.withValues(alpha: 0.3)
-                    : const Color(0xFFE0E0E0),
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -98,7 +97,7 @@ class ApplicationFormFilterTabs extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.white : const Color(0xFF757575),
+                  color: AppColors.black,
                 ),
               ),
             ),

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/base_types/loading_status.dart';
+import '../../../../../core/models/radio_button_item.dart';
+import '../../../../../core/theme/theme.dart';
+import '../../../../../core/widgets/app_check_box.dart';
+import '../../../../../core/widgets/radio_button_group/app_radio_button_group.dart';
 import '../../../domain/domain.dart';
 import '../../blocs/application_form_page/bloc.dart';
 import '../form_fields/date_picker_field.dart';
@@ -10,8 +14,13 @@ import '../form_fields/info_box.dart';
 
 class AlpinaAccessForm extends StatefulWidget {
   final void Function(AlpinaDigitalAccessParams?) onFormChanged;
+  final Widget? titleWidget;
 
-  const AlpinaAccessForm({super.key, required this.onFormChanged});
+  const AlpinaAccessForm({
+    super.key,
+    required this.onFormChanged,
+    this.titleWidget,
+  });
 
   @override
   State<AlpinaAccessForm> createState() => _AlpinaAccessFormState();
@@ -26,12 +35,9 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
   bool _showComment = false;
   bool _agreementAccepted = false;
 
-  // Map radio button selection to code values
-  // static const String _yesCode = 'yes';
-  // static const String _noCode = 'no';
-  // TODO: ASK BE ABOUT THIS
-  static const String _yesCode = 'yes';
-  static const String _noCode = 'ne_znayu';
+  static const String _yesCode = 'da';
+  static const String _noCode = 'net';
+  static const String _unknownCode = 'ne_znayu';
 
   @override
   void dispose() {
@@ -127,6 +133,7 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              if (widget.titleWidget != null) widget.titleWidget!,
               // Date field
               DatePickerField(
                 label: 'Дата',
@@ -155,27 +162,23 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
               const SizedBox(height: 8),
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.grey100,
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: RadioGroup<String>(
-                  groupValue: _prevAccessCode,
-                  onChanged: (value) {
-                    setState(() {
-                      _prevAccessCode = value;
-                    });
-                    _updateForm();
-                  },
-                  child: Column(
-                    children: [
-                      RadioListTile<String>(
-                        title: const Text('Да'),
-                        value: _yesCode,
-                      ),
-                      RadioListTile<String>(
-                        title: const Text('Нет'),
-                        value: _noCode,
-                      ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                  child: AppRadioButtonGroup<String>(
+                    value: _prevAccessCode,
+                    onChanged: (value) {
+                      setState(() {
+                        _prevAccessCode = value;
+                      });
+                      _updateForm();
+                    },
+                    items: const [
+                      RadioButtonItem(value: _yesCode, label: 'Да'),
+                      RadioButtonItem(value: _noCode, label: 'Нет'),
+                      RadioButtonItem(value: _unknownCode, label: 'Не знаю'),
                     ],
                   ),
                 ),
@@ -186,6 +189,11 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
               SwitchListTile(
                 title: const Text('Добавить комментарий'),
                 value: _showComment,
+                activeThumbColor: AppColors.white,
+                inactiveThumbColor: AppColors.white,
+                activeTrackColor: AppColors.blue500,
+                inactiveTrackColor: AppColors.grey500,
+                trackOutlineColor: WidgetStatePropertyAll(Colors.transparent),
                 onChanged: (value) {
                   setState(() {
                     _showComment = value;
@@ -210,20 +218,35 @@ class _AlpinaAccessFormState extends State<AlpinaAccessForm> {
               ],
 
               // Agreement checkbox
-              CheckboxListTile(
-                title: const Text(
-                  'Я ознакомлен(а) с информацией о сроке действия ссылки 24 часа и удалении аккаунта при его неиспользовании более 3 месяцев',
-                  style: TextStyle(fontSize: 14),
-                ),
-                value: _agreementAccepted,
-                onChanged: (value) {
+              GestureDetector(
+                onTap: () {
                   setState(() {
-                    _agreementAccepted = value ?? false;
+                    _agreementAccepted = !_agreementAccepted;
                   });
                   _updateForm();
                 },
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppCheckBox(
+                      value: _agreementAccepted,
+                      onChanged: (value) {
+                        setState(() {
+                          _agreementAccepted = value;
+                        });
+                        _updateForm();
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'Я ознакомлен(а) с информацией о сроке действия ссылки 24 часа и удалении аккаунта при его неиспользовании более 3 месяцев',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
 

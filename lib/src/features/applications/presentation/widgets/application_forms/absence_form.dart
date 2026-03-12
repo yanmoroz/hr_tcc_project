@@ -10,8 +10,13 @@ import '../form_fields/comment_field.dart';
 
 class AbsenceForm extends StatefulWidget {
   final void Function(AbsenceParams?) onFormChanged;
+  final Widget? titleWidget;
 
-  const AbsenceForm({super.key, required this.onFormChanged});
+  const AbsenceForm({
+    super.key,
+    required this.onFormChanged,
+    this.titleWidget,
+  });
 
   @override
   State<AbsenceForm> createState() => _AbsenceFormState();
@@ -147,6 +152,7 @@ class _AbsenceFormState extends State<AbsenceForm> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              if (widget.titleWidget != null) widget.titleWidget!,
               // Category dropdown
               DropdownButtonFormField<int>(
                 decoration: const InputDecoration(

@@ -7,6 +7,7 @@ import '../../../../../gen/assets.gen.dart';
 import '../../../../core/base_types/loading_status.dart';
 import '../../../../core/entities/application_form.dart';
 import '../../../../core/entities/application_form_group.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/search_bar_widget.dart';
 import '../blocs/application_creation_page/bloc.dart';
 import '../widgets/application_form_filter_tabs.dart';
@@ -92,74 +93,82 @@ class ApplicationCreationPage extends StatelessWidget {
 
           return Column(
             children: [
-              const SizedBox(height: 8),
-
               // Filter tabs - optimized with BlocSelector
-              BlocSelector<
-                ApplicationCreationBloc,
-                ApplicationCreationState,
-                _FilterTabsState
-              >(
-                selector: (state) {
-                  if (state.status == LoadingStatus.success) {
-                    return _FilterTabsState(
-                      groups: state.groups,
-                      allForms: state.allForms,
-                      selectedGroupId: state.selectedGroupId,
-                    );
-                  }
-                  return const _FilterTabsState(
-                    groups: [],
-                    allForms: [],
-                    selectedGroupId: null,
-                  );
-                },
-                builder: (context, filterTabsState) {
-                  if (filterTabsState.groups.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
-
-                  return Column(
-                    children: [
-                      ApplicationFormFilterTabs(
-                        groups: filterTabsState.groups,
-                        allForms: filterTabsState.allForms,
-                        selectedGroupId: filterTabsState.selectedGroupId,
-                        onGroupChanged: (groupId) {
-                          context.read<ApplicationCreationBloc>().add(
-                            ApplicationCreationEvent.filterByGroup(groupId),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  );
-                },
-              ),
-
-              // Search bar - optimized with BlocSelector
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child:
+              Container(
+                decoration: BoxDecoration(color: AppColors.white),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8),
                     BlocSelector<
                       ApplicationCreationBloc,
                       ApplicationCreationState,
-                      _SearchBarState
+                      _FilterTabsState
                     >(
                       selector: (state) {
-                        return const _SearchBarState();
+                        if (state.status == LoadingStatus.success) {
+                          return _FilterTabsState(
+                            groups: state.groups,
+                            allForms: state.allForms,
+                            selectedGroupId: state.selectedGroupId,
+                          );
+                        }
+                        return const _FilterTabsState(
+                          groups: [],
+                          allForms: [],
+                          selectedGroupId: null,
+                        );
                       },
-                      builder: (context, searchBarState) {
-                        return SearchBarWidget(
-                          hintText: 'Наименование заявки',
-                          onSearchChanged: (query) {
-                            context.read<ApplicationCreationBloc>().add(
-                              ApplicationCreationEvent.searchForms(query),
-                            );
-                          },
+                      builder: (context, filterTabsState) {
+                        if (filterTabsState.groups.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return Column(
+                          children: [
+                            ApplicationFormFilterTabs(
+                              groups: filterTabsState.groups,
+                              allForms: filterTabsState.allForms,
+                              selectedGroupId: filterTabsState.selectedGroupId,
+                              onGroupChanged: (groupId) {
+                                context.read<ApplicationCreationBloc>().add(
+                                  ApplicationCreationEvent.filterByGroup(
+                                    groupId,
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                          ],
                         );
                       },
                     ),
+
+                    // Search bar - optimized with BlocSelector
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      child:
+                          BlocSelector<
+                            ApplicationCreationBloc,
+                            ApplicationCreationState,
+                            _SearchBarState
+                          >(
+                            selector: (state) {
+                              return const _SearchBarState();
+                            },
+                            builder: (context, searchBarState) {
+                              return SearchBarWidget(
+                                hintText: 'Наименование заявки',
+                                onSearchChanged: (query) {
+                                  context.read<ApplicationCreationBloc>().add(
+                                    ApplicationCreationEvent.searchForms(query),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                    ),
+                  ],
+                ),
               ),
 
               // Forms list
